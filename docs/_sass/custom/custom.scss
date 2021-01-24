@@ -1,0 +1,6 @@
+.site-footer, .breadcrumb-nav { display: none; }
+
+.main-content h1 { margin-bottom: 1.5rem; }
+
+.text-delta { display: none; }
+.text-delta + ul::before { font-weight: bold; content: 'Next:'; }
