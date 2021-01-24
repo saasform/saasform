@@ -30,7 +30,8 @@ twitter_username: saasform
 github_username:  saasform
 
 # Build settings
-theme: just-the-docs
+#theme: just-the-docs
+remote_theme: pmarsceill/just-the-docs
 
 aux_links:
   "Saasform on GitHub":
@@ -46,7 +47,7 @@ gh_edit_link_text: "Edit this page on GitHub"
 gh_edit_repository: "https://github.com/saasform/saasform" # the github URL for your repo
 gh_edit_branch: "master" # the branch that your docs is served from
 
-# ga_tracking: UA-177397859-1
+ga_tracking: UA-177397859-1
 
 # Exclude from processing.
 # The following items will not be processed, by default.
