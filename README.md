@@ -67,4 +67,4 @@ We love any type of contribution, bug fixes, new integrations and better docs. S
 
 ## Saasform Cloud
 
-Saasform Cloud is our hosted solution and we're onboarding beta customers. Sign up for updates at [https://saasform.dev](saasform.dev).
+Saasform Cloud is our hosted solution and we're onboarding beta customers. Sign up for updates at [saasform.dev](https://saasform.dev).
