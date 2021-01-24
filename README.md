@@ -25,12 +25,12 @@ Open your browser at [http://localhost:8080](http://localhost:8080).
 
 ## Next Steps
 
-1. Customize the Website from Admin (set logo, color, pricing, content, analytics)
-1. Try out the User Flows (sign up, verify email, add payment)
-1. Integrate User Authentication (Technical)
+1. Customize the website (Set logo, color, pricing, content, analytics)
+1. Try out the user flows (Sign up, verify email, add payment)
+1. [Integrate user authentication](https://docs.saasform.dev/start/integrate-user-authentication) (Technical)
 1. Develop Saasform (Technical)
-1. Get Ready for Production (Technical)
-1. Migrate to/from Saasform Cloud
+1. Get ready for production (Technical)
+1. Migrate to Saasform Cloud
 
 ## Features
 - Webpages
