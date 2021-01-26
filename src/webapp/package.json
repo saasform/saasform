@@ -72,5 +72,10 @@
   },
   "ts-standard": {
     "project": "./tsconfig.json"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint"
+    }
   }
 }
