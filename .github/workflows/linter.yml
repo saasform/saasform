@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Lint
 
 on:
   push:
@@ -26,6 +26,9 @@ jobs:
       with:
         path: '**/node_modules'
         key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+    - name: Deps (webapp)
+      working-directory: ./src/webapp
+      run: yarn install
     - name: Tests (webapp)
       working-directory: ./src/webapp
       run: yarn lint
