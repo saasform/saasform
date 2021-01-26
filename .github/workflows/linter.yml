@@ -27,5 +27,5 @@ jobs:
         path: '**/node_modules'
         key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
     - name: Tests (webapp)
-      working-directory: ./webapp
+      working-directory: ./src/webapp
       run: yarn lint

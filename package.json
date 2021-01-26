@@ -9,7 +9,6 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lerna run lint"
     }
   },
   "lint-staged": {

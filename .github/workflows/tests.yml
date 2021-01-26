@@ -30,8 +30,8 @@ jobs:
         path: '**/node_modules'
         key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
     - name: Deps (webapp)
-      working-directory: ./webapp
+      working-directory: ./src/webapp
       run: yarn install
     - name: Tests (webapp)
-      working-directory: ./webapp
+      working-directory: ./src/webapp
       run: yarn test
