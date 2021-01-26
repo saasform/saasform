@@ -4,7 +4,8 @@
 
 [![Slack Chat](https://img.shields.io/badge/chat-Slack-green.svg)](https://join.slack.com/t/saasformers/shared_invite/zt-ktzmotjp-Bit5MMInRNyJ~lxfeupd7Q)
 
-[![GitHub Super-Linter](https://github.com/saasform/saasform/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
+
 
 Saasform is a state-of-the-art website for your SaaS, with authentication, payments and common growth & marketing tools.
 
