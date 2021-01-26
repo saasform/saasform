@@ -1,5 +1,10 @@
+# Saasform
+
 [![License](https://img.shields.io/github/license/saasform/saasform.svg)](https://github.com/saasform/saasform/blob/master/LICENSE)
+
 [![Slack Chat](https://img.shields.io/badge/chat-Slack-green.svg)](https://join.slack.com/t/saasformers/shared_invite/zt-ktzmotjp-Bit5MMInRNyJ~lxfeupd7Q)
+
+[![GitHub Super-Linter](https://github.com/saasform/saasform/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
 Saasform is a state-of-the-art website for your SaaS, with authentication, payments and common growth & marketing tools.
 
@@ -9,19 +14,17 @@ Building a SaaS requires building a website, authentication, payments… and mai
 
 Saasform is built with security and usability in mind. It's a standalone service including its own datastore, i.e. it's not a boilerplate, so you can build your SaaS with the tech stack you'd like, even serverless. All you need to do is to integrate Saasform authentication in your backend or functions. This architecture is great to launch quickly, keep you focused on your core features, and maintain a good separation as your infrastructure and team scale.
 
-
 ## Get Started
 
 Launch Saasform:
 
-```
+```bash
 git clone https://github.com/saasform/saasform
 cd saasform
 docker-compose up
 ```
 
 Open your browser at [http://localhost:8080](http://localhost:8080).
-
 
 ## Next Steps
 
@@ -33,6 +36,7 @@ Open your browser at [http://localhost:8080](http://localhost:8080).
 1. Migrate to Saasform Cloud
 
 ## Features
+
 - Webpages
   - [x] Homepage
   - [x] Login / Signup / Password reset
