@@ -6,7 +6,6 @@
 
 [![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
 
-
 Saasform is a state-of-the-art website for your SaaS, with authentication, payments and common growth & marketing tools.
 
 ![Saasform preview](https://raw.githubusercontent.com/saasform/saasform/main/docs/images/saasform-hero.png)
