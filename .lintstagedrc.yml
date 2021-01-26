@@ -1,4 +1,0 @@
-linters:
-  src/webapp/**.ts:
-    - ts-standard --fix
-    - git add
