@@ -8,7 +8,7 @@ import {
 } from 'typeorm'
 
 class CredentialsJSON {
-  encrypted_password: string
+  encryptedPassword: string
 };
 
 @Entity('usersCredentials')
@@ -36,7 +36,7 @@ export class UserCredentialsEntity {
     }
   }
 
-  constructor (credential: string = '', userId: number = 0, json: CredentialsJSON = { encrypted_password: '' }) {
+  constructor (credential: string = '', userId: number = 0, json: CredentialsJSON = { encryptedPassword: '' }) {
     this.credential = credential
     this.userId = userId
     this.json = json

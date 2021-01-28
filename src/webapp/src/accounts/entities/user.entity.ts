@@ -64,7 +64,7 @@ export class UserEntity {
   }
 
   /**
-   * Set values in this.data from values in json
+   * Set values in this from values in this.data
    */
   @AfterLoad()
   public setValuesFromJson (): any {
@@ -94,6 +94,13 @@ export class UserEntity {
       }
     })
     this.data = data
+  }
+
+  /**
+   * Set a random password
+   */
+  async setRandomPassword (): Promise<any> {
+    this.password = password(10)
   }
 
   /**
