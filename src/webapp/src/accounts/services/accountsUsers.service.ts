@@ -1,20 +1,18 @@
 import { REQUEST } from '@nestjs/core'
 import { Injectable, Scope, Inject } from '@nestjs/common'
 import { QueryService } from '@nestjs-query/core'
-import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, getRepository } from 'typeorm'
+import { Repository } from 'typeorm'
 
 import { AccountUserEntity } from '../entities/accountUser.entity'
 import { UsersService } from '../services/users.service'
 import { UserEntity } from '../entities/user.entity'
 import { AccountEntity } from '../entities/account.entity'
+import { BaseService } from 'src/utilities/base.service'
 
 @QueryService(AccountUserEntity)
 @Injectable({ scope: Scope.REQUEST })
-export class AccountsUsersService extends TypeOrmQueryService<
-AccountUserEntity
-> {
+export class AccountsUsersService extends BaseService<AccountUserEntity> {
   constructor (
     @Inject(REQUEST) private readonly req,
     @InjectRepository(AccountUserEntity)
@@ -22,12 +20,8 @@ AccountUserEntity
     private readonly usersService: UsersService // private stripeClient: StripeClient,
   ) {
     super(
-      req !== undefined && req !== null
-        ? getRepository(
-          AccountUserEntity,
-          req?.req.tenantId ?? req.tenantId
-        )
-        : getRepository(AccountUserEntity)
+      req,
+      'AccountUserEntity'
     )
   }
 

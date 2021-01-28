@@ -1,9 +1,8 @@
 import { REQUEST } from '@nestjs/core'
 import { Injectable, Inject } from '@nestjs/common'
 import { QueryService } from '@nestjs-query/core'
-import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, getRepository } from 'typeorm'
+import { Repository } from 'typeorm'
 
 import { AccountEntity, AccountData } from '../entities/account.entity'
 
@@ -11,6 +10,7 @@ import { UsersService } from './users.service'
 import { UserEntity } from '../entities/user.entity'
 // import { NewUserInput } from '../dto/new-user.input' // TODO
 import { AccountsUsersService } from './accountsUsers.service'
+import { BaseService } from 'src/utilities/base.service'
 // import { PaymentsService } from '../paymentModule/payments.service';
 // import { PlansService } from '../plans/plans.service';
 
@@ -19,7 +19,7 @@ import { AccountsUsersService } from './accountsUsers.service'
 
 @QueryService(AccountEntity)
 @Injectable()
-export class AccountsService extends TypeOrmQueryService<AccountEntity> {
+export class AccountsService extends BaseService<AccountEntity> {
   // Why we cannot inject this??
   // private stripeClient;
 
@@ -32,14 +32,7 @@ export class AccountsService extends TypeOrmQueryService<AccountEntity> {
     // private readonly plansService: PlansService,
     // private readonly paymentsService: PaymentsService,
   ) {
-    super(
-      req !== undefined && req !== null
-        ? getRepository(
-          AccountEntity,
-          req?.req.tenantId ?? req.tenantId
-        )
-        : getRepository(AccountEntity)
-    )
+    super(req, 'AccountEntity')
 
     // TODO: inject this instead of instantiate
     // this.stripeClient = { ...stripe, createStripeFreeSubscription }

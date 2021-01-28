@@ -1,9 +1,8 @@
 import { REQUEST } from '@nestjs/core'
 import { Injectable, Scope, Inject } from '@nestjs/common'
 import { QueryService } from '@nestjs-query/core'
-import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, getRepository } from 'typeorm'
+import { Repository } from 'typeorm'
 import * as bcrypt from 'bcrypt'
 
 import { UserEntity } from '../entities/user.entity'
@@ -14,9 +13,10 @@ import { NewUserInput } from '../dto/new-user.input'
 // import { CommunicationService } from '../communication/communication.service'
 // import config from '../../utilities/config'
 import { UserCredentialsService } from '../services/userCredentials.service'
+import { BaseService } from 'src/utilities/base.service'
 @QueryService(UserEntity)
 @Injectable({ scope: Scope.REQUEST })
-export class UsersService extends TypeOrmQueryService<UserEntity> {
+export class UsersService extends BaseService<UserEntity> {
   constructor (
     @Inject(REQUEST) private readonly req,
     @InjectRepository(UserEntity)
@@ -27,12 +27,8 @@ export class UsersService extends TypeOrmQueryService<UserEntity> {
   ) {
     // super(getRepository(UserEntity, req.req ? req.req.tenantId : req.tenantId))
     super(
-      req !== undefined && req !== null
-        ? getRepository(
-          UserEntity,
-          req?.req.tenantId ?? req.tenantId
-        )
-        : getRepository(UserEntity)
+      req,
+      'UserEntity'
     )
   }
 

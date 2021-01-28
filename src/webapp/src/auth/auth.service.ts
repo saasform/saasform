@@ -108,7 +108,7 @@ export class AuthService {
       const parseResult = parseDomain(primaryDomain)
       if (parseResult.type === ParseResultType.Listed) {
         const { domain, topLevelDomains } = parseResult
-        cookieDomain = `${domain as string}.${topLevelDomains.join('.') as string}`
+        cookieDomain = `${domain as string}.${topLevelDomains.join('.')}`
       } else {
         // if improperly set, fall back to the request's hostname
         cookieDomain = requestHostname

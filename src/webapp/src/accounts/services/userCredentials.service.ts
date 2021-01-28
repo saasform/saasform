@@ -1,28 +1,22 @@
 import { REQUEST } from '@nestjs/core'
 import { Injectable, Scope, Inject } from '@nestjs/common'
 import { QueryService } from '@nestjs-query/core'
-import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
+// import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, getRepository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 import * as bcrypt from 'bcrypt'
+import { BaseService } from 'src/utilities/base.service'
 
 @QueryService(UserCredentialsEntity)
 @Injectable({ scope: Scope.REQUEST })
-export class UserCredentialsService extends TypeOrmQueryService<UserCredentialsEntity> {
+export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
   constructor (
     @Inject(REQUEST) private readonly req,
     @InjectRepository(UserCredentialsEntity) private readonly usersCredentialsRepository: Repository<UserCredentialsEntity>
   ) {
     // super(getRepository(UserCredentialsEntity, req.req ? req.req.tenantId : req.tenantId))
-    super(
-      req !== undefined && req !== null
-        ? getRepository(
-          UserCredentialsEntity,
-          req?.req.tenantId ?? req.tenantId
-        )
-        : getRepository(UserCredentialsEntity)
-    )
+    super(req, 'UserCredentialsEntity')
   }
 
   async findUserCredentials (credential: string): Promise<UserCredentialsEntity | null> {

@@ -2,7 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt'
 import { PassportStrategy } from '@nestjs/passport'
 import { Injectable } from '@nestjs/common'
 // import { SettingsService } from '../settings/settings.service'
-// import { ContextIdFactory, ModuleRef } from '@nestjs/core'
+import { ModuleRef } from '@nestjs/core'
 // import { AuthService } from './auth.service'
 import { RequestUser } from './interfaces/user.interface'
 
@@ -24,7 +24,7 @@ async function secretOrKeyProvider (request: Request, rawJwtToken, done): Promis
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor (private readonly moduleRef) {
+  constructor (private readonly moduleRef: ModuleRef) {
     super({
       jwtFromRequest: cookieOrBearerExtractor,
       ignoreExpiration: false,
