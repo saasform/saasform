@@ -10,7 +10,6 @@ import { parseDomain, ParseResultType } from 'parse-domain'
 // import { PaymentsService } from '../paymentModule/payments.service'
 // import { PlansService } from '../plans/plans.service'
 import { UserCredentialsService } from '../accounts/services/userCredentials.service'
-import config from '../utilities/config'
 import { UserEntity } from '../accounts/entities/user.entity'
 
 @Injectable()
@@ -130,7 +129,7 @@ export class AuthService {
 
     let options = { secure: true, httpOnly: true, domain: cookieDomain }
 
-    if (config.__IS_DEV__) {
+    if (process.env.NODE_ENV === 'development') {
       options = { secure: false, httpOnly: false, domain: cookieDomain }
     }
 
