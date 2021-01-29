@@ -12,21 +12,6 @@ import { UserCredentialsEntity } from './entities/userCredentials.entity'
 import { AccountUserEntity } from './entities/accountUser.entity'
 import { UserCredentialsService } from './services/userCredentials.service'
 
-// @Module({
-//   providers: [AccountsService, AccountsUsersService, UsersService],
-//   imports: [
-//     NestjsQueryGraphQLModule.forFeature({
-//       imports: [
-//         NestjsQueryTypeOrmModule.forFeature([AccountEntity])
-//       ],
-//       services: [AccountsService, AccountsUsersService, UsersService],
-//       resolvers: []
-//     }),
-//     AccountsService, AccountsUsersService, UsersService
-//   ],
-//   exports: [AccountsService]
-// })
-
 @Module({
   imports: [
     NestjsQueryGraphQLModule.forFeature({

@@ -23,5 +23,4 @@ export interface ValidUser {
   user: any
   credential: any
   account: any
-  // subscription: any
 }

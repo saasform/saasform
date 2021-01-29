@@ -3,18 +3,12 @@ import { AuthService } from './auth.service'
 import { UsersService } from '../accounts/services/users.service'
 import { JwtService } from '@nestjs/jwt'
 import { AccountsService } from '../accounts/services/accounts.service'
-// import { PaymentsService } from '../paymentModule/payments.service'
 import { mockedRepo, mockedUserCredentials, mockUserCredentialsService } from '../accounts/test/testData'
 import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
-// import { SettingsService } from '../settings/settings.service'
-// import { CommunicationService } from '../communication/communication.service'
-// import { PlansService } from '../plans/plans.service'
 import { UserCredentialsService } from '../accounts/services/userCredentials.service'
 
 const mockJwtService = {}
 const mockAccountsService = {}
-// const mockPaymentService = {}
-// const mockPlanService = {}
 
 describe('AuthService', () => {
   let service: AuthService
@@ -24,17 +18,13 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
-        // CommunicationService,
         TypeOrmQueryService,
-        // SettingsService,
         {
           provide: UsersService,
           useValue: mockedRepo
         },
         { provide: JwtService, useValue: mockJwtService },
         { provide: AccountsService, useValue: mockAccountsService },
-        // { provide: PaymentsService, useValue: mockPaymentService },
-        // { provide: PlansService, useValue: mockPlanService },
         { provide: UserCredentialsService, useValue: mockUserCredentialsService }
       ]
     }).compile()
@@ -54,6 +44,7 @@ describe('AuthService', () => {
           expect(expUser).toBeDefined()
         })
         /*
+        // Linters complains about null or undefined
         it('with registered email and undefined password', async () => {
           const expUser = await service.validateUser(mockedUserCredentials.credential, undefined)
           expect(expUser).not.toBeDefined()
@@ -72,6 +63,7 @@ describe('AuthService', () => {
           expect(expUser).toBeNull()
         })
         /*
+        // Linters complains about null or undefined
         it('with unregistered email and undefined password', async () => {
           const expUser = await service.validateUser('werqw@email.com', undefined)
           expect(expUser).not.toBeDefined()

@@ -11,17 +11,6 @@ import { AccountUserEntity } from '../entities/accountUser.entity'
 import { AccountsUsersService } from './accountsUsers.service'
 import { UsersService } from './users.service'
 
-// import { PlanEntity } from '../plans/plan.entity'
-// import { PlansService } from '../plans/plans.service'
-
-// import { SettingsService } from '../settings/settings.service'
-// import { SettingsEntity } from '../settings/settings.entity'
-
-// import { CommunicationService } from '../communication/communication.service'
-
-// import { PaymentEntity } from '../paymentModule/payment.entity'
-// import { PaymentsService } from '../paymentModule/payments.service'
-
 import { UserCredentialsService } from './userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 import { mockUserCredentialsEntity } from '../test/testData'
@@ -36,9 +25,7 @@ describe('Accounts Service', () => {
   let service // Removed type AccountsService because we must overwrite the accountsRepository property
   let repo: Repository<AccountEntity>
   let userRepo: Repository<UserEntity>
-  // let plansRepo: Repository<PlanEntity>
   let accountsUsersRepo: Repository<AccountUserEntity>
-  // let paymentsRepo: Repository<PaymentEntity>
 
   let user: UserEntity
 
@@ -68,17 +55,6 @@ describe('Accounts Service', () => {
     addStripeUser: jest.fn((user, plan) => user)
   }
 
-  // const mockedPlansRepo = {
-  //   getPlans: jest.fn(() => [{ plan: 'mocked' }])
-  // }
-
-  // const mockedStripe = {
-  //   customers: { create: jest.fn(customer => { return { user: 'stripe' } }) },
-  //   createStripeFreeSubscription: jest.fn((plan, user) => {})
-  // }
-
-  // const mockedPaymentRepo = {}
-
   beforeEach(async () => {
     jest.clearAllMocks()
 
@@ -98,27 +74,11 @@ describe('Accounts Service', () => {
           provide: getRepositoryToken(AccountUserEntity),
           useValue: mockedAccountsUsersRepo
         },
-        // PlansService,
-        // {
-        //   provide: getRepositoryToken(PlanEntity),
-        //   useValue: mockedPlansRepo
-        // },
         UsersService,
         {
           provide: getRepositoryToken(UserEntity),
           useValue: mockedUserRepo
         },
-        // SettingsService,
-        // {
-        //   provide: getRepositoryToken(SettingsEntity),
-        //   useValue: {}
-        // },
-        // PaymentsService,
-        // {
-        //   provide: getRepositoryToken(PaymentEntity),
-        //   useValue: mockedPaymentRepo
-        // },
-        // CommunicationService,
         UserCredentialsService,
         {
           provide: getRepositoryToken(UserCredentialsEntity),
@@ -139,29 +99,16 @@ describe('Accounts Service', () => {
     userRepo = await module.get<Repository<UserEntity>>(
       getRepositoryToken(UserEntity)
     )
-    // plansRepo = await module.get<Repository<PlanEntity>>(
-    //   getRepositoryToken(PlanEntity)
-    // )
-    // paymentsRepo = await module.get<Repository<PaymentEntity>>(
-    //   getRepositoryToken(PaymentEntity)
-    // )
 
     // We must manually set the following because extending TypeOrmQueryService seems to break it
     Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
     service.accountsRepository = repo
     service.usersService = userRepo
     service.accountsUsersService = accountsUsersRepo
-    // service.plansService = plansRepo
-    // service.stripeClient = { ...mockedStripe } // TODO: remove this
-    // service.paymentsService = paymentsRepo
-    // Object.keys(mockedStripe).forEach(
-    //   f => (service.stripeClient[f] = mockedStripe[f]),
-    // );
   })
 
   afterEach(() => {
     jest.restoreAllMocks()
-    // jest.resetAllMocks();
   })
 
   it('should be defined', () => {
@@ -184,13 +131,6 @@ describe('Accounts Service', () => {
       const repoSpy = jest.spyOn(mockedRepo, 'createOne')
       await service.add({ data: { name: 'foo bar' } })
 
-      // const _c = repoSpy.mock.calls[0][0]
-
-      // expect(repoSpy).toBeCalledWith(
-      //   expect.objectContaining({
-      //     data: { name: 'foo bar', stripe: { user: 'stripe' } }
-      //   })
-      // )
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
           data: { name: 'foo bar' }
@@ -201,13 +141,6 @@ describe('Accounts Service', () => {
     it('should link the account to the owner when called with the owner', async () => {
       const repoSpy = jest.spyOn(mockedRepo, 'createOne')
       await service.add({ data: {}, user })
-
-      // expect(repoSpy).toBeCalledWith(
-      //   expect.objectContaining({
-      //     data: { name: undefined, stripe: { user: 'stripe' } },
-      //     owner_id: 101
-      //   })
-      // )
 
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
@@ -235,22 +168,6 @@ describe('Accounts Service', () => {
 
       expect(repoSpy).toBeCalledTimes(0)
     })
-
-    // it('should create a stripe user and link it to the account', async () => {
-    //   const stripeSpy = jest.spyOn(mockedStripe.customers, 'create')
-    //   await service.add({ data: { name: 'foo bar' }, user })
-
-    //   expect(stripeSpy).toBeCalledWith(
-    //     expect.objectContaining({ name: 'foo bar' })
-    //   )
-    // })
-
-    // it('should add a subscription with the free tier for the stripe account', async () => {
-    //   const stripeSpy = jest.spyOn(mockedStripe, 'createStripeFreeSubscription')
-    //   await service.add({ data: { name: 'foo bar' }, user })
-
-    //   expect(stripeSpy).toBeCalledWith({ plan: 'mocked' }, { user: 'stripe' })
-    // })
   })
 
   describe('Invite user', () => {
@@ -303,12 +220,10 @@ describe('Accounts Service', () => {
         it('Should not create a new User', async () => {
           jest.clearAllMocks()
           const repoSpy = jest.spyOn(mockedUserRepo, 'findOrCreateUser')
-          // const repoAddSpy = jest.spyOn(mockedUserRepo, 'addUser')
 
           await service.inviteUser({ email: 'foo@bar.it' }, 1)
 
           expect(repoSpy).toBeCalledTimes(1)
-          // expect(repoAddSpy).toBeCalledTimes(0)
         })
 
         it('The new User should have not requested a reset password', async () => {
@@ -328,9 +243,3 @@ describe('Accounts Service', () => {
     })
   })
 })
-
-// it('A user can be associated with multiple accounts', async () => {});
-
-// it('An existing user can be associated', async () => {});
-
-// it('The user can be associated with multiple accounts', async () => {});

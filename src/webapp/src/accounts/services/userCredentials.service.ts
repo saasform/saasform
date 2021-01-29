@@ -15,7 +15,6 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
     @Inject(REQUEST) private readonly req,
     @InjectRepository(UserCredentialsEntity) private readonly usersCredentialsRepository: Repository<UserCredentialsEntity>
   ) {
-    // super(getRepository(UserCredentialsEntity, req.req ? req.req.tenantId : req.tenantId))
     super(req, 'UserCredentialsEntity')
   }
 

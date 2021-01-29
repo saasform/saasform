@@ -1,32 +1,18 @@
 import { Module } from '@nestjs/common'
 import { AuthService } from './auth.service'
-// import { UsersModule } from '../users/users.module'
 import { PassportModule } from '@nestjs/passport'
 import { LocalStrategy } from './local.strategy'
 import { JwtStrategy } from './jwt.strategy'
 import { JwtModule } from '@nestjs/jwt'
-// import { SettingsService } from '../settings/settings.service'
-// import { SettingsModule } from '../settings/settings.module'
 import { AccountsModule } from '../accounts/accounts.module'
 import { AccountsService } from '../accounts/services/accounts.service'
-// import { UsersCredentialsModule } from '../usersCredentials/userCredentials.module'
-
-// import { PaymentsModule } from '../paymentModule/payments.module'
-// import { PaymentsService } from '../paymentModule/payments.service'
-// import { GoogleService } from './google.service'
-// import { PlansModule } from '../plans/plans.module'
 
 @Module({
   imports: [
-    // SettingsModule,
-    // UsersModule,
-    // UsersCredentialsModule,
     AccountsModule,
-    // PaymentsModule,
     PassportModule,
-    // PlansModule,
     JwtModule.registerAsync({
-      imports: [/* SettingsModule, PaymentsModule, */AccountsModule],
+      imports: [/* SettingsModule, */AccountsModule],
       // useFactory: async (settingsService: SettingsService) => ({
       //   privateKey: await settingsService.getJWTPrivateKey(),
       //   signOptions: {
@@ -42,7 +28,7 @@ import { AccountsService } from '../accounts/services/accounts.service'
           }
         }
       },
-      inject: [/* SettingsService, PaymentsService, */AccountsService]
+      inject: [/* SettingsService, */AccountsService]
     })
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy/* , SettingsService, GoogleService */],

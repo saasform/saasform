@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { UsersService } from '../accounts/services/users.service'
 import { AccountsService } from '../accounts/services/accounts.service'
-// import { SettingsService } from '../settings/settings.service'
 import { RequestUser, ValidUser } from './interfaces/user.interface'
 
 import { JwtService } from '@nestjs/jwt'
 import { parseDomain, ParseResultType } from 'parse-domain'
 
-// import { PaymentsService } from '../paymentModule/payments.service'
-// import { PlansService } from '../plans/plans.service'
 import { UserCredentialsService } from '../accounts/services/userCredentials.service'
 import { UserEntity } from '../accounts/entities/user.entity'
 
@@ -18,13 +15,10 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly accountsService: AccountsService,
-    // private readonly settingsService: SettingsService,
-    // private readonly paymentService: PaymentsService,
-    // private readonly plansService: PlansService,
     private readonly userCredentialsService: UserCredentialsService
   ) {}
 
-  async validateUser (email: string, inputPassword: string): Promise<ValidUser | null> { // TODO: use a valid type
+  async validateUser (email: string, inputPassword: string): Promise<ValidUser | null> {
     if (email == null || inputPassword == null) {
       return null
     }
@@ -52,40 +46,8 @@ export class AuthService {
       return null
     }
 
-    // BILLING
-    // const subscription = await this.validateSubscription(account)
-    // return { user, credential, account, subscription }
-
     return { user, credential, account }
   }
-
-  // BILLING
-  /**
-  * Get info about the plan from the DB.
-  * Eventually plans and payments should converge into a single module
-  * (or groups of module) and just 1 call should be enough.
-  *
-  * @param user_id
-  */
-  /*
-  async validateSubscription (account) {
-    await this.paymentService.refreshPaymentsFromStripe(account)
-    const payment = await this.paymentService.getActivePayments(account.id)
-    const plan = await this.plansService.getPlanForPayment(payment)
-
-    const subscription = plan
-      ? {
-        subscription_id: payment.id,
-        subscription_plan: plan.uid,
-        subscription_status: payment.status,
-        payment_status: null, // TODO
-        subscription_expiration: null // TODO
-      }
-      : {}
-
-    return subscription
-  }
-  */
 
   async getTokenPayloadFromUserModel (validUser: ValidUser): Promise<RequestUser | null> {
     return {
@@ -97,11 +59,10 @@ export class AuthService {
       email: validUser.user.email,
       email_verified: validUser.user?.data.emailConfirmed ?? false,
       staff: validUser.user?.isAdmin ?? false
-      // ...subscription
     }
   }
 
-  getJwtCookieDomain (requestHostname, primaryDomain): any { // TODO: use a valid type
+  getJwtCookieDomain (requestHostname, primaryDomain): any { // TODO: specify type
     let cookieDomain
 
     // if the request is from localhost or mysaasform.com, use the request's hostname
@@ -122,7 +83,7 @@ export class AuthService {
     return cookieDomain
   }
 
-  async setJwtCookie (request, response, requestUser: RequestUser): Promise<any> { // TODO: use a valid type
+  async setJwtCookie (request, response, requestUser: RequestUser): Promise<any> { // TODO: specify type
     const jwt = await this.jwtService.sign(requestUser)
     const settings = { domain_primary: 'localhost' } /* await this.settingsService.getWebsiteSettings() */
     const cookieDomain = this.getJwtCookieDomain(request.hostname, settings.domain_primary)
@@ -167,8 +128,6 @@ export class AuthService {
       // if user already present return immediately
       return null
     }
-    // BILLING
-    // await this.paymentService.refreshPaymentsFromStripe(account)
 
     return { user, credential, account }
   }

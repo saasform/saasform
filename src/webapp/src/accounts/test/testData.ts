@@ -40,11 +40,9 @@ export const mockedRepo = {
   })
 }
 
-// encryptedPassword === 'password'
 export const mockedUserCredentials = new UserCredentialsEntity('user@gmail.com', 1, { encryptedPassword: '$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm' })
 
 export const mockUserCredentialsEntity = {
-  // changePassword: jest.fn(),
   find: jest.fn(({ where: { userId } }) => userId === mockedUserCredentials.userId ? mockedUserCredentials : undefined),
   findOne: jest.fn(({ where: { credential } }) => credential === mockedUserCredentials.credential ? mockedUserCredentials : undefined),
   createOne: jest.fn((userCredential) => userCredential),

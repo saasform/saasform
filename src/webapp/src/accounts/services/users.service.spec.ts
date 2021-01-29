@@ -4,14 +4,9 @@ import { getRepositoryToken } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 
-// import { mockServer } from 'graphql-tools'
-
 import { UsersService } from './users.service'
 import { UserEntity } from '../entities/user.entity'
 import { NewUserInput } from '../dto/new-user.input'
-// import { SettingsEntity } from '../settings/settings.entity'
-// import { SettingsService } from '../settings/settings.service'
-// import { CommunicationService } from '../communication/communication.service'
 import { mockedCommunicationService, mockedRandom, mockedRepo, mockedUser, mockedUserExpiredToken, mockUserCredentialsEntity } from '../test/testData'
 import { UserCredentialsService } from '../services/userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
@@ -21,8 +16,6 @@ import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 describe('UsersService', () => {
   let service // Removed type AccountsService because we must overwrite the accountsRepository property
   let repo: Repository<UserEntity>
-  // let settingsRepo: Repository<SettingsEntity>
-  // let communicationService
 
   beforeEach(async () => {
     jest.clearAllMocks()
@@ -34,12 +27,6 @@ describe('UsersService', () => {
           provide: getRepositoryToken(UserEntity),
           useValue: mockedRepo
         },
-        // SettingsService,
-        // {
-        //   provide: getRepositoryToken(SettingsEntity),
-        //   useValue: mockedSettingRepo
-        // },
-        // CommunicationService,
         UserCredentialsService,
         {
           provide: getRepositoryToken(UserCredentialsEntity),
@@ -47,15 +34,6 @@ describe('UsersService', () => {
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
-        // It would be nice to mock the whole UserEntity to better control
-        // UserEntity,
-        // {
-        //   provide: UserEntity,
-        //   useValue: {
-        //     ...UserEntity,
-        //     resetPassword: jest.fn(_ => {return true;})
-        //   }
-        // }
       ]
     }).compile()
 
@@ -63,15 +41,11 @@ describe('UsersService', () => {
     repo = await module.get<Repository<UserEntity>>(
       getRepositoryToken(UserEntity)
     )
-    // settingsRepo = await module.get<Repository<SettingsEntity>>(
-    //   getRepositoryToken(SettingsEntity)
-    // )
 
     // We must manually set the following because extending TypeOrmQueryService seems to break it
     Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
     service.accountsRepository = repo
     service.userCredentialsService = { ...mockUserCredentialsEntity, changePassword: jest.fn() }
-    // service.settingsService = settingsRepo
     service.communicationService = mockedCommunicationService
     service.random = { ...mockedRandom }
   })
@@ -139,22 +113,22 @@ describe('UsersService', () => {
 
   describe('resetPassword', () => {
     it('should not change old password with new value with wrong token', async () => {
-      const isChanged: boolean = await service.resetPassword('unknown', 'etiqa123@')
+      const isChanged: boolean = await service.resetPassword('unknown', 'qqwqe123@')
       expect(isChanged).toBeFalsy()
     })
 
     it('should change old password with new value', async () => {
-      const isChanged: boolean = await service.resetPassword('xpSPApwqdaS@', 'etiqa123@')
+      const isChanged: boolean = await service.resetPassword('xpSPApwqdaS@', 'qqwqe123@')
       expect(isChanged).toBeTruthy()
     })
 
     it('should not change old password with new value with expired token', async () => {
-      const isChanged: boolean = await service.resetPassword('anotherAnother@', 'etiqa123@')
+      const isChanged: boolean = await service.resetPassword('anotherAnother@', 'qqwqe123@')
       expect(isChanged).toBeFalsy()
     })
 
     it('should not change old password with null email', async () => {
-      const isChanged: boolean = await service.resetPassword(null, 'etiqa123@')
+      const isChanged: boolean = await service.resetPassword(null, 'qqwqe123@')
       expect(isChanged).toBeFalsy()
     })
 

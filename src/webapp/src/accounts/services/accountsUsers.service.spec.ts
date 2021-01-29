@@ -10,13 +10,6 @@ import { UsersService } from './users.service'
 import { UserEntity } from '../entities/user.entity'
 import { AccountsService } from './accounts.service'
 import { AccountEntity } from '../entities/account.entity'
-// import { PlansService } from '../plans/plans.service'
-// import { PlanEntity } from '../plans/plan.entity'
-// import { SettingsService } from '../settings/settings.service'
-// import { SettingsEntity } from '../settings/settings.entity'
-// import { CommunicationService } from '../communication/communication.service'
-// import { PaymentsService } from '../paymentModule/payments.service'
-// import { PaymentEntity } from '../paymentModule/payment.entity'
 import { UserCredentialsService } from './userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 import { mockUserCredentialsEntity } from '../test/testData'
@@ -34,11 +27,6 @@ describe('AccountsUsers Service', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        // PlansService,
-        // {
-        //   provide: getRepositoryToken(PlanEntity),
-        //   useValue: {}
-        // },
         UsersService,
         {
           provide: getRepositoryToken(UserEntity),
@@ -54,17 +42,6 @@ describe('AccountsUsers Service', () => {
           provide: getRepositoryToken(AccountUserEntity),
           useValue: mockedRepo
         },
-        // SettingsService,
-        // {
-        //   provide: getRepositoryToken(SettingsEntity),
-        //   useValue: {}
-        // },
-        // CommunicationService,
-        // PaymentsService,
-        // {
-        //   provide: getRepositoryToken(PaymentEntity),
-        //   useValue: {}
-        // },
         UserCredentialsService,
         {
           provide: getRepositoryToken(UserCredentialsEntity),

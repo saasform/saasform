@@ -7,7 +7,6 @@ import {
 import { ModuleRef } from '@nestjs/core'
 import { AuthGuard } from '@nestjs/passport'
 import { AuthService } from './auth.service'
-// import { GoogleService } from './google.service'
 
 @Injectable()
 export class LoginAuthGuard extends AuthGuard('local') {
@@ -27,37 +26,9 @@ export class LoginAuthGuard extends AuthGuard('local') {
 
     await this.authService.setJwtCookie(request, response, request.user)
 
-    // BILLING
-    // for admins "subscription" is always active
-    // if (request.user.staff == null) {
-    //   if (request.user.subscription_status == null || !['active', 'trialing'].includes(request.user.subscription_status)) {
-    //     throw new UnauthorizedException('Subscription not active')
-    //   }
-    // }
-
     return result
   }
 }
-
-/*
-@Injectable()
-export class GoogleAuthGuard implements CanActivate {
-  constructor (private readonly googleService: GoogleService) {
-  }
-
-  async canActivate (context: ExecutionContext): Promise<boolean> {
-    let isOk = false
-    const request = context.switchToHttp().getRequest()
-    const googleUser = await this.googleService.getUser(request.body.idToken)
-    if (googleUser?.email != null) {
-      request.googleUser = googleUser
-      isOk = true
-    }
-    return isOk
-  }
-}
-*/
-
 @Injectable()
 export class UserRequiredAuthGuard extends AuthGuard('jwt') {}
 
@@ -69,23 +40,6 @@ export class UserOptionalAuthGuard extends AuthGuard('jwt') {
     return user
   }
 }
-
-/*
-@Injectable()
-export class MustHaveSubscription extends AuthGuard('jwt') {
-  handleRequest(err, user) {
-    if (!user) {
-      throw new UnauthorizedException('Subscription not active');
-    }
-    if (!user.staff) {
-      if (!user.subscription || user.subscription.status != 'active') {
-        throw new UnauthorizedException('Subscription not active');
-      }
-    }
-    return user;
-  }
-}
-*/
 
 @Injectable()
 export class AdminRequiredAuthGuard extends AuthGuard('jwt') {

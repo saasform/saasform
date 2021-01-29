@@ -8,5 +8,5 @@ export class AccountDTO {
   id!: number
 
   @FilterableField()
-  json!: string
+  data!: string
 }

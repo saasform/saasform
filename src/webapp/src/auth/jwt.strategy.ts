@@ -1,9 +1,7 @@
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { PassportStrategy } from '@nestjs/passport'
 import { Injectable } from '@nestjs/common'
-// import { SettingsService } from '../settings/settings.service'
 import { ModuleRef } from '@nestjs/core'
-// import { AuthService } from './auth.service'
 import { RequestUser } from './interfaces/user.interface'
 
 const cookieOrBearerExtractor = (req: any): any => {
@@ -35,13 +33,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate (request: Request, payload: any): Promise<RequestUser> {
-    // BILLING only. For the moment return payload always
-    // const contextId = ContextIdFactory.getByRequest(request)
-    // const authService = await this.moduleRef.resolve(AuthService, contextId)
-    // await authService.validateSubscription(payload.id)
-
-    // TODO validate payload
     // TODO if payload is not up to date wrt models, issue a new jwt
+    // this happens if anything changes after login, like a plan change
     return payload
   }
 }

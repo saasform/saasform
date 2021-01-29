@@ -10,7 +10,6 @@ import { TypeOrmQueryService, TypeOrmQueryServiceOpts } from '@nestjs-query/quer
 export class BaseService<T> extends TypeOrmQueryService<T> { // implements QueryService<Entity, DeepPartial<Entity>, DeepPartial<Entity>> {
   constructor (
     req: any, entity, opts?: TypeOrmQueryServiceOpts<T>) {
-    // const repo: Repository<T> = getRepository<T>(entity)
     const repo: Repository<T> = req !== undefined && req !== null
       ? getRepository(
         entity,
