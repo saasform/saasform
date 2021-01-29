@@ -8,3 +8,7 @@
 - standardsjs (chenxsan.vscode-standardjs)
 - markdownlint (davidanson.vscode-markdownlint)
 - commitizen (knisterpeter.vscode-commitizen)
+
+## Mapping values from/to .data field in entities
+
+TODO. See `accounts/entities/user.entity.ts` for details.
