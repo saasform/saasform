@@ -18,3 +18,10 @@ export interface RequestUser {
   payment_status?: boolean // inidicates if a payment method is present
   subscription_expiration?: number // timestamp
 }
+
+export interface ValidUser {
+  user: any
+  credential: any
+  account: any
+  // subscription: any
+}

@@ -267,8 +267,6 @@ describe('Accounts Service', () => {
         const repoSpy = jest.spyOn(mockedAccountsUsersRepo, 'addUser')
         await service.inviteUser(user, 1)
 
-        console.log(repoSpy.mock.calls)
-
         const invitedUser = repoSpy.mock.calls[0][0]
 
         expect(invitedUser.password).not.toBeNull()
@@ -296,7 +294,6 @@ describe('Accounts Service', () => {
         await service.inviteUser(user, 1)
         expect(repoSpy).toBeCalledTimes(1)
 
-        console.log('call', repoSpy.mock.calls)
         const invitedAccount = repoSpy.mock.calls[0][1]
 
         expect(invitedAccount).toBe(1)

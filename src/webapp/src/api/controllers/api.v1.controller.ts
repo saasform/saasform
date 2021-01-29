@@ -56,6 +56,7 @@ export class ApiV1Controller {
     }
 
     await this.authService.setJwtCookie(req, res, requestUser)
+    // SETTINGS
     // const redirect = await this.settingsService.getRedirectAfterLogin()
     const redirect = '/'
 

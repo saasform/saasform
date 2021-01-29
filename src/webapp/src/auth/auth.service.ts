@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { UsersService } from '../accounts/services/users.service'
 import { AccountsService } from '../accounts/services/accounts.service'
 // import { SettingsService } from '../settings/settings.service'
-import { RequestUser } from './interfaces/user.interface'
+import { RequestUser, ValidUser } from './interfaces/user.interface'
 
 import { JwtService } from '@nestjs/jwt'
 import { parseDomain, ParseResultType } from 'parse-domain'
@@ -25,29 +25,39 @@ export class AuthService {
     private readonly userCredentialsService: UserCredentialsService
   ) {}
 
-  async validateUser (email: string, inputPassword: string): Promise<any | null> { // TODO: use a valid type
+  async validateUser (email: string, inputPassword: string): Promise<ValidUser | null> { // TODO: use a valid type
     if (email == null || inputPassword == null) {
       return null
     }
-    const userCredentials = await this.userCredentialsService.findUserCredentials(email)
-    if (userCredentials == null) {
+    const credential = await this.userCredentialsService.findUserCredentials(email)
+    if (credential == null) {
       console.error('auth.service - validateUser - credentials not valid', email)
       return null
     }
 
-    const isRegistered = await this.userCredentialsService.isRegistered(userCredentials, inputPassword)
+    const isRegistered = await this.userCredentialsService.isRegistered(credential, inputPassword)
     if (!isRegistered) {
       console.error('auth.service - validateUser - credentials not registered', email)
       return null
     }
 
-    const userInfo = await this.usersService.findById(userCredentials.userId)
-    if (userInfo == null) {
+    const user = await this.usersService.findById(credential.userId)
+    if (user == null) {
       console.error('auth.service - validateUser - userInfo not found', email)
       return null
     }
 
-    return { ...userInfo, ...userCredentials }
+    const account = await this.accountsService.findByUserId(user.id)
+    if (account == null) {
+      console.error('auth.service - registerUser - account not found', user)
+      return null
+    }
+
+    // BILLING
+    // const subscription = await this.validateSubscription(account)
+    // return { user, credential, account, subscription }
+
+    return { user, credential, account }
   }
 
   // BILLING
@@ -78,23 +88,16 @@ export class AuthService {
   }
   */
 
-  async getTokenPayloadFromUserModel (user): Promise<RequestUser | null> { // TODO: chech type. It should be UserEntity, but userId is not present in that model
-    const account = await this.accountsService.findByUserId(user.userId)
-    if (account == null) {
-      console.error('auth.service - registerUser - account not found', user)
-      return null
-    }
-    // const subscription = await this.validateSubscription(account)
-
+  async getTokenPayloadFromUserModel (validUser: ValidUser): Promise<RequestUser | null> {
     return {
       nonce: '', // TODO
-      id: user.id,
-      account_id: account?.id,
-      account_name: account?.data.name ?? '',
+      id: validUser.user.id,
+      account_id: validUser.account?.id,
+      account_name: validUser.account?.data.name ?? '',
       status: 'active',
-      email: user.email,
-      email_verified: user?.data.emailConfirmed ?? false,
-      staff: user?.isAdmin ?? false
+      email: validUser.user.email,
+      email_verified: validUser.user?.data.emailConfirmed ?? false,
+      staff: validUser.user?.isAdmin ?? false
       // ...subscription
     }
   }
@@ -139,14 +142,14 @@ export class AuthService {
     return email != null ? user : null
   }
 
-  async registerUser (email: string, password: string = '', accountEmail: string = ''): Promise<UserEntity | null> {
+  async registerUser (email: string, password: string = '', accountEmail: string = ''): Promise<ValidUser | null> {
     if (email == null) {
       console.error('auth.service - registerUser - missing parameters', email, password, accountEmail)
       return null // this should never happen
     }
 
-    const userCredentials = await this.userCredentialsService.findUserCredentials(email)
-    if (userCredentials != null) {
+    const credential = await this.userCredentialsService.findUserCredentials(email)
+    if (credential != null) {
       console.error('auth.service - registerUser - user already registered', email, password, accountEmail)
       // if user already present return immediately
       return null
@@ -168,6 +171,6 @@ export class AuthService {
     // BILLING
     // await this.paymentService.refreshPaymentsFromStripe(account)
 
-    return user
+    return { user, credential, account }
   }
 }
