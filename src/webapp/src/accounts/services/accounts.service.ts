@@ -10,7 +10,7 @@ import { UsersService } from './users.service'
 import { UserEntity } from '../entities/user.entity'
 // import { NewUserInput } from '../dto/new-user.input' // TODO
 import { AccountsUsersService } from './accountsUsers.service'
-import { BaseService } from 'src/utilities/base.service'
+import { BaseService } from '../../utilities/base.service'
 // import { PaymentsService } from '../paymentModule/payments.service';
 // import { PlansService } from '../plans/plans.service';
 

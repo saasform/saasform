@@ -11,7 +11,7 @@ import { parseDomain, ParseResultType } from 'parse-domain'
 // import { PlansService } from '../plans/plans.service'
 import { UserCredentialsService } from '../accounts/services/userCredentials.service'
 import config from '../utilities/config'
-import { UserEntity } from 'src/accounts/entities/user.entity'
+import { UserEntity } from '../accounts/entities/user.entity'
 
 @Injectable()
 export class AuthService {

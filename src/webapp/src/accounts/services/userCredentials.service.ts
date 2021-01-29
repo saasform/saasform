@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 import * as bcrypt from 'bcrypt'
-import { BaseService } from 'src/utilities/base.service'
+import { BaseService } from '../../utilities/base.service'
 
 @QueryService(UserCredentialsEntity)
 @Injectable({ scope: Scope.REQUEST })

@@ -13,7 +13,7 @@ import { NewUserInput } from '../dto/new-user.input'
 // import { CommunicationService } from '../communication/communication.service'
 // import config from '../../utilities/config'
 import { UserCredentialsService } from '../services/userCredentials.service'
-import { BaseService } from 'src/utilities/base.service'
+import { BaseService } from '../../utilities/base.service'
 @QueryService(UserEntity)
 @Injectable({ scope: Scope.REQUEST })
 export class UsersService extends BaseService<UserEntity> {
