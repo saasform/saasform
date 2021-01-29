@@ -31,17 +31,19 @@ export class AuthService {
     }
     const userCredentials = await this.userCredentialsService.findUserCredentials(email)
     if (userCredentials == null) {
-      console.error('validateUser - credentials not valid', email)
+      console.error('auth.service - validateUser - credentials not valid', email)
       return null
     }
 
     const isRegistered = await this.userCredentialsService.isRegistered(userCredentials, inputPassword)
     if (!isRegistered) {
+      console.error('auth.service - validateUser - credentials not registered', email)
       return null
     }
 
     const userInfo = await this.usersService.findById(userCredentials.userId)
     if (userInfo == null) {
+      console.error('auth.service - validateUser - userInfo not found', email)
       return null
     }
 
@@ -76,9 +78,10 @@ export class AuthService {
   }
   */
 
-  async getTokenPayloadFromUserModel (user): Promise<RequestUser | null> {
+  async getTokenPayloadFromUserModel (user): Promise<RequestUser | null> { // TODO: chech type. It should be UserEntity, but userId is not present in that model
     const account = await this.accountsService.findByUserId(user.userId)
     if (account == null) {
+      console.error('auth.service - registerUser - account not found', user)
       return null
     }
     // const subscription = await this.validateSubscription(account)
@@ -90,7 +93,7 @@ export class AuthService {
       account_name: account?.data.name ?? '',
       status: 'active',
       email: user.email,
-      email_verified: user?.emailConfirmed ?? false,
+      email_verified: user?.data.emailConfirmed ?? false,
       staff: user?.isAdmin ?? false
       // ...subscription
     }
@@ -138,17 +141,31 @@ export class AuthService {
 
   async registerUser (email: string, password: string = '', accountEmail: string = ''): Promise<UserEntity | null> {
     if (email == null) {
-      return null
+      console.error('auth.service - registerUser - missing parameters', email, password, accountEmail)
+      return null // this should never happen
     }
 
     const userCredentials = await this.userCredentialsService.findUserCredentials(email)
-    if (userCredentials == null) {
+    if (userCredentials != null) {
+      console.error('auth.service - registerUser - user already registered', email, password, accountEmail)
+      // if user already present return immediately
       return null
     }
 
     const user = await this.usersService.addUser({ email, password, data: { name: '', email } })
+    if (user == null) {
+      console.error('auth.service - registerUser - error while creating user', email, password, accountEmail)
+      // if user already present return immediately
+      return null
+    }
+
+    const account = await this.accountsService.add({ data: { name: accountEmail ?? email }, user })
+    if (account == null) {
+      console.error('auth.service - registerUser - error while creating account', email, password, accountEmail)
+      // if user already present return immediately
+      return null
+    }
     // BILLING
-    // const account = await this.accountsService.add({ data: { name: accountEmail || email }, user })
     // await this.paymentService.refreshPaymentsFromStripe(account)
 
     return user

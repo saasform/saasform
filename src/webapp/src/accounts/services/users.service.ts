@@ -88,7 +88,7 @@ export class UsersService extends BaseService<UserEntity> {
       await this.userCredentialsService.addUserCredentials({
         credential: user.email,
         userId: res.id,
-        json: { encrypted_password: user.password }
+        json: { encryptedPassword: user.password }
       })
       return res
     } catch (err) {
