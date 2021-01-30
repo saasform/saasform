@@ -17,7 +17,7 @@ cd saasform
 docker-compose up
 ```
 
-Open your browser at [http://localhost:8080](http://localhost:8080){:target="_blank"}.
+Open your browser at [http://localhost:3000](http://localhost:3000){:target="_blank"}.
 
 Our default is to launch 2 containers: webapp and db.
 
