@@ -1,6 +1,6 @@
 ---
 name: Tech task
-about: Describe this issue template's purpose here.
+about: Add a tech task.
 title: ''
 labels: ''
 assignees: ''
