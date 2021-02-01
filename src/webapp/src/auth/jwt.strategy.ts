@@ -1,8 +1,9 @@
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { PassportStrategy } from '@nestjs/passport'
 import { Injectable } from '@nestjs/common'
-import { ModuleRef } from '@nestjs/core'
+import { ContextIdFactory, ModuleRef } from '@nestjs/core'
 import { RequestUser } from './interfaces/user.interface'
+import { SettingsService } from '../settings/settings.service'
 
 const cookieOrBearerExtractor = (req: any): any => {
   if (req?.cookies?.__session != null) {
@@ -12,10 +13,9 @@ const cookieOrBearerExtractor = (req: any): any => {
 }
 
 async function secretOrKeyProvider (request: Request, rawJwtToken, done): Promise<any> {
-  // const contextId = ContextIdFactory.getByRequest(request)
-  // const settingsService = await this.moduleRef.resolve(SettingsService, contextId)
-  // const secret = await settingsService.getJWTPublicKey()
-  const secret = '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEuvBUTvRfwq5zFQGYEunyWUJ/fogZrQHF\nhXsyyjRFtk3Wfxy41GfhIEUg1O7hNJbCFldaTWsUp8W7mAbHU+xB2w==\n-----END PUBLIC KEY-----'
+  const contextId = ContextIdFactory.getByRequest(request)
+  const settingsService = await this.moduleRef.resolve(SettingsService, contextId)
+  const secret = await settingsService.getJWTPublicKey()
 
   return done(null, secret)
 }
@@ -33,6 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate (request: Request, payload: any): Promise<RequestUser> {
+    // Validate subscriptions here
     // TODO if payload is not up to date wrt models, issue a new jwt
     // this happens if anything changes after login, like a plan change
     return payload
