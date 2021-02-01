@@ -49,7 +49,7 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
         )
       )
     } catch (error) {
-      console.error('userCredentials.service - addUserCredentials - Error while inserting new user', userCredentials, error)
+      console.error('userCredentials.service - addUserCredentials - Error while inserting new user', error)
       return null
     }
   }
@@ -68,7 +68,7 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
     try {
       return await this.updateOne(userCredentials[0].id, { json: { encryptedPassword } })
     } catch (error) {
-      console.error('userCredentials.service - changePassword', credential, password, error)
+      console.error('userCredentials.service - changePassword', credential, error)
       return null
     }
   }
