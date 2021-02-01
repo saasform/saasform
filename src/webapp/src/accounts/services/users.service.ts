@@ -82,7 +82,7 @@ export class UsersService extends BaseService<UserEntity> {
       })
       return res
     } catch (err) {
-      console.error('Error while inserting new user', newUser, err)
+      console.error('Error while inserting new user', err)
       return null
     }
   }
@@ -97,7 +97,7 @@ export class UsersService extends BaseService<UserEntity> {
       return false
     }
     if (user.data.resetPasswordTokenExp < now) {
-      console.error('resetPassword - Token expired', resetPasswordToken, user.data.resetPasswordTokenExp, now)
+      console.error('resetPassword - Token expired for user', user.id)
       return false
     }
 

@@ -104,27 +104,27 @@ export class AuthService {
 
   async registerUser (email: string, password: string = '', accountEmail: string = ''): Promise<ValidUser | null> {
     if (email == null) {
-      console.error('auth.service - registerUser - missing parameters', email, password, accountEmail)
+      console.error('auth.service - registerUser - missing parameters', email, accountEmail)
       return null // this should never happen
     }
 
     const credential = await this.userCredentialsService.findUserCredentials(email)
     if (credential != null) {
-      console.error('auth.service - registerUser - user already registered', email, password, accountEmail)
+      console.error('auth.service - registerUser - user already registered', email, accountEmail)
       // if user already present return immediately
       return null
     }
 
     const user = await this.usersService.addUser({ email, password, data: { name: '', email } })
     if (user == null) {
-      console.error('auth.service - registerUser - error while creating user', email, password, accountEmail)
+      console.error('auth.service - registerUser - error while creating user', email, accountEmail)
       // if user already present return immediately
       return null
     }
 
     const account = await this.accountsService.add({ data: { name: accountEmail ?? email }, user })
     if (account == null) {
-      console.error('auth.service - registerUser - error while creating account', email, password, accountEmail)
+      console.error('auth.service - registerUser - error while creating account', email, accountEmail)
       // if user already present return immediately
       return null
     }
