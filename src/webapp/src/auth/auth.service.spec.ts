@@ -3,9 +3,10 @@ import { AuthService } from './auth.service'
 import { UsersService } from '../accounts/services/users.service'
 import { JwtService } from '@nestjs/jwt'
 import { AccountsService } from '../accounts/services/accounts.service'
-import { mockedRepo, mockedUserCredentials, mockUserCredentialsService } from '../accounts/test/testData'
+import { mockedRepo, mockedUserCredentials, mockUserCredentialsService, settingsServiceMock } from '../accounts/test/testData'
 import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { UserCredentialsService } from '../accounts/services/userCredentials.service'
+import { SettingsService } from '../settings/settings.service'
 
 const mockJwtService = {}
 const mockAccountsService = {}
@@ -25,7 +26,8 @@ describe('AuthService', () => {
         },
         { provide: JwtService, useValue: mockJwtService },
         { provide: AccountsService, useValue: mockAccountsService },
-        { provide: UserCredentialsService, useValue: mockUserCredentialsService }
+        { provide: UserCredentialsService, useValue: mockUserCredentialsService },
+        { provide: SettingsService, useValue: settingsServiceMock }
       ]
     }).compile()
 
@@ -107,12 +109,12 @@ describe('AuthService', () => {
       const primaryDomain = 'uplom.com'
       expect(service.getJwtCookieDomain(requestHostname, primaryDomain)).toBe('uplom.com')
     })
-    it.skip('Cookie domain for primary = 2nd level, request via 3rd', () => {
+    it('Cookie domain for primary = 2nd level, request via 3rd', () => {
       const requestHostname = 'beta.uplom.com'
       const primaryDomain = 'uplom.com'
       expect(service.getJwtCookieDomain(requestHostname, primaryDomain)).toBe('uplom.com')
     })
-    it.skip('Cookie domain for primary = 3rd level', () => {
+    it('Cookie domain for primary = 3rd level', () => {
       const requestHostname = 'beta.uplom.com'
       const primaryDomain = 'beta.uplom.com'
       expect(service.getJwtCookieDomain(requestHostname, primaryDomain)).toBe('uplom.com')
