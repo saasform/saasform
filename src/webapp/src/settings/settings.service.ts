@@ -38,7 +38,7 @@ export function escapeOnce (str: string): string {
 }
 
 export function htmlEncode (s: string): string {
-  return s != null ? escapeOnce(s) : ''
+  return s != null && s !== '' ? escapeOnce(s) : ''
 }
 
 export function htmlAsset (assetsRoot: string, asset: string): string {
@@ -62,10 +62,10 @@ export function mergeAll (entity: SettingsEntity, update): SettingsEntity {
 // TODO req should be "private readonly" but tests won't work
 export class SettingsService extends BaseService<SettingsEntity> {
   constructor (
-    @Inject(REQUEST) private readonly req: any
+    @Inject(REQUEST) public req: any
     // @InjectRepository(SettingsEntity)
   ) {
-    super(req, 'AccountEntity')
+    super(req, 'SettingsEntity')
 
     // const _merge = this.repo.merge
     this.repo.merge = mergeAll
@@ -103,17 +103,13 @@ export class SettingsService extends BaseService<SettingsEntity> {
 
   async getSettings (category: string): Promise<SettingsEntity> {
     // TODO cache
-    let data
-    if (data === null) {
-      const records = await this.query({})
+    const records = await this.query({})
 
-      data = {}
-      for (const r of records) {
-        data[r.category] = r
-      }
-      await this.validateSettings(data)
+    const data = {}
+    for (const r of records) {
+      data[r.category] = r
     }
-
+    await this.validateSettings(data)
     return data[category]
   }
 
@@ -128,13 +124,11 @@ export class SettingsService extends BaseService<SettingsEntity> {
   }
 
   async getJWTPublicKey (): Promise<string> {
-    // return '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEuvBUTvRfwq5zFQGYEunyWUJ/fogZrQHF\nhXsyyjRFtk3Wfxy41GfhIEUg1O7hNJbCFldaTWsUp8W7mAbHU+xB2w==\n-----END PUBLIC KEY-----';
     const keys = await this.getKeysSettings()
     return keys.jwt_public_key
   }
 
   async getJWTPrivateKey (): Promise<string> {
-    // return '-----BEGIN EC PRIVATE KEY-----\nMHQCAQEEIMhbZNd8LHVCB7M42/cfP1nulEcb7rzjwGUP+BGOWPvtoAcGBSuBBAAK\noUQDQgAEuvBUTvRfwq5zFQGYEunyWUJ/fogZrQHFhXsyyjRFtk3Wfxy41GfhIEUg\n1O7hNJbCFldaTWsUp8W7mAbHU+xB2w==\n-----END EC PRIVATE KEY-----';
     const keys = await this.getKeysSettings()
     return keys.jwt_private_key
   }
