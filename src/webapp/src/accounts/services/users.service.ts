@@ -93,7 +93,7 @@ export class UsersService extends BaseService<UserEntity> {
     )[0]
     const now = new Date().getTime()
     if (typeof user === 'undefined') {
-      console.error('resetPassword - User not found', resetPasswordToken)
+      console.error('resetPassword - User not found')
       return false
     }
     if (user.data.resetPasswordTokenExp < now) {
