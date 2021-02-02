@@ -7,6 +7,7 @@ import { AccountsModule } from './accounts/accounts.module'
 import { AuthModule } from './auth/auth.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { GraphQLModule } from '@nestjs/graphql'
+import { WebsiteModule } from './website/website.module'
 
 const envFile = './env/env.local'
 /* eslint @typescript-eslint/no-var-requires: "off" */
@@ -40,7 +41,8 @@ require('dotenv').config({ path: envFile })
       playground: true,
       installSubscriptionHandlers: true,
       autoSchemaFile: true
-    })
+    }),
+    WebsiteModule
   ],
   controllers: [AppController],
   providers: [AppService]
