@@ -1,10 +1,10 @@
 import { Controller, Get, Post, UseGuards, Request, Res } from '@nestjs/common'
 import { Response } from 'express'
-import { LoginAuthGuard } from '../..//auth/auth.guard'
-import { AuthService } from '../..//auth/auth.service'
+import { LoginAuthGuard } from '../../../auth/auth.guard'
+import { AuthService } from '../../../auth/auth.service'
 
 @Controller('/api/v1')
-export class ApiV1Controller {
+export class ApiV1AutheticationController {
   constructor (
     private readonly authService: AuthService
   ) {}
@@ -40,7 +40,8 @@ export class ApiV1Controller {
 
     const user = await this.authService.registerUser(email, password, account)
     if (user == null) {
-      return response.json({
+      console.log('returning 409')
+      return response.status(409).json({
         statusCode: 409,
         message: 'Already registered'
       })
@@ -49,7 +50,7 @@ export class ApiV1Controller {
     const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
     if (requestUser == null) {
       console.error('API V1 - handleSignup - requestUser not valid')
-      return response.json({
+      return response.status(500).json({
         statusCode: 500,
         message: 'Server error'
       })
@@ -60,7 +61,7 @@ export class ApiV1Controller {
     // const redirect = await this.settingsService.getRedirectAfterLogin()
     const redirect = '/'
 
-    return response.json({
+    return response.status(302).json({
       statusCode: 302,
       message: 'Found',
       redirect
