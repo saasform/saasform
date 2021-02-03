@@ -1,0 +1,9 @@
+Signup
+
+<form action="" method="POST">
+    <input type="email" id="email" name="email" placeholder="name@address.com" required>
+    <input type="password" id="password" name="password" placeholder="Enter your password" minlength="8" required>
+    <input type="password" id="confirmation" name="confirmation" placeholder="Confirm your password" minlength="8" required>
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+    <input type="submit" />
+</form>
