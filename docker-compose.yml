@@ -22,6 +22,8 @@ services:
       MYSQL_HOST: db
     ports:
       - "3000:3000"
+    volumes:
+      - ./data/themes:/app/themes
 
   # admin:
   #   image: node:12
