@@ -1,12 +1,15 @@
-import { NestFactory } from '@nestjs/core'
-import { AppModule } from './app.module'
+import * as helmet from 'helmet'
 
-import { configureApp } from './main.app'
+import { join } from 'path'
+import { ValidationPipe } from '@nestjs/common'
+import { Liquid } from 'liquidjs'
+import * as bodyParser from 'body-parser'
+import * as cookieParser from 'cookie-parser'
+import * as csurf from 'csurf'
 
 // import { HttpExceptionsFilter } from './filters/http-exceptions.filter';
 
 // add '.' at the end of the string, unless it's there already
-/*
 function formatDot (s: string): string {
   if (s == null) {
     return ''
@@ -60,13 +63,3 @@ export function configureApp (app, isTest: boolean = false): void {
     })
   }
 }
-*/
-
-/* eslint-disable */
-async function bootstrap () {
-  const app = await NestFactory.create(AppModule)
-  configureApp(app);
-  await app.listen(3000)
-}
-bootstrap()
-/* eslint-enable */

@@ -69,7 +69,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
 
     // const _merge = this.repo.merge
     this.repo.merge = mergeAll
-    this.req = req.req != null ? req.req : req
+    this.req = req?.req != null ? req.req : req
   }
 
   async validateSettings (data: any): Promise<any> {
