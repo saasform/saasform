@@ -25,7 +25,7 @@ Open your browser at [http://localhost:3000](http://localhost:3000).
 
 ## Next Steps
 
-1. [Customize the website (Set logo, color, pricing, content, analytics)](https://docs.saasform.dev/start/customize-website)
+1. Customize the website (Set logo, color, pricing, content, analytics)
 1. Try out the user flows (Sign up, verify email, add payment)
 1. [Integrate user authentication](https://docs.saasform.dev/start/integrate-user-authentication) (Technical)
 1. Develop Saasform (Technical)
