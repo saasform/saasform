@@ -12,7 +12,7 @@ services:
       - ./data/db:/var/lib/mysql:cached
 
   webapp:
-    image: saasform
+    image: saasform/webapp:0.0.1
     restart: always
     depends_on:
       - db
@@ -27,7 +27,7 @@ services:
       - ./data/themes:/app/themes
 
   beautifulsaas:
-    image: beautifulsaas
+    image: saasform/beautifulsaas:0.0.1
     restart: always
     depends_on:
       - webapp
