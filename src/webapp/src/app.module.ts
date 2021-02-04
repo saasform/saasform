@@ -19,7 +19,8 @@ require('dotenv').config({ path: envFile })
     AccountsModule,
     AuthModule,
     ConfigModule.forRoot({
-      envFilePath: [envFile]
+      envFilePath: [envFile],
+      isGlobal: true
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',

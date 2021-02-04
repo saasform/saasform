@@ -20,10 +20,22 @@ services:
       - ./src/webapp/env/env.local
     environment:
       MYSQL_HOST: db
+      NODE_ENV: development
     ports:
       - "3000:3000"
     volumes:
       - ./data/themes:/app/themes
+
+  beautifulsaas:
+    image: beautifulsaas
+    restart: always
+    depends_on:
+      - webapp
+    environment:
+      SAASFORM: http://webapp:3000
+    ports:
+      - "8080:3000"
+    command: ["wait-for-it", "webapp:3000", "--", "npm", "start"]
 
   # admin:
   #   image: node:12

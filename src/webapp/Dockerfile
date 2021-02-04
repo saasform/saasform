@@ -16,6 +16,8 @@ RUN yarn build
 # RUN yarn build
 
 FROM node:12.19.0-stretch-slim
+RUN apt-get update
+RUN apt-get install -y wait-for-it
 COPY --chown=node:node --from=builder /app/node_modules /app/node_modules
 # COPY --chown=node:node --from=builder /app/themes /app/themes
 COPY --chown=node:node --from=builder /app/dist /app/dist

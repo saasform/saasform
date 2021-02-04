@@ -6,6 +6,7 @@ import { SettingsEntity, SettingsWebsiteJson, SettingsKeysJson } from './setting
 
 import { createECKey } from 'ec-key'
 import { BaseService } from '../utilities/base.service'
+import { ConfigService } from '@nestjs/config'
 
 const __IS_DEV__ = (process.env.NODE_ENV === 'development') // eslint-disable-line
 
@@ -62,8 +63,9 @@ export function mergeAll (entity: SettingsEntity, update): SettingsEntity {
 // TODO req should be "private readonly" but tests won't work
 export class SettingsService extends BaseService<SettingsEntity> {
   constructor (
-    @Inject(REQUEST) public req: any
+    @Inject(REQUEST) public req: any,
     // @InjectRepository(SettingsEntity)
+    private readonly configService: ConfigService
   ) {
     super(req, 'SettingsEntity')
 
@@ -141,6 +143,8 @@ export class SettingsService extends BaseService<SettingsEntity> {
       return `${proto}://${settings.domain_app as string}${port}`
     } else if (settings.domain_primary != null) {
       return `${proto}://app.${settings.domain_primary as string}${port}`
+    } else if (this.configService.get<string>('SAAS_HOST') !== '') {
+      return `${proto}://app.${this.configService.get<string>('SAAS_HOST') as string}${port}`
     }
     return '/'
   }
