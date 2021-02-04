@@ -1,12 +1,14 @@
 import { Controller, Get, Post, UseGuards, Request, Res } from '@nestjs/common'
 import { Response } from 'express'
+import { SettingsService } from '../../../settings/settings.service'
 import { LoginAuthGuard } from '../../../auth/auth.guard'
 import { AuthService } from '../../../auth/auth.service'
 
 @Controller('/api/v1')
 export class ApiV1AutheticationController {
   constructor (
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly settingsService: SettingsService
   ) {}
 
   @Get()
@@ -65,6 +67,16 @@ export class ApiV1AutheticationController {
       statusCode: 302,
       message: 'Found',
       redirect
+    })
+  }
+
+  @Get('/public-key')
+  async getPublicKey (@Request() req, @Res() res: Response): Promise<any> {
+    const publicKey = await this.settingsService.getJWTPublicKey()
+
+    return res.status(200).json({
+      statusCode: 200,
+      message: publicKey
     })
   }
 }

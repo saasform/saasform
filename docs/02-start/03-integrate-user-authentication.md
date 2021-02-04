@@ -33,7 +33,8 @@ pX1EidrR/4hx7giOGgwZO4a9z+zlgVhpiTaxBrTpP7d9+rPWUMicoQ==
 
 ## Code Sample (Javascript / Express)
 
-Below is a code example based on Express.
+Below is a code example based on Express which uses `passport` and `passport-jwt` to verify JWT tokens.
+
 ```js
 const cookieParser = require('cookie-parser');
 const passport = require('passport');

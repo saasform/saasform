@@ -42,7 +42,11 @@ export function configureApp (app, isTest: boolean = false): void {
 
   app.useGlobalPipes(new ValidationPipe())
 
-  app.use(helmet())
+  if (process.env.NODE_ENV === 'development') { // TODO: better check for development mode
+    console.warn('NOT USING HELMET. DO NOT DO THIS IN PRODUCTION')
+  } else {
+    app.use(helmet())
+  }
 
   // app.useGlobalFilters(new HttpExceptionsFilter())
 
