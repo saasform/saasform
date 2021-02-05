@@ -123,6 +123,7 @@ export class AuthService {
       return null
     }
 
+    // We create a new acount for this user and add this as owner
     const account = await this.accountsService.add({ data: { name: accountEmail ?? email }, user })
     if (account == null) {
       console.error('auth.service - registerUser - error while creating account', email, accountEmail)

@@ -60,8 +60,7 @@ export class ApiV1AutheticationController {
 
     await this.authService.setJwtCookie(req, res, requestUser)
     // SETTINGS
-    // const redirect = await this.settingsService.getRedirectAfterLogin()
-    const redirect = '/'
+    const redirect = await this.settingsService.getRedirectAfterLogin()
 
     return response.status(302).json({
       statusCode: 302,

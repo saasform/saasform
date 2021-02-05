@@ -13,6 +13,8 @@ import { AccountEntity } from '../entities/account.entity'
 import { UserCredentialsService } from './userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 import { mockUserCredentialsEntity } from '../test/testData'
+import { NotificationsService } from '../../notifications/notifications.service'
+import { SettingsService } from '../../settings/settings.service'
 
 describe('AccountsUsers Service', () => {
   let service // Removed type AccountsService because we must overwrite the accountsRepository property
@@ -46,6 +48,14 @@ describe('AccountsUsers Service', () => {
         {
           provide: getRepositoryToken(UserCredentialsEntity),
           useValue: mockUserCredentialsEntity
+        },
+        {
+          provide: NotificationsService,
+          useValue: { sendEmail: jest.fn((to, template, data) => true) }
+        },
+        {
+          provide: SettingsService,
+          useValue: {}
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService

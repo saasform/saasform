@@ -11,12 +11,14 @@ import { UserEntity } from './entities/user.entity'
 import { UserCredentialsEntity } from './entities/userCredentials.entity'
 import { AccountUserEntity } from './entities/accountUser.entity'
 import { UserCredentialsService } from './services/userCredentials.service'
+import { NotificationsModule } from '../notifications/notifications.module'
+import { NotificationsService } from '../notifications/notifications.service'
 
 @Module({
   imports: [
     NestjsQueryGraphQLModule.forFeature({
-      imports: [NestjsQueryTypeOrmModule.forFeature([AccountEntity, UserEntity, AccountUserEntity, UserCredentialsEntity])],
-      services: [AccountsService, AccountsUsersService, UsersService, UserCredentialsService],
+      imports: [NestjsQueryTypeOrmModule.forFeature([AccountEntity, UserEntity, AccountUserEntity, UserCredentialsEntity]), NotificationsModule],
+      services: [AccountsService, AccountsUsersService, UsersService, UserCredentialsService, NotificationsService],
       resolvers: [{ DTOClass: AccountDTO, ServiceClass: AccountsService }]
     })
   ],

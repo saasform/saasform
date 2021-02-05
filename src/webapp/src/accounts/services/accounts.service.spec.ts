@@ -14,6 +14,8 @@ import { UsersService } from './users.service'
 import { UserCredentialsService } from './userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 import { mockUserCredentialsEntity } from '../test/testData'
+import { NotificationsService } from '../../notifications/notifications.service'
+import { SettingsService } from '../../settings/settings.service'
 
 const accountsArray = [
   new AccountEntity(),
@@ -83,6 +85,14 @@ describe('Accounts Service', () => {
         {
           provide: getRepositoryToken(UserCredentialsEntity),
           useValue: mockUserCredentialsEntity
+        },
+        {
+          provide: NotificationsService,
+          useValue: { sendEmail: jest.fn((to, template, data) => true) }
+        },
+        {
+          provide: SettingsService,
+          useValue: {}
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService

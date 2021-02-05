@@ -102,7 +102,6 @@ describe('SettingsService', () => {
 
   it('getRedirectAfterLogin', async () => {
     const mock = service.query
-    const configMock = service.configService
     let result
 
     // domain_app

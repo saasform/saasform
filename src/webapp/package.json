@@ -31,6 +31,7 @@
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.5.1",
     "@nestjs/typeorm": "^7.1.5",
+    "@sendgrid/mail": "^7.4.2",
     "add": "^2.0.6",
     "apollo-server-express": "^2.19.2",
     "bcrypt": "^5.0.0",

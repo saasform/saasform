@@ -10,6 +10,8 @@ import { UsersService } from './users.service'
 import { UserEntity } from '../entities/user.entity'
 import { AccountsUsersService } from './accountsUsers.service'
 import { BaseService } from '../../utilities/base.service'
+import { NotificationsService } from '../../notifications/notifications.service'
+import { SettingsService } from '../..//settings/settings.service'
 
 @QueryService(AccountEntity)
 @Injectable()
@@ -19,7 +21,9 @@ export class AccountsService extends BaseService<AccountEntity> {
     @InjectRepository(AccountEntity)
     private readonly accountsRepository: Repository<AccountEntity>,
     private readonly accountsUsersService: AccountsUsersService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly notificationService: NotificationsService,
+    private readonly settingsService: SettingsService
   ) {
     super(req, 'AccountEntity')
   }
@@ -63,6 +67,18 @@ export class AccountsService extends BaseService<AccountEntity> {
       // If a user is specified add the user as owner
       if (user !== undefined) await this.accountsUsersService.addUser(user, res)
       // TODO: refactor this
+
+      // send email here (new account template)
+      // console.log('user', user);
+      const settings = await this.settingsService.getWebsiteRenderingVariables()
+      const emailData = {
+        title: settings.title,
+        user,
+        link: `${await this.settingsService.getBaseDomain()}/verify-email/${user.emailConfirmationToken as string}`
+      }
+      if ((await this.notificationService.sendEmail(user.email, 'newAccount', emailData)) === false) {
+        console.error('Error while sending email')
+      }
 
       return res
     } catch (err) {
@@ -131,11 +147,18 @@ export class AccountsService extends BaseService<AccountEntity> {
       return null
     }
 
+    // TODO: can it be possible that an invited user is the owner?
+    // maybe yes if it is invited by the saas admin
     await this.setOwner(account, user.id)
 
     if (await this.accountsUsersService.addUser(user, account) == null) {
+      console.error(
+        'accounts.service - inviteUser - Error while inviting new user (add accountUser relationthip)', user.id, account.id
+      )
       return null
     }
+
+    // send email here (invited user template)
 
     return user
   }
