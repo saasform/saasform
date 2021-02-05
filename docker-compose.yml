@@ -21,6 +21,7 @@ services:
     environment:
       MYSQL_HOST: db
       NODE_ENV: development
+      SAAS_HOST: beautifulsaas.localhost
     ports:
       - "3000:3000"
     volumes:
@@ -33,6 +34,7 @@ services:
       - webapp
     environment:
       SAASFORM: http://webapp:3000
+      SAASFORM_LOGIN: http://beautifulsaas.localhost:3000/login
     ports:
       - "8080:3000"
     command: ["wait-for-it", "webapp:3000", "--", "npm", "start"]

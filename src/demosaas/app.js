@@ -43,7 +43,7 @@ fetch(`${process.env.SAASFORM}/api/v1/public-key`)
 
 // Create authentication strategy to protect routes
 const auth = passport.authenticate('jwt', { session: false,
-                                            failureRedirect: `${process.env.SAASFORM}/login` }
+                                            failureRedirect: `${process.env.SAASFORM_LOGIN}` }
                                   );
 /* END Saasform init code*/
 
