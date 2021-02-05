@@ -65,7 +65,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
   constructor (
     @Inject(REQUEST) public req: any,
     // @InjectRepository(SettingsEntity)
-    private readonly configService: ConfigService
+    public configService: ConfigService
   ) {
     super(req, 'SettingsEntity')
 
@@ -138,13 +138,14 @@ export class SettingsService extends BaseService<SettingsEntity> {
   async getRedirectAfterLogin (cachedSettings?): Promise<string> {
     const proto = (__IS_DEV__) ? 'http' : 'https'
     const port = (__IS_DEV__) ? ':8080' : ''
+    const configuredHost = this.configService.get<string>('SAAS_HOST') ?? ''
     const settings = cachedSettings ?? await this.getWebsiteSettings()
     if (settings.domain_app != null) {
       return `${proto}://${settings.domain_app as string}${port}`
     } else if (settings.domain_primary != null) {
       return `${proto}://app.${settings.domain_primary as string}${port}`
-    } else if (this.configService.get<string>('SAAS_HOST') !== '') {
-      return `${proto}://app.${this.configService.get<string>('SAAS_HOST') as string}${port}`
+    } else if (configuredHost !== '') {
+      return `${proto}://app.${configuredHost}${port}`
     }
     return '/'
   }
