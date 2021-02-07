@@ -87,6 +87,45 @@ export class UsersService extends BaseService<UserEntity> {
     }
   }
 
+  async confirmEmail (token: string): Promise<UserEntity | null> {
+    if (token === '') {
+      console.error('confirmEmail - error in parameters')
+    }
+
+    const user = (
+      await this.query({ filter: { emailConfirmationToken: { eq: token } } })
+    )[0]
+
+    if (user == null) {
+      console.error('confirmEmail - User not found')
+      return null
+    }
+
+    const now = new Date().getTime()
+    if (user.data.emailConfirmationTokenExp < now) {
+      console.error('confirmEmail - Token expired', user.data.emailConfirmationTokenExp, now)
+      return null
+    }
+
+    try {
+      const res = await this.updateOne(user.id, {
+        emailConfirmationToken: '',
+        data: {
+          emailConfirmationToken: '',
+          emailConfirmationTokenExp: 0,
+          emailConfirmed: true
+        }
+      })
+
+      // not auto called after updateOne :(
+      res.setValuesFromJson()
+      return res
+    } catch (err) {
+      console.error('Error while confirming token', token, err)
+      return null
+    }
+  }
+
   async resetPassword (resetPasswordToken: string, password: string): Promise<boolean> {
     const user = (
       await this.query({ filter: { resetPasswordToken: { eq: resetPasswordToken } } })

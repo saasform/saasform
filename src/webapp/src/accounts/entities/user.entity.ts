@@ -59,7 +59,9 @@ export class UserEntity {
 
   constructor () {
     this.data = new UserJson()
-    this.emailConfirmationToken = ''
+    this.setConfirmationEmailToken().catch(err => {
+      console.error('User Entity - constructor - error while setting confirmation token', err)
+    })
     this.resetPasswordToken = ''
   }
 

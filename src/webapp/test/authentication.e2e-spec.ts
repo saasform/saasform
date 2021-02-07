@@ -13,7 +13,7 @@ import { configureApp } from '../src/main.app'
 import { AppService } from '../src/app.service'
 import { AuthModule } from '../src/auth/auth.module'
 import { ApiV1AutheticationController } from '../src/api/controllers/v1/api.authentication.controller'
-import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config'
 
 /**
  * User: 101, 102, 103
@@ -41,8 +41,8 @@ const configuration = (): any => ({
   port: 1234
 })
 
-const envFile = '../env/env.local'
-const secretsFile = '../env/secrets.local'
+// const envFile = '../env/env.local'
+// const secretsFile = '../env/secrets.local'
 
 describe('Authentication (e2e)', () => {
   let app: NestExpressApplication
@@ -57,7 +57,8 @@ describe('Authentication (e2e)', () => {
           autoSchemaFile: true
         }),
         ConfigModule.forRoot({
-          envFilePath: [secretsFile, envFile],
+          // envFilePath: [secretsFile, envFile],
+          load: [configuration],
           isGlobal: true
         }),
         AuthModule,
@@ -76,7 +77,7 @@ describe('Authentication (e2e)', () => {
     for (query of DB_INIT.split(';')) {
       if (query.trim() !== '') {
         await db.query(query)
-      } 
+      }
     }
 
     agent = await request(app.getHttpServer())

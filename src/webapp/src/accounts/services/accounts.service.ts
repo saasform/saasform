@@ -69,7 +69,6 @@ export class AccountsService extends BaseService<AccountEntity> {
       // TODO: refactor this
 
       // send email here (new account template)
-      // console.log('user', user);
       const settings = await this.settingsService.getWebsiteRenderingVariables()
       const emailData = {
         title: settings.title,
