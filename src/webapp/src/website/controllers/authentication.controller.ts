@@ -111,7 +111,7 @@ export class AuthenticationController {
         throw new Error('Account not found')
       }
 
-      if (user != null && req.user != null) {
+      if (req.user != null) {
         // auto login (only if user was already logged in)
         const requestUser = await this.authService.getTokenPayloadFromUserModel({ user, credential: null, account })
         if (requestUser == null) {
