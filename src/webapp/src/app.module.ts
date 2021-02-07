@@ -8,18 +8,18 @@ import { AuthModule } from './auth/auth.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { GraphQLModule } from '@nestjs/graphql'
 import { WebsiteModule } from './website/website.module'
+import { NotificationsModule } from './notifications/notifications.module'
 
+// TODO: improve this part see #19
 const envFile = './env/env.local'
+const secretsFile = './env/secrets.local'
 /* eslint @typescript-eslint/no-var-requires: "off" */
 require('dotenv').config({ path: envFile })
 
 @Module({
   imports: [
-    ApiModule,
-    AccountsModule,
-    AuthModule,
     ConfigModule.forRoot({
-      envFilePath: [envFile],
+      envFilePath: [secretsFile, envFile],
       isGlobal: true
     }),
     TypeOrmModule.forRoot({
@@ -43,7 +43,11 @@ require('dotenv').config({ path: envFile })
       installSubscriptionHandlers: true,
       autoSchemaFile: true
     }),
-    WebsiteModule
+    ApiModule,
+    AccountsModule,
+    AuthModule,
+    WebsiteModule,
+    NotificationsModule
   ],
   controllers: [AppController],
   providers: [AppService]

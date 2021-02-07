@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common'
+import { Global, Module } from '@nestjs/common'
 import { NestjsQueryGraphQLModule } from '@nestjs-query/query-graphql'
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm'
 import { SettingsItemDTO } from './settings.dto'
 import { SettingsEntity } from './settings.entity'
 import { SettingsService } from './settings.service'
 
+@Global()
 @Module({
   imports: [
     NestjsQueryGraphQLModule.forFeature({

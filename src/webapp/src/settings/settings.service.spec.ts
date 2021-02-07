@@ -3,6 +3,7 @@ import { SettingsService, htmlEncode, htmlAsset, mergeAll } from './settings.ser
 
 import { SettingsEntity } from './settings.entity'
 import { getRepositoryToken } from '@nestjs/typeorm'
+import { ConfigService } from '@nestjs/config'
 
 const settingsData = [
   {
@@ -32,12 +33,24 @@ describe('SettingsService', () => {
         {
           provide: getRepositoryToken(SettingsEntity),
           useValue: mockRepository
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => {
+              switch (key) {
+                default:
+                  return null
+              }
+            })
+          }
         }
       ]
     }).compile()
 
     service = module.get<SettingsService>(SettingsService)
     service.req = {}
+    service.configService = module.get<ConfigService>(ConfigService)
     Object.keys(mockQueryService).forEach(f => (service[f] = mockQueryService[f]))
   })
 
@@ -107,8 +120,15 @@ describe('SettingsService', () => {
     result = await service.getRedirectAfterLogin()
     expect(result).toEqual('https://app.mysite.com')
 
+    // configured host
+    service.query = mock
+    service.configService.get = jest.fn(_ => 'mockedHost')
+    result = await service.getRedirectAfterLogin()
+    expect(result).toEqual('https://app.mockedHost')
+
     // no settings (original)
     service.query = mock
+    service.configService.get = jest.fn(_ => '')
     result = await service.getRedirectAfterLogin()
     expect(result).toEqual('/')
   })

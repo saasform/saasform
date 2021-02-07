@@ -56,7 +56,7 @@ describe('UsersService', () => {
   })
 
   describe('Email confirmation', () => {
-    it.skip('should set the email confirmation token and flag when a user is created', async () => {
+    it('should set the email confirmation token and flag when a user is created', async () => {
       const repoSpy = jest.spyOn(mockedRepo, 'createOne')
       const userInput: NewUserInput = new NewUserInput()
       userInput.email = 'foo@email.com'
@@ -91,7 +91,7 @@ describe('UsersService', () => {
     it('should send the confirmation email', async () => {
     })
 
-    it.skip('should remove the token and set the confirmation token ', async () => {
+    it('should remove the token and set the confirmation token ', async () => {
       const repoSpy = jest.spyOn(mockedRepo, 'updateOne')
       const confirmedUser: UserEntity = await service.confirmEmail(mockedUser.emailConfirmationToken)
 
@@ -102,7 +102,7 @@ describe('UsersService', () => {
       expect(confirmedUser.data.emailConfirmed).toBeTruthy()
     })
 
-    it.skip('should NOT remove the token and set the confirmation token if the token is expired', async () => {
+    it('should NOT remove the token and set the confirmation token if the token is expired', async () => {
       const repoSpy = jest.spyOn(mockedRepo, 'updateOne')
       const confirmedUser: UserEntity = await service.confirmEmail(mockedUserExpiredToken.emailConfirmationToken)
 
