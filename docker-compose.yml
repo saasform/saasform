@@ -12,16 +12,17 @@ services:
       - ./data/db:/var/lib/mysql:cached
 
   webapp:
-    image: saasform/webapp:0.0.1
+    image: saasform/saasform:0.0.1
     restart: always
     depends_on:
       - db
     env_file:
       - ./src/webapp/env/env.local
+      - ./data/config/secrets.local
+      - ./data/config/overrides.env
     environment:
       MYSQL_HOST: db
       NODE_ENV: development
-      SAAS_HOST: beautifulsaas.localhost
     ports:
       - "3000:3000"
     volumes:

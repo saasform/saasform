@@ -1,3 +1,5 @@
 data/db
 
 node_module
+secrets.local
+JOURNAL.md

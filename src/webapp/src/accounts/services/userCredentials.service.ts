@@ -20,6 +20,7 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
 
   async findUserCredentials (credential: string): Promise<UserCredentialsEntity | null> {
     if (credential === null) {
+      console.error('userCredentials.service - findUserCredentials - parameter error')
       return null
     }
 

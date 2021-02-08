@@ -1,0 +1,25 @@
+<div>
+    Welcome to {{ title }}.
+</div>
+
+<div>
+    {% if user %}
+        Hello {{ user.email }}.
+        {% if user.email_verified == false %}
+            <div>
+                Please verify your email
+            </div>
+        {% else %}
+            <div>
+                Your email is verified, thanks!
+            </div>
+        {% endif %}
+        <div>
+            <a href="/logout">logout</a>
+        </div>
+    {% else %}
+        <a href="/login">Login</a>
+
+        <a href="/signup">Signup</a>
+    {% endif %}
+</div>
