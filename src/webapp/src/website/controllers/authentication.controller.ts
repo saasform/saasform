@@ -91,7 +91,6 @@ export class AuthenticationController {
     }
   }
 
-  // http://localhost:3000/verify-email/pIW5IIOs
   @UseGuards(UserOptionalAuthGuard)
   @Get('verify-email/:token')
   async confirmEmail (@Request() req, @Res() res: Response, @Param('token') token: string): Promise<any> {
@@ -129,5 +128,12 @@ export class AuthenticationController {
       console.error(error)
       return res.render(`${data.themeRoot as string}/500`, data)
     }
+  }
+
+  @Get('/logout')
+  async logout (@Request() req, @Res() res: Response): Promise<any> {
+    res.clearCookie('__session', { domain: req.hostname })
+    req.logout()
+    res.redirect('/')
   }
 }

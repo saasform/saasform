@@ -135,9 +135,14 @@ export class SettingsService extends BaseService<SettingsEntity> {
     return keys.jwt_private_key
   }
 
+  // TODO: fix the IS_DEV part
+  // TODO: TDD this
+  // TODO: refactor this and the next one
   async getBaseDomain (cachedSettings?): Promise<string> {
     const proto = (__IS_DEV__) ? 'http' : 'https'
-    const port = (__IS_DEV__) ? ':8080' : ''
+    const port = this.configService.get<string>('SAAS_PORT') === ''
+      ? `:${this.configService.get<string>('SAAS_PORT') as string}`
+      : ''
     const configuredHost = this.configService.get<string>('SAAS_HOST') ?? ''
     const settings = cachedSettings ?? await this.getWebsiteSettings()
     if (settings.domain_app != null) {
@@ -145,20 +150,25 @@ export class SettingsService extends BaseService<SettingsEntity> {
     } else if (settings.domain_primary != null) {
       return `${proto}://${settings.domain_primary as string}${port}`
     } else if (configuredHost !== '') {
-      return `${proto}://${configuredHost}${port}`
+      return `${configuredHost}`
     }
     return '/'
   }
 
+  // TODO: TDD this
+  // TODO: use the getBaseDomain code
   async getRedirectAfterLogin (cachedSettings?): Promise<string> {
     const proto = (__IS_DEV__) ? 'http' : 'https'
     const port = (__IS_DEV__) ? ':8080' : ''
+    const configuredRedirect = this.configService.get<string>('SAAS_REDIRECT') ?? ''
     const configuredHost = this.configService.get<string>('SAAS_HOST') ?? ''
     const settings = cachedSettings ?? await this.getWebsiteSettings()
     if (settings.domain_app != null) {
       return `${proto}://${settings.domain_app as string}${port}`
     } else if (settings.domain_primary != null) {
       return `${proto}://app.${settings.domain_primary as string}${port}`
+    } else if (configuredRedirect !== '') {
+      return `${configuredRedirect}`
     } else if (configuredHost !== '') {
       return `${proto}://app.${configuredHost}${port}`
     }
