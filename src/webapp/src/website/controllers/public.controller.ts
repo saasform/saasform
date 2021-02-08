@@ -5,7 +5,8 @@ import {
   Res,
   UseGuards
   //   Param
-} from '@nestjs/common'; import { Response } from 'express'
+} from '@nestjs/common'
+import { Response } from 'express'
 import { SettingsService } from '../../settings/settings.service'
 import { UserOptionalAuthGuard } from '../..//auth/auth.guard'
 
@@ -17,7 +18,7 @@ export class PublicController {
 
   @UseGuards(UserOptionalAuthGuard)
   @Get('/')
-  async getLogin (@Request() req, @Res() res: Response): Promise<any> {
+  async getHome (@Request() req, @Res() res: Response): Promise<any> {
     const data = await this.settingsService.getWebsiteRenderingVariables()
     const user = req.user != null ? req.user : {}
 

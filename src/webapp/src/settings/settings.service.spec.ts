@@ -124,7 +124,7 @@ describe('SettingsService', () => {
     service.query = mock
     service.configService.get = jest.fn(_ => 'mockedHost')
     result = await service.getRedirectAfterLogin()
-    expect(result).toEqual('https://app.mockedHost')
+    expect(result).toEqual('mockedHost')
 
     // no settings (original)
     service.query = mock
