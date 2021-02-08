@@ -10,6 +10,8 @@ import { NewUserInput } from '../dto/new-user.input'
 import { mockedCommunicationService, mockedRandom, mockedRepo, mockedUser, mockedUserExpiredToken, mockUserCredentialsEntity } from '../test/testData'
 import { UserCredentialsService } from '../services/userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
+import { NotificationsService } from '../../notifications/notifications.service'
+import { SettingsService } from '../../settings/settings.service'
 
 // const mockRepository = {}
 
@@ -31,6 +33,14 @@ describe('UsersService', () => {
         {
           provide: getRepositoryToken(UserCredentialsEntity),
           useValue: { ...mockUserCredentialsEntity, changePassword: jest.fn() }
+        },
+        {
+          provide: NotificationsService,
+          useValue: { sendEmail: jest.fn((to, template, data) => true) }
+        },
+        {
+          provide: SettingsService,
+          useValue: {}
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
