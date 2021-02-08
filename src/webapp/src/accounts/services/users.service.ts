@@ -9,6 +9,8 @@ import { UserEntity } from '../entities/user.entity'
 import { NewUserInput } from '../dto/new-user.input'
 import { UserCredentialsService } from '../services/userCredentials.service'
 import { BaseService } from '../../utilities/base.service'
+import { SettingsService } from '../../settings/settings.service'
+import { NotificationsService } from '../../notifications/notifications.service'
 @QueryService(UserEntity)
 @Injectable({ scope: Scope.REQUEST })
 export class UsersService extends BaseService<UserEntity> {
@@ -16,7 +18,9 @@ export class UsersService extends BaseService<UserEntity> {
     @Inject(REQUEST) private readonly req,
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
-    private readonly userCredentialsService: UserCredentialsService
+    private readonly userCredentialsService: UserCredentialsService,
+    private readonly settingsService: SettingsService,
+    private readonly notificationService: NotificationsService
   ) {
     super(
       req,
@@ -126,6 +130,22 @@ export class UsersService extends BaseService<UserEntity> {
     }
   }
 
+  async sendResetPasswordEmail (email: string): Promise<any> {
+    const user = await this.findByEmail(email)
+    if (user == null) {
+      console.error('userService - sendResetPasswordEmail - user not found', email)
+      return null
+    }
+
+    await user.setResetPasswordToken()
+    const link = `${await this.settingsService.getBaseDomain()}/reset-password/${user.resetPasswordToken}`
+
+    await this.updateOne(user.id, { resetPasswordToken: user.data.resetPasswordToken, data: { ...user.data } })
+    if (await this.notificationService.sendEmail(email, 'resetPassword', { user, link }) === false) {
+      console.error('userService - sendResetPasswordEmail - error while sending email')
+    }
+  }
+
   async resetPassword (resetPasswordToken: string, password: string): Promise<boolean> {
     const user = (
       await this.query({ filter: { resetPasswordToken: { eq: resetPasswordToken } } })
@@ -154,7 +174,7 @@ export class UsersService extends BaseService<UserEntity> {
           resetPasswordTokenExp: 0
         }
       })
-      res.setValuesFromJson()
+      res.setValuesFromJson() // TODO: do we need this?
 
       await this.userCredentialsService.changePassword(user.email, password)
       return true
