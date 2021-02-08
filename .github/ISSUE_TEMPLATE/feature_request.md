@@ -1,5 +1,5 @@
-As a _<persona<_
+As a <persona>
 
-I want to _<do something>_
+I want to <do something>
 
-In order to _<receive benefit>_
+In order to <receive benefit>
