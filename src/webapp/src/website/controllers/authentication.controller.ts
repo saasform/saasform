@@ -93,20 +93,20 @@ export class AuthenticationController {
 
   @UseGuards(UserOptionalAuthGuard)
   @Get('verify-email/:token')
-  async confirmEmail (@Request() req, @Res() res: Response, @Param('token') token: string): Promise<any> {
+  async verifyEmailToken (@Request() req, @Res() res: Response, @Param('token') token: string): Promise<any> {
     const data = await this.settingsService.getWebsiteRenderingVariables()
     try {
       const user = await this.usersService.confirmEmail(token)
 
       if (user == null || user.id === null) {
-        console.error('confirmEmail - User not found')
+        console.error('verifyEmailToken - User not found')
         throw new Error('User not found')
       }
 
       const account = await this.accountsService.findByUserId(user.id)
 
       if (account == null) {
-        console.error('confirmEmail - Account not found')
+        console.error('verifyEmailToken - Account not found')
         throw new Error('Account not found')
       }
 
@@ -114,7 +114,7 @@ export class AuthenticationController {
         // auto login (only if user was already logged in)
         const requestUser = await this.authService.getTokenPayloadFromUserModel({ user, credential: null, account })
         if (requestUser == null) {
-          console.error('confirmEmail - error while reissuing token')
+          console.error('verifyEmailToken - error while reissuing token')
           throw new Error('User not found')
         }
         await this.authService.setJwtCookie(req, res, requestUser)
@@ -135,5 +135,49 @@ export class AuthenticationController {
     res.clearCookie('__session', { domain: req.hostname })
     req.logout()
     res.redirect('/')
+  }
+
+  @Get('/reset-password')
+  async resetPassword (@Request() req, @Res() res: Response): Promise<any> {
+    const data = await this.settingsService.getWebsiteRenderingVariables()
+    const pageData = {
+      ...data,
+      csrfToken: req.csrfToken()
+    }
+
+    return res.render(`${data.themeRoot as string}/resetPassword`, pageData)
+  }
+
+  @Post('/reset-password')
+  async postResetPassword (@Request() req, @Res() res: Response): Promise<any> {
+    const { email } = req.body
+
+    await this.usersService.sendResetPasswordEmail(email)
+    res.redirect('/') // TODO
+  }
+
+  @Get('reset-password/:token')
+  async resetPasswordToken (@Request() req, @Res() res: Response, @Param('token') token: string): Promise<any> {
+    const data = await this.settingsService.getWebsiteRenderingVariables()
+    const pageData = {
+      ...data,
+      token,
+      csrfToken: req.csrfToken()
+    }
+
+    return res.render(`${data.themeRoot as string}/resetPasswordToken`, pageData)
+  }
+
+  @Post('/reset-password-finish')
+  async postResetPasswordToken (@Request() req, @Res() res: Response): Promise<any> {
+    const { token, password, confirmation } = req.body
+
+    if (password !== confirmation) {
+      return res.redirect('/error')
+    }
+
+    await this.usersService.resetPassword(token, password)
+
+    return res.redirect('/login') // TODO: make this less hard coded
   }
 }
