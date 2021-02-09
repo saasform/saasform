@@ -135,43 +135,30 @@ export class SettingsService extends BaseService<SettingsEntity> {
     return keys.jwt_private_key
   }
 
-  // TODO: fix the IS_DEV part
   // TODO: TDD this
-  // TODO: refactor this and the next one
-  async getBaseDomain (cachedSettings?): Promise<string> {
-    const proto = (__IS_DEV__) ? 'http' : 'https'
-    const port = this.configService.get<string>('SAAS_PORT') === ''
-      ? `:${this.configService.get<string>('SAAS_PORT') as string}`
-      : ''
-    const configuredHost = this.configService.get<string>('SAAS_HOST') ?? ''
+  async getBaseUrl (cachedSettings?): Promise<string> {
+    const configuredBaseUrl = this.configService.get<string>('SAASFORM_BASE_URL') ?? ''
     const settings = cachedSettings ?? await this.getWebsiteSettings()
     if (settings.domain_app != null) {
-      return `${proto}://${settings.domain_app as string}${port}`
+      return `https://${settings.domain_app as string}${port}`
     } else if (settings.domain_primary != null) {
-      return `${proto}://${settings.domain_primary as string}${port}`
-    } else if (configuredHost !== '') {
-      return `${configuredHost}`
+      return `https://${settings.domain_primary as string}${port}`
+    } else if (configuredBaseUrl !== '') {
+      return `${configuredBaseUrl}`
     }
     return '/'
   }
 
   // TODO: TDD this
-  // TODO: use the getBaseDomain code
   async getRedirectAfterLogin (cachedSettings?): Promise<string> {
-    const proto = (__IS_DEV__) ? 'http' : 'https'
-    const port = (__IS_DEV__) ? ':8080' : ''
-    const configuredRedirect = this.configService.get<string>('SAAS_REDIRECT') ?? ''
-    const configuredHost = this.configService.get<string>('SAAS_HOST') ?? ''
+    const configuredRedirectUrl = this.configService.get<string>('SAAS_REDIRECT_URL') ?? ''
     const settings = cachedSettings ?? await this.getWebsiteSettings()
     if (settings.domain_app != null) {
-      return `${proto}://${settings.domain_app as string}${port}`
+      return `https://${settings.domain_app as string}${port}`
     } else if (settings.domain_primary != null) {
-      return `${proto}://app.${settings.domain_primary as string}${port}`
-    } else if (configuredRedirect !== '') {
-      return `${configuredRedirect}`
-    } else if (configuredHost !== '') {
-      return `${proto}://app.${configuredHost}${port}`
-    }
+      return `https://app.${settings.domain_primary as string}${port}`
+    } else if (configuredRedirectUrl !== '') {
+      return `${configuredRedirectUrl}`
     return '/'
   }
 
@@ -362,209 +349,6 @@ export class SettingsService extends BaseService<SettingsEntity> {
         title: 'Get MultiPreview now!',
         text: 'Share your articles over and over, but keep them click-worthy with fresh images',
         button: 'Get started for free'
-      }
-    }
-
-    if (this.req.headers != null && this.req.headers['x-tenant-name'] === 'vyrill') {
-      home = {
-        colorPrimary: 'red',
-        hero_image: 'https://vyrill.com/wp-content/themes/vyrill2018/img/influence_verified.jpg',
-        hero_subtitle: 'Discover and connect with real video influencers',
-        hero_cta: 'Search for free',
-        benefits: [
-          {
-            icon: 'https://secureservercdn.net/198.71.233.64/990.0e0.myftpupload.com/wp-content/themes/vyrill2018/img/vip_icon_a1.png',
-            title: 'Authentic influencers',
-            text: 'Search over 500K videos from over 150K+ influencers - and growing. 100% bot free'
-          },
-          {
-            icon: 'https://secureservercdn.net/198.71.233.64/990.0e0.myftpupload.com/wp-content/themes/vyrill2018/img/vip_icon_a3.png',
-            title: 'Keep your feed original',
-            text: 'Vyrill\'s proprietary AI technology helps you assess brand safety & tone with just a few clicks'
-          },
-          {
-            icon: 'https://secureservercdn.net/198.71.233.64/990.0e0.myftpupload.com/wp-content/themes/vyrill2018/img/vip_icon_a4.png',
-            title: 'Control costs and time',
-            text: 'Gone are the hours of weeding through videos. With just a few clicks you\'re done'
-          }
-        ],
-        logos: [],
-        //   {
-        //     name: 'Instagram',
-        //     image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/instagram.svg'),
-        //   },
-        //   {
-        //     name: 'Facebook',
-        //     image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/facebook.svg'),
-        //   },
-        //   {
-        //     name: 'Pinterest',
-        //     image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/pinterest.svg'),
-        //   },
-        //   {
-        //     name: 'LinkedIn',
-        //     image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/linkedin.svg'),
-        //   },
-        // ],
-        product: [
-          {
-            title: 'Search for influencers by topic, category, brand & competition',
-            text: 'You can search by topics such as reviews, unboxing, tutorials, and more. Easy and frustration free search capabilities saves you time. Then you can download all of the data in a .cvs file with just a click. It\'s that simple',
-            image: 'https://secureservercdn.net/198.71.233.64/990.0e0.myftpupload.com/wp-content/themes/vyrill2018/img/video_index_page.jpg'
-          },
-          {
-            title: 'The industry\'s only solution to provide demographics of both the influencer & people in the video',
-            text: 'Ensure your marketing efforts represent your entire target audience and deliver influencer selections in complete confidence that they meet your brand\'s expectations. Get easy to read summary of overall diversity, disparity, sentiment and brand safety with our unique data analysis',
-            image: 'https://secureservercdn.net/198.71.233.64/990.0e0.myftpupload.com/wp-content/themes/vyrill2018/img/diversity.jpg',
-            position: 'left'
-          }
-        ],
-        testimonials: {},
-        //   title: 'Our customers are our biggest fans',
-        //   text: 'We don\'t like to brag, but we don\t mind letting our customers do it for us. Here are a few nice things people are saying',
-        //   quotes: [
-        //     {
-        //       name: 'Megan Groves',
-        //       photo: 'https://pbs.twimg.com/profile_images/1041757865617252352/dAljhozX_400x400.jpg',
-        //       quote: 'We recommend our clients write evergreen content and then repost it multiple times to drive better traffic. Finally we have a tool that lets us do this while keeping social feeds looking FRESH and ORIGINAL!',
-        //     },
-        //     {
-        //       name: 'Nicolò Ungari',
-        //       photo: 'https://pbs.twimg.com/profile_images/506581638348697600/uroKAbOb_400x400.jpeg',
-        //       quote: 'When I see a Twitter feed with the same image over and over again, I laugh :) Then I think back to my own feed before MultiPreview. It was pretty rough. I can\'t recommend this enough!',
-        //     },
-        //   ],
-        // },
-        pricing: {
-          title: 'Simple, straight-forward pricing',
-          text: '',
-          plans: []
-        },
-        faq: [
-          {
-            question: 'Can I search by topic, other than keyword?',
-            answer: 'Absolutely, you can search by topics such as reviews, unboxing, tutorials...'
-          },
-          {
-            question: 'What else can I filter by?',
-            answer: 'Demographics & diversity, brand safety, sentiment and much more!'
-          },
-          {
-            question: 'Is there a money back guarantee?',
-            answer: 'Yes, if you\'re not totally satisfied with Vyrill, let us know and we\'ll send over a refund'
-          },
-          {
-            question: 'Is there a free trial?',
-            answer: 'Yes, all plans include a free trial'
-          }
-        ],
-        cta: {
-          badge: 'Get started',
-          title: 'Get Vyrill now!',
-          text: 'Discover and connect with real video influencers',
-          button: 'Search for free'
-        }
-      }
-    };
-
-    if (this.req.headers != null && this.req.headers['x-tenant-name'] === 'distro') {
-      home = {
-        hero_image: 'https://distro.to/static/images/home-hero.jpg',
-        hero_subtitle: 'Create email distribution lists for your communications and keep them all organized and accessible.\n\nDon\'t replace your email, make it better',
-        hero_cta: 'Get started in 30 seconds',
-        benefits: [
-          {
-            // icon: 'https://secureservercdn.net/198.71.233.64/990.0e0.myftpupload.com/wp-content/themes/vyrill2018/img/vip_icon_a1.png',
-            title: 'Discussions, finally organized',
-            text: 'Create separate groups for your teams and projects to collaborate and share updates.\n\nInvite your teammates and collaborators whether they use Distro and start enjoying neatly organized discussions'
-          },
-          {
-            // icon: 'https://secureservercdn.net/198.71.233.64/990.0e0.myftpupload.com/wp-content/themes/vyrill2018/img/vip_icon_a3.png',
-            title: 'Organization transparency',
-            text: 'Discover public groups and conversations within your organization.\n\nNo more hoping to be added to the right email thread; Distro enables to join the conversations and find the information you need'
-          },
-          {
-            // icon: 'https://secureservercdn.net/198.71.233.64/990.0e0.myftpupload.com/wp-content/themes/vyrill2018/img/vip_icon_a4.png',
-            title: 'Meet your teams where they are',
-            text: 'Emails aren\'t evil, they are just out of control.\n\nDistro doesn\'t force you to replace emails and instead makes it better. Thanks to email, you can use Distro even with those in your organization who don\'t have a Distro account.'
-          }
-        ],
-        logos: [],
-        //   {
-        //     name: 'Instagram',
-        //     image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/instagram.svg'),
-        //   },
-        //   {
-        //     name: 'Facebook',
-        //     image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/facebook.svg'),
-        //   },
-        //   {
-        //     name: 'Pinterest',
-        //     image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/pinterest.svg'),
-        //   },
-        //   {
-        //     name: 'LinkedIn',
-        //     image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/linkedin.svg'),
-        //   },
-        // ],
-        product: [
-          // {
-          //   title: 'Search for influencers by topic, category, brand & competition',
-          //   text: 'You can search by topics such as reviews, unboxing, tutorials, and more. Easy and frustration free search capabilities saves you time. Then you can download all of the data in a .cvs file with just a click. It\'s that simple',
-          //   image: 'https://secureservercdn.net/198.71.233.64/990.0e0.myftpupload.com/wp-content/themes/vyrill2018/img/video_index_page.jpg',
-          // },
-          // {
-          //   title: 'The industry\'s only solution to provide demographics of both the influencer & people in the video',
-          //   text: 'Ensure your marketing efforts represent your entire target audience and deliver influencer selections in complete confidence that they meet your brand\'s expectations. Get easy to read summary of overall diversity, disparity, sentiment and brand safety with our unique data analysis',
-          //   image: 'https://secureservercdn.net/198.71.233.64/990.0e0.myftpupload.com/wp-content/themes/vyrill2018/img/diversity.jpg',
-          //   position: 'left',
-          // },
-        ],
-        testimonials: {},
-        //   title: 'Our customers are our biggest fans',
-        //   text: 'We don\'t like to brag, but we don\t mind letting our customers do it for us. Here are a few nice things people are saying',
-        //   quotes: [
-        //     {
-        //       name: 'Megan Groves',
-        //       photo: 'https://pbs.twimg.com/profile_images/1041757865617252352/dAljhozX_400x400.jpg',
-        //       quote: 'We recommend our clients write evergreen content and then repost it multiple times to drive better traffic. Finally we have a tool that lets us do this while keeping social feeds looking FRESH and ORIGINAL!',
-        //     },
-        //     {
-        //       name: 'Nicolò Ungari',
-        //       photo: 'https://pbs.twimg.com/profile_images/506581638348697600/uroKAbOb_400x400.jpeg',
-        //       quote: 'When I see a Twitter feed with the same image over and over again, I laugh :) Then I think back to my own feed before MultiPreview. It was pretty rough. I can\'t recommend this enough!',
-        //     },
-        //   ],
-        // },
-        pricing: {
-          title: 'Simple, straight-forward pricing',
-          text: '',
-          plans: []
-        },
-        faq: [
-          {
-            question: 'Can I create different Distros with different teams?',
-            answer: 'Yes, exactly like with emails.'
-          },
-          {
-            question: 'Can I add new people to existing Distros?',
-            answer: 'Absolutely, it\'s as easy adding new people to an email thread.'
-          },
-          {
-            question: 'Can I reply via Gmail and on my mobile?',
-            answer: 'Yes, exactly like with emails. :)'
-          },
-          {
-            question: 'Is there a money back guarantee?',
-            answer: 'Yes, if you\'re not totally satisfied, let us know and we\'ll send over a refund'
-          }
-        ],
-        cta: {
-          badge: 'Get started',
-          title: 'Join Distro now!',
-          text: 'Don\'t replace your email, make it better',
-          button: 'Join Distro for free'
-        }
       }
     }
 

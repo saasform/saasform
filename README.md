@@ -21,7 +21,7 @@ cd saasform
 docker-compose up
 ```
 
-Open your browser at [http://localhost:3000](http://localhost:3000).
+Open your browser at [http://localhost:7000](http://localhost:7000).
 
 ## Next Steps
 

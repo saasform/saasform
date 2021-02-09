@@ -73,7 +73,7 @@ export class AccountsService extends BaseService<AccountEntity> {
       const emailData = {
         title: settings.title,
         user,
-        link: `${await this.settingsService.getBaseDomain()}/verify-email/${user.emailConfirmationToken as string}`
+        link: `${await this.settingsService.getBaseUrl()}/verify-email/${user.emailConfirmationToken as string}`
       }
       if ((await this.notificationService.sendEmail(user.email, 'newAccount', emailData)) === false) {
         console.error('Error while sending email')

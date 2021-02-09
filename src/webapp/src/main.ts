@@ -66,7 +66,7 @@ export function configureApp (app, isTest: boolean = false): void {
 async function bootstrap () {
   const app = await NestFactory.create(AppModule)
   configureApp(app);
-  await app.listen(3000)
+  await app.listen(7000)
 }
 bootstrap()
 /* eslint-enable */
