@@ -140,9 +140,9 @@ export class SettingsService extends BaseService<SettingsEntity> {
     const configuredBaseUrl = this.configService.get<string>('SAASFORM_BASE_URL') ?? ''
     const settings = cachedSettings ?? await this.getWebsiteSettings()
     if (settings.domain_app != null) {
-      return `https://${settings.domain_app as string}${port}`
+      return `https://${settings.domain_app as string}`
     } else if (settings.domain_primary != null) {
-      return `https://${settings.domain_primary as string}${port}`
+      return `https://${settings.domain_primary as string}`
     } else if (configuredBaseUrl !== '') {
       return `${configuredBaseUrl}`
     }
@@ -154,11 +154,13 @@ export class SettingsService extends BaseService<SettingsEntity> {
     const configuredRedirectUrl = this.configService.get<string>('SAAS_REDIRECT_URL') ?? ''
     const settings = cachedSettings ?? await this.getWebsiteSettings()
     if (settings.domain_app != null) {
-      return `https://${settings.domain_app as string}${port}`
+      return `https://${settings.domain_app as string}`
     } else if (settings.domain_primary != null) {
-      return `https://app.${settings.domain_primary as string}${port}`
+      return `https://app.${settings.domain_primary as string}`
     } else if (configuredRedirectUrl !== '') {
       return `${configuredRedirectUrl}`
+    }
+
     return '/'
   }
 
@@ -247,8 +249,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
 
     const userEmail = this.req.user != null ? this.req.user.email : ''
 
-    let home
-    home = {
+    const home = {
       hero_image: htmlAsset(assetsRoot, 'assets/img/illustrations/illustration-6.png'),
       hero_subtitle: 'Share your articles over and over, but keep them click-worthy with fresh images',
       hero_cta: 'Get started now',

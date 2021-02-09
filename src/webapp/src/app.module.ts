@@ -10,13 +10,13 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { WebsiteModule } from './website/website.module'
 import { NotificationsModule } from './notifications/notifications.module'
 
-import { readFileSync } from 'fs';
-import * as yaml from 'js-yaml';
-import { join } from 'path';
+import { readFileSync } from 'fs'
+import * as yaml from 'js-yaml'
+import { join } from 'path'
 
-const config = () => yaml.load(
-  readFileSync(join(__dirname, '..', 'config', 'saasform.yml'), 'utf8'),
-);
+const config = (): any => yaml.load(
+  readFileSync(join(__dirname, '..', 'config', 'saasform.yml'), 'utf8')
+)
 
 @Module({
   imports: [
