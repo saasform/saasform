@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   saasform:
-    image: saasform:latest
+    image: saasform/saasform:latest
     restart: always
     depends_on:
       - saasform-db
@@ -23,7 +23,7 @@ services:
       - ./data/db:/var/lib/mysql:cached
 
   demo-express:
-    image: demo-express:latest
+    image: saasform/demo-express:latest
     depends_on:
       - saasform
     environment:
