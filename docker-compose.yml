@@ -1,53 +1,34 @@
 version: "3.1"
 services:
-  db:
+  saasform:
+    image: saasform/saasform:latest
+    restart: always
+    depends_on:
+      - saasform-db
+    env_file:
+      - ./data/saasform.env
+    ports:
+      - "7000:7000"
+    volumes:
+      - ./data/config:/app/config
+      - ./data/themes:/app/themes
+
+  saasform-db:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     env_file:
-      - ./src/webapp/env/env.local
-    ports:
-      - "3306:3306"
+      - ./data/saasform.env
     volumes:
       - ./data/db:/var/lib/mysql:cached
 
-  webapp:
-    image: saasform/saasform:0.0.1
-    restart: always
+  demo-express:
+    image: saasform/demo-express:latest
     depends_on:
-      - db
-    env_file:
-      - ./src/webapp/env/env.local
-      - ./data/config/secrets.local
-      - ./data/config/overrides.env
+      - saasform
     environment:
-      MYSQL_HOST: db
-      NODE_ENV: development
+      SAASFORM_SERVER: http://saasform:7000
+      SAASFORM_USER_LOGIN: http://localhost:7000/login
     ports:
       - "3000:3000"
-    volumes:
-      - ./data/themes:/app/themes
-
-  beautifulsaas:
-    image: saasform/beautifulsaas:0.0.1
-    restart: always
-    depends_on:
-      - webapp
-    environment:
-      SAASFORM: http://webapp:3000
-      SAASFORM_LOGIN: http://beautifulsaas.localhost:3000/login
-    ports:
-      - "8080:3000"
-    command: ["wait-for-it", "webapp:3000", "--", "npm", "start"]
-
-  # admin:
-  #   image: node:12
-  #   restart: always
-  #   depends_on:
-  #     - webapp
-  #   ports:
-  #     - "3001:3001"
-  #   volumes:
-  #     - ./admin:/mnt:cached
-  #   working_dir: /mnt
-  #   command: yarn start
+    command: ["wait-for-it", "webapp:7000", "--", "npm", "start"]

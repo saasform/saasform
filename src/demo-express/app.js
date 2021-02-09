@@ -25,7 +25,7 @@ const cookieExtractor = function(req) {
 };
 
 // Get public key from Saasform
-fetch(`${process.env.SAASFORM}/api/v1/public-key`)
+fetch(`${process.env.SAASFORM_SERVER}/api/v1/public-key`)
   .then(response => response.json())
   .then(data => {
     const opts = {
@@ -43,7 +43,7 @@ fetch(`${process.env.SAASFORM}/api/v1/public-key`)
 
 // Create authentication strategy to protect routes
 const auth = passport.authenticate('jwt', { session: false,
-                                            failureRedirect: `${process.env.SAASFORM_LOGIN}` }
+                                            failureRedirect: `${process.env.SAASFORM_USER_LOGIN}` }
                                   );
 /* END Saasform init code*/
 

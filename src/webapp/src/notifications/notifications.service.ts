@@ -24,8 +24,8 @@ export class NotificationsService {
     private readonly settingsService: SettingsService,
     public configService: ConfigService
   ) {
-    this.api_key = this.configService.get<string>('SENDGRID_APIKEY') ?? ''
-    this.sendFrom = this.configService.get<string>('SEND_FROM') ?? ''
+    this.api_key = this.configService.get<string>('SENDGRID_API_KEY') ?? ''
+    this.sendFrom = this.configService.get<string>('SENDGRID_SEND_FROM') ?? ''
     sgMail.setApiKey(this.api_key)
   }
 

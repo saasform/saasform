@@ -77,15 +77,6 @@ describe('SettingsService', () => {
     expect(result.name).toEqual('Test')
   })
 
-  it('getWebsiteRenderingVariables (HACK - vyrill)', async () => {
-    service.req = { headers: { 'x-tenant-name': 'vyrill' } }
-    const result = await service.getWebsiteRenderingVariables()
-
-    expect(mockQueryService.query).toHaveBeenCalled()
-    expect(result.name).toEqual('Test')
-    expect(result.home.colorPrimary).toEqual('red')
-  })
-
   it('getJWTPublicKey', async () => {
     const expected = '-----BEGIN PUBLIC KEY-----'
     const result = await service.getJWTPublicKey()

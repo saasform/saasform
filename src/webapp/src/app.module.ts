@@ -10,16 +10,18 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { WebsiteModule } from './website/website.module'
 import { NotificationsModule } from './notifications/notifications.module'
 
-// TODO: improve this part see #19
-const envFile = './env/env.local'
-const secretsFile = './env/secrets.local'
-/* eslint @typescript-eslint/no-var-requires: "off" */
-require('dotenv').config({ path: envFile })
+import { readFileSync } from 'fs'
+import * as yaml from 'js-yaml'
+import { join } from 'path'
+
+const config = (): any => yaml.load(
+  readFileSync(join(__dirname, '..', 'config', 'saasform.yml'), 'utf8')
+)
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: [secretsFile, envFile],
+      load: [config],
       isGlobal: true
     }),
     TypeOrmModule.forRoot({

@@ -25,5 +25,5 @@ COPY --chown=node:node --from=builder /app/dist /app/dist
 WORKDIR /app
 USER node
 # RUN rm -f ./themes/admin ; ln -s /admin ./themes/admin
-EXPOSE 3000
+EXPOSE 7000
 CMD ["node", "dist/main.js"]
