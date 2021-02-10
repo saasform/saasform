@@ -74,7 +74,7 @@ export class NotificationsService {
 
   async sendEmail (to: string, template: string, data: any): Promise<Boolean> {
     if (to === '' || template === '') {
-      console.error('notificationService - sendEmail - param error', to, template, data)
+      console.error('notificationService - sendEmail - param error', to, template)
       return false
     }
 

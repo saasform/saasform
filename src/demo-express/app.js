@@ -39,7 +39,7 @@ fetch(`${process.env.SAASFORM_SERVER}/api/v1/public-key`)
     // Initialize passport to use Saasform
     app.use(passport.initialize());
     console.log('Saasform initialised');
-  })
+  });
 
 // Create authentication strategy to protect routes
 const auth = passport.authenticate('jwt', { session: false,
