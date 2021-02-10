@@ -14,25 +14,31 @@ import { readFileSync } from 'fs'
 import * as yaml from 'js-yaml'
 import { join } from 'path'
 
-const config = (): any => yaml.load(
+const getConfig = (): any => yaml.load(
   readFileSync(join(__dirname, '..', 'config', 'saasform.yml'), 'utf8')
 )
+
+// We preload configs, so that we can
+// directly use them in the @Module setup
+const config = getConfig()
+
+// TODO: check is insecure params are being used
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [config],
+      load: [getConfig],
       isGlobal: true
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.MYSQL_HOST ?? 'localhost',
-      port: parseInt(process.env.MYSQL_PORT ?? '3306'),
-      username: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE,
-      autoLoadEntities: true, // TODO: remove this once migrations are in place
-      synchronize: true,
+      host: config.MYSQL_HOST ?? 'localhost',
+      port: parseInt(config.MYSQL_PORT ?? '3306'),
+      username: config.MYSQL_USER ?? 'saasform',
+      password: config.MYSQL_PASSWORD ?? 'saasformp',
+      database: config.MYSQL_DATABASE ?? 'saasform',
+      autoLoadEntities: true,
+      synchronize: true, // TODO: remove this once migrations are in place
       extra: {
         min: 0,
         max: 100,

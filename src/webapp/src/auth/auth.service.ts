@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common'
-import { UsersService } from '../accounts/services/users.service'
-import { AccountsService } from '../accounts/services/accounts.service'
-import { RequestUser, ValidUser } from './interfaces/user.interface'
+import { ConfigService } from '@nestjs/config'
 
 import { JwtService } from '@nestjs/jwt'
 import { parseDomain, ParseResultType } from 'parse-domain'
 
+import { RequestUser, ValidUser } from './interfaces/user.interface'
+
+import { AccountsService } from '../accounts/services/accounts.service'
 import { UserCredentialsService } from '../accounts/services/userCredentials.service'
+import { UsersService } from '../accounts/services/users.service'
 import { UserEntity } from '../accounts/entities/user.entity'
+
 import { SettingsService } from '../settings/settings.service'
 
 @Injectable()
@@ -17,7 +20,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly accountsService: AccountsService,
     private readonly userCredentialsService: UserCredentialsService,
-    private readonly settingsService: SettingsService
+    private readonly settingsService: SettingsService,
+    private readonly configeService: ConfigService
   ) {}
 
   async validateUser (email: string, inputPassword: string): Promise<ValidUser | null> {
@@ -92,7 +96,7 @@ export class AuthService {
 
     let options = { secure: true, httpOnly: true, domain: cookieDomain }
 
-    if (process.env.NODE_ENV === 'development') { // TODO: better check for development mode
+    if (this.configeService.get<string>('NODE_ENV') === 'development') { // TODO: better check for development mode
       options = { secure: false, httpOnly: false, domain: cookieDomain }
     }
 

@@ -19,6 +19,8 @@ services:
     restart: always
     env_file:
       - ./data/saasform.env
+    ports:
+      - "3306:3306"
     volumes:
       - ./data/db:/var/lib/mysql:cached
 
@@ -28,7 +30,7 @@ services:
       - saasform
     environment:
       SAASFORM_SERVER: http://saasform:7000
-      SAASFORM_USER_LOGIN: http://localhost:7000/login
+      SAASFORM_USER_LOGIN: http://mydemosaas.localhost:7000/login
     ports:
       - "3000:3000"
     command: ["wait-for-it", "webapp:7000", "--", "npm", "start"]

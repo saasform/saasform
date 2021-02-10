@@ -1,11 +1,17 @@
-import * as helmet from 'helmet'
-
+import { readFileSync } from 'fs'
 import { join } from 'path'
 import { ValidationPipe } from '@nestjs/common'
 import { Liquid } from 'liquidjs'
 import * as bodyParser from 'body-parser'
 import * as cookieParser from 'cookie-parser'
 import * as csurf from 'csurf'
+import * as helmet from 'helmet'
+import * as yaml from 'js-yaml'
+
+// UGLY: we are parsing again the config file so we can detect if we are in development mode
+const config = yaml.load(
+  readFileSync(join(__dirname, '..', 'config', 'saasform.yml'), 'utf8')
+)
 
 // import { HttpExceptionsFilter } from './filters/http-exceptions.filter';
 
@@ -42,7 +48,7 @@ export function configureApp (app, isTest: boolean = false): void {
 
   app.useGlobalPipes(new ValidationPipe())
 
-  if (process.env.NODE_ENV === 'development') { // TODO: better check for development mode
+  if (config.NODE_ENV === 'development') { // TODO: better check for development mode. See also comment at beginning
     console.warn('NOT USING HELMET. DO NOT DO THIS IN PRODUCTION')
   } else {
     app.use(helmet())

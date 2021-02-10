@@ -7,6 +7,10 @@ MYSQL_DATABASE: saasform
 MYSQL_USER: saasform
 MYSQL_PASSWORD: saasformp
 
+## WARNING: remove this for production
+NODE_ENV: development
+
+# UPDATE THE FOLLOWING VALUES
 SENDGRID_API_KEY: SG.xxx
 SENDGRID_SEND_FROM: hello@beautifulsaas.com
 
