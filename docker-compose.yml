@@ -1,22 +1,5 @@
 version: "3.1"
 services:
-  saasform:
-    image: saasform/saasform:latest
-    restart: always
-    depends_on:
-      - saasform-db
-    environment:
-      - NODE_ENV=development
-      - MYSQL_HOST=saasform-db
-      - MYSQL_DATABASE=saasform
-      - MYSQL_USER=saasform
-      - MYSQL_PASSWORD=saasformp
-    ports:
-      - "7000:7000"
-    volumes:
-      - ./data/config:/app/config
-      - ./data/themes:/app/themes
-
   saasform-db:
     image: mariadb:10.5
     restart: always
@@ -26,12 +9,36 @@ services:
       - MYSQL_DATABASE=saasform
       - MYSQL_USER=saasform
       - MYSQL_PASSWORD=saasformp
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_ROOT_PASSWORD=rootpassword
     volumes:
       - ./data/db:/var/lib/mysql:cached
 
+  saasform:
+    image: saasform/saasform:latest
+    restart: always
+    depends_on:
+      - saasform-db
+    environment:
+      - NODE_ENV=development
+      - TYPEORM_CONNECTION=mysql
+      - TYPEORM_HOST=saasform-db
+      - TYPEORM_USERNAME=saasform
+      - TYPEORM_PASSWORD=saasformp
+      - TYPEORM_DATABASE=saasform
+      - TYPEORM_PORT=3306
+      - TYPEORM_SYNCHRONIZE=true
+      - TYPEORM_LOGGING=true
+      - TYPEORM_MIGRATIONS=/app/dist/migration/**/*.js
+    ports:
+      - "7000:7000"
+    volumes:
+      - ./data/config:/app/config
+      - ./data/themes:/app/themes
+    command: ["bash", "/app/bin/startup.sh"]
+
   demo-express:
     image: saasform/demo-express:latest
+    restart: always
     depends_on:
       - saasform
     environment:
@@ -39,4 +46,4 @@ services:
       SAASFORM_USER_LOGIN: http://localhost:7000/login
     ports:
       - "3000:3000"
-    command: ["wait-for-it", "webapp:7000", "--", "npm", "start"]
+    command: ["wait-for-it",  "saasform:7000", "--", "npm", "start"]

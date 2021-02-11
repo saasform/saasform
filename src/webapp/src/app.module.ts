@@ -28,13 +28,13 @@ const config = (): any => yaml.load(
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
-        host: configService.get('MYSQL_HOST'),
-        port: configService.get('MYSQL_PORT'),
-        username: configService.get('MYSQL_USER'),
-        password: configService.get('MYSQL_PASSWORD'),
-        database: configService.get('MYSQL_DATABASE'),
+        host: configService.get('TYPEORM_HOST'),
+        port: configService.get('TYPEORM_PORT'),
+        username: configService.get('TYPEORM_USERNAME'),
+        password: configService.get('TYPEORM_PASSWORD'),
+        database: configService.get('TYPEORM_DATABASE'),
         autoLoadEntities: true, // TODO: remove this once migrations are in place
-        synchronize: true,
+        // synchronize: true,
         extra: {
           min: 0,
           max: 100,

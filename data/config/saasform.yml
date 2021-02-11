@@ -1,11 +1,12 @@
 SAAS_REDIRECT_URL: http://localhost:3000
 SAASFORM_BASE_URL: http://localhost:7000
 
-MYSQL_HOST: localhost
-MYSQL_PORT: 3306
-MYSQL_DATABASE: saasform
-MYSQL_USER: saasform
-MYSQL_PASSWORD: saasformp
+
+TYPEORM_HOST: localhost
+TYPEORM_PORT: 3306
+TYPEORM_DATABASE: saasform
+TYPEORM_USERNAME: saasform
+TYPEORM_PASSWORD: saasformp
 
 SENDGRID_API_KEY: SG.xxx
 SENDGRID_SEND_FROM: hello@beautifulsaas.com

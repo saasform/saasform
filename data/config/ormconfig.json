@@ -1,0 +1,18 @@
+{
+   "type": "mysql",
+   "host": "saasform-db",
+   "port": 3306,
+   "username": "saasform",
+   "password": "saasformp",
+   "database": "saasform",
+   "synchronize": true,
+   "logging": false,
+   "migrations": [
+      "/app/dist/migration/**/*.js"
+   ],
+   "cli": {
+      "entitiesDir": "/app/dist/entity",
+      "migrationsDir": "/app/dist/migration",
+      "subscribersDir": "/app/dist/subscriber"
+   }
+}
