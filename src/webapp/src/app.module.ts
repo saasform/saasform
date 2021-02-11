@@ -42,7 +42,7 @@ const config = (): any => yaml.load(
           idleTimeoutMillis: 120000
         }
       }),
-      inject: [ConfigService],
+      inject: [ConfigService]
     }),
     GraphQLModule.forRoot({
       playground: true,
