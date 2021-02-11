@@ -1,9 +1,8 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm'
 
 export class init1613050217744 implements MigrationInterface {
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up (queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
         CREATE TABLE IF NOT EXISTS usersCredentials (
             id int(11) NOT NULL AUTO_INCREMENT,
             credential varchar(255) NOT NULL,
@@ -12,11 +11,9 @@ export class init1613050217744 implements MigrationInterface {
             PRIMARY KEY (id),
             UNIQUE KEY IDX_2eadaf29b2fd55a4705975397f (credential)
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-          `);
+          `)
+  }
 
-    }
-
-    public async down(queryRunner: QueryRunner): Promise<void> {
-    }
-
+  public async down (queryRunner: QueryRunner): Promise<void> {
+  }
 }
