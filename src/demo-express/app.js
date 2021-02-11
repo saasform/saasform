@@ -39,6 +39,10 @@ fetch(`${process.env.SAASFORM_SERVER}/api/v1/public-key`)
     // Initialize passport to use Saasform
     app.use(passport.initialize());
     console.log('Saasform initialised');
+  })
+  .catch(err => {
+    console.error('Error while retrieving public key');
+    process.exit(1)
   });
 
 // Create authentication strategy to protect routes
