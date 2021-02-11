@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ApiModule } from './api/api.module'
@@ -24,21 +24,25 @@ const config = (): any => yaml.load(
       load: [config],
       isGlobal: true
     }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.MYSQL_HOST ?? 'localhost',
-      port: parseInt(process.env.MYSQL_PORT ?? '3306'),
-      username: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE,
-      autoLoadEntities: true, // TODO: remove this once migrations are in place
-      synchronize: true,
-      extra: {
-        min: 0,
-        max: 100,
-        evictionRunIntervalMillis: 120000,
-        idleTimeoutMillis: 120000
-      }
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get('MYSQL_HOST'),
+        port: configService.get('MYSQL_PORT'),
+        username: configService.get('MYSQL_USER'),
+        password: configService.get('MYSQL_PASSWORD'),
+        database: configService.get('MYSQL_DATABASE'),
+        autoLoadEntities: true, // TODO: remove this once migrations are in place
+        synchronize: true,
+        extra: {
+          min: 0,
+          max: 100,
+          evictionRunIntervalMillis: 120000,
+          idleTimeoutMillis: 120000
+        }
+      }),
+      inject: [ConfigService],
     }),
     GraphQLModule.forRoot({
       playground: true,
