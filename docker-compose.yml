@@ -5,8 +5,12 @@ services:
     restart: always
     depends_on:
       - saasform-db
-    env_file:
-      - ./data/saasform.env
+    environment:
+      - NODE_ENV=development
+      - MYSQL_HOST=saasform-db
+      - MYSQL_DATABASE=saasform
+      - MYSQL_USER=saasform
+      - MYSQL_PASSWORD=saasformp
     ports:
       - "7000:7000"
     volumes:
@@ -14,11 +18,15 @@ services:
       - ./data/themes:/app/themes
 
   saasform-db:
-    image: mysql:8.0
-    command: --default-authentication-plugin=mysql_native_password
+    image: mariadb:10.5
     restart: always
-    env_file:
-      - ./data/saasform.env
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=saasform
+      - MYSQL_USER=saasform
+      - MYSQL_PASSWORD=saasformp
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
     volumes:
       - ./data/db:/var/lib/mysql:cached
 
