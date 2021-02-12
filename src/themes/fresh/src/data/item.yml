@@ -1,0 +1,2 @@
+image: "{{ item.image }}"
+name: "{{ item.name }}"
