@@ -145,7 +145,7 @@ export class AuthenticationController {
       csrfToken: req.csrfToken()
     }
 
-    return res.render(`${data.themeRoot as string}/resetPassword`, pageData)
+    return res.render(`${data.themeRoot as string}/reset-password`, pageData)
   }
 
   @Post('/reset-password')

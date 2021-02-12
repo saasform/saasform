@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{{ website.nameAndTitle }}</title>
+  <meta name="description" content="{{ website.description }}">
+  <meta name="keywords" content="">
+  <meta name="author" content="">
+  {{ website.googleTagManagerHeader }}
+  {{ website.googleAnalyticsCode }}
+  {{ website.facebookPixelCode }}
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ root }}/assets/css/bundle.css">
+  <link rel="icon" type="image/png" href="{{ root }}/assets/img/favicon.png" />
+</head>
+<body>
+  {{ website.googleTagManagerBody }}
+
+  <nav x-data="initNavbar()" class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
+    {{> navbar-index}}
+  </nav>
+  <nav x-data="initNavbar()"  x-on:scroll.window="scroll()" id="navbar-clone"
+    class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation" :class="{
+      'is-active': scrolled,
+      '': !scrolled
+    }">
+    {{> navbar-index}}
+  </nav>
+
+  {{> body}}
+  {{> footer}}
+
+  <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
+  <script src="{{ root }}/assets/js/bundle.js"></script>
+</body>
+</html>

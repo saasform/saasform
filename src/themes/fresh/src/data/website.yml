@@ -1,0 +1,22 @@
+# layout
+name: "{{ name }}"
+title: "{{ title | formatDot }}"
+nameAndTitle: "{{ nameAndTitle }}"
+description: "{{ description }}"
+googleTagManagerHeader: "{{ googleTagManagerHeader }}"
+googleAnalyticsCode: "{{ googleAnalyticsCode }}"
+facebookPixelCode: "{{ facebookPixelCode }}"
+googleTagManagerBody: "{{ googleTagManagerBody }}"
+
+# navbar
+appDomain: "{{ appDomain }}"
+
+# footer
+legal_name: "{{ legal_name }}"
+social_github: "{{ social_github }}"
+social_twitter: "{{ social_twitter }}"
+social_linkedin: "{{ social_linkedin }}"
+
+# page
+pageTitle: "{{ pageTitle }}"
+pageBody: "{{ pageBody }}"

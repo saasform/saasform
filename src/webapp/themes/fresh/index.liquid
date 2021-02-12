@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{{ nameAndTitle }}</title>
+  <meta name="description" content="{{ description }}">
+  <meta name="keywords" content="">
+  <meta name="author" content="">
+  {{ googleTagManagerHeader }}
+  {{ googleAnalyticsCode }}
+  {{ facebookPixelCode }}
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ assetsRoot }}/assets/css/bundle.css">
+  <link rel="icon" type="image/png" href="{{ assetsRoot }}/assets/img/favicon.png" />
+</head>
+<body>
+  {{ googleTagManagerBody }}
+
+  <nav x-data="initNavbar()" class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="#">
+          <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ name }}</h2>
+          <!--img src="{{ assetsRoot }}/img/logo/logo.svg" alt="" width="112" height="28"-->
+        </a>
+        <div class="navbar-burger" @click="openMobileMenu()">
+          <span class="menu-toggle">
+            <span class="icon-box-toggle" :class="{
+                'active': mobileOpen,
+                '': !mobileOpen
+              }">
+              <span class="rotate">
+                <i class="icon-line-top"></i>
+                <i class="icon-line-center"></i>
+                <i class="icon-line-bottom"></i>
+              </span>
+            </span>
+        </div>
+      </div>
+      <div id="navbar-menu" class="navbar-menu is-static" :class="{
+          'is-active': mobileOpen,
+          '': !mobileOpen
+        }">
+        <div class="navbar-end">
+          <a href="#product" class="navbar-item is-primary">
+            Product
+          </a>
+          <a href="#pricing" class="navbar-item is-primary">
+            Pricing
+          </a>
+          <a href="#faq" class="navbar-item is-primary">
+            FAQ
+          </a>
+        </div>
+        <div class="navbar-end">
+          {% if userEmail != "" %}
+          <a href="{{ appDomain }}" class="navbar-item is-primary">
+            Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
+          </a>
+          {% else %}
+          <a href="/login" class="navbar-item is-primary">
+            Log in
+          </a>
+          <a href="/signup" class="navbar-item">
+            <span class="button signup-button primary-btn raised">
+              Sign up
+            </span>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>  </nav>
+  <nav x-data="initNavbar()"  x-on:scroll.window="scroll()" id="navbar-clone"
+    class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation" :class="{
+      'is-active': scrolled,
+      '': !scrolled
+    }">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="#">
+          <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ name }}</h2>
+          <!--img src="{{ assetsRoot }}/img/logo/logo.svg" alt="" width="112" height="28"-->
+        </a>
+        <div class="navbar-burger" @click="openMobileMenu()">
+          <span class="menu-toggle">
+            <span class="icon-box-toggle" :class="{
+                'active': mobileOpen,
+                '': !mobileOpen
+              }">
+              <span class="rotate">
+                <i class="icon-line-top"></i>
+                <i class="icon-line-center"></i>
+                <i class="icon-line-bottom"></i>
+              </span>
+            </span>
+        </div>
+      </div>
+      <div id="navbar-menu" class="navbar-menu is-static" :class="{
+          'is-active': mobileOpen,
+          '': !mobileOpen
+        }">
+        <div class="navbar-end">
+          <a href="#product" class="navbar-item is-primary">
+            Product
+          </a>
+          <a href="#pricing" class="navbar-item is-primary">
+            Pricing
+          </a>
+          <a href="#faq" class="navbar-item is-primary">
+            FAQ
+          </a>
+        </div>
+        <div class="navbar-end">
+          {% if userEmail != "" %}
+          <a href="{{ appDomain }}" class="navbar-item is-primary">
+            Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
+          </a>
+          {% else %}
+          <a href="/login" class="navbar-item is-primary">
+            Log in
+          </a>
+          <a href="/signup" class="navbar-item">
+            <span class="button signup-button primary-btn raised">
+              Sign up
+            </span>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>  </nav>
+
+  
+  <section class="hero is-midheight is-default is-bold">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns is-vcentered">
+          <div class="column is-5 is-offset-1 landing-caption">
+            <h1 class="title is-1 is-bold is-spaced">
+              {{ title | formatDot }}
+            </h1>
+            <h2 class="subtitle is-5 is-muted">{{ home.hero_subtitle | formatNoOrphanDot }}</h2>
+            <div class="button-wrap">
+              <a href="/signup" class="button cta primary-btn raised">
+                {{ home.hero_cta }}
+              </a>
+            </div>
+          </div>
+          <div class="column is-5">
+            <figure class="image">
+              <img src="{{ home.hero_image }}" alt="{{ name }}">
+            </figure>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  
+    <div class="hero-foot mb-20">
+      <div class="content-wrapper">
+        <div class="columns">
+          <div class="column is-one-third">
+            <div class="feature-card is-bordered has-text-centered is-feature-reveal">
+              <div class="card-title">
+                <h4>App builder</h4>
+              </div>
+              <div class="card-icon">
+                <img src="{{ assetsRoot }}/assets/img/icons/web.svg">
+              </div>
+              <div class="card-text">
+                <p>This is some cool explanatory text that is on two rows</p>
+              </div>
+            </div>
+          </div>
+          <div class="column">
+            <div class="feature-card is-bordered has-text-centered is-feature-reveal">
+              <div class="card-title">
+                <h4>Cloud integration</h4>
+              </div>
+              <div class="card-icon">
+                <img src="{{ assetsRoot }}/assets/img/icons/rocket.svg">
+              </div>
+              <div class="card-text">
+                <p>This is some explanatory text that is on two rows</p>
+              </div>
+            </div>
+          </div>
+          <div class="column">
+            <div class="feature-card is-bordered has-text-centered is-feature-reveal">
+              <div class="card-title">
+                <h4>Addons & Plugins</h4>
+              </div>
+              <div class="card-icon">
+                <img src="{{ assetsRoot }}/assets/img/icons/light-bulb.svg">
+              </div>
+              <div class="card-text">
+                <p>This is some explanatory text that is on two rows</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      {% assign len = home.logos.length %}
+      {% if len > 0 %}
+      <div class="container">
+        <div class="tabs is-centered">
+          <ul>
+            {% for item in home.logos %}
+            <li><a><img class="partner-logo" src="{{ item.image }}" alt="{{ item.name }}"></a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  
+    <!--div class="hero-foot mb-20">
+      <div class="container">
+        <div class="tabs is-centered">
+          <ul>
+            <li><a><img class="partner-logo" src="{{ assetsRoot }}/assets/img/logo/clients/systek.svg"></a></li>
+            <li><a><img class="partner-logo" src="{{ assetsRoot }}/assets/img/logo/clients/tribe.svg"></a></li>
+            <li><a><img class="partner-logo" src="{{ assetsRoot }}/assets/img/logo/clients/kromo.svg"></a></li>
+            <li><a><img class="partner-logo" src="{{ assetsRoot }}/assets/img/logo/clients/infinite.svg"></a></li>
+            <li><a><img class="partner-logo" src="{{ assetsRoot }}/assets/img/logo/clients/gutwork.svg"></a></li>
+          </ul>
+        </div>
+      </div>
+    </div-->
+  </section>
+  
+  <!--section class="section section-feature-grey is-medium">
+    <div class="container">
+      <div class="title-wrapper has-text-centered">
+        <h2 class="title is-2">Great Power Comes </h2>
+        <h3 class="subtitle is-5 is-muted">With great Responsability</h3>
+        <div class="divider is-centered"></div>
+      </div>
+  
+      <div class="content-wrapper">
+        <div class="columns">
+          <div class="column is-one-third">
+            <div class="feature-card is-bordered has-text-centered is-feature-reveal">
+              <div class="card-title">
+                <h4>App builder</h4>
+              </div>
+              <div class="card-icon">
+                <img src="{{ assetsRoot }}/assets/img/icons/web.svg">
+              </div>
+              <div class="card-text">
+                <p>This is some cool explanatory text that is on two rows</p>
+              </div>
+              <div class="card-action">
+                <a href="#" class="button btn-align-md primary-btn raised">Free Trial</a>
+              </div>
+            </div>
+          </div>
+          <div class="column">
+            <div class="feature-card is-bordered has-text-centered is-feature-reveal">
+              <div class="card-title">
+                <h4>Cloud integration</h4>
+              </div>
+              <div class="card-icon">
+                <img src="{{ assetsRoot }}/assets/img/icons/rocket.svg">
+              </div>
+              <div class="card-text">
+                <p>This is some explanatory text that is on two rows</p>
+              </div>
+              <div class="card-action">
+                <a href="#" class="button btn-align-md primary-btn raised">Get Started</a>
+              </div>
+            </div>
+          </div>
+          <div class="column">
+            <div class="feature-card is-bordered has-text-centered is-feature-reveal">
+              <div class="card-title">
+                <h4>Addons & Plugins</h4>
+              </div>
+              <div class="card-icon">
+                <img src="{{ assetsRoot }}/assets/img/icons/light-bulb.svg">
+              </div>
+              <div class="card-text">
+                <p>This is some explanatory text that is on two rows</p>
+              </div>
+              <div class="card-action">
+                <a href="#" class="button btn-align-md primary-btn raised">Get Started</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section-->
+  
+  <section id="product" class="section is-medium">
+    <div class="container">
+      <!--div class="title-wrapper has-text-centered">
+        <h2 class="title is-2">Awesome Features</h2>
+        <h3 class="subtitle is-5 is-muted">To make you super happy</h3>
+        <div class="divider is-centered"></div>
+      </div-->
+      <div class="columns is-vcentered side-feature mt-60">
+        <div class="column is-5 is-offset-1">
+          <img src="{{ assetsRoot }}/assets/img/illustrations/features/feature-2.png" alt="">
+        </div>
+        <div class="column is-4 is-offset-1">
+          <h3 class="title is-3 mb-10 is-title-reveal">Collaborate easily</h3>
+          <p class="subtitle is-5 is-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cum audissem Antiochum, Brute, ut solebam, cum M. Quae diligentissime contra Aristonem dicuntur a Chryippo.</p>
+        </div>
+      </div>
+  
+      <div class="columns is-vcentered side-feature mt-60">
+        <div class="column is-4 is-offset-2">
+          <h3 class="title is-3 mb-10 is-title-reveal">Connect with people</h3>
+          <p class="subtitle is-5 is-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cum audissem Antiochum, Brute, ut solebam, cum M. Quae diligentissime contra Aristonem dicuntur a Chryippo.</p>
+        </div>
+        <div class="column is-5">
+          <img src="{{ assetsRoot }}/assets/img/illustrations/features/feature-1.png" alt="">
+        </div>
+      </div>
+  
+      <div class="columns is-vcentered side-feature mt-60">
+        <div class="column is-5 is-offset-1">
+          <img src="{{ assetsRoot }}/assets/img/illustrations/features/feature-2.png" alt="">
+        </div>
+        <div class="column is-4 is-offset-1">
+          <h3 class="title is-3 mb-10 is-title-reveal">Collaborate easily</h3>
+          <p class="subtitle is-5 is-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cum audissem Antiochum, Brute, ut solebam, cum M. Quae diligentissime contra Aristonem dicuntur a Chryippo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!--section class="section section-feature-grey is-medium">
+    <div class="container">
+  
+      <div class="columns is-vcentered app-side">
+        <div class="column is-5 is-offset-1">
+          <h3 class="title is-3 is-spaced is-title-reveal">An intuitive app</h3>
+          <p class="subtitle is-5 is-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cum audissem Antiochum, Brute, ut solebam, cum M. Quae diligentissime contra Aristonem dicuntur a Chryippo.</p>
+        </div>
+        <div class="column is-10">
+          <div class="has-text-centered">
+            <img class="pushed-image" src="{{ assetsRoot }}/assets/img/illustrations/mockups/app-mockup.png">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="section is-medium">
+    <div class="container">
+      <div class="title-wrapper has-text-centered">
+        <h2 class="title is-2">Wait, there's more</h2>
+        <h3 class="subtitle is-5 is-muted">To make you super happy</h3>
+        <div class="divider is-centered"></div>
+      </div>
+  
+      <div class="content-wrapper">
+        <div class="columns is-multiline icon-list">
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-github" size="large"></ion-icon>
+              </div>
+              <h4>Github</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-bitbucket" size="large"></ion-icon>
+              </div>
+              <h4>Bitbucket</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-slack" size="large"></ion-icon>
+              </div>
+              <h4>Slack</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-npm" size="large"></ion-icon>
+              </div>
+              <h4>Npm</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-javascript" size="large"></ion-icon>
+              </div>
+              <h4>Javascript</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-nodejs" size="large"></ion-icon>
+              </div>
+              <h4>Nodejs</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-angular" size="large"></ion-icon>
+              </div>
+              <h4>Angular</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-google" size="large"></ion-icon>
+              </div>
+              <h4>Google</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-python" size="large"></ion-icon>
+              </div>
+              <h4>Python</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-wordpress" size="large"></ion-icon>
+              </div>
+              <h4>WordPress</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-android" size="large"></ion-icon>
+              </div>
+              <h4>Android</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="feature-icon has-text-centered">
+              <div class="icon-wrap is-icon-reveal">
+                <ion-icon name="logo-apple" size="large"></ion-icon>
+              </div>
+              <h4>Apple</h4>
+              <p>Some feature text</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section-->
+  
+  <section class="section is-medium section-feature-grey">
+    <div class="overlay"></div>
+    <div class="container">
+  
+      <div class="title-wrapper has-text-centered">
+        <h2 class="title is-2 is-spaced">Our clients love us</h2>
+        <h3 class="subtitle is-5">Look at what they say about us</h3>
+      </div>
+  
+      <div class="content-wrapper">
+        <div class="columns is-vcentered">
+          <div class="column is-4">
+            <figure class="testimonial">
+              <blockquote>
+                Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
+              </blockquote>
+              <div class="author">
+                <img src="{{ assetsRoot }}/assets/img/illustrations/faces/1.png" alt=""/>
+                <h5>Irma Walters</h5><span>Accountant</span>
+              </div>
+            </figure>
+          </div>
+          <div class="column is-4">
+            <figure class="testimonial">
+              <blockquote>
+                Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
+              </blockquote>
+              <div class="author">
+                <img src="{{ assetsRoot }}/assets/img/illustrations/faces/2.png" alt=""/>
+                <h5>John Bradley</h5><span>Financial Analyst</span>
+              </div>
+            </figure>
+          </div>
+          <div class="column is-4">
+            <figure class="testimonial">
+              <blockquote>
+                Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
+              </blockquote>
+              <div class="author">
+                <img src="{{ assetsRoot }}/assets/img/illustrations/faces/3.png" alt=""/>
+                <h5>Gary Blackman</h5><span>HR Manager</span>
+              </div>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="pricing" class="section is-medium section-feature-grey">
+    <div class="container">
+      <div class="title-wrapper has-text-centered">
+        <h2 class="title is-2">Get Started</h2>
+        <h3 class="subtitle is-5 is-muted">Choose one of our plans</h3>
+        <div class="divider is-centered"></div>
+      </div>
+  
+      <div class="pricing-wrap">
+        <div class="feature-card is-pricing has-text-centered">
+          <h3 class="plan-name">Starter</h3>
+          <img src="{{ assetsRoot }}/assets/img/illustrations/pricing/1.svg" alt=""/>
+          <div class="price">
+            0
+          </div>
+          <p>Sign up, get some awesome features and get started now</p>
+          <a class="button is-fullwidth is-bold">Get Started</a>
+        </div>
+        <div class="feature-card is-pricing has-text-centered">
+          <h3 class="plan-name">Pro</h3>
+          <img src="{{ assetsRoot }}/assets/img/illustrations/pricing/2.svg" alt=""/>
+          <div class="price">
+            15
+          </div>
+          <p>Sign up, get some awesome features and get started now</p>
+          <a class="button is-fullwidth primary-btn raised is-bold">Get Started</a>
+        </div>
+        <div class="feature-card is-pricing has-text-centered">
+          <h3 class="plan-name">Business</h3>
+          <img src="{{ assetsRoot }}/assets/img/illustrations/pricing/3.svg" alt=""/>
+          <div class="price">
+            30
+          </div>
+          <p>Sign up, get some awesome features and get started now</p>
+          <a class="button is-fullwidth is-bold">Get Started</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="faq" class="section section-light-grey is-medium">
+  </section>
+  
+  <!--section class="section section-light-grey is-medium">
+    <div class="container">
+      <div class="title-wrapper has-text-centered">
+        <h2 class="title is-2 is-spaced">Drop us a line or two </h2>
+        <h3 class="subtitle is-5 is-muted">We'd love to hear from You</h3>
+        <div class="divider is-centered"></div>
+      </div>
+  
+      <div class="content-wrapper">
+        <div class="columns">
+          <div class="column is-6 is-offset-3">
+            <form>
+              <div class="columns is-multiline">
+                <div class="column is-6">
+                  <input class="input is-medium" type="text" placeholder="First Name *">
+                </div>
+                <div class="column is-6">
+                  <input class="input is-medium" type="text" placeholder="Last Name *">
+                </div>
+                <div class="column is-6">
+                  <input class="input is-medium" type="text" placeholder="Email *">
+                </div>
+                <div class="column is-6">
+                  <input class="input is-medium" type="email" placeholder="Company">
+                </div>
+                <div class="column is-12">
+                  <textarea class="textarea" rows="6" placeholder=""></textarea>
+                </div>
+                <div class="column is-12">
+                  <div class="form-footer has-text-right mt-10">
+                    <button class="button cta is-large primary-btn form-button raised is-clear">Send Message</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section-->
+  
+  <!--div id="auth-modal" class="modal">
+    <div class="modal-background modal-dismiss"></div>
+    <div class="modal-content">
+      <div class="flex-card auth-card">
+        <div class="tabs-wrapper">
+          <div class="tabs">
+            <ul>
+              <li class="is-active" data-tab="login-tab"><a>Login</a></li>
+              <li data-tab="register-tab"><a>Register</a></li>
+            </ul>
+          </div>
+          <div id="login-tab" class="tab-content is-active">
+            <div class="field">
+              <label>Username</label>
+              <div class="control">
+                <input type="text" class="input is-medium" placeholder="Enter username">
+              </div>
+            </div>
+            <div class="field">
+              <label>Password</label>
+              <div class="control">
+                <input type="password" class="input is-medium" placeholder="Enter password">
+              </div>
+            </div>
+  
+            <a class="button is-fullwidth secondary-btn is-rounded raised">Log in</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+  </div-->
+  
+  <footer class="footer footer-dark">
+    <div class="container">
+      <div class="columns">
+        <div class="column">
+          <div class="footer-logo">
+            <h2 class="is-size-4 has-text-weight-semibold">{{ name }}</h2>
+            <!--img src="{{ assetsRoot }}/img/logo/logo.svg"-->
+          </div>
+          &copy; 2020 {{ legal_name }}
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+              <h3>Legal</h3>
+            </div>
+            <ul class="link-list">
+              <li><a href="/privacy-policy">Privacy policy</a></li>
+              <li><a href="/terms-of-service">Terms of service</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+              <h3>Follow Us</h3>
+              <nav class="level is-mobile">
+                <div class="level-left">
+                  <a class="level-item" href="{{ social_github }}">
+                    <span class="icon">
+                      <ion-icon name="logo-github" size="large"></ion-icon>
+                    </span>
+                  </a>
+                  <a class="level-item" href="{{ social_twitter }}">
+                    <span class="icon">
+                      <ion-icon name="logo-twitter" size="large"></ion-icon>
+                    </span>
+                  </a>
+                  <a class="level-item" href="{{ social_linkedin }}">
+                    <span class="icon">
+                      <ion-icon name="logo-linkedin" size="large"></ion-icon>
+                    </span>
+                  </a>
+                </div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
+  <script src="{{ assetsRoot }}/assets/js/bundle.js"></script>
+</body>
+</html>
