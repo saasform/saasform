@@ -27,6 +27,6 @@ export class PublicController {
       user
     }
 
-    return res.render(`${data.themeRoot as string}/home`, pageData)
+    return res.render(`${data.themeRoot as string}/index`, pageData)
   }
 }

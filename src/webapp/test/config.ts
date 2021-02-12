@@ -5,9 +5,9 @@ export const DB_CONFIG: TypeOrmModuleOptions = {
   dropSchema: true,
   host: 'localhost',
   port: 3306,
-  username: 'rw',
-  password: 'RTMP7smoOuHF2F5+v9IYtTb0KBqq2kIFlbfBla3nAZ3z',
-  database: 'db_test',
+  username: 'saasform',
+  password: 'saasformp',
+  database: 'saasform_test',
   autoLoadEntities: true,
   synchronize: true
 }

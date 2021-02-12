@@ -247,7 +247,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
 
     const appDomain = this.getRedirectAfterLogin(settings)
 
-    const userEmail = this.req.user != null ? this.req.user.email : ''
+    const userEmail = this.req?.user?.email ?? ''
 
     const home = {
       hero_image: htmlAsset(assetsRoot, 'assets/img/illustrations/illustration-6.png'),
