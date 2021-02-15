@@ -31,7 +31,7 @@ export class NotificationsService {
     }
   }
 
-  isCertainlyInvalidApiKey() {
+  isCertainlyInvalidApiKey (): boolean {
     return this.apiKey === '' || this.apiKey.endsWith('xxx')
   }
 
