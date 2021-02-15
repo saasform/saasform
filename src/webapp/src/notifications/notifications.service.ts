@@ -32,7 +32,7 @@ export class NotificationsService {
   }
 
   isCertainlyInvalidApiKey() {
-    return this.apiKey === '' || this.apiKey === 'SG.xxx'
+    return this.apiKey === '' || this.apiKey.endsWith('xxx')
   }
 
   /**
