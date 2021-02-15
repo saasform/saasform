@@ -17,16 +17,22 @@ const EMAIL_TEMPLATES_DIR = 'email'
 
 @Injectable()
 export class NotificationsService {
-  private readonly api_key: string
+  private readonly apiKey: string
   private readonly sendFrom: string
 
   constructor (
     private readonly settingsService: SettingsService,
     public configService: ConfigService
   ) {
-    this.api_key = this.configService.get<string>('SENDGRID_API_KEY') ?? ''
-    this.sendFrom = this.configService.get<string>('SENDGRID_SEND_FROM') ?? ''
-    sgMail.setApiKey(this.api_key)
+    this.apiKey = this.configService.get<string>('SENDGRID_API_KEY', '')
+    this.sendFrom = this.configService.get<string>('SENDGRID_SEND_FROM', '')
+    if (!this.isCertainlyInvalidApiKey()) {
+      sgMail.setApiKey(this.apiKey)
+    }
+  }
+
+  isCertainlyInvalidApiKey() {
+    return this.apiKey === '' || this.apiKey === 'SG.xxx'
   }
 
   /**
@@ -73,6 +79,11 @@ export class NotificationsService {
   }
 
   async sendEmail (to: string, template: string, data: any): Promise<Boolean> {
+    if (this.isCertainlyInvalidApiKey()) {
+      console.error('notificationService - sendEmail - api key not configured')
+      return false
+    }
+
     if (to === '' || template === '') {
       console.error('notificationService - sendEmail - param error', to, template)
       return false
