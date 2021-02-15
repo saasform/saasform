@@ -3,8 +3,8 @@
 import './store/store';
 import 'alpinejs';
 import { env } from './libs/utils/constants';
-import { initPageLoader } from './libs/components/pageloader';
-import { switchDemoImages, insertBgImages, initModals } from './libs/utils/utils';
+// import { initPageLoader } from './libs/components/pageloader';
+import { insertBgImages, initModals } from './libs/utils/utils';
 import { initNavbar } from './libs/components/navbar';
 import { initSidebar } from './libs/components/sidebar';
 import { initBackToTop } from './libs/components/backtotop';
@@ -14,22 +14,21 @@ window.initNavbar = initNavbar;
 window.initSidebar = initSidebar;
 window.initBackToTop = initBackToTop;
 
-const showPageloader = initPageLoader();
+// const showPageloader = initPageLoader();
 
 document.onreadystatechange = function () {
-    if (document.readyState == 'complete') {
+  if (document.readyState === 'complete') {
 
-        //Switch demo images
-        const changeImages = switchDemoImages(env);
+    //Switch demo images
+    // switchDemoImages(env);
 
-        //Switch backgrounds
-        const changeBackgrounds = insertBgImages();
+    //Switch backgrounds
+    insertBgImages();
 
-        //Feather Icons
-        const featherIcons = feather.replace();
-        
-        // Add modal windows
-        const modals = initModals();
-    }
+    //Feather Icons
+    feather.replace();
+
+    // Add modal windows
+    initModals();
+  }
 }
-

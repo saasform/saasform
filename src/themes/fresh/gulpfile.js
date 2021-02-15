@@ -1,20 +1,18 @@
-const { src, dest, task, watch, series, parallel } = require('gulp');
+const { src, dest, watch, series, parallel } = require('gulp');
 const del = require('del');
 const options = require("./config");
 const browserSync = require('browser-sync').create();
 
 const sass = require('gulp-sass');
 const bourbon = require('node-bourbon').includePaths;
-const postcss = require('gulp-postcss');
 const concat = require('gulp-concat');
-const uglify = require('gulp-uglify');
-const imagemin = require('gulp-imagemin');
-const cleanCSS = require('gulp-clean-css');
-const purgecss = require('gulp-purgecss');
+// const imagemin = require('gulp-imagemin');
+// const cleanCSS = require('gulp-clean-css');
+// const purgecss = require('gulp-purgecss');
 const sourcemaps = require('gulp-sourcemaps');
 const autoprefixer = require('gulp-autoprefixer');
 const rename = require("gulp-rename");
-const minify = require('gulp-minify-css');
+const minifyCSS = require('gulp-minify-css');
 const merge = require('merge-stream');
 const panini = require('panini');
 
@@ -49,7 +47,7 @@ function setupBulma() {
 }
 
 //Compile Sass code
-function compileSASS() {
+/*function compileSASS() {
   console.log("\n\t" + logSymbols.info, "Compiling Bulma Sass..\n");
   return src(['src/sass/bulma.sass'])
     .pipe(sass({
@@ -61,10 +59,10 @@ function compileSASS() {
     .pipe(autoprefixer('last 2 versions'))
     .pipe(dest('dist/assets/css'))
     .pipe(browserSync.stream());
-}
+}*/
 
 //Compile Scss code
-function compileSCSS() {
+function compileCSS() {
   console.log("\n\t" + logSymbols.info, "Compiling App SCSS..\n");
 
   const scssStream = src(['src/scss/main.scss'])
@@ -85,8 +83,9 @@ function compileSCSS() {
 
   return merge(scssStream, cssStream)
     .pipe(sourcemaps.init())
-    // .pipe(minify())
+    .pipe(minifyCSS())
     .pipe(autoprefixer('last 2 versions'))
+    .pipe(concat('bundle.css'))
     .pipe(concat('bundle.css'))
     .pipe(sourcemaps.write('./'))
     .pipe(dest('dist/assets/css'))
@@ -94,7 +93,7 @@ function compileSCSS() {
 }
 
 //Concat CSS Plugins
-function concatCssPlugins() {
+/*function concatCssPlugins() {
   console.log("\n\t" + logSymbols.info, "Compiling Plugin styles..\n");
   return src([
     nodepath + 'simplebar/dist/simplebar.min.css',
@@ -108,13 +107,13 @@ function concatCssPlugins() {
     .pipe(sourcemaps.write('./'))
     .pipe(dest('dist/assets/css'))
     .pipe(browserSync.stream());
-}
+}*/
 
 //Compile HTML partials with Panini
-function compileHTML() {
+/*function compileHTML() {
   console.log("\n\t" + logSymbols.info, "Compiling HTML..\n");
   panini.refresh();
-  return src('src/pages/**/*.html')
+  return src('src/pages/**\/*.html')
     .pipe(panini({
       root: 'src/pages/',
       layouts: 'src/layouts/',
@@ -124,7 +123,7 @@ function compileHTML() {
     }))
     .pipe(dest('dist'))
     .pipe(browserSync.stream());
-}
+}*/
 
 function compileLiquid() {
   console.log("\n\t" + logSymbols.info, "Compiling Liquid..\n");
@@ -162,9 +161,9 @@ function previewReload(done) {
 }
 
 //Development Tasks
-function devHTML() {
-  return src(`${options.paths.src.base}/**/*.html`).pipe(dest(options.paths.dist.base));
-}
+/*function devHTML() {
+  return src(`${options.paths.src.base}/**\/*.html`).pipe(dest(options.paths.dist.base));
+}*/
 
 //Optimize images
 function devImages() {
@@ -203,7 +202,7 @@ function watchFiles() {
   //watch('src/**/*.html', compileHTML);
   watch(`${options.paths.src.base}/**/*.html`, series(compileLiquid, previewReload));
   watch(`${options.paths.src.base}/data/*`, series(compileLiquid, previewReload));
-  watch(['src/scss/**/*', 'src/scss/*'], compileSCSS);
+  watch(['src/scss/**/*', 'src/scss/*'], compileCSS);
   watch(`${options.paths.src.js}/**/*.js`, series(javascriptBuild, previewReload));
   watch(`${options.paths.src.img}/**/*`, series(devImages, previewReload));
   console.log("\n\t" + logSymbols.info, "Watching for Changes..\n");
@@ -220,7 +219,7 @@ exports.setup = series(setupBulma);
 exports.default = series(
   devClean, // Clean Dist Folder
   resetPages,
-  parallel(compileSCSS, javascriptBuild, devImages, compileLiquid),
+  parallel(compileCSS, javascriptBuild, devImages, compileLiquid),
   livePreview, // Live Preview Build
   watchFiles // Watch for Live Changes
 );
