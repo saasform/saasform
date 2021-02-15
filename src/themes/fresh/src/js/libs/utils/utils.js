@@ -4,6 +4,7 @@ export function getUrlParams(param) {
   return urlParams.get(param);
 }
 
+/*
 export function switchDemoImages(environment) {
   if (environment === "development") {
     const targets = document.querySelectorAll("[data-demo-src]");
@@ -23,7 +24,7 @@ export function switchDemoImages(environment) {
       }
     }
   }
-}
+}*/
 
 export function insertBgImages() {
   const targets = document.querySelectorAll("[data-background]");
