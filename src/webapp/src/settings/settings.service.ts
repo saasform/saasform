@@ -171,7 +171,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     const { themeRoot, assetsRoot } = await this.getAssetsRoot()
     const settings = await this.getWebsiteSettings()
 
-    const htmlAsset: (string) => string = (asset: string) => (`${assetsRoot}/${asset}`)
+    const htmlAsset: (asset: string) => string = (asset: string) => (`${assetsRoot}/${asset}`)
 
     // TODO make better/with types
     const res = {
