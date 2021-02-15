@@ -188,6 +188,9 @@ export class SettingsService extends BaseService<SettingsEntity> {
       legalName: '',
       domainPrimary: '',
       email: '',
+      socialGithub: '',
+      socialTwitter: '',
+      socialLinkedin: '',
 
       // computed
       themeRoot: '',
@@ -272,6 +275,9 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'legal_name',
       'domain_primary',
       'email',
+      'social_github',
+      'social_twitter',
+      'social_linkedin',
       // home
       'home.hero_image',
       'home.hero_subtitle',
