@@ -24,9 +24,10 @@ export class PublicController {
 
     const pageData = {
       ...data,
+      csrfToken: req.csrfToken(),
       user
     }
 
-    return res.render(`${data.themeRoot as string}/index`, pageData)
+    return res.render(`${data.themeRoot as string}/index-sso`, pageData)
   }
 }
