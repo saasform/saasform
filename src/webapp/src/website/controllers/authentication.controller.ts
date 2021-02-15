@@ -59,12 +59,7 @@ export class AuthenticationController {
 
   @Post('/signup')
   async postSignup (@Request() req, @Res() res: Response): Promise<any> {
-    const { email, password, confirmation, account } = req.body
-
-    if (password !== confirmation) {
-      // TODO: redirect to error page
-      res.redirect('/error')
-    }
+    const { email, password, account } = req.body
 
     const user = await this.authService.registerUser(email, password, account)
     if (user == null) { // TODO: redirect to error page

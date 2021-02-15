@@ -20,3 +20,4 @@ socialLinkedin: "{{ socialLinkedin }}"
 # page
 pageTitle: "{{ pageTitle }}"
 pageBody: "{{ pageBody }}"
+csrfToken: "{{ csrfToken }}"

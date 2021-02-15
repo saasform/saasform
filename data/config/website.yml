@@ -7,6 +7,10 @@ social_github: https://github.com/saasform/saasform
 social_twitter: https://twitter.com/saasform
 social_linkedin: https://linkedin.com/company/saasform
 
+# google_analytics: UA_xxx
+# google_tag_manager:
+# facebook_pixel_id:
+
 home:
   hero_image: assets/img/illustrations/illustration-6.png
   hero_subtitle: Share your articles over and over, but keep them click-worthy with fresh images
