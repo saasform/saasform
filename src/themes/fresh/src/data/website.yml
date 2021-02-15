@@ -12,10 +12,10 @@ googleTagManagerBody: "{{ googleTagManagerBody }}"
 appDomain: "{{ appDomain }}"
 
 # footer
-legal_name: "{{ legal_name }}"
-social_github: "{{ social_github }}"
-social_twitter: "{{ social_twitter }}"
-social_linkedin: "{{ social_linkedin }}"
+legalName: "{{ legalName }}"
+socialGithub: "{{ socialGithub }}"
+socialTwitter: "{{ socialTwitter }}"
+socialLinkedin: "{{ socialLinkedin }}"
 
 # page
 pageTitle: "{{ pageTitle }}"
