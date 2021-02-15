@@ -1,6 +1,6 @@
 SAAS_REDIRECT_URL: http://localhost:3000
 SAASFORM_BASE_URL: http://localhost:7000
-
+SAASFORM_THEME: default
 
 TYPEORM_HOST: localhost
 TYPEORM_PORT: 3306

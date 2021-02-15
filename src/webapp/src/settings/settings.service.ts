@@ -162,7 +162,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
   }
 
   async getAssetsRoot (): Promise<{themeRoot: string, assetsRoot: string}> {
-    const themeRoot: string = this.req.tenantId ?? 'default'
+    const themeRoot: string = this.configService.get('SAASFORM_THEME', 'default')
     const assetsRoot: string = `/${themeRoot}`
     return { themeRoot, assetsRoot }
   }
