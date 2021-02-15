@@ -321,7 +321,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     res.userEmail = this.req?.user?.email ?? ''
     res.nameAndTitle = `${res.name} - ${res.title}`
 
-    res.googleTagManagerHeader = res.googleTagManager !== ''
+    res.googleTagManagerHeader = res.googleTagManager !== '' && !res.googleTagManager.endsWith('xxx')
       ? `
       <!-- Google Tag Manager -->
       <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -332,7 +332,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       <!-- End Google Tag Manager -->
     `
       : ''
-    res.googleTagManagerBody = res.googleTagManager !== ''
+    res.googleTagManagerBody = res.googleTagManager !== '' && !res.googleTagManager.endsWith('xxx')
       ? `
       <!-- Google Tag Manager (noscript) -->
       <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${res.googleTagManager}"
@@ -340,7 +340,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       <!-- End Google Tag Manager (noscript) -->
     `
       : ''
-    res.googleAnalyticsCode = res.googleAnalytics !== ''
+    res.googleAnalyticsCode = res.googleAnalytics !== '' && !res.googleAnalytics.endsWith('xxx')
       ? `
       <!-- Global site tag (gtag.js) - Google Analytics -->
       <script async src="https://www.googletagmanager.com/gtag/js?id=${res.googleAnalytics}"></script>
@@ -353,7 +353,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       </script>
     `
       : ''
-    res.facebookPixelCode = res.facebookPixelId !== ''
+    res.facebookPixelCode = res.facebookPixelId !== '' && !res.facebookPixelId.endsWith('xxx')
       ? `
       <!-- Facebook Pixel Code -->
       <script>
