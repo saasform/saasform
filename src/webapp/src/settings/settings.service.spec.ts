@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { SettingsService, htmlEncode, htmlAsset, mergeAll } from './settings.service'
+import { SettingsService, htmlEncode, mergeAll } from './settings.service'
 
 import { SettingsEntity } from './settings.entity'
 import { getRepositoryToken } from '@nestjs/typeorm'
@@ -134,10 +134,6 @@ describe('SettingsService (aux functions)', () => {
     expect(htmlEncode('hello world')).toEqual('hello world')
     expect(htmlEncode('hello <world>')).toEqual('hello &lt;world&gt;')
     expect(htmlEncode('hello &lt;world&gt;')).toEqual('hello &lt;world&gt;')
-  })
-
-  it('htmlAsset', () => {
-    expect(htmlAsset('/assets', 'one-asset')).toEqual('/assets/one-asset')
   })
 
   it('mergeAll', () => {

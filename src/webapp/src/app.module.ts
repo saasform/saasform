@@ -14,14 +14,17 @@ import { readFileSync } from 'fs'
 import * as yaml from 'js-yaml'
 import { join } from 'path'
 
-const config = (): any => yaml.load(
+const configSaasform = (): any => yaml.load(
   readFileSync(join(__dirname, '..', 'config', 'saasform.yml'), 'utf8')
+)
+const configWebsite = (): any => yaml.load(
+  readFileSync(join(__dirname, '..', 'config', 'website.yml'), 'utf8')
 )
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [config],
+      load: [configSaasform, configWebsite],
       isGlobal: true
     }),
     TypeOrmModule.forRootAsync({
