@@ -7,8 +7,14 @@ assignees: ''
 
 ---
 
-As a <persona>
+**As a...**
 
-I want to <do something>
+_persona_
 
-In order to <receive benefit>
+**I want to...**
+
+_do something_
+
+**So that...**
+
+_benefit_
