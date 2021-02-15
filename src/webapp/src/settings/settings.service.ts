@@ -1,3 +1,4 @@
+import { _ } from 'lodash'
 import { REQUEST } from '@nestjs/core'
 import { Injectable, Scope, Inject } from '@nestjs/common'
 import { QueryService } from '@nestjs-query/core'
@@ -40,10 +41,6 @@ export function escapeOnce (str: string): string {
 
 export function htmlEncode (s: string): string {
   return s != null && s !== '' ? escapeOnce(s) : ''
-}
-
-export function htmlAsset (assetsRoot: string, asset: string): string {
-  return `${assetsRoot}/${asset}`
 }
 
 export function mergeAll (entity: SettingsEntity, update): SettingsEntity {
@@ -164,9 +161,9 @@ export class SettingsService extends BaseService<SettingsEntity> {
     return '/'
   }
 
-  async getAssetsRoot (): Promise<any> {
-    const themeRoot = this.req.tenantId ?? 'default'
-    const assetsRoot = `/${themeRoot as string}`
+  async getAssetsRoot (): Promise<{themeRoot: string, assetsRoot: string}> {
+    const themeRoot: string = this.req.tenantId ?? 'default'
+    const assetsRoot: string = `/${themeRoot}`
     return { themeRoot, assetsRoot }
   }
 
@@ -174,56 +171,183 @@ export class SettingsService extends BaseService<SettingsEntity> {
     const { themeRoot, assetsRoot } = await this.getAssetsRoot()
     const settings = await this.getWebsiteSettings()
 
-    const name = htmlEncode(settings.name)
-    const title = htmlEncode(settings.title)
-    const nameAndTitle = `${name} - ${title}`
-    const description = htmlEncode(settings.description)
-    const prelaunchEnabled = !!settings.prelaunch_enabled
-    const prelaunchHidePoweredby = !!settings.prelaunch_hide_poweredby || (this.req.headers != null && this.req.headers['x-tenant-name'] === 'saasform')
-    const prelaunchCleartextPassword = htmlEncode(settings.prelaunch_cleartext_password)
-    const prelaunchMessage = htmlEncode(settings.prelaunch_message)
-    const prelaunchBackground = htmlEncode(settings.prelaunch_background)
-    const googleAnalytics = htmlEncode(settings.google_analytics)
-    const googleTagManager = htmlEncode(settings.google_tag_manager)
-    const facebookPixelId = htmlEncode(settings.facebook_pixel_id)
-    const legalName = htmlEncode(settings.legal_name)
-    const domainPrimary = htmlEncode(settings.domain_primary)
-    const email = htmlEncode(settings.email)
+    const htmlAsset: (string) => string = (asset: string) => (`${assetsRoot}/${asset}`)
 
-    const googleTagManagerHeader = googleTagManager != null
+    // TODO make better/with types
+    const res = {
+      name: '',
+      title: '',
+      description: '',
+      prelaunchEnabled: '',
+      prelaunchCleartextPassword: '',
+      prelaunchMessage: '',
+      prelaunchBackground: '',
+      googleAnalytics: '',
+      googleTagManager: '',
+      facebookPixelId: '',
+      legalName: '',
+      domainPrimary: '',
+      email: '',
+
+      // computed
+      themeRoot: '',
+      assetsRoot: '',
+      appDomain: '',
+      userEmail: '',
+      nameAndTitle: '',
+
+      googleAnalyticsCode: '',
+      googleTagManagerHeader: '',
+      googleTagManagerBody: '',
+      facebookPixelCode: '',
+
+      // home
+      home: {
+        heroImage: '',
+        heroSubtitle: '',
+        heroCta: '',
+        benefits: [
+          {
+            icon: '',
+            title: '',
+            text: ''
+          }
+        ],
+        logos: [
+          {
+            name: '',
+            image: ''
+          }
+        ],
+        product: [
+          {
+            title: '',
+            text: '',
+            image: ''
+          }
+        ],
+        testimonials: {
+          title: '',
+          text: '',
+          quotes: [
+            {
+              name: '',
+              photo: '',
+              quote: ''
+            }
+          ]
+        },
+        pricing: {
+          title: '',
+          text: '',
+          plans: [
+          ]
+        },
+        faq: [
+          {
+            question: '',
+            answer: ''
+          }
+        ],
+        cta: {
+          badge: '',
+          title: '',
+          text: '',
+          button: ''
+        }
+      }
+    }
+
+    const paths = [
+      'name',
+      'title',
+      'description',
+      'prelaunch_enabled',
+      'prelaunch_cleartext_password',
+      'prelaunch_message',
+      'prelaunch_background',
+      'google_analytics',
+      'google_tag_manager',
+      'facebook_pixel_id',
+      'legal_name',
+      'domain_primary',
+      'email',
+      // home
+      'home.hero_image',
+      'home.hero_subtitle',
+      'home.hero_cta',
+      'home.testimonials.title',
+      'home.testimonials.text',
+      'home.pricing.title',
+      'home.pricing.text',
+      'home.cta.badge',
+      'home.cta.title',
+      'home.cta.text',
+      'home.cta.button'
+    ]
+    for (const key of paths) {
+      const camelKey = key.split('.').map(_.camelCase).join('.')
+      const finalFunc = (key.endsWith('icon') || key.endsWith('image') || key.endsWith('photo')) ? htmlAsset : htmlEncode
+
+      const value = _.get(settings, key) ?? this.configService.get(key, '')
+
+      _.set(res, camelKey, finalFunc(value))
+    }
+
+    const arrayPaths = [
+      'home.benefits',
+      'home.logos',
+      'home.testimonials.quotes',
+      'home.pricing.plans',
+      'home.faq'
+    ]
+    for (const key of arrayPaths) {
+      const camelKey = key.split('.').map(_.camelCase).join('.')
+      const arrayFromSettings = _.get(settings, key) ?? []
+      const arrayFromConfig = this.configService.get(key, [])
+      const arrayValue = arrayFromSettings.length > 0 ? arrayFromSettings : arrayFromConfig
+      _.set(res, camelKey, arrayValue)
+    }
+
+    res.themeRoot = themeRoot
+    res.assetsRoot = assetsRoot
+    res.appDomain = await this.getRedirectAfterLogin(settings)
+    res.userEmail = this.req?.user?.email ?? ''
+    res.nameAndTitle = `${res.name} - ${res.title}`
+
+    res.googleTagManagerHeader = res.googleTagManager !== ''
       ? `
       <!-- Google Tag Manager -->
       <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
       new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
       j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','${googleTagManager}');</script>
+      })(window,document,'script','dataLayer','${res.googleTagManager}');</script>
       <!-- End Google Tag Manager -->
     `
-      : null
-    const googleTagManagerBody = googleTagManager != null
+      : ''
+    res.googleTagManagerBody = res.googleTagManager !== ''
       ? `
       <!-- Google Tag Manager (noscript) -->
-      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${googleTagManager}"
+      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${res.googleTagManager}"
       height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <!-- End Google Tag Manager (noscript) -->
     `
-      : null
-    const googleAnalyticsCode = googleAnalytics != null
+      : ''
+    res.googleAnalyticsCode = res.googleAnalytics !== ''
       ? `
       <!-- Global site tag (gtag.js) - Google Analytics -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id=${googleAnalytics}"></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=${res.googleAnalytics}"></script>
       <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
-        gtag('config', '${googleAnalytics}');
+        gtag('config', '${res.googleAnalytics}');
       </script>
     `
-      : null
-
-    const facebookPixelCode = facebookPixelId != null
+      : ''
+    res.facebookPixelCode = res.facebookPixelId !== ''
       ? `
       <!-- Facebook Pixel Code -->
       <script>
@@ -235,147 +359,16 @@ export class SettingsService extends BaseService<SettingsEntity> {
         t.src=v;s=b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '${facebookPixelId}');
+        fbq('init', '${res.facebookPixelId}');
         fbq('track', 'PageView');
       </script>
       <noscript><img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=${facebookPixelId}&ev=PageView&noscript=1"
+        src="https://www.facebook.com/tr?id=${res.facebookPixelId}&ev=PageView&noscript=1"
       /></noscript>
       <!-- End Facebook Pixel Code -->
     `
-      : null
+      : ''
 
-    const appDomain = this.getRedirectAfterLogin(settings)
-
-    const userEmail = this.req?.user?.email ?? ''
-
-    const home = {
-      hero_image: htmlAsset(assetsRoot, 'assets/img/illustrations/illustration-6.png'),
-      hero_subtitle: 'Share your articles over and over, but keep them click-worthy with fresh images',
-      hero_cta: 'Get started now',
-      benefits: [
-        {
-          icon: htmlAsset(assetsRoot, 'assets/img/icons/duotone-icons/General/Star.svg'),
-          title: 'Drive more pageviews',
-          text: 'MultiPreview supports your marketing goals. Share articles continuously to amplify reach, but swap out images to appeal and entice'
-        },
-        {
-          icon: htmlAsset(assetsRoot, 'assets/img/icons/duotone-icons/Weather/Rainbow.svg'),
-          title: 'Keep your feed original',
-          text: 'MultiPreview helps you plan a diversified feed. Repurpose an article by highlighting different quotes or callouts, or choose a new preview'
-        },
-        {
-          icon: htmlAsset(assetsRoot, 'assets/img/icons/duotone-icons/General/Heart.svg'),
-          title: 'Make it matter',
-          text: 'MultiPreview adds a new dimension to content sharing. What would you do if you could replace images every time you share an article?'
-        }
-      ],
-      logos: [
-        {
-          name: 'Twitter',
-          image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/twitter.svg')
-        },
-        {
-          name: 'Facebook',
-          image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/facebook.svg')
-        },
-        {
-          name: 'Pinterest',
-          image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/pinterest.svg')
-        },
-        {
-          name: 'LinkedIn',
-          image: htmlAsset(assetsRoot, 'assets/img/brands/logotype/linkedin.svg')
-        }
-      ],
-      product: [
-        {
-          title: 'Load the article you want to share',
-          text: 'Add the link of an article you want to share. MultiPreview is platform agnostic and works with any article, blog post or web page. Medium, Wordpress, Ghost, Substack... you name it. All you need to start is the link of your article',
-          image: htmlAsset(assetsRoot, 'assets/img/illustrations/illustration-4.png')
-        },
-        {
-          title: 'Add multiple images and create magic links',
-          text: 'Now add a collection of images that will make your article pop. MultiPreview creates a magic link for every image you add. Drag and drop or copy and paste the link to any visuals you\'d like - quotes, photos, and more. It\'s ultra fast!',
-          image: htmlAsset(assetsRoot, 'assets/img/illustrations/illustration-9.png'),
-          position: 'left'
-        },
-        {
-          title: 'Et voilà! Just share your magic links',
-          text: 'Post your magic links on Twitter, Facebook, Linkedin... Magic links expand in your feed with the image you chose. Even if you share the same article over and over to get more pageviews, the image will always be different. Your feed will look original and won\'t bore your readers',
-          image: htmlAsset(assetsRoot, 'assets/img/illustrations/illustration-3.png')
-        }
-      ],
-      testimonials: {
-        title: 'Our customers are our biggest fans',
-        text: 'We don\'t like to brag, but we don\t mind letting our customers do it for us. Here are a few nice things people are saying',
-        quotes: [
-          {
-            name: 'Megan Groves',
-            photo: 'https://pbs.twimg.com/profile_images/1041757865617252352/dAljhozX_400x400.jpg',
-            quote: 'We recommend our clients write evergreen content and then repost it multiple times to drive better traffic. Finally we have a tool that lets us do this while keeping social feeds looking FRESH and ORIGINAL!'
-          },
-          {
-            name: 'Nicolò Ungari',
-            photo: 'https://pbs.twimg.com/profile_images/506581638348697600/uroKAbOb_400x400.jpeg',
-            quote: 'When I see a Twitter feed with the same image over and over again, I laugh :) Then I think back to my own feed before MultiPreview. It was pretty rough. I can\'t recommend this enough!'
-          }
-        ]
-      },
-      pricing: {
-        title: 'Fair, simple pricing',
-        text: null,
-        plans: []
-      },
-      faq: [
-        {
-          question: 'Can I use MultiPreview for my clients?',
-          answer: 'Absolutely, share as many articles across as many accounts as you\'d like.'
-        },
-        {
-          question: 'Can I add team members?',
-          answer: 'Not yet, but we\'re adding support soon.'
-        },
-        {
-          question: 'Is there a money back guarantee?',
-          answer: 'Yes, if you\'re not totally satisfied with MultiPreview, let us know and we\'ll send over a refund.'
-        },
-        {
-          question: 'Is there a free trial?',
-          answer: 'Yes, all plans include a free trial.'
-        }
-      ],
-      cta: {
-        badge: 'Get started',
-        title: 'Get MultiPreview now!',
-        text: 'Share your articles over and over, but keep them click-worthy with fresh images',
-        button: 'Get started for free'
-      }
-    }
-
-    return {
-      themeRoot,
-      assetsRoot,
-      name,
-      title,
-      nameAndTitle,
-      description,
-      prelaunchEnabled,
-      prelaunchHidePoweredby,
-      prelaunchCleartextPassword,
-      prelaunchMessage,
-      prelaunchBackground,
-      googleAnalyticsCode,
-      googleTagManagerHeader,
-      googleTagManagerBody,
-      facebookPixelCode,
-      userEmail,
-      appDomain,
-      legalName,
-      domainPrimary,
-      email,
-
-      home
-    }
+    return res
   }
 }
