@@ -2,7 +2,7 @@
 
 import './store/store';
 import 'alpinejs';
-import { env } from './libs/utils/constants';
+// import { env } from './libs/utils/constants';
 // import { initPageLoader } from './libs/components/pageloader';
 import { insertBgImages, initModals } from './libs/utils/utils';
 import { initNavbar } from './libs/components/navbar';
