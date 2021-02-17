@@ -268,6 +268,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       root_theme: '',
       saas_redirect_url: '',
       user_email: '',
+      user_email_verified: '',
 
       html_google_analytics: '',
       html_google_tag_manager_header: '',
@@ -368,6 +369,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     res.root_assets = assetsRoot
     res.saas_redirect_url = redirectAfterLogin
     res.user_email = this.req?.user?.email ?? ''
+    res.user_email_verified = this.req?.user?.user_email_verified ?? false
 
     res.html_google_tag_manager_header = res.app_google_tag_manager !== '' && !res.app_google_tag_manager.endsWith('xxx')
       ? `
