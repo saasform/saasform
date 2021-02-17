@@ -4436,27 +4436,6 @@ function initNavbar() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.initPageLoader = initPageLoader;
-
-function initPageLoader() {
-  window.addEventListener('load', function () {
-    var pageloader = document.getElementById('pageloader');
-    var infraloader = document.getElementById('infraloader');
-    pageloader.classList.toggle('is-active');
-    var pageloaderTimeout = setTimeout(function () {
-      infraloader.classList.remove('is-active');
-      pageloader.classList.toggle('is-active');
-      clearTimeout(pageloaderTimeout);
-    }, 1200);
-  });
-}
-
-},{}],7:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.initSidebar = initSidebar;
 
 function initSidebar() {
@@ -4477,171 +4456,13 @@ function initSidebar() {
   };
 }
 
-},{}],8:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.demoData = exports.themeColors = exports.env = void 0;
-var env = 'development';
-exports.env = env;
-var themeColors = {
-  primary: '#00d1b2',
-  secondary: '#00d1b2',
-  accent: '#797bf2',
-  success: '#06d6a0',
-  info: '#039BE5',
-  warning: '#faae42',
-  danger: '#FF7273',
-  purple: '#8269B2',
-  blue: '#37C3FF',
-  green: '#93E088',
-  lightGreen: '#63ebc6',
-  yellow: '#FFD66E',
-  orange: '#FFA981',
-  lightText: '#a2a5b9',
-  fadeGrey: '#ededed',
-  chartGrey: '#B0BDC4'
-};
-exports.themeColors = themeColors;
-var demoData = [{
-  "type": "user",
-  "title": "Helen Miller",
-  "content": "Los Angeles",
-  "photoUrl": "/img/avatars/helen.jpg",
-  "color": null
-}, {
-  "type": "user",
-  "title": "Shane Black",
-  "content": "Los Angeles",
-  "photoUrl": null,
-  "color": "#7F00FF"
-}, {
-  "type": "user",
-  "title": "Daniella Walters",
-  "content": "San Francisco",
-  "photoUrl": null,
-  "color": "#00D1B2"
-}, {
-  "type": "user",
-  "title": "Elie Daniels",
-  "content": "Dublin",
-  "photoUrl": "/img/avatars/elie.jpg",
-  "color": null
-}, {
-  "type": "user",
-  "title": "Terry Daniels",
-  "content": "New York",
-  "photoUrl": "/img/avatars/terry.jpg",
-  "color": null
-}, {
-  "type": "user",
-  "title": "Alex Walsh",
-  "content": "Irvine",
-  "photoUrl": "/img/avatars/alex.jpg",
-  "color": null
-}, {
-  "type": "user",
-  "title": "Adam Klinsky",
-  "content": "Seattle",
-  "photoUrl": "/img/avatars/eric.png",
-  "color": null
-}, {
-  "type": "user",
-  "title": "Christina Song",
-  "content": "Mystic Falls",
-  "photoUrl": "/img/avatars/christina.jpg",
-  "color": null
-}, {
-  "type": "user",
-  "title": "Barry Smithers",
-  "content": "Miami",
-  "photoUrl": "/img/avatars/barry.jpg",
-  "color": null
-}, {
-  "type": "user",
-  "title": "Sally Mitchells",
-  "content": "San Francisco",
-  "photoUrl": "/img/avatars/sally.jpg",
-  "color": null
-}, {
-  "type": "file",
-  "title": "INV-49465",
-  "content": "Pending invoice",
-  "photoUrl": "/img/icons/search/1.svg",
-  "color": null
-}, {
-  "type": "file",
-  "title": "INV-49789",
-  "content": "Pending invoice",
-  "photoUrl": "/img/icons/search/1.svg",
-  "color": null
-}, {
-  "type": "transaction",
-  "title": "TR-8066",
-  "content": "Transaction amount: + $874.99",
-  "photoUrl": "/img/icons/search/2.svg",
-  "color": null
-}, {
-  "type": "transaction",
-  "title": "TR-8067",
-  "content": "Transaction amount: + $1042.99",
-  "photoUrl": "/img/icons/search/2.svg",
-  "color": null
-}, {
-  "type": "transaction",
-  "title": "TR-9078",
-  "content": "Transaction amount: - $2500.00",
-  "photoUrl": "/img/icons/search/2.svg",
-  "color": null
-}, {
-  "type": "transaction",
-  "title": "TR-8066",
-  "content": "Transaction amount: - $139.99",
-  "photoUrl": "/img/icons/search/2.svg",
-  "color": null
-}, {
-  "type": "company",
-  "title": "Airbnb",
-  "content": "Company",
-  "photoUrl": "/img/logo/companies/airbnb.svg",
-  "color": null
-}, {
-  "type": "company",
-  "title": "Tesla",
-  "content": "Company",
-  "photoUrl": "/img/logo/companies/tesla.svg",
-  "color": null
-}, {
-  "type": "company",
-  "title": "Alfresco",
-  "content": "Company",
-  "photoUrl": "/img/logo/companies/alfresco.svg",
-  "color": null
-}, {
-  "type": "company",
-  "title": "H&M",
-  "content": "Company",
-  "photoUrl": "/img/logo/companies/hm.svg",
-  "color": null
-}, {
-  "type": "company",
-  "title": "Amazon",
-  "content": "Company",
-  "photoUrl": "/img/logo/companies/amazon.svg",
-  "color": null
-}];
-exports.demoData = demoData;
-
-},{}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getUrlParams = getUrlParams;
-exports.switchDemoImages = switchDemoImages;
 exports.insertBgImages = insertBgImages;
 exports.initModals = initModals;
 
@@ -4650,27 +4471,28 @@ function getUrlParams(param) {
   var urlParams = new URLSearchParams(queryString);
   return urlParams.get(param);
 }
-
-function switchDemoImages(environment) {
+/*
+export function switchDemoImages(environment) {
   if (environment === "development") {
-    var targets = document.querySelectorAll("[data-demo-src]");
-    var bgTargets = document.querySelectorAll("[data-demo-background]");
+    const targets = document.querySelectorAll("[data-demo-src]");
+    const bgTargets = document.querySelectorAll("[data-demo-background]");
 
     if (typeof targets != "undefined" && targets != null) {
       for (var i = 0, len = targets.length; i < len; i++) {
-        var demoUrl = targets[i].getAttribute("data-demo-src");
+        let demoUrl = targets[i].getAttribute("data-demo-src");
         targets[i].setAttribute("src", demoUrl);
       }
     }
 
     if (typeof bgTargets != "undefined" && bgTargets != null) {
       for (var i = 0, len = bgTargets.length; i < len; i++) {
-        var demoBgUrl = bgTargets[i].getAttribute("data-demo-background");
+        let demoBgUrl = bgTargets[i].getAttribute("data-demo-background");
         bgTargets[i].setAttribute("data-background", demoBgUrl);
       }
     }
   }
-}
+}*/
+
 
 function insertBgImages() {
   var targets = document.querySelectorAll("[data-background]");
@@ -4727,16 +4549,12 @@ function initModals() {
   });
 }
 
-},{}],10:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 require("./store/store");
 
 require("alpinejs");
-
-var _constants = require("./libs/utils/constants");
-
-var _pageloader = require("./libs/components/pageloader");
 
 var _utils = require("./libs/utils/utils");
 
@@ -4746,27 +4564,28 @@ var _sidebar = require("./libs/components/sidebar");
 
 var _backtotop = require("./libs/components/backtotop");
 
+// import { env } from './libs/utils/constants';
+// import { initPageLoader } from './libs/components/pageloader';
 var feather = require('feather-icons');
 
 window.initNavbar = _navbar.initNavbar;
 window.initSidebar = _sidebar.initSidebar;
-window.initBackToTop = _backtotop.initBackToTop;
-var showPageloader = (0, _pageloader.initPageLoader)();
+window.initBackToTop = _backtotop.initBackToTop; // const showPageloader = initPageLoader();
 
 document.onreadystatechange = function () {
-  if (document.readyState == 'complete') {
+  if (document.readyState === 'complete') {
     //Switch demo images
-    var changeImages = (0, _utils.switchDemoImages)(_constants.env); //Switch backgrounds
+    // switchDemoImages(env);
+    //Switch backgrounds
+    (0, _utils.insertBgImages)(); //Feather Icons
 
-    var changeBackgrounds = (0, _utils.insertBgImages)(); //Feather Icons
+    feather.replace(); // Add modal windows
 
-    var featherIcons = feather.replace(); // Add modal windows
-
-    var modals = (0, _utils.initModals)();
+    (0, _utils.initModals)();
   }
 };
 
-},{"./libs/components/backtotop":4,"./libs/components/navbar":5,"./libs/components/pageloader":6,"./libs/components/sidebar":7,"./libs/utils/constants":8,"./libs/utils/utils":9,"./store/store":11,"alpinejs":2,"feather-icons":3}],11:[function(require,module,exports){
+},{"./libs/components/backtotop":4,"./libs/components/navbar":5,"./libs/components/sidebar":6,"./libs/utils/utils":7,"./store/store":9,"alpinejs":2,"feather-icons":3}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4782,4 +4601,4 @@ Spruce.store('app', {
 var _default = Spruce;
 exports["default"] = _default;
 
-},{"@ryangjchandler/spruce":1}]},{},[10]);
+},{"@ryangjchandler/spruce":1}]},{},[8]);

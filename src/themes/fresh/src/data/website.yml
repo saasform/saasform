@@ -1,23 +1,94 @@
 # layout
 name: "{{ name }}"
 title: "{{ title | formatDot }}"
-nameAndTitle: "{{ nameAndTitle }}"
 description: "{{ description }}"
-googleTagManagerHeader: "{{ googleTagManagerHeader }}"
-googleAnalyticsCode: "{{ googleAnalyticsCode }}"
-facebookPixelCode: "{{ facebookPixelCode }}"
-googleTagManagerBody: "{{ googleTagManagerBody }}"
-
-# navbar
-appDomain: "{{ appDomain }}"
+domain_primary: "{{ domain_primary }}"
+email: "{{ email }}"
+logo_url: "{{ logo_url }}"
 
 # footer
-legalName: "{{ legalName }}"
-socialGithub: "{{ socialGithub }}"
-socialTwitter: "{{ socialTwitter }}"
-socialLinkedin: "{{ socialLinkedin }}"
+legal_company_name: "{{ legal_company_name }}"
+social_github: "{{ social_github }}"
+social_twitter: "{{ social_twitter }}"
+social_linkedin: "{{ social_linkedin }}"
+
+# seo
+seo_fb_app_id: "{{ seo_fb_app_id }}"
+seo_title: "{{ seo_title }}"
+seo_description: "{{ seo_description }}"
+seo_og_url: "{{ seo_og_url }}"
+seo_og_title: "{{ seo_og_title }}"
+seo_og_description: "{{ seo_og_description }}"
+seo_og_image_url: "{{ seo_og_image_url }}"
+seo_twitter_title: "{{ seo_twitter_title }}"
+seo_twitter_description: "{{ seo_twitter_description }}"
+seo_twitter_image_url: "{{ seo_twitter_image_url }}"
+
+# computed
+saas_redirect_url: "{{ saas_redirect_url }}"
+user_email: "{{ user_email }}"
+html_google_analytics: "{{ html_google_analytics }}"
+html_google_tag_manager_header: "{{ html_google_tag_manager_header }}"
+html_google_tag_manager_body: "{{ html_google_tag_manager_body }}"
+html_facebook_pixel: "{{ html_facebook_pixel }}"
+csrf_token: "{{ csrf_token }}"
 
 # page
-pageTitle: "{{ pageTitle }}"
-pageBody: "{{ pageBody }}"
-csrfToken: "{{ csrfToken }}"
+page_title: "{{ page_title }}"
+page_body: "{{ page_body }}"
+legal_website_url: "{{ legal_website_url }}"
+legal_email: "{{ legal_email }}"
+
+# home
+hero_subtitle: "{{ hero_subtitle | formatNoOrphanDot }}"
+hero_cta: "{{ hero_cta }}"
+hero_image_url: "{{ hero_image_url }}"
+# benefits: [
+#   {
+#     icon: "
+#     title: "
+#     text: "
+#   }
+# ],
+# logos: [
+#   {
+#     name: "
+#     image_url: "
+#   }
+# ],
+# features: [
+#   {
+#     title: "
+#     text: "
+#     image_url: "
+#   }
+# ],
+# testimonials_title: "
+# testimonials_text: "
+# testimonials: [
+#   {
+#     name: "
+#     image_url: "
+#     quote: "
+#   }
+# ],
+# pricing_title: "
+# pricing_text: "
+# pricing_plans: [
+# ],
+# faq: [
+#   {
+#     title: "
+#     text: "
+#   }
+# ],
+# cta_badge: "
+# cta_title: "
+# cta_text: "
+# cta_button: "
+
+# prelaunch page, if enabled
+prelaunch_enabled: "{{ prelaunch_enabled }}"
+prelaunch_cleartext_password: "{{ prelaunch_cleartext_password }}"
+prelaunch_message: "{{ prelaunch_message }}"
+prelaunch_background_url: "{{ prelaunch_background_url }}"

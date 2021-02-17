@@ -4,31 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>{{ nameAndTitle }}</title>
-  <meta name="description" content="{{ description }}">
+  <title>{{ seo_title }}</title>
+  <meta name="description" content="{{ seo_description }}">
   <meta name="keywords" content="">
   <meta name="author" content="">
-  {{ googleTagManagerHeader }}
-  {{ googleAnalyticsCode }}
-  {{ facebookPixelCode }}
+  {{ html_google_tag_manager_header }}
+  {{ html_google_analytics }}
+  {{ html_facebook_pixel }}
 
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-  <link rel="stylesheet" href="{{ assetsRoot }}/assets/css/bundle.css">
-  <link rel="icon" type="image/png" href="{{ assetsRoot }}/assets/img/favicon.png" />
+  <link rel="stylesheet" href="{{ root_assets }}/assets/css/bundle.css">
+  <link rel="icon" type="image/png" href="{{ root_assets }}/assets/img/favicon.png" />
 </head>
 <body>
-  {{ googleTagManagerBody }}
+  {{ html_google_tag_manager_body }}
 
   <nav x-data="initNavbar()" class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
     <div class="container">
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
           <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ name }}</h2>
-          <!--img src="{{ assetsRoot }}/img/logo/logo.svg" alt="" width="112" height="28"-->
+          <!--img src="{{ root_assets }}/img/logo/logo.svg" alt="" width="112" height="28"-->
         </a>
         <div class="navbar-burger" @click="openMobileMenu()">
           <span class="menu-toggle">
@@ -60,8 +60,8 @@
           </a>
         </div>
         <div class="navbar-end">
-          {% if userEmail != "" %}
-          <a href="{{ appDomain }}" class="navbar-item is-primary">
+          {% if user_email != "" %}
+          <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
             Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
           </a>
           {% else %}
@@ -86,7 +86,7 @@
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
           <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ name }}</h2>
-          <!--img src="{{ assetsRoot }}/img/logo/logo.svg" alt="" width="112" height="28"-->
+          <!--img src="{{ root_assets }}/img/logo/logo.svg" alt="" width="112" height="28"-->
         </a>
         <div class="navbar-burger" @click="openMobileMenu()">
           <span class="menu-toggle">
@@ -118,8 +118,8 @@
           </a>
         </div>
         <div class="navbar-end">
-          {% if userEmail != "" %}
-          <a href="{{ appDomain }}" class="navbar-item is-primary">
+          {% if user_email != "" %}
+          <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
             Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
           </a>
           {% else %}
@@ -140,9 +140,9 @@
   <section class="section">
     <div class="container content">
       <h1 class="title">
-        {{ pageTitle }}
+        {{ page_title }}
       </h1>
-      {{ pageBody }}
+      {{ page_body }}
     </div>
   </section>
   
@@ -152,9 +152,9 @@
         <div class="column">
           <div class="footer-logo">
             <h2 class="is-size-4 has-text-weight-semibold">{{ name }}</h2>
-            <!--img src="{{ assetsRoot }}/img/logo/logo.svg"-->
+            <!--img src="{{ root_assets }}/img/logo/logo.svg"-->
           </div>
-          &copy; 2020 {{ legalName }}
+          &copy; 2020 {{ legal_company_name }}
         </div>
         <div class="column">
           <div class="footer-column">
@@ -170,20 +170,20 @@
         <div class="column">
           <div class="footer-column">
             <div class="footer-header">
-              <h3>Follow Us</h3>
+              <h3>Follow us</h3>
               <nav class="level is-mobile">
                 <div class="level-left">
-                  <a class="level-item" href="{{ socialGithub }}">
+                  <a class="level-item" href="{{ social_github }}">
                     <span class="icon">
                       <ion-icon name="logo-github" size="large"></ion-icon>
                     </span>
                   </a>
-                  <a class="level-item" href="{{ socialTwitter }}">
+                  <a class="level-item" href="{{ social_twitter }}">
                     <span class="icon">
                       <ion-icon name="logo-twitter" size="large"></ion-icon>
                     </span>
                   </a>
-                  <a class="level-item" href="{{ socialLinkedin }}">
+                  <a class="level-item" href="{{ social_linkedin }}">
                     <span class="icon">
                       <ion-icon name="logo-linkedin" size="large"></ion-icon>
                     </span>
@@ -198,6 +198,6 @@
   </footer>
 
   <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
-  <script src="{{ assetsRoot }}/assets/js/bundle.js"></script>
+  <script src="{{ root_assets }}/assets/js/bundle.js"></script>
 </body>
 </html>

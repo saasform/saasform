@@ -4,24 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>{{ nameAndTitle }}</title>
-  <meta name="description" content="{{ description }}">
+  <title>{{ seo_title }}</title>
+  <meta name="description" content="{{ seo_description }}">
   <meta name="keywords" content="">
   <meta name="author" content="">
-  {{ googleTagManagerHeader }}
-  {{ googleAnalyticsCode }}
-  {{ facebookPixelCode }}
+  {{ html_google_tag_manager_header }}
+  {{ html_google_analytics }}
+  {{ html_facebook_pixel }}
 
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-  <link rel="stylesheet" href="{{ assetsRoot }}/assets/css/bundle.css">
-  <link rel="icon" type="image/png" href="{{ assetsRoot }}/assets/img/favicon.png" />
+  <link rel="stylesheet" href="{{ root_assets }}/assets/css/bundle.css">
+  <link rel="icon" type="image/png" href="{{ root_assets }}/assets/img/favicon.png" />
 </head>
 <body>
-  {{ googleTagManagerBody }}
+  {{ html_google_tag_manager_body }}
 
   <section class="hero is-fullheight">
     <div class="hero-body">
@@ -71,7 +71,7 @@
             </div>
   
             <!-- Submit -->
-            <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
             <div class="field">
               <div class="control">
                 <button class="button is-primary is-fullwidth" type="submit">Sign in</button>
@@ -106,6 +106,6 @@
   
 
   <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
-  <script src="{{ assetsRoot }}/assets/js/bundle.js"></script>
+  <script src="{{ root_assets }}/assets/js/bundle.js"></script>
 </body>
 </html>

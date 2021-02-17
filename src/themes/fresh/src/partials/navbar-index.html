@@ -34,8 +34,8 @@
       </a>
     </div>
     <div class="navbar-end">
-      {% if userEmail != "" %}
-      <a href="{{ website.appDomain }}" class="navbar-item is-primary">
+      {% if user_email != "" %}
+      <a href="{{ website.saas_redirect_url }}" class="navbar-item is-primary">
         Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
       </a>
       {% else %}

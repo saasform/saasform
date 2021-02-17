@@ -20,14 +20,12 @@ export class PublicController {
   @Get('/')
   async getHome (@Request() req, @Res() res: Response): Promise<any> {
     const data = await this.settingsService.getWebsiteRenderingVariables()
-    const user = req.user != null ? req.user : {}
 
     const pageData = {
       ...data,
-      csrfToken: req.csrfToken(),
-      user
+      csrf_token: req.csrfToken()
     }
 
-    return res.render(`${data.themeRoot as string}/index-sso`, pageData)
+    return res.render(`${data.root_theme as string}/index`, pageData)
   }
 }

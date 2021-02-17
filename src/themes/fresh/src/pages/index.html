@@ -10,16 +10,16 @@ layout: index
           <h1 class="title is-1 is-bold is-spaced">
             {{ website.title }}
           </h1>
-          <h2 class="subtitle is-5 is-muted">{{ home.heroSubtitle }}</h2>
+          <h2 class="subtitle is-5 is-muted">{{ website.hero_subtitle }}</h2>
           <div class="button-wrap">
             <a href="/signup" class="button cta primary-btn raised">
-              {{ home.heroCta }}
+              {{ website.hero_cta }}
             </a>
           </div>
         </div>
         <div class="column is-5">
           <figure class="image">
-            <img src="{{ home.heroImage }}" alt="{{ website.name }}">
+            <img src="{{ website.hero_image_url }}" alt="{{ website.name }}">
           </figure>
         </div>
 

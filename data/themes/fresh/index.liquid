@@ -4,31 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>{{ nameAndTitle }}</title>
-  <meta name="description" content="{{ description }}">
+  <title>{{ seo_title }}</title>
+  <meta name="description" content="{{ seo_description }}">
   <meta name="keywords" content="">
   <meta name="author" content="">
-  {{ googleTagManagerHeader }}
-  {{ googleAnalyticsCode }}
-  {{ facebookPixelCode }}
+  {{ html_google_tag_manager_header }}
+  {{ html_google_analytics }}
+  {{ html_facebook_pixel }}
 
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-  <link rel="stylesheet" href="{{ assetsRoot }}/assets/css/bundle.css">
-  <link rel="icon" type="image/png" href="{{ assetsRoot }}/assets/img/favicon.png" />
+  <link rel="stylesheet" href="{{ root_assets }}/assets/css/bundle.css">
+  <link rel="icon" type="image/png" href="{{ root_assets }}/assets/img/favicon.png" />
 </head>
 <body>
-  {{ googleTagManagerBody }}
+  {{ html_google_tag_manager_body }}
 
   <nav x-data="initNavbar()" class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
     <div class="container">
       <div class="navbar-brand">
         <a class="navbar-item" href="#">
           <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ name }}</h2>
-          <!--img src="{{ assetsRoot }}/img/logo/logo.svg" alt="" width="112" height="28"-->
+          <!--img src="{{ root_assets }}/img/logo/logo.svg" alt="" width="112" height="28"-->
         </a>
         <div class="navbar-burger" @click="openMobileMenu()">
           <span class="menu-toggle">
@@ -60,8 +60,8 @@
           </a>
         </div>
         <div class="navbar-end">
-          {% if userEmail != "" %}
-          <a href="{{ appDomain }}" class="navbar-item is-primary">
+          {% if user_email != "" %}
+          <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
             Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
           </a>
           {% else %}
@@ -86,7 +86,7 @@
       <div class="navbar-brand">
         <a class="navbar-item" href="#">
           <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ name }}</h2>
-          <!--img src="{{ assetsRoot }}/img/logo/logo.svg" alt="" width="112" height="28"-->
+          <!--img src="{{ root_assets }}/img/logo/logo.svg" alt="" width="112" height="28"-->
         </a>
         <div class="navbar-burger" @click="openMobileMenu()">
           <span class="menu-toggle">
@@ -118,8 +118,8 @@
           </a>
         </div>
         <div class="navbar-end">
-          {% if userEmail != "" %}
-          <a href="{{ appDomain }}" class="navbar-item is-primary">
+          {% if user_email != "" %}
+          <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
             Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
           </a>
           {% else %}
@@ -145,16 +145,16 @@
             <h1 class="title is-1 is-bold is-spaced">
               {{ title | formatDot }}
             </h1>
-            <h2 class="subtitle is-5 is-muted">{{ home.heroSubtitle | formatNoOrphanDot }}</h2>
+            <h2 class="subtitle is-5 is-muted">{{ hero_subtitle | formatNoOrphanDot }}</h2>
             <div class="button-wrap">
               <a href="/signup" class="button cta primary-btn raised">
-                {{ home.heroCta }}
+                {{ hero_cta }}
               </a>
             </div>
           </div>
           <div class="column is-5">
             <figure class="image">
-              <img src="{{ home.heroImage }}" alt="{{ name }}">
+              <img src="{{ hero_image_url }}" alt="{{ name }}">
             </figure>
           </div>
   
@@ -171,7 +171,7 @@
                 <h4>App builder</h4>
               </div>
               <div class="card-icon">
-                <img src="{{ assetsRoot }}/assets/img/icons/web.svg">
+                <img src="{{ root_assets }}/assets/img/icons/web.svg">
               </div>
               <div class="card-text">
                 <p>This is some cool explanatory text that is on two rows</p>
@@ -184,7 +184,7 @@
                 <h4>Cloud integration</h4>
               </div>
               <div class="card-icon">
-                <img src="{{ assetsRoot }}/assets/img/icons/rocket.svg">
+                <img src="{{ root_assets }}/assets/img/icons/rocket.svg">
               </div>
               <div class="card-text">
                 <p>This is some explanatory text that is on two rows</p>
@@ -197,7 +197,7 @@
                 <h4>Addons & Plugins</h4>
               </div>
               <div class="card-icon">
-                <img src="{{ assetsRoot }}/assets/img/icons/light-bulb.svg">
+                <img src="{{ root_assets }}/assets/img/icons/light-bulb.svg">
               </div>
               <div class="card-text">
                 <p>This is some explanatory text that is on two rows</p>
@@ -213,7 +213,7 @@
         <div class="tabs is-centered">
           <ul>
             {% for item in home.logos %}
-            <li><a><img class="partner-logo" src="{{ item.image }}" alt="{{ item.name }}"></a></li>
+            <li><a><img class="partner-logo" src="" alt="{{ item.name }}"></a></li>
             {% endfor %}
           </ul>
         </div>
@@ -225,11 +225,11 @@
       <div class="container">
         <div class="tabs is-centered">
           <ul>
-            <li><a><img class="partner-logo" src="{{ assetsRoot }}/assets/img/logo/clients/systek.svg"></a></li>
-            <li><a><img class="partner-logo" src="{{ assetsRoot }}/assets/img/logo/clients/tribe.svg"></a></li>
-            <li><a><img class="partner-logo" src="{{ assetsRoot }}/assets/img/logo/clients/kromo.svg"></a></li>
-            <li><a><img class="partner-logo" src="{{ assetsRoot }}/assets/img/logo/clients/infinite.svg"></a></li>
-            <li><a><img class="partner-logo" src="{{ assetsRoot }}/assets/img/logo/clients/gutwork.svg"></a></li>
+            <li><a><img class="partner-logo" src="{{ root_assets }}/assets/img/logo/clients/systek.svg"></a></li>
+            <li><a><img class="partner-logo" src="{{ root_assets }}/assets/img/logo/clients/tribe.svg"></a></li>
+            <li><a><img class="partner-logo" src="{{ root_assets }}/assets/img/logo/clients/kromo.svg"></a></li>
+            <li><a><img class="partner-logo" src="{{ root_assets }}/assets/img/logo/clients/infinite.svg"></a></li>
+            <li><a><img class="partner-logo" src="{{ root_assets }}/assets/img/logo/clients/gutwork.svg"></a></li>
           </ul>
         </div>
       </div>
@@ -252,7 +252,7 @@
                 <h4>App builder</h4>
               </div>
               <div class="card-icon">
-                <img src="{{ assetsRoot }}/assets/img/icons/web.svg">
+                <img src="{{ root_assets }}/assets/img/icons/web.svg">
               </div>
               <div class="card-text">
                 <p>This is some cool explanatory text that is on two rows</p>
@@ -268,7 +268,7 @@
                 <h4>Cloud integration</h4>
               </div>
               <div class="card-icon">
-                <img src="{{ assetsRoot }}/assets/img/icons/rocket.svg">
+                <img src="{{ root_assets }}/assets/img/icons/rocket.svg">
               </div>
               <div class="card-text">
                 <p>This is some explanatory text that is on two rows</p>
@@ -284,7 +284,7 @@
                 <h4>Addons & Plugins</h4>
               </div>
               <div class="card-icon">
-                <img src="{{ assetsRoot }}/assets/img/icons/light-bulb.svg">
+                <img src="{{ root_assets }}/assets/img/icons/light-bulb.svg">
               </div>
               <div class="card-text">
                 <p>This is some explanatory text that is on two rows</p>
@@ -308,7 +308,7 @@
       </div-->
       <div class="columns is-vcentered side-feature mt-60">
         <div class="column is-5 is-offset-1">
-          <img src="{{ assetsRoot }}/assets/img/illustrations/features/feature-2.png" alt="">
+          <img src="{{ root_assets }}/assets/img/illustrations/features/feature-2.png" alt="">
         </div>
         <div class="column is-4 is-offset-1">
           <h3 class="title is-3 mb-10 is-title-reveal">Collaborate easily</h3>
@@ -322,13 +322,13 @@
           <p class="subtitle is-5 is-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cum audissem Antiochum, Brute, ut solebam, cum M. Quae diligentissime contra Aristonem dicuntur a Chryippo.</p>
         </div>
         <div class="column is-5">
-          <img src="{{ assetsRoot }}/assets/img/illustrations/features/feature-1.png" alt="">
+          <img src="{{ root_assets }}/assets/img/illustrations/features/feature-1.png" alt="">
         </div>
       </div>
   
       <div class="columns is-vcentered side-feature mt-60">
         <div class="column is-5 is-offset-1">
-          <img src="{{ assetsRoot }}/assets/img/illustrations/features/feature-2.png" alt="">
+          <img src="{{ root_assets }}/assets/img/illustrations/features/feature-2.png" alt="">
         </div>
         <div class="column is-4 is-offset-1">
           <h3 class="title is-3 mb-10 is-title-reveal">Collaborate easily</h3>
@@ -348,7 +348,7 @@
         </div>
         <div class="column is-10">
           <div class="has-text-centered">
-            <img class="pushed-image" src="{{ assetsRoot }}/assets/img/illustrations/mockups/app-mockup.png">
+            <img class="pushed-image" src="{{ root_assets }}/assets/img/illustrations/mockups/app-mockup.png">
           </div>
         </div>
       </div>
@@ -495,7 +495,7 @@
                 Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
               </blockquote>
               <div class="author">
-                <img src="{{ assetsRoot }}/assets/img/illustrations/faces/1.png" alt=""/>
+                <img src="{{ root_assets }}/assets/img/illustrations/faces/1.png" alt=""/>
                 <h5>Irma Walters</h5><span>Accountant</span>
               </div>
             </figure>
@@ -506,7 +506,7 @@
                 Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
               </blockquote>
               <div class="author">
-                <img src="{{ assetsRoot }}/assets/img/illustrations/faces/2.png" alt=""/>
+                <img src="{{ root_assets }}/assets/img/illustrations/faces/2.png" alt=""/>
                 <h5>John Bradley</h5><span>Financial Analyst</span>
               </div>
             </figure>
@@ -517,7 +517,7 @@
                 Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
               </blockquote>
               <div class="author">
-                <img src="{{ assetsRoot }}/assets/img/illustrations/faces/3.png" alt=""/>
+                <img src="{{ root_assets }}/assets/img/illustrations/faces/3.png" alt=""/>
                 <h5>Gary Blackman</h5><span>HR Manager</span>
               </div>
             </figure>
@@ -538,7 +538,7 @@
       <div class="pricing-wrap">
         <div class="feature-card is-pricing has-text-centered">
           <h3 class="plan-name">Starter</h3>
-          <img src="{{ assetsRoot }}/assets/img/illustrations/pricing/1.svg" alt=""/>
+          <img src="{{ root_assets }}/assets/img/illustrations/pricing/1.svg" alt=""/>
           <div class="price">
             0
           </div>
@@ -547,7 +547,7 @@
         </div>
         <div class="feature-card is-pricing has-text-centered">
           <h3 class="plan-name">Pro</h3>
-          <img src="{{ assetsRoot }}/assets/img/illustrations/pricing/2.svg" alt=""/>
+          <img src="{{ root_assets }}/assets/img/illustrations/pricing/2.svg" alt=""/>
           <div class="price">
             15
           </div>
@@ -556,7 +556,7 @@
         </div>
         <div class="feature-card is-pricing has-text-centered">
           <h3 class="plan-name">Business</h3>
-          <img src="{{ assetsRoot }}/assets/img/illustrations/pricing/3.svg" alt=""/>
+          <img src="{{ root_assets }}/assets/img/illustrations/pricing/3.svg" alt=""/>
           <div class="price">
             30
           </div>
@@ -650,9 +650,9 @@
         <div class="column">
           <div class="footer-logo">
             <h2 class="is-size-4 has-text-weight-semibold">{{ name }}</h2>
-            <!--img src="{{ assetsRoot }}/img/logo/logo.svg"-->
+            <!--img src="{{ root_assets }}/img/logo/logo.svg"-->
           </div>
-          &copy; 2020 {{ legalName }}
+          &copy; 2020 {{ legal_company_name }}
         </div>
         <div class="column">
           <div class="footer-column">
@@ -668,20 +668,20 @@
         <div class="column">
           <div class="footer-column">
             <div class="footer-header">
-              <h3>Follow Us</h3>
+              <h3>Follow us</h3>
               <nav class="level is-mobile">
                 <div class="level-left">
-                  <a class="level-item" href="{{ socialGithub }}">
+                  <a class="level-item" href="{{ social_github }}">
                     <span class="icon">
                       <ion-icon name="logo-github" size="large"></ion-icon>
                     </span>
                   </a>
-                  <a class="level-item" href="{{ socialTwitter }}">
+                  <a class="level-item" href="{{ social_twitter }}">
                     <span class="icon">
                       <ion-icon name="logo-twitter" size="large"></ion-icon>
                     </span>
                   </a>
-                  <a class="level-item" href="{{ socialLinkedin }}">
+                  <a class="level-item" href="{{ social_linkedin }}">
                     <span class="icon">
                       <ion-icon name="logo-linkedin" size="large"></ion-icon>
                     </span>
@@ -696,6 +696,6 @@
   </footer>
 
   <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
-  <script src="{{ assetsRoot }}/assets/js/bundle.js"></script>
+  <script src="{{ root_assets }}/assets/js/bundle.js"></script>
 </body>
 </html>

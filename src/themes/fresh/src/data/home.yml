@@ -1,3 +1,0 @@
-heroSubtitle: "{{ home.heroSubtitle | formatNoOrphanDot }}"
-heroCta: "{{ home.heroCta }}"
-heroImage: "{{ home.heroImage }}"
