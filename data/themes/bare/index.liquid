@@ -4,8 +4,8 @@
 
 <div>
     {% if user %}
-        Hello {{ user.email }}.
-        {% if user.email_verified == false %}
+        Hello {{ user_email }}.
+        {% if user_email_verified == false %}
             <div>
                 Please verify your email
             </div>
