@@ -1,2 +1,5 @@
-image: "{{ item.image }}"
 name: "{{ item.name }}"
+title: "{{ item.title }}"
+text: "{{ item.text }}"
+icon: "{{ item.icon }}"
+image_url: "{{ item.image_url }}"

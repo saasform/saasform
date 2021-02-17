@@ -28,10 +28,10 @@ export class AuthenticationController {
     const data = await this.settingsService.getWebsiteRenderingVariables()
     const pageData = {
       ...data,
-      csrfToken: req.csrfToken()
+      csrf_token: req.csrfToken()
     }
 
-    return res.render(`${data.themeRoot as string}/login`, pageData)
+    return res.render(`${data.root_theme as string}/login`, pageData)
   }
 
   @UseGuards(LoginAuthGuard)
@@ -51,10 +51,10 @@ export class AuthenticationController {
     const data = await this.settingsService.getWebsiteRenderingVariables()
     const pageData = {
       ...data,
-      csrfToken: req.csrfToken()
+      csrf_token: req.csrfToken()
     }
 
-    return res.render(`${data.themeRoot as string}/signup`, pageData)
+    return res.render(`${data.root_theme as string}/signup`, pageData)
   }
 
   @Post('/signup')
@@ -121,7 +121,7 @@ export class AuthenticationController {
       }
     } catch (error) {
       console.error(error)
-      return res.render(`${data.themeRoot as string}/500`, data)
+      return res.render(`${data.root_theme as string}/500`, data)
     }
   }
 
@@ -137,10 +137,10 @@ export class AuthenticationController {
     const data = await this.settingsService.getWebsiteRenderingVariables()
     const pageData = {
       ...data,
-      csrfToken: req.csrfToken()
+      csrf_token: req.csrfToken()
     }
 
-    return res.render(`${data.themeRoot as string}/reset-password`, pageData)
+    return res.render(`${data.root_theme as string}/reset-password`, pageData)
   }
 
   @Post('/reset-password')
@@ -157,10 +157,10 @@ export class AuthenticationController {
     const pageData = {
       ...data,
       token,
-      csrfToken: req.csrfToken()
+      csrf_token: req.csrfToken()
     }
 
-    return res.render(`${data.themeRoot as string}/resetPasswordToken`, pageData)
+    return res.render(`${data.root_theme as string}/resetPasswordToken`, pageData)
   }
 
   @Post('/reset-password-finish')

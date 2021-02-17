@@ -1,4 +1,4 @@
 module.exports = function() {
-  return '{{ assetsRoot }}';
+  return '{{ root_assets }}';
   // return '';
 }
