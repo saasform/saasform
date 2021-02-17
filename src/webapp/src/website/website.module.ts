@@ -4,10 +4,11 @@ import { AuthModule } from '../auth/auth.module'
 import { SettingsModule } from '../settings/settings.module'
 import { AuthenticationController } from './controllers/authentication.controller'
 import { CommondController } from './controllers/common.controller'
+import { PaymentsController } from './controllers/payments.controller'
 import { PublicController } from './controllers/public.controller'
 
 @Module({
   imports: [SettingsModule, AuthModule, AccountsModule],
-  controllers: [CommondController, AuthenticationController, PublicController]
+  controllers: [CommondController, AuthenticationController, PublicController, PaymentsController]
 })
 export class WebsiteModule { }

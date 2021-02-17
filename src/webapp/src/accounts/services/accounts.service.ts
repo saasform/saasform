@@ -12,6 +12,8 @@ import { AccountsUsersService } from './accountsUsers.service'
 import { BaseService } from '../../utilities/base.service'
 import { NotificationsService } from '../../notifications/notifications.service'
 import { SettingsService } from '../..//settings/settings.service'
+import { PaymentsService } from '../../payments/services/payments.service'
+import { PlansService } from '../../payments/services/plans.service'
 
 @QueryService(AccountEntity)
 @Injectable()
@@ -22,6 +24,8 @@ export class AccountsService extends BaseService<AccountEntity> {
     private readonly accountsRepository: Repository<AccountEntity>,
     private readonly accountsUsersService: AccountsUsersService,
     private readonly usersService: UsersService,
+    private readonly paymentsService: PaymentsService,
+    private readonly plansService: PlansService,
     private readonly notificationService: NotificationsService,
     private readonly settingsService: SettingsService
   ) {
@@ -61,6 +65,22 @@ export class AccountsService extends BaseService<AccountEntity> {
     // This will be overwritten later when the first user
     // will be associated with this account.
     account.owner_id = user?.id ?? 0
+
+
+    // Create a Stripe user for this account
+    const stripeCustomer = await this.paymentsService.createStripeCustomer({
+      name: data.name,
+    });
+
+    account.data.stripe = stripeCustomer;
+
+    // Add free tier plan
+    const plans = await this.plansService.getPlans();
+    await this.paymentsService.createStripeFreeSubscription(
+      plans[0],
+      stripeCustomer,
+    );
+
 
     try {
       const res = await this.createOne(account)
@@ -178,6 +198,46 @@ export class AccountsService extends BaseService<AccountEntity> {
     const account = await this.findById(users[0]?.account_id)
 
     return account
+  }
+
+  async addPaymentsMethods(id: number, card: any): Promise<[any]|any> {
+    try {
+      const account = await this.findById(id);
+      if (account == null) {
+        console.error('addPaymentsMethods - account not found')
+        return null;
+      }
+      if (account.data == null) {
+        console.error('addPaymentsMethods - account format error')
+        return null;
+      }
+
+      const method = await this.paymentsService.createPaymentMethod(account.data.stripe.id, card);
+
+      // TODO: check errors
+
+      if (!account.data.payments_methods)
+        account.data.payments_methods = [method]
+      else
+        account.data.payments_methods.push(method)
+
+      this.updateOne(id, {data: account.data})
+      
+      return account.data.payments_methods;
+    } catch (error) {
+      console.error('getPaymentsMethods - error', id, error);
+    }
+  }
+
+  async subscribeToPlan(account: AccountEntity, subscription: any) {
+    // Getting the first method.
+    // This is a hack to only use 1 PM for the MVP.
+    // FIXME.
+    const paymentMethod = account.data.payments_methods[0];
+
+    const price = await this.plansService.getPriceByProductAndAnnual(subscription.plan, subscription.monthly);
+
+    this.paymentsService.subscribeToPlan(account.data.stripe.id, paymentMethod, price);
   }
 
   // TODO: call this from user profile payments method page

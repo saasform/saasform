@@ -8,10 +8,12 @@ import { AccountsModule } from '../accounts/accounts.module'
 import { AccountsService } from '../accounts/services/accounts.service'
 import { SettingsModule } from '../settings/settings.module'
 import { SettingsService } from '../settings/settings.service'
+import { PaymentsModule } from '../payments/payments.module'
 
 @Module({
   imports: [
     AccountsModule,
+    PaymentsModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [SettingsModule, AccountsModule],

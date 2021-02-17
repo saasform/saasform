@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport'
 import { Injectable } from '@nestjs/common'
 import { ContextIdFactory, ModuleRef } from '@nestjs/core'
 import { RequestUser } from './interfaces/user.interface'
+import { AuthService } from './auth.service'
 import { SettingsService } from '../settings/settings.service'
 
 const cookieOrBearerExtractor = (req: any): any => {
@@ -32,10 +33,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate (request: Request, payload: any): Promise<RequestUser> {
+  async validate (request: Request, payload: any): Promise<RequestUser | null> {
+    const contextId = ContextIdFactory.getByRequest(request)
+    const authService = await this.moduleRef.resolve(AuthService, contextId)
+
     // Validate subscriptions here
-    // TODO if payload is not up to date wrt models, issue a new jwt
+    // if payload is not up to date wrt models, issue a new jwt
     // this happens if anything changes after login, like a plan change
-    return payload
+    const requestUserWithSubscription = await authService.updateActiveSubscription(payload)
+    if (requestUserWithSubscription == null) {
+      console.error('localStrategy - validate - error while add subscription to token')
+      return null
+    }    
+
+    return requestUserWithSubscription
   }
 }
