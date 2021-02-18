@@ -216,7 +216,7 @@ export class AccountsService extends BaseService<AccountEntity> {
 
       // TODO: check errors
 
-      if (!account.data.payments_methods)
+      if (account.data.payments_methods == null)
         account.data.payments_methods = [method]
       else
         account.data.payments_methods.push(method)
@@ -233,10 +233,8 @@ export class AccountsService extends BaseService<AccountEntity> {
     // Getting the first method.
     // This is a hack to only use 1 PM for the MVP.
     // FIXME.
-    const paymentMethod = account.data.payments_methods[0];
-
+    const paymentMethod = account.data.payments_methods.filter(p => p.id === subscription.method)[0];
     const price = await this.plansService.getPriceByProductAndAnnual(subscription.plan, subscription.monthly);
-
     this.paymentsService.subscribeToPlan(account.data.stripe.id, paymentMethod, price);
   }
 

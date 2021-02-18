@@ -14,6 +14,21 @@
                 Your email is verified, thanks!
             </div>
         {% endif %}
+
+        {% if user.subscription_id == null %}
+            <div>
+                No active subscription
+            </div>           
+        {% else %}
+            <div>
+                 Your subscription is: {{ user.subscription_status }}
+            </div>
+        {% endif %}
+
+        <div>
+            <a href="/user/billing/subscribe">Go to billing</a>
+        </div>
+
         <div>
             <a href="/logout">logout</a>
         </div>

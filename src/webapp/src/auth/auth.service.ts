@@ -69,25 +69,27 @@ export class AuthService {
   }
 
   async updateActiveSubscription (token: RequestUser): Promise<RequestUser | null> {
+    const {subscription_id, subscription_plan, subscription_status, ...tokenWithOutSubscription} = token
+
     const account = await this.accountsService.getById(token.account_id)
     // TODO: next line should be removed when we have web hooks from stripe
     await this.paymentsService.refreshPaymentsFromStripe(account)
     const payment = await this.paymentsService.getActivePayments(token.account_id)
 
     if (payment == null) {
-      console.log('No subscription available')
-      return token
+      console.error('No subscription available')
+      return tokenWithOutSubscription
     }
 
     const plan = await this.plansService.getPlanForPayment(payment);
 
     if (plan == null) {
-      console.log('No plan for subscription') // this should never happend
+      console.error('No plan for subscription') // this should never happend
       return null
     }
 
     return {
-      ...token,
+      ...tokenWithOutSubscription,
       subscription_id: payment.data.id,
       subscription_plan: plan.uid,
       subscription_status: payment.status,

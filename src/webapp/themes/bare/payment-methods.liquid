@@ -1,8 +1,16 @@
-Payment methods
+<div>
+<h1>Payment methods</h1>
 
-List here
+<ul>
+{% for method in account.payments_methods %}
+  <li>xxxx-xxxx-xxxx-{{ method.card.last4 }} expiring on {{ method.card.exp_month }}/{{ method.card.exp_year }}</li>
+{% endfor %}
+</ul>
+</div>
 
-Add one
+
+
+<h2>Add a new method</h2>
 
 <form action="/user/billing/payment" method="POST">
 

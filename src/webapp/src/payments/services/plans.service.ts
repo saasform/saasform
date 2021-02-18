@@ -298,6 +298,6 @@ export class PlansService extends BaseService<PlanEntity> {
 
     const res = plans.filter(p => p.id === product)[0]
 
-    return monthly ? res.prices.month : res.prices.month
+    return monthly ? res.prices.month : res.prices.year
   }
 }

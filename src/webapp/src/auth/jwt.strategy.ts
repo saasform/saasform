@@ -42,9 +42,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // this happens if anything changes after login, like a plan change
     const requestUserWithSubscription = await authService.updateActiveSubscription(payload)
     if (requestUserWithSubscription == null) {
-      console.error('localStrategy - validate - error while add subscription to token')
+      console.error('jwtStrategy - validate - error while add subscription to token')
       return null
-    }    
+    }
 
     return requestUserWithSubscription
   }

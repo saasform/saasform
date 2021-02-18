@@ -31,6 +31,7 @@ export class PublicController {
 
     const pageData = {
       ...data,
+      user: req.user,
       csrf_token: req.csrfToken()
     }
 
@@ -52,7 +53,7 @@ export class PublicController {
 
     // extract variables from md header, e.g. title
     const mdParts = mdFile.split(/---\n/)
-    let mdVars = {}
+    let mdVars = {title: ''}
     let mdBody = mdFile
     if (mdParts.length === 3) {
       try {

@@ -30,14 +30,6 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     )
   }
 
-  // async getPayments () {
-  //   const payments = await this.query({})
-
-  //   console.log('Retrieved from DB', payments)
-
-  //   return payments
-  // }
-
   /**
    * Retuns the active subcsription for an account.
    * @param account_id
@@ -50,7 +42,6 @@ export class PaymentsService extends BaseService<PaymentEntity> {
           status: { in: ['active', 'trialing'] }
         }
       })
-      console.log('pp',payments)
       return payments && payments[0] ? payments[0] : null
     } catch (error) {
       console.error(

@@ -8,7 +8,7 @@ import {
 import { SettingsService } from '../../settings/settings.service'
 
 @Controller('/')
-export class CommondController {
+export class CommonController {
   constructor (
     private readonly settingsService: SettingsService
   ) {}
