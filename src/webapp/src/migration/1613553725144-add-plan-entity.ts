@@ -1,9 +1,8 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm'
 
 export class addPlanEntity1613553725144 implements MigrationInterface {
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up (queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
         CREATE TABLE IF NOT EXISTS plans (
             id int(11) NOT NULL AUTO_INCREMENT,
             created datetime(6) NOT NULL DEFAULT current_timestamp(6),
@@ -14,10 +13,8 @@ export class addPlanEntity1613553725144 implements MigrationInterface {
             PRIMARY KEY (id)
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         `)
-    }
+  }
 
-
-    public async down(queryRunner: QueryRunner): Promise<void> {
-    }
-
+  public async down (queryRunner: QueryRunner): Promise<void> {
+  }
 }

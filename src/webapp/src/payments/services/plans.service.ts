@@ -1,15 +1,12 @@
 import { REQUEST } from '@nestjs/core'
 import { Injectable, Scope, Inject } from '@nestjs/common'
-import { Query, QueryService } from '@nestjs-query/core'
-import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, getRepository, getConnection } from 'typeorm'
+import { QueryService } from '@nestjs-query/core'
+import { getConnection } from 'typeorm'
 import { BaseService } from '../../utilities/base.service'
 
 // import { ProductEntity } from './product.entity';
 // import { PriceEntity } from './price.entity';
 import { PlanEntity } from '../entities/plan.entity'
-import { idText } from 'typescript'
 
 import { Plan } from '../entities/plan.model'
 import { PaymentEntity } from '../entities/payment.entity'
@@ -31,15 +28,14 @@ export class PlansService extends BaseService<PlanEntity> {
       req,
       'PlanEntity'
     )
-    this.tenantId = req.req ? req.req.tenantId : req.tenantId
+    // this.tenantId = req.req ? req.req.tenantId : req.tenantId
   }
 
   createPlan (id, name, description, _prices, features, extra): any {
-    if(features == null)
-      features = []
-    
+    if (features == null) { features = [] }
+
     const prices = _prices.reduce((prices, price) => {
-      const { id, currency, unit_amount, unit_amount_decimal, recurring, product } = price
+      const { id, currency, unit_amount, unit_amount_decimal, recurring, product } = price // eslint-disable-line
       prices[recurring.interval] = {
         id,
         unit_amount_decimal,
@@ -64,7 +60,7 @@ export class PlansService extends BaseService<PlanEntity> {
     return plan
   }
 
-  async addPlan (name, description, monthAmount, yearAmount, features, extra) {
+  async addPlan (name, description, monthAmount, yearAmount, features, extra): Promise<any> { // TODO: return a proper type
     try {
     // TODO: if yearAmount is 0, use standard discount
       const product = await this.stripeService.client.products.create({
@@ -106,11 +102,11 @@ export class PlansService extends BaseService<PlanEntity> {
   }
 
   // TODO: Refactor
-  async createFirstBilling (tenantId) {
+  async createFirstBilling (): Promise<any> { // TODO: return a proper type
     // should we move the API call outside?
     await this.addPlan(
       'Starter',
-      `${tenantId} Starter plan`,
+      'Starter plan',
       3500, 2900 * 12,
       [
         { name: '3 sites' },
@@ -124,7 +120,7 @@ export class PlansService extends BaseService<PlanEntity> {
 
     await this.addPlan(
       'Pro',
-      `${tenantId} Pro plan`,
+      'Pro plan',
       11900, 9900 * 12,
       [
         { name: '100 sites' },
@@ -139,7 +135,7 @@ export class PlansService extends BaseService<PlanEntity> {
 
     await this.addPlan(
       'Enterprise',
-      `${tenantId} Enterprise plan`,
+      'Enterprise plan',
       0, 0,
       [
         { name: 'All features' },
@@ -153,16 +149,16 @@ export class PlansService extends BaseService<PlanEntity> {
     )
   }
 
-  validatePlan (p) {
+  validatePlan (p): any {
     const plan = JSON.parse(p.plan)
     plan.prices.year.unit_amount_hr = Math.round(plan.prices.year.unit_amount_hr / 12)
     plan.uid = p.id // MySql ID used to update the plan
     return {
       ...plan,
-      button: plan.button || 'Choose',
+      button: plan.button ?? 'Choose',
       price_year: plan.prices.year.unit_amount_hr,
       price_month: plan.prices.month.unit_amount_hr,
-      price_decimals: plan.price_decimals || 0,
+      price_decimals: plan.price_decimals ?? 0,
       price_text: plan.priceText,
       free_trial: plan.freeTrial
     }
@@ -172,8 +168,7 @@ export class PlansService extends BaseService<PlanEntity> {
     let plans = await this.query({})
 
     if (plans.length === 0) {
-      const tenantId = this.tenantId
-      await this.createFirstBilling(tenantId)
+      await this.createFirstBilling()
       plans = await this.query({})
     }
 
@@ -183,17 +178,17 @@ export class PlansService extends BaseService<PlanEntity> {
   async getPricingAndPlans (): Promise<any> {
     const plans = await this.getPlans()
     return {
-      free_trial: plans?.[0].free_trial || 0,
+      free_trial: plans?.[0]?.free_trial ?? 0,
       plans
     }
   }
 
-  async getPlanForPayment (payment: PaymentEntity) {
-    if (!payment) { return null }
+  async getPlanForPayment (payment: PaymentEntity): Promise<any> { // TODO: use a better type
+    if (payment == null) { return null }
 
     const plans = await this.getPlans()
     const plan =
-    payment && payment.data && payment.data.plan
+    payment && payment.data && payment.data.plan // eslint-disable-line
       ? plans.filter(p => p.id === payment.data.plan.product)[0]
       : null
 
@@ -217,15 +212,15 @@ export class PlansService extends BaseService<PlanEntity> {
     }
 
     // TODO: replace this with actual JSON values on the DB. See users and account for example
-    let month_price = JSON.parse(savedPlan.prices)[0]
-    let year_price = JSON.parse(savedPlan.prices)[1]
+    let monthPrice = JSON.parse(savedPlan.prices)[0]
+    let yearPrice = JSON.parse(savedPlan.prices)[1]
 
     let toUpdate = false
 
     // Create a new Stripe pricing for month price if necessary
-    if (month_price.unit_amount_decimal !== plan.prices.month.unit_amount_decimal) {
+    if (monthPrice.unit_amount_decimal !== plan.prices.month.unit_amount_decimal) {
       toUpdate = true
-      month_price = await this.stripeService.client.prices.create({
+      monthPrice = await this.stripeService.client.prices.create({
         unit_amount: plan.prices.month.unit_amount_decimal,
         currency: 'usd',
         recurring: { interval: 'month' },
@@ -233,9 +228,9 @@ export class PlansService extends BaseService<PlanEntity> {
       })
     }
     // Create a new Stripe pricing for year price if necessary
-    if (year_price.unit_amount_decimal !== plan.prices.year.unit_amount_decimal) {
+    if (yearPrice.unit_amount_decimal !== plan.prices.year.unit_amount_decimal) {
       toUpdate = true
-      year_price = await this.stripeService.client.prices.create({
+      yearPrice = await this.stripeService.client.prices.create({
         unit_amount: plan.prices.year.unit_amount_decimal,
         currency: 'usd',
         recurring: { interval: 'year' },
@@ -264,16 +259,16 @@ export class PlansService extends BaseService<PlanEntity> {
 
       const _plan = this.createPlan(
         id, plan.name, description,
-        [month_price, year_price],
+        [monthPrice, yearPrice],
         plan?.features ?? [],
         newExtra
       )
 
       // TODO: replace this with actual JSON values on the DB. See users and account for example
-      savedPlan.prices = JSON.stringify([month_price, year_price])
+      savedPlan.prices = JSON.stringify([monthPrice, yearPrice])
       savedPlan.plan = JSON.stringify(_plan)
 
-      const { id: plan_id, ...update } = savedPlan
+      const { id: plan_id, ...update } = savedPlan // eslint-disable-line
       await this.updateOne(plan.uid, update)
     }
 
@@ -298,6 +293,6 @@ export class PlansService extends BaseService<PlanEntity> {
 
     const res = plans.filter(p => p.id === product)[0]
 
-    return monthly ? res.prices.month : res.prices.year
+    return monthly != null ? res.prices.month : res.prices.year
   }
 }

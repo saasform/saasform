@@ -10,7 +10,6 @@ import { SettingsService } from '../settings/settings.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
 
-
 const mockJwtService = {}
 const mockAccountsService = {}
 
@@ -38,7 +37,7 @@ describe('AuthService', () => {
         {
           provide: PlansService,
           useValue: {}
-        },
+        }
       ]
     }).compile()
 

@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn, ManyToOne } from 'typeorm'
-import { IsEmail, IsNotEmpty, IsJSON } from 'class-validator'
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
+import { IsJSON } from 'class-validator'
 
 @Entity({ name: 'plans' })
 export class PlanEntity {

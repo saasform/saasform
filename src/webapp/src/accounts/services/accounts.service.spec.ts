@@ -65,7 +65,7 @@ describe('Accounts Service', () => {
     createStripeFreeSubscription: jest.fn(_ => {})
   }
 
-  const mockedPlansService = {getPlans: jest.fn(_ => [{}])}
+  const mockedPlansService = { getPlans: jest.fn(_ => [{}]) }
 
   beforeEach(async () => {
     jest.clearAllMocks()

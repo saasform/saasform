@@ -1,9 +1,6 @@
 import { REQUEST } from '@nestjs/core'
 import { Injectable, Scope, Inject } from '@nestjs/common'
-import { Query, QueryService } from '@nestjs-query/core'
-import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, getRepository, getConnection } from 'typeorm'
+import { QueryService } from '@nestjs-query/core'
 
 import { BaseService } from '../../utilities/base.service'
 // PaymentStatus is giving issues. Check on PaymentEntity
@@ -11,9 +8,6 @@ import { PaymentEntity /* PaymentStatus */ } from '../entities/payment.entity'
 // TODO: move stripe functions inside this module
 import { AccountEntity } from '../../accounts/entities/account.entity'
 import { StripeService } from './stripe.service'
-
-
-
 
 @QueryService(PaymentEntity)
 @Injectable({ scope: Scope.REQUEST })
@@ -32,21 +26,21 @@ export class PaymentsService extends BaseService<PaymentEntity> {
 
   /**
    * Retuns the active subcsription for an account.
-   * @param account_id
+   * @param accountId
    */
-  async getActivePayments (account_id: number): Promise<PaymentEntity|null> {
+  async getActivePayments (accountId: number): Promise<PaymentEntity|null> {
     try {
       const payments = await this.query({
         filter: {
-          account_id: { eq: account_id },
+          account_id: { eq: accountId },
           status: { in: ['active', 'trialing'] }
         }
       })
-      return payments && payments[0] ? payments[0] : null
+      return payments[0] ?? null
     } catch (error) {
       console.error(
         'getActivePayments - error in query',
-        account_id,
+        accountId,
         error
       )
       return null
@@ -68,8 +62,8 @@ export class PaymentsService extends BaseService<PaymentEntity> {
    * lifecycle.
    * @param account the account to refresh.
    */
-  async refreshPaymentsFromStripe (account: AccountEntity) {
-    if (!account || !account.data || !account.data.stripe) return null
+  async refreshPaymentsFromStripe (account: AccountEntity): Promise<any> { // TODO: return a proper type
+    if (account?.data?.stripe == null) return null
 
     try {
       const customer = await this.stripeService.client.customers.retrieve(
@@ -80,22 +74,22 @@ export class PaymentsService extends BaseService<PaymentEntity> {
       const payments = await this.query({
         filter: { account_id: { eq: account.id } }
       })
-      const active_subscriptions = customer.subscriptions.data.map(
+      const activeSubscriptions = customer.subscriptions.data.map(
         s => s.id
       )
-      const payments_ids = payments.map(p => p.stripe_id)
+      const paymentsIds = payments.map(p => p.stripe_id)
 
       // Delete removed payments
       for (let i = 0; i < payments.length; i++) {
         const p = payments[i]
-        !active_subscriptions.includes(p.stripe_id) &&
+        !activeSubscriptions.includes(p.stripe_id) && // eslint-disable-line
               (await this.deleteOne(p.id))
       }
 
       // Create new payments.
       for (let i = 0; i < customer.subscriptions.data.length; i++) {
         const subscription = customer.subscriptions.data[i]
-        !payments_ids.includes(subscription.id) &&
+        !paymentsIds.includes(subscription.id) &&
               (await this.createOne({
                 account_id: account.id,
                 status: subscription.status,
@@ -108,7 +102,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
       for (let i = 0; i < payments.length; i++) {
         const { id, ...p } = payments[i]
         const match = customer.subscriptions.data.filter(s => s.id === p.stripe_id)[0]
-        if (match) {
+        if (match != null) {
           // We create the update object
           const update = {
             ...p,
@@ -126,8 +120,8 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     }
   }
 
-  async createPaymentMethod (customer: string, card: any) {
-    const { number, exp_month, exp_year, cvc } = card
+  async createPaymentMethod (customer: string, card: any): Promise<any> { // TODO: return a proper type
+    const { number, exp_month, exp_year, cvc } = card // eslint-disable-line
     const paymentMethod = await this.stripeService.client.paymentMethods.create({
       type: 'card',
       card: {
@@ -135,7 +129,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
       }
     })
 
-    const attachedPaymentMethod = await this.stripeService.client.paymentMethods.attach(
+    await this.stripeService.client.paymentMethods.attach(
       paymentMethod.id,
       { customer }
     )
@@ -154,8 +148,8 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     return paymentMethod
   }
 
-  async subscribeToPlan (customer: string, paymentMethod: any, price: any) {
-    const subscription = await this.stripeService.client.subscriptions.create({
+  async subscribeToPlan (customer: string, paymentMethod: any, price: any): Promise<any> { // TODO: return a proper type
+    await this.stripeService.client.subscriptions.create({
       customer,
       default_payment_method: paymentMethod.id,
       items: [
@@ -166,40 +160,38 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     // TODO: check errors
   }
 
-  async createStripeCustomer (customer) {
+  async createStripeCustomer (customer): Promise<any> { // TODO: return a proper type
     try {
       const stripeCustomer = await this.stripeService.client.customers.create(
         customer
-      );
-  
-      if(stripeCustomer == null) {
-        console.error('paymentService - createStripeCustomer - error while creating stripe customer', customer);
+      )
+
+      if (stripeCustomer == null) {
+        console.error('paymentService - createStripeCustomer - error while creating stripe customer', customer)
       }
-  
-      return stripeCustomer  
-    }
-    catch(error) {
-      console.error('paymentService - createStripeCustomer - error while creating stripe customer', customer, error);
+
+      return stripeCustomer
+    } catch (error) {
+      console.error('paymentService - createStripeCustomer - error while creating stripe customer', customer, error)
     }
   }
 
-  async createStripeFreeSubscription (plan, user) {
+  async createStripeFreeSubscription (plan, user): Promise<any> { // TODO: return a proper type
     // TODO: fix the trial duration
-    const trial_days = 10
-    const trial_end = Math.floor(Date.now() / 1000) + trial_days * 24 * 60 * 60
+    const trialDays = 10
+    const trialEnd = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60
 
     try {
       // TODO: fix the price to use
       const subscription = await this.stripeService.client.subscriptions.create({
         customer: user.id,
         items: [{ price: plan.prices.year.id }],
-        trial_end
+        trialEnd
       })
 
       return subscription
-    }
-    catch(error) {
-      console.error('paymentService - createStripeCustomer - error while creating free plan', plan, user, error);
+    } catch (error) {
+      console.error('paymentService - createStripeCustomer - error while creating free plan', plan, user, error)
       return null
     }
   };

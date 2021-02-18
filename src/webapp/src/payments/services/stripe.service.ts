@@ -14,6 +14,6 @@ export class StripeService {
     public configService: ConfigService
   ) {
     this.api_key = this.configService.get<string>('STRIPE_API_KEY') ?? ''
-    this.client = require('stripe')(this.api_key)
+    this.client = require('stripe')(this.api_key) // eslint-disable-line
   }
 }

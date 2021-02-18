@@ -15,7 +15,6 @@ import { NotificationsModule } from '../notifications/notifications.module'
 import { NotificationsService } from '../notifications/notifications.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
-import { PaymentsModule } from '../payments/payments.module'
 
 @Module({
   imports: [

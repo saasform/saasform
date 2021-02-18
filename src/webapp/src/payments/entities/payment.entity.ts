@@ -24,6 +24,7 @@ export class PaymentEntity {
   /* For some reason this is giving issues.
      It complains saying that
      Database query failed: Data truncated for column 'column_name' at row 1
+     See #39
    */
   // @Column({
   //   type: "enum",

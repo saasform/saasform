@@ -69,7 +69,9 @@ export class AuthService {
   }
 
   async updateActiveSubscription (token: RequestUser): Promise<RequestUser | null> {
-    const {subscription_id, subscription_plan, subscription_status, ...tokenWithOutSubscription} = token
+    // Remove the subscription details. This is necessary because otherwise
+    // we would keep old data if subscription changed.
+    const { subscription_id, subscription_plan, subscription_status, ...tokenWithOutSubscription } = token // eslint-disable-line
 
     const account = await this.accountsService.getById(token.account_id)
     // TODO: next line should be removed when we have web hooks from stripe
@@ -77,14 +79,16 @@ export class AuthService {
     const payment = await this.paymentsService.getActivePayments(token.account_id)
 
     if (payment == null) {
+      // No subscription. Returning the token without subscription details
       console.error('No subscription available')
       return tokenWithOutSubscription
     }
 
-    const plan = await this.plansService.getPlanForPayment(payment);
+    const plan = await this.plansService.getPlanForPayment(payment)
 
     if (plan == null) {
-      console.error('No plan for subscription') // this should never happend
+      // this should never happend. TODO: check if this is valid when plans change
+      console.error('No plan for subscription')
       return null
     }
 

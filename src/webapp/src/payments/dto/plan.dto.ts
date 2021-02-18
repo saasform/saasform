@@ -1,5 +1,5 @@
-import { ObjectType, GraphQLISODateTime, Field, ID } from '@nestjs/graphql'
-import { NestjsQueryGraphQLModule, FilterableField } from '@nestjs-query/query-graphql'
+import { ObjectType, Field, ID } from '@nestjs/graphql'
+import { FilterableField } from '@nestjs-query/query-graphql'
 
 @ObjectType('Plan')
 export class PlanDTO {

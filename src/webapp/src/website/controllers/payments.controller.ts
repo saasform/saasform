@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common'
 import { Response } from 'express'
 import { SettingsService } from '../../settings/settings.service'
-import { UserOptionalAuthGuard, UserRequiredAuthGuard } from '../../auth/auth.guard'
+import { UserRequiredAuthGuard } from '../../auth/auth.guard'
 import { AccountsService } from '../../accounts/services/accounts.service'
 import { PlansService } from '../../payments/services/plans.service'
 
@@ -23,8 +23,8 @@ export class PaymentsController {
 
   @UseGuards(UserRequiredAuthGuard)
   @Get('/user/billing/payment')
-  async getPaymentMethodList(@Request() req, @Res() res: Response) {
-    const account = await this.accountsService.findByOwnerEmail(req.user.email);
+  async getPaymentMethodList (@Request() req, @Res() res: Response): Promise<any> {
+    const account = await this.accountsService.findByOwnerEmail(req.user.email)
 
     const data = await this.settingsService.getWebsiteRenderingVariables()
     const pageData = {
@@ -39,17 +39,17 @@ export class PaymentsController {
 
   @UseGuards(UserRequiredAuthGuard)
   @Post('/user/billing/payment')
-  async newPaymentMethod(@Request() req, @Res() res: Response) {
+  async newPaymentMethod (@Request() req, @Res() res: Response): Promise<any> {
     const account = await this.accountsService.findByOwnerEmail(req.user.email)
 
-    await this.accountsService.addPaymentsMethods(account.id, req.body);
+    await this.accountsService.addPaymentsMethods(account.id, req.body)
 
-    return res.redirect('/user/billing/subscribe');
+    return res.redirect('/user/billing/subscribe')
   }
 
   @UseGuards(UserRequiredAuthGuard)
   @Get('/user/billing/subscribe')
-  async subscribePage(@Request() req, @Res() res: Response) {
+  async subscribePage (@Request() req, @Res() res: Response): Promise<any> {
     const account = await this.accountsService.findByOwnerEmail(req.user.email)
     const plans = this.plansService.getPlans()
 
@@ -67,13 +67,13 @@ export class PaymentsController {
 
   @UseGuards(UserRequiredAuthGuard)
   @Post('/user/billing/subscribe')
-  async subscribeToPlan(@Request() req, @Res() res: Response) {
+  async subscribeToPlan (@Request() req, @Res() res: Response): Promise<any> {
     const account = await this.accountsService.findByOwnerEmail(req.user.email)
 
-    this.accountsService.subscribeToPlan(account, req.body)
+    await this.accountsService.subscribeToPlan(account, req.body)
 
-    await this.accountsService.addPaymentsMethods(account.id, req.body);
+    await this.accountsService.addPaymentsMethods(account.id, req.body)
 
-    return res.redirect('/');
+    return res.redirect('/')
   }
 }

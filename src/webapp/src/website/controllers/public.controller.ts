@@ -53,7 +53,7 @@ export class PublicController {
 
     // extract variables from md header, e.g. title
     const mdParts = mdFile.split(/---\n/)
-    let mdVars = {title: ''}
+    let mdVars = { title: '' }
     let mdBody = mdFile
     if (mdParts.length === 3) {
       try {

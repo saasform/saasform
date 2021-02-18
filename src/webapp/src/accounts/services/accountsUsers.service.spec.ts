@@ -18,7 +18,6 @@ import { SettingsService } from '../../settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
 
-
 describe('AccountsUsers Service', () => {
   let service // Removed type AccountsService because we must overwrite the accountsRepository property
   let repo: Repository<AccountUserEntity>

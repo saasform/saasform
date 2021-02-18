@@ -1,4 +1,3 @@
-import { REQUEST } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
@@ -49,10 +48,10 @@ describe('Payments Service', () => {
   const mockedRepo = {
     query: jest.fn(
       query => {
-        if (query && query.filter && query.filter.account_id && query.filter.account_id.eq == 101) {
+        if (query?.filter?.account_id?.eq === 101) {
           return paymentsArray
         }
-        if (query && query.filter && query.filter.status && query.filter.status.in) {
+        if (query?.filter?.status?.in != null) {
           return paymentsArray
         }
         return [
@@ -69,7 +68,7 @@ describe('Payments Service', () => {
 
   // This depends on Stripe. We need to update this when we support more payment processors
   const mockedStripe = {
-    customers: { retrieve: jest.fn(customer_id => ({ subscriptions: { data: subscriptionsArray } })) }
+    customers: { retrieve: jest.fn(_ => ({ subscriptions: { data: subscriptionsArray } })) }
   }
 
   beforeEach(async () => {
@@ -99,7 +98,7 @@ describe('Payments Service', () => {
     // We must manually set the following because extending TypeOrmQueryService seems to break it
     Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
     service.paymentsRepository = repo
-    service.stripeService = {client: mockedStripe}
+    service.stripeService = { client: mockedStripe }
     // Object.keys(mockedStripe).forEach(
     //   f => (service.stripeClient[f] = mockedStripe[f]),
     // );
@@ -113,13 +112,13 @@ describe('Payments Service', () => {
   describe('getActivePayments', () => {
     it('should return a single payment', async () => {
       const repoSpy = jest.spyOn(mockedRepo, 'query')
-      const account_id = 1
-      const payments = await service.getActivePayments(account_id)
+      const accountId = 1
+      const payments = await service.getActivePayments(accountId)
       expect(payments).toEqual(paymentsArray[0])
       expect(repoSpy).toBeCalledTimes(1)
       expect(repoSpy).toBeCalledWith({
         filter: {
-          account_id: { eq: account_id },
+          account_id: { eq: accountId },
           status: { in: ['active', 'trialing'] }
         }
       })
@@ -179,7 +178,7 @@ describe('Payments Service', () => {
       account.id = 101
       await service.refreshPaymentsFromStripe(account)
 
-      const {id, ...sub} = existingSubscription
+      const { id, ...sub } = existingSubscription
       const update = { ...sub, data: { id: 'sub_2', status: 'active', active: 'false' }, status: 'active' }
       // delete update.id FIXME
 

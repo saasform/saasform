@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+// import { Repository } from 'typeorm'
 import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 
 import { PlanEntity } from '../entities/plan.entity'
@@ -14,7 +14,7 @@ const mockedRepo = {
 
 describe('PlansService', () => {
   let service
-  let repo: Repository<PlanEntity>
+  // let repo: Repository<PlanEntity>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,9 +35,9 @@ describe('PlansService', () => {
     }).compile()
 
     service = module.get<PlansService>(PlansService)
-    repo = await module.get<Repository<PlanEntity>>(
-      getRepositoryToken(PlanEntity)
-    )
+    // repo = await module.get<Repository<PlanEntity>>(
+    //   getRepositoryToken(PlanEntity)
+    // )
 
     Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
     // service.accountsRepository = repo;
