@@ -188,15 +188,16 @@ function javascriptBuild() {
   );
 }
 
+// Not used
 //Copy data files
-function copyData() {
-  console.log("\n\t" + logSymbols.info, "Copying data files..\n");
-  return src([
-    'src/data/**/*',
-  ])
-    .pipe(dest('dist/data'))
-    .pipe(browserSync.stream());
-}
+// function copyData() {
+//   console.log("\n\t" + logSymbols.info, "Copying data files..\n");
+//   return src([
+//     'src/data/**/*',
+//   ])
+//     .pipe(dest('dist/data'))
+//     .pipe(browserSync.stream());
+// }
 
 function watchFiles() {
   //watch('src/**/*.html', compileHTML);

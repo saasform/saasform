@@ -13,6 +13,7 @@ import { NotificationsModule } from './notifications/notifications.module'
 import { readFileSync } from 'fs'
 import * as yaml from 'js-yaml'
 import { join } from 'path'
+import { PaymentsModule } from './payments/payments.module'
 
 const configSaasform = (): any => yaml.load(
   readFileSync(join(__dirname, '..', 'config', 'saasform.yml'), 'utf8')
@@ -36,7 +37,7 @@ const configWebsite = (): any => yaml.load(
         username: configService.get('TYPEORM_USERNAME'),
         password: configService.get('TYPEORM_PASSWORD'),
         database: configService.get('TYPEORM_DATABASE'),
-        autoLoadEntities: true, // TODO: remove this once migrations are in place
+        autoLoadEntities: true,
         // synchronize: true,
         extra: {
           min: 0,
@@ -48,11 +49,12 @@ const configWebsite = (): any => yaml.load(
       inject: [ConfigService]
     }),
     GraphQLModule.forRoot({
-      playground: true,
+      playground: true, // TODO: remove this in prod
       installSubscriptionHandlers: true,
       autoSchemaFile: true
     }),
     ApiModule,
+    PaymentsModule,
     AccountsModule,
     AuthModule,
     WebsiteModule,

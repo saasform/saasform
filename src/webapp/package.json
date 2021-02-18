@@ -57,6 +57,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3",
+    "stripe": "^8.135.0",
     "typeorm": "^0.2.30",
     "urlsafe-base64": "^1.0.0",
     "yarn": "^1.22.10"

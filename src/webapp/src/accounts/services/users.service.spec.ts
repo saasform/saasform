@@ -12,6 +12,8 @@ import { UserCredentialsService } from '../services/userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 import { NotificationsService } from '../../notifications/notifications.service'
 import { SettingsService } from '../../settings/settings.service'
+import { PaymentsService } from '../../payments/services/payments.service'
+import { PlansService } from '../../payments/services/plans.service'
 
 // const mockRepository = {}
 
@@ -40,6 +42,14 @@ describe('UsersService', () => {
         },
         {
           provide: SettingsService,
+          useValue: {}
+        },
+        {
+          provide: PaymentsService,
+          useValue: {}
+        },
+        {
+          provide: PlansService,
           useValue: {}
         },
         // We must also pass TypeOrmQueryService

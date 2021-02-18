@@ -36,7 +36,7 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
     return this.compare(password, userCredentials?.json?.encryptedPassword ?? '')
   }
 
-  async addUserCredentials (userCredentials: any): Promise<UserCredentialsEntity | null> { // TODO: specify type
+  async addUserCredentials (userCredentials: any): Promise<UserCredentialsEntity | null> {
     if (userCredentials === null) {
       return null
     }

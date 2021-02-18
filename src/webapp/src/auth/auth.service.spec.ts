@@ -7,6 +7,8 @@ import { mockedRepo, mockedUserCredentials, mockUserCredentialsService, settings
 import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { UserCredentialsService } from '../accounts/services/userCredentials.service'
 import { SettingsService } from '../settings/settings.service'
+import { PaymentsService } from '../payments/services/payments.service'
+import { PlansService } from '../payments/services/plans.service'
 
 const mockJwtService = {}
 const mockAccountsService = {}
@@ -27,7 +29,15 @@ describe('AuthService', () => {
         { provide: JwtService, useValue: mockJwtService },
         { provide: AccountsService, useValue: mockAccountsService },
         { provide: UserCredentialsService, useValue: mockUserCredentialsService },
-        { provide: SettingsService, useValue: settingsServiceMock }
+        { provide: SettingsService, useValue: settingsServiceMock },
+        {
+          provide: PaymentsService,
+          useValue: {}
+        },
+        {
+          provide: PlansService,
+          useValue: {}
+        }
       ]
     }).compile()
 

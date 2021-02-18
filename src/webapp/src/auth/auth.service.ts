@@ -9,6 +9,8 @@ import { parseDomain, ParseResultType } from 'parse-domain'
 import { UserCredentialsService } from '../accounts/services/userCredentials.service'
 import { UserEntity } from '../accounts/entities/user.entity'
 import { SettingsService } from '../settings/settings.service'
+import { PaymentsService } from '../payments/services/payments.service'
+import { PlansService } from '../payments/services/plans.service'
 
 @Injectable()
 export class AuthService {
@@ -17,7 +19,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly accountsService: AccountsService,
     private readonly userCredentialsService: UserCredentialsService,
-    private readonly settingsService: SettingsService
+    private readonly settingsService: SettingsService,
+    private readonly paymentsService: PaymentsService,
+    private readonly plansService: PlansService
   ) {}
 
   async validateUser (email: string, inputPassword: string): Promise<ValidUser | null> {
@@ -61,6 +65,39 @@ export class AuthService {
       email: validUser.user.email,
       email_verified: validUser.user?.data.emailConfirmed ?? false,
       staff: validUser.user?.isAdmin ?? false
+    }
+  }
+
+  async updateActiveSubscription (token: RequestUser): Promise<RequestUser | null> {
+    // Remove the subscription details. This is necessary because otherwise
+    // we would keep old data if subscription changed.
+    const { subscription_id, subscription_plan, subscription_status, ...tokenWithOutSubscription } = token // eslint-disable-line
+
+    const account = await this.accountsService.getById(token.account_id)
+    // TODO: next line should be removed when we have web hooks from stripe
+    await this.paymentsService.refreshPaymentsFromStripe(account)
+    const payment = await this.paymentsService.getActivePayments(token.account_id)
+
+    if (payment == null) {
+      // No subscription. Returning the token without subscription details
+      console.error('No subscription available')
+      return tokenWithOutSubscription
+    }
+
+    const plan = await this.plansService.getPlanForPayment(payment)
+
+    if (plan == null) {
+      // this should never happend. TODO: check if this is valid when plans change
+      console.error('No plan for subscription')
+      return null
+    }
+
+    return {
+      ...tokenWithOutSubscription,
+      subscription_id: payment.data.id,
+      subscription_plan: plan.uid,
+      subscription_status: payment.status,
+      subscription_expiration: payment.data.current_period_end
     }
   }
 
