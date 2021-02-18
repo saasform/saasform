@@ -16,6 +16,8 @@ import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 import { mockUserCredentialsEntity } from '../test/testData'
 import { NotificationsService } from '../../notifications/notifications.service'
 import { SettingsService } from '../../settings/settings.service'
+import { PaymentsService } from '../../payments/services/payments.service'
+import { PlansService } from '../../payments/services/plans.service'
 
 const accountsArray = [
   new AccountEntity(),
@@ -57,6 +59,14 @@ describe('Accounts Service', () => {
     addStripeUser: jest.fn((user, plan) => user)
   }
 
+  // This depends on Stripe. We need to update this when we support more payment processors
+  const mockedPaymentsService = {
+    createStripeCustomer: jest.fn(_ => {}),
+    createStripeFreeSubscription: jest.fn(_ => {})
+  }
+
+  const mockedPlansService = {getPlans: jest.fn(_ => [{}])}
+
   beforeEach(async () => {
     jest.clearAllMocks()
 
@@ -94,6 +104,14 @@ describe('Accounts Service', () => {
           provide: SettingsService,
           useValue: {}
         },
+        {
+          provide: PaymentsService,
+          useValue: mockedPaymentsService
+        },
+        {
+          provide: PlansService,
+          useValue: mockedPlansService
+        },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
       ]
@@ -115,6 +133,8 @@ describe('Accounts Service', () => {
     service.accountsRepository = repo
     service.usersService = userRepo
     service.accountsUsersService = accountsUsersRepo
+    service.paymentsService = mockedPaymentsService
+    service.plansService = mockedPlansService
   })
 
   afterEach(() => {
