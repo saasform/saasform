@@ -6,6 +6,9 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 
+const DEFAULT_SAASFORM_SERVER = 'http://localhost:7000'
+const DEFAULT_SAASFORM_USER_LOGIN = 'http://localhost:7000/login'
+
 
 /* BEGIN Saasform imports */
 const fetch = require('node-fetch');
@@ -25,7 +28,7 @@ const cookieExtractor = function(req) {
 };
 
 // Get public key from Saasform
-fetch(`${process.env.SAASFORM_SERVER}/api/v1/public-key`)
+fetch(`${process.env.SAASFORM_SERVER || DEFAULT_SAASFORM_SERVER}/api/v1/public-key`)
   .then(response => response.json())
   .then(data => {
     const opts = {
@@ -47,7 +50,7 @@ fetch(`${process.env.SAASFORM_SERVER}/api/v1/public-key`)
 
 // Create authentication strategy to protect routes
 const auth = passport.authenticate('jwt', { session: false,
-                                            failureRedirect: `${process.env.SAASFORM_USER_LOGIN}` }
+                                            failureRedirect: `${process.env.SAASFORM_USER_LOGIN || DEFAULT_SAASFORM_USER_LOGIN}` }
                                   );
 /* END Saasform init code*/
 
