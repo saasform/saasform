@@ -15,7 +15,7 @@ import { PublicController } from './controllers/public.controller'
     AuthenticationController,
     PaymentsController,
     UserController,
-    PublicController,
+    PublicController
   ]
 })
 export class WebsiteModule { }
