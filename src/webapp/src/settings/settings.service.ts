@@ -333,14 +333,14 @@ export class SettingsService extends BaseService<SettingsEntity> {
       const arrayFromConfig = this.configService.get(key, [])
       const arrayValue = arrayFromSettings.length > 0 ? arrayFromSettings : arrayFromConfig
       const finalArrayValue = arrayValue.map(item => {
-        const ret = {};
+        const ret = {}
         for (const key in item) {
-          const value = item[key];
+          const value = item[key]
           const finalFunc = key.endsWith('url') ? htmlAsset : htmlEncode
           const finalValue = (typeof value === 'string') ? finalFunc(value) : value
-          ret[key] = finalValue;
+          ret[key] = finalValue
         }
-        return ret;
+        return ret
       })
       _.set(res, key, finalArrayValue)
       // TODO encode

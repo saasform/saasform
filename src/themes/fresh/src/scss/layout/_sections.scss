@@ -54,7 +54,7 @@ Section Styles
     &.is-bordered {
       border-top: 1px solid $light-grey;
       border-bottom: 1px solid $light-grey;
-      margin: 3rem 0;
+      margin-top: 3rem;
     }
 
     &.has-background-dark {
@@ -68,6 +68,10 @@ Section Styles
     &.is-back {
       margin-top: -18rem;
       padding-top: 18rem;
+    }
+
+    &.has-vgradient {
+      background-image: linear-gradient($white-bis, $white);
     }
 }
 
