@@ -40,26 +40,26 @@ logos:
     image_url: assets/img/brands/logotype/pinterest.svg
   - name: LinkedIn
     image_url: assets/img/brands/logotype/linkedin.svg
-product:
+features:
   - title: Load the article you want to share
     text:  Add the link of an article you want to share. MultiPreview is platform agnostic and works with any article, blog post or web page. Medium, Wordpress, Ghost, Substack... you name it. All you need to start is the link of your article
     image_url: assets/img/illustrations/illustration-4.png
   - title: Add multiple images and create magic links
-    text: Now add a collection of images that will make your article pop. MultiPreview creates a magic link for every image you add. Drag and drop or copy and paste the link to any visuals you\'d like - quotes, photos, and more. It\'s ultra fast!
-    image_url: assets/img/illustrations/illustration-9.png,
+    text: Now add a collection of images that will make your article pop. MultiPreview creates a magic link for every image you add. Drag and drop or copy and paste the link to any visuals you'd like - quotes, photos, and more. It's ultra fast!
+    image_url: assets/img/illustrations/illustration-9.png
     position: left
   - title: Et voilà! Just share your magic links
-    text: Post your magic links on Twitter, Facebook, Linkedin... Magic links expand in your feed with the image you chose. Even if you share the same article over and over to get more pageviews, the image will always be different. Your feed will look original and won\'t bore your readers
+    text: Post your magic links on Twitter, Facebook, Linkedin... Magic links expand in your feed with the image you chose. Even if you share the same article over and over to get more pageviews, the image will always be different. Your feed will look original and won't bore your readers
     image_url: assets/img/illustrations/illustration-3.png
 testimonials_title: Our customers are our biggest fans
-testimonials_text: We don\'t like to brag, but we don\'t mind letting our customers do it for us. Here are a few nice things people are saying
+testimonials_text: We don't like to brag, but we don't mind letting our customers do it for us. Here are a few nice things people are saying
 testimonials:
   - name: Megan Groves
     image_url: https://pbs.twimg.com/profile_images/1041757865617252352/dAljhozX_400x400.jpg
     quote: We recommend our clients write evergreen content and then repost it multiple times to drive better traffic. Finally we have a tool that lets us do this while keeping social feeds looking FRESH and ORIGINAL!'
   - name: Nicolò Ungari
     image_url: https://pbs.twimg.com/profile_images/506581638348697600/uroKAbOb_400x400.jpeg
-    quote: When I see a Twitter feed with the same image over and over again, I laugh :) Then I think back to my own feed before MultiPreview. It was pretty rough. I can\'t recommend this enough!'
+    quote: When I see a Twitter feed with the same image over and over again, I laugh :) Then I think back to my own feed before MultiPreview. It was pretty rough. I can't recommend this enough!'
 pricing_title: Fair, simple pricing
 pricing_text:
 pricing_free_trial: 7
@@ -94,11 +94,11 @@ pricing_plans:
       - Premius support
 faq:
   - question: Can I use MultiPreview for my clients?
-    answer: Absolutely, share as many articles across as many accounts as you\'d like.
+    answer: Absolutely, share as many articles across as many accounts as you'd like.
   - question: Can I add team members?
-    answer: Not yet, but we\'re adding support soon.
+    answer: Not yet, but we're adding support soon.
   - question: Is there a money back guarantee?
-    answer: Yes, if you\'re not totally satisfied with MultiPreview, let us know and we\'ll send over a refund.
+    answer: Yes, if you're not totally satisfied with MultiPreview, let us know and we'll send over a refund.
   - question: Is there a free trial?
     answer: Yes, all plans include a free trial.
 cta_badge: Get started
