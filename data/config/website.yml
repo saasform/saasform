@@ -22,43 +22,43 @@ hero_image_url: assets/img/illustrations/illustration-6.png
 hero_subtitle: Share your articles over and over, but keep them click-worthy with fresh images
 hero_cta: Get started now
 benefits:
-  - icon: assets/img/icons/duotone-icons/General/Star.svg
+  - image_url: assets/img/icons/duotone-icons/General/Star.svg
     title: Drive more pageviews
     text: MultiPreview supports your marketing goals. Share articles continuously to amplify reach, but swap out images to appeal and entice
-  - icon: assets/img/icons/duotone-icons/Weather/Rainbow.svg
+  - image_url: assets/img/icons/duotone-icons/Weather/Rainbow.svg
     title: Keep your feed original
     text: MultiPreview helps you plan a diversified feed. Repurpose an article by highlighting different quotes or callouts, or choose a new preview
-  - icon: assets/img/icons/duotone-icons/General/Heart.svg
+  - image_url: assets/img/icons/duotone-icons/General/Heart.svg
     title: Make it matter
     text: MultiPreview adds a new dimension to content sharing. What would you do if you could replace images every time you share an article?
 logos:
   - name: Twitter
-    image: assets/img/brands/logotype/twitter.svg
+    image_url: assets/img/brands/logotype/twitter.svg
   - name: Facebook
-    image: assets/img/brands/logotype/facebook.svg
+    image_url: assets/img/brands/logotype/facebook.svg
   - name: Pinterest
-    image: assets/img/brands/logotype/pinterest.svg
+    image_url: assets/img/brands/logotype/pinterest.svg
   - name: LinkedIn
-    image: assets/img/brands/logotype/linkedin.svg
+    image_url: assets/img/brands/logotype/linkedin.svg
 product:
   - title: Load the article you want to share
     text:  Add the link of an article you want to share. MultiPreview is platform agnostic and works with any article, blog post or web page. Medium, Wordpress, Ghost, Substack... you name it. All you need to start is the link of your article
-    image: assets/img/illustrations/illustration-4.png
+    image_url: assets/img/illustrations/illustration-4.png
   - title: Add multiple images and create magic links
     text: Now add a collection of images that will make your article pop. MultiPreview creates a magic link for every image you add. Drag and drop or copy and paste the link to any visuals you\'d like - quotes, photos, and more. It\'s ultra fast!
-    image: assets/img/illustrations/illustration-9.png,
+    image_url: assets/img/illustrations/illustration-9.png,
     position: left
   - title: Et voilà! Just share your magic links
     text: Post your magic links on Twitter, Facebook, Linkedin... Magic links expand in your feed with the image you chose. Even if you share the same article over and over to get more pageviews, the image will always be different. Your feed will look original and won\'t bore your readers
-    image: assets/img/illustrations/illustration-3.png
+    image_url: assets/img/illustrations/illustration-3.png
 testimonials_title: Our customers are our biggest fans
 testimonials_text: We don\'t like to brag, but we don\'t mind letting our customers do it for us. Here are a few nice things people are saying
 testimonials:
   - name: Megan Groves
-    photo: https://pbs.twimg.com/profile_images/1041757865617252352/dAljhozX_400x400.jpg
+    image_url: https://pbs.twimg.com/profile_images/1041757865617252352/dAljhozX_400x400.jpg
     quote: We recommend our clients write evergreen content and then repost it multiple times to drive better traffic. Finally we have a tool that lets us do this while keeping social feeds looking FRESH and ORIGINAL!'
   - name: Nicolò Ungari
-    photo: https://pbs.twimg.com/profile_images/506581638348697600/uroKAbOb_400x400.jpeg
+    image_url: https://pbs.twimg.com/profile_images/506581638348697600/uroKAbOb_400x400.jpeg
     quote: When I see a Twitter feed with the same image over and over again, I laugh :) Then I think back to my own feed before MultiPreview. It was pretty rough. I can\'t recommend this enough!'
 pricing_title: Fair, simple pricing
 pricing_text:
@@ -87,6 +87,7 @@ pricing_plans:
   - name: Enterprise
     price_text: Let's talk
     button: Contact us
+    button_href: mailto:hello@multipreview.com
     features:
       - All unlimited
       - Single Sign-On
