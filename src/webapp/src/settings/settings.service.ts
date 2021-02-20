@@ -316,7 +316,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     for (const key of encodedPaths) {
       const finalFunc = key.endsWith('url') ? htmlAsset : htmlEncode
       const value = _.get(settings, key) ?? this.configService.get(key) ?? ''
-      const finalValue = (typeof value === 'string') ? finalFunc(value) : value;
+      const finalValue = (typeof value === 'string') ? finalFunc(value) : value
       _.set(res, key, finalValue)
     }
 

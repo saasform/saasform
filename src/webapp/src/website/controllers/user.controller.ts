@@ -3,9 +3,7 @@ import {
   Get,
   Request,
   Res,
-  UseGuards,
-  NotFoundException
-  //   Param
+  UseGuards
 } from '@nestjs/common'
 import { Response } from 'express'
 
@@ -27,7 +25,7 @@ export class UserController {
       ...data,
       user: req.user,
       csrf_token: req.csrfToken(),
-      user_page: 'general',
+      user_page: 'general'
     }
 
     console.log(pageData)
@@ -44,7 +42,7 @@ export class UserController {
       ...data,
       user: req.user,
       csrf_token: req.csrfToken(),
-      user_page: 'security',
+      user_page: 'security'
     }
 
     console.log(pageData)
@@ -61,7 +59,7 @@ export class UserController {
       ...data,
       user: req.user,
       csrf_token: req.csrfToken(),
-      user_page: 'team',
+      user_page: 'team'
     }
 
     console.log(pageData)
@@ -78,12 +76,11 @@ export class UserController {
       ...data,
       user: req.user,
       csrf_token: req.csrfToken(),
-      user_page: 'billing',
+      user_page: 'billing'
     }
 
     console.log(pageData)
 
     return res.render(`${data.root_theme as string}/user`, pageData)
   }
-
 }
