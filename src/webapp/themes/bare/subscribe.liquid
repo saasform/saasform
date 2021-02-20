@@ -6,11 +6,13 @@
   <div>
     <h2>Choose plan</h2>
 
+    <!-- Display of the plans -->
     <ul>
       {% for plan in plans %}
+        <!-- Single plan view -->
         <li>
           <input type="radio" id="huey" name="plan" value="{{plan.id}}" />
-          <label for="{{plan.id}}">{{plan.name}} {{plan.price_year}} ({{plan.price_month}} when billen monthly)</label>
+          <label for="{{plan.id}}">{{plan.name}} {{plan.price_year}} ({{plan.price_month}} when billed monthly)</label>
         </li>
       {% endfor %}
     </ul>
@@ -19,8 +21,10 @@
   <div>
     <h2>Choose payment method</h2>
 
+    <!-- Display of methods of payment -->
     <ul>
       {% for method in account.payments_methods %}
+      <!-- Single method view -->
       <li>
         <input type="radio" id="huey" name="method" value="{{method.id}}" />
         <label for="{{method.id}}">xxxx-xxxx-xxxx-{{ method.card.last4 }} expiring on {{ method.card.exp_month }}/{{ method.card.exp_year }}</label>
@@ -28,6 +32,7 @@
       {% endfor %}
     </ul>
 
+    <!-- Monthly/yearly flag -->
     <input type="checkbox" id="monthly" name="monthly" />
     <label for="monthly">Pay monthly</label>
   </div>
@@ -39,6 +44,7 @@
 
 
 
+<!-- New payment method form -->
 <div>
   <h2>Add a payment method</h2>
 
@@ -48,7 +54,7 @@
     <input name="paymentName" id="modalPaymentName" type="text" value="First Last">
 
     <!-- Card info -->
-    <input name="number" id="modalPaymentNumbber" type="number" value="4242 4242 4242 4242">
+    <input name="number" id="modalPaymentNumbber" type="text" value="4242424242424242">
     <input  name="exp_month" id="modalPaymentDate" type="text" value="11">
     <input  name="exp_year" id="modalPaymentDate" type="text" value="2023">
     <input  name="cvc" id="modalPaymentDate" type="text" value="123">

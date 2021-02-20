@@ -21,6 +21,7 @@ export class LoginAuthGuard extends AuthGuard('local') {
     const response = context.switchToHttp().getResponse()
 
     if (request?.user == null) {
+      console.error('LoginAuthGuard - canActivate - user is null')
       throw new UnauthorizedException()
     }
 

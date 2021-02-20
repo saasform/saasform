@@ -179,14 +179,14 @@ export class PaymentsService extends BaseService<PaymentEntity> {
   async createStripeFreeSubscription (plan, user): Promise<any> { // TODO: return a proper type
     // TODO: fix the trial duration
     const trialDays = 10
-    const trialEnd = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60
+    const trial_end = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60 // eslint-disable-line @typescript-eslint/naming-convention
 
     try {
       // TODO: fix the price to use
       const subscription = await this.stripeService.client.subscriptions.create({
         customer: user.id,
         items: [{ price: plan.prices.year.id }],
-        trialEnd
+        trial_end
       })
 
       return subscription

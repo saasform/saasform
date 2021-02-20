@@ -60,13 +60,11 @@ export class AuthenticationController {
   @Post('/signup')
   async postSignup (@Request() req, @Res() res: Response): Promise<any> {
     const { email, password, account } = req.body
+    const data = await this.settingsService.getWebsiteRenderingVariables()
 
     const user = await this.authService.registerUser(email, password, account)
     if (user == null) { // TODO: redirect to error page
-      return res.json({
-        statusCode: 409,
-        message: 'Already registered'
-      })
+      return res.render(`${data.root_theme as string}/error`, { error: 'User already registered' })
     }
 
     const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
