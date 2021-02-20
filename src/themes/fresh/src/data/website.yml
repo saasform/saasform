@@ -43,49 +43,22 @@ legal_email: "{{ legal_email }}"
 hero_subtitle: "{{ hero_subtitle | formatNoOrphanDot }}"
 hero_cta: "{{ hero_cta }}"
 hero_image_url: "{{ hero_image_url }}"
-# benefits: [
-#   {
-#     icon: "
-#     title: "
-#     text: "
-#   }
-# ],
-# logos: [
-#   {
-#     name: "
-#     image_url: "
-#   }
-# ],
-# features: [
-#   {
-#     title: "
-#     text: "
-#     image_url: "
-#   }
-# ],
-# testimonials_title: "
-# testimonials_text: "
-# testimonials: [
-#   {
-#     name: "
-#     image_url: "
-#     quote: "
-#   }
-# ],
-# pricing_title: "
-# pricing_text: "
-# pricing_plans: [
-# ],
-# faq: [
-#   {
-#     title: "
-#     text: "
-#   }
-# ],
-# cta_badge: "
-# cta_title: "
-# cta_text: "
-# cta_button: "
+benefits: "{{ benefits }}"
+logos: "{{ logos }}"
+features: "{{ features }}"
+testimonials_title: "{{ testimonials_title | formatDot }}"
+testimonials_text: "{{ testimonials_text | formatNoOrphanDot }}"
+testimonials: "{{ testimonials }}"
+pricing_title: "{{ pricing_title | formatDot }}"
+pricing_text: "{{ pricing_text | formatNoOrphanDot }}"
+pricing_free_trial: "{{ pricing_free_trial }}"
+pricing_credit_card_required: "{{ pricing_credit_card_required }}"
+pricing_plans: "{{ pricing_plans }}"
+faq: "{{ faq }}"
+cta_badge: "{{ cta_badge }}"
+cta_title: "{{ cta_title | formatDot }}"
+cta_text: "{{ cta_text | formatNoOrphanDot }}"
+cta_button: "{{ cta_button }}"
 
 # prelaunch page, if enabled
 prelaunch_enabled: "{{ prelaunch_enabled }}"

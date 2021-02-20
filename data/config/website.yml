@@ -51,19 +51,46 @@ product:
   - title: Et voilà! Just share your magic links
     text: Post your magic links on Twitter, Facebook, Linkedin... Magic links expand in your feed with the image you chose. Even if you share the same article over and over to get more pageviews, the image will always be different. Your feed will look original and won\'t bore your readers
     image: assets/img/illustrations/illustration-3.png
+testimonials_title: Our customers are our biggest fans
+testimonials_text: We don\'t like to brag, but we don\'t mind letting our customers do it for us. Here are a few nice things people are saying
 testimonials:
-  title: Our customers are our biggest fans
-  text: We don\'t like to brag, but we don\'t mind letting our customers do it for us. Here are a few nice things people are saying
-  quotes:
-    - name: Megan Groves
-      photo: https://pbs.twimg.com/profile_images/1041757865617252352/dAljhozX_400x400.jpg
-      quote: We recommend our clients write evergreen content and then repost it multiple times to drive better traffic. Finally we have a tool that lets us do this while keeping social feeds looking FRESH and ORIGINAL!'
-    - name: Nicolò Ungari
-      photo: https://pbs.twimg.com/profile_images/506581638348697600/uroKAbOb_400x400.jpeg
-      quote: When I see a Twitter feed with the same image over and over again, I laugh :) Then I think back to my own feed before MultiPreview. It was pretty rough. I can\'t recommend this enough!'
-pricing:
-  title: Fair, simple pricing
-  text: null
+  - name: Megan Groves
+    photo: https://pbs.twimg.com/profile_images/1041757865617252352/dAljhozX_400x400.jpg
+    quote: We recommend our clients write evergreen content and then repost it multiple times to drive better traffic. Finally we have a tool that lets us do this while keeping social feeds looking FRESH and ORIGINAL!'
+  - name: Nicolò Ungari
+    photo: https://pbs.twimg.com/profile_images/506581638348697600/uroKAbOb_400x400.jpeg
+    quote: When I see a Twitter feed with the same image over and over again, I laugh :) Then I think back to my own feed before MultiPreview. It was pretty rough. I can\'t recommend this enough!'
+pricing_title: Fair, simple pricing
+pricing_text:
+pricing_free_trial: 7
+pricing_credit_card_required: false
+pricing_plans:
+  - name: Starter
+    price_year: 2.99
+    price_month: 3.50
+    price_decimals: 2
+    button: Choose
+    features:
+      - 3 articles
+      - 3 images/article
+      - Unlimited shares
+  - name: Unlimited
+    price_year: 9.99
+    price_month: 11.99
+    price_decimals: 2
+    button: Choose
+    primary: true
+    features:
+      - Unlimited articles
+      - Unlimited images/article
+      - Unlimited shares
+  - name: Enterprise
+    price_text: Let's talk
+    button: Contact us
+    features:
+      - All unlimited
+      - Single Sign-On
+      - Premius support
 faq:
   - question: Can I use MultiPreview for my clients?
     answer: Absolutely, share as many articles across as many accounts as you\'d like.
@@ -73,8 +100,7 @@ faq:
     answer: Yes, if you\'re not totally satisfied with MultiPreview, let us know and we\'ll send over a refund.
   - question: Is there a free trial?
     answer: Yes, all plans include a free trial.
-cta:
-  badge: Get started
-  title: Get MultiPreview now!
-  text: Share your articles over and over, but keep them click-worthy with fresh images
-  button: Get started for free
+cta_badge: Get started
+cta_title: Get MultiPreview now!
+cta_text: Share your articles over and over, but keep them click-worthy with fresh images
+cta_button: Get started for free

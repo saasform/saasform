@@ -227,7 +227,14 @@ export class SettingsService extends BaseService<SettingsEntity> {
       ],
       pricing_title: '',
       pricing_text: '',
+      pricing_free_trial: '',
+      pricing_credit_card_required: '',
       pricing_plans: [
+        {
+          name: '',
+          image_url: '',
+          quote: ''
+        }
       ],
       faq: [
         {
@@ -295,6 +302,8 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'testimonials_text',
       'pricing_title',
       'pricing_text',
+      'pricing_free_trial',
+      'pricing_credit_card_required',
       'cta_badge',
       'cta_title',
       'cta_text',
@@ -306,8 +315,9 @@ export class SettingsService extends BaseService<SettingsEntity> {
     ]
     for (const key of encodedPaths) {
       const finalFunc = key.endsWith('url') ? htmlAsset : htmlEncode
-      const value = _.get(settings, key) ?? this.configService.get(key, '')
-      _.set(res, key, finalFunc(value))
+      const value = _.get(settings, key) ?? this.configService.get(key) ?? ''
+      const finalValue = (typeof value === 'string') ? finalFunc(value) : value;
+      _.set(res, key, finalValue)
     }
 
     const arrayPaths = [

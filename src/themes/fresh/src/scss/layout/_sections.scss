@@ -151,7 +151,7 @@ Section Styles
         box-shadow: $light-shadow;
         margin: 8px;
         padding: 20px;
-        height: 420px;
+        /*height: 420px;*/
 
         .plan-name {
             font-family: $font;
@@ -173,6 +173,7 @@ Section Styles
             font-size: 2.4rem;
             color: $blue-grey;
 
+            /*
             &:before {
                 content: '$';
                 position: relative;
@@ -191,7 +192,7 @@ Section Styles
                 font-size: .9rem;
                 font-weight: 400;
                 color: $muted-grey;
-            }
+            }*/
         }
 
         p {
