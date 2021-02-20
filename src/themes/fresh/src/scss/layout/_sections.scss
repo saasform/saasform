@@ -50,6 +50,25 @@ Section Styles
         width: 100%;
         z-index: 0;
     }
+
+    &.is-bordered {
+      border-top: 1px solid $light-grey;
+      border-bottom: 1px solid $light-grey;
+      margin: 3rem 0;
+    }
+
+    &.has-background-dark {
+      background-color: $blue-grey!important;
+    }
+
+    &.is-front {
+      z-index: 1;
+    }
+
+    &.is-back {
+      margin-top: -18rem;
+      padding-top: 18rem;
+    }
 }
 
 //Titles
@@ -146,7 +165,7 @@ Section Styles
 
 .feature-card {
     &.is-pricing {
-        border: 1px solid darken($fade-grey, 4%);
+        //border: 1px solid darken($fade-grey, 4%);
         border-radius: 6px;
         box-shadow: $light-shadow;
         margin: 8px;

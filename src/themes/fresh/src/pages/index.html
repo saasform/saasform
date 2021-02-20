@@ -4,20 +4,20 @@ layout: index
 
 <section class="hero is-midheight is-default is-bold">
   <div class="hero-body">
-    <div class="container">
+    <div class="container is-max-desktop">
       <div class="columns is-vcentered">
-        <div class="column is-5 is-offset-1 landing-caption">
+        <div class="column is-5 landing-caption">
           <h1 class="title is-1 is-bold is-spaced">
             {{ website.title }}
           </h1>
           <h2 class="subtitle is-5 is-muted">{{ website.hero_subtitle }}</h2>
           <div class="button-wrap">
-            <a href="/signup" class="button cta primary-btn raised">
+            <a href="/signup" class="button is-primary is-medium raised">
               {{ website.hero_cta }}
             </a>
           </div>
         </div>
-        <div class="column is-5">
+        <div class="column is-offset-1">
           <figure class="image">
             <img src="{{ website.hero_image_url }}" alt="{{ website.name }}">
           </figure>
@@ -28,144 +28,47 @@ layout: index
   </div>
 
   <div class="hero-foot mb-20">
-    <div class="content-wrapper">
+    <div class="container is-max-desktop content">
       <div class="columns">
-        <div class="column is-one-third">
-          <div class="feature-card is-bordered has-text-centered is-feature-reveal">
-            <div class="card-title">
-              <h4>App builder</h4>
-            </div>
-            <div class="card-icon">
-              <img src="{{ root }}/assets/img/icons/web.svg">
-            </div>
-            <div class="card-text">
-              <p>This is some cool explanatory text that is on two rows</p>
-            </div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="feature-card is-bordered has-text-centered is-feature-reveal">
-            <div class="card-title">
-              <h4>Cloud integration</h4>
-            </div>
-            <div class="card-icon">
-              <img src="{{ root }}/assets/img/icons/rocket.svg">
-            </div>
-            <div class="card-text">
-              <p>This is some explanatory text that is on two rows</p>
-            </div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="feature-card is-bordered has-text-centered is-feature-reveal">
-            <div class="card-title">
-              <h4>Addons & Plugins</h4>
-            </div>
-            <div class="card-icon">
-              <img src="{{ root }}/assets/img/icons/light-bulb.svg">
-            </div>
-            <div class="card-text">
-              <p>This is some explanatory text that is on two rows</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        {% for item in benefits %}
+          <div class="column">
 
-    {% assign len = logos.length %}
-    {% if len > 0 %}
-    <div class="container">
-      <div class="tabs is-centered">
-        <ul>
-          {% for item in logos %}
-          <li><a><img class="partner-logo" src="{{ item.image }}" alt="{{ item.name }}"></a></li>
-          {% endfor %}
-        </ul>
+            <img src="{{ item.image_url }}" alt="{{ item.title }}" width="50" />
+
+            <h4>
+              {{ item.title }}
+            </h4>
+
+            <p class="is-muted has-text-grey">
+              {{ item.text }}
+            </p>
+
+          </div>
+        {% endfor %}
       </div>
+
     </div>
-    {% endif %}
   </div>
-
-  <!--div class="hero-foot mb-20">
-    <div class="container">
-      <div class="tabs is-centered">
-        <ul>
-          <li><a><img class="partner-logo" src="{{ root }}/assets/img/logo/clients/systek.svg"></a></li>
-          <li><a><img class="partner-logo" src="{{ root }}/assets/img/logo/clients/tribe.svg"></a></li>
-          <li><a><img class="partner-logo" src="{{ root }}/assets/img/logo/clients/kromo.svg"></a></li>
-          <li><a><img class="partner-logo" src="{{ root }}/assets/img/logo/clients/infinite.svg"></a></li>
-          <li><a><img class="partner-logo" src="{{ root }}/assets/img/logo/clients/gutwork.svg"></a></li>
-        </ul>
-      </div>
-    </div>
-  </div-->
 </section>
 
-<!--section class="section section-feature-grey is-medium">
-  <div class="container">
-    <div class="title-wrapper has-text-centered">
-      <h2 class="title is-2">Great Power Comes </h2>
-      <h3 class="subtitle is-5 is-muted">With great Responsability</h3>
-      <div class="divider is-centered"></div>
-    </div>
+{% assign len = logos.length %}
+{% if len > 0 %}
+<section class="section is-bordered">
+  <div class="container is-max-desktop">
+    <div class="columns is-vcentered">
+      {% for item in logos %}
+        <div class="column has-text-centered">
 
-    <div class="content-wrapper">
-      <div class="columns">
-        <div class="column is-one-third">
-          <div class="feature-card is-bordered has-text-centered is-feature-reveal">
-            <div class="card-title">
-              <h4>App builder</h4>
-            </div>
-            <div class="card-icon">
-              <img src="{{ root }}/assets/img/icons/web.svg">
-            </div>
-            <div class="card-text">
-              <p>This is some cool explanatory text that is on two rows</p>
-            </div>
-            <div class="card-action">
-              <a href="#" class="button btn-align-md primary-btn raised">Free Trial</a>
-            </div>
-          </div>
+          <img class="partner-logo" src="{{ item.image_url }}" alt="{{ item.name }}">
+
         </div>
-        <div class="column">
-          <div class="feature-card is-bordered has-text-centered is-feature-reveal">
-            <div class="card-title">
-              <h4>Cloud integration</h4>
-            </div>
-            <div class="card-icon">
-              <img src="{{ root }}/assets/img/icons/rocket.svg">
-            </div>
-            <div class="card-text">
-              <p>This is some explanatory text that is on two rows</p>
-            </div>
-            <div class="card-action">
-              <a href="#" class="button btn-align-md primary-btn raised">Get Started</a>
-            </div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="feature-card is-bordered has-text-centered is-feature-reveal">
-            <div class="card-title">
-              <h4>Addons & Plugins</h4>
-            </div>
-            <div class="card-icon">
-              <img src="{{ root }}/assets/img/icons/light-bulb.svg">
-            </div>
-            <div class="card-text">
-              <p>This is some explanatory text that is on two rows</p>
-            </div>
-            <div class="card-action">
-              <a href="#" class="button btn-align-md primary-btn raised">Get Started</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      {% endfor %}
     </div>
   </div>
-</section-->
+</section>
+{% endif %}
 
 <section id="product" class="section is-medium">
-  <div class="container">
     <!--div class="title-wrapper has-text-centered">
       <h2 class="title is-2">Awesome Features</h2>
       <h3 class="subtitle is-5 is-muted">To make you super happy</h3>
@@ -203,197 +106,8 @@ layout: index
   </div>
 </section>
 
-<!--section class="section section-feature-grey is-medium">
-  <div class="container">
-
-    <div class="columns is-vcentered app-side">
-      <div class="column is-5 is-offset-1">
-        <h3 class="title is-3 is-spaced is-title-reveal">An intuitive app</h3>
-        <p class="subtitle is-5 is-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cum audissem Antiochum, Brute, ut solebam, cum M. Quae diligentissime contra Aristonem dicuntur a Chryippo.</p>
-      </div>
-      <div class="column is-10">
-        <div class="has-text-centered">
-          <img class="pushed-image" src="{{ root }}/assets/img/illustrations/mockups/app-mockup.png">
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section is-medium">
-  <div class="container">
-    <div class="title-wrapper has-text-centered">
-      <h2 class="title is-2">Wait, there's more</h2>
-      <h3 class="subtitle is-5 is-muted">To make you super happy</h3>
-      <div class="divider is-centered"></div>
-    </div>
-
-    <div class="content-wrapper">
-      <div class="columns is-multiline icon-list">
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-github" size="large"></ion-icon>
-            </div>
-            <h4>Github</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-bitbucket" size="large"></ion-icon>
-            </div>
-            <h4>Bitbucket</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-slack" size="large"></ion-icon>
-            </div>
-            <h4>Slack</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-npm" size="large"></ion-icon>
-            </div>
-            <h4>Npm</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-javascript" size="large"></ion-icon>
-            </div>
-            <h4>Javascript</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-nodejs" size="large"></ion-icon>
-            </div>
-            <h4>Nodejs</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-angular" size="large"></ion-icon>
-            </div>
-            <h4>Angular</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-google" size="large"></ion-icon>
-            </div>
-            <h4>Google</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-python" size="large"></ion-icon>
-            </div>
-            <h4>Python</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-wordpress" size="large"></ion-icon>
-            </div>
-            <h4>WordPress</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-android" size="large"></ion-icon>
-            </div>
-            <h4>Android</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-        <div class="column is-3">
-          <div class="feature-icon has-text-centered">
-            <div class="icon-wrap is-icon-reveal">
-              <ion-icon name="logo-apple" size="large"></ion-icon>
-            </div>
-            <h4>Apple</h4>
-            <p>Some feature text</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section-->
-
-<!--section class="section is-medium section-feature-grey">
-  <div class="overlay"></div>
-  <div class="container">
-
-    <div class="title-wrapper has-text-centered">
-      <h2 class="title is-2 is-spaced">Our clients love us</h2>
-      <h3 class="subtitle is-5">Look at what they say about us</h3>
-    </div>
-
-    <div class="content-wrapper">
-      <div class="columns is-vcentered">
-        <div class="column is-4">
-          <figure class="testimonial">
-            <blockquote>
-              Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
-            </blockquote>
-            <div class="author">
-              <img src="{{ root }}/assets/img/illustrations/faces/1.png" alt=""/>
-              <h5>Irma Walters</h5><span>Accountant</span>
-            </div>
-          </figure>
-        </div>
-        <div class="column is-4">
-          <figure class="testimonial">
-            <blockquote>
-              Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
-            </blockquote>
-            <div class="author">
-              <img src="{{ root }}/assets/img/illustrations/faces/2.png" alt=""/>
-              <h5>John Bradley</h5><span>Financial Analyst</span>
-            </div>
-          </figure>
-        </div>
-        <div class="column is-4">
-          <figure class="testimonial">
-            <blockquote>
-              Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
-            </blockquote>
-            <div class="author">
-              <img src="{{ root }}/assets/img/illustrations/faces/3.png" alt=""/>
-              <h5>Gary Blackman</h5><span>HR Manager</span>
-            </div>
-          </figure>
-        </div>
-      </div>
-    </div>
-  </div>
-</section-->
-
-<section id="pricing" class="section is-medium section-feature-grey">
-  <div class="container">
+<section id="pricing" class="section is-medium is-front">
+  <div class="container is-max-desktop">
     <div class="content has-text-centered">
       <h2 class="title is-2">{{ website.pricing_title }}</h2>
 
@@ -436,9 +150,9 @@ layout: index
         </ul>
 
         {% if item.primary %}
-        <a class="button is-fullwidth is-bold is-primary">
+        <a class="button is-fullwidth is-bold is-primary" href="{{{ item.button_href }}}">
         {% else %}
-        <a class="button is-fullwidth is-bold">
+        <a class="button is-fullwidth is-bold" href="{{{ item.button_href }}}">
         {% endif %}
           {{ item.button }}
         </a>
@@ -448,7 +162,35 @@ layout: index
   </div>
 </section>
 
-<section id="faq" class="section section-light-grey is-medium">
+<section id="faq" class="section has-background-dark is-medium is-back">
+  <div class="container is-max-desktop">
+    <div class="columns">
+
+      <div class="column is-8 is-offset-2 has-text-centered">
+
+      <p class="tag is-dark is-rounded is-uppercase">
+        {{ website.cta_badge }}
+      </p>
+      <br/>
+
+      <p class="has-text-light is-size-2">
+        {{ website.cta_title }}
+      </p>
+      <br/>
+
+      <p class="has-text-grey-light is-size-5">
+        {{ website.cta_text }}
+      </p>
+      <br/>
+
+      <a href="/signup" class="button is-primary is-medium">
+        {{ website.cta_button }}
+      </a>
+
+
+    </div>
+    </div>
+  </div>
 </section>
 
 <!--section class="section section-light-grey is-medium">

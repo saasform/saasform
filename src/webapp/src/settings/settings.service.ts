@@ -169,7 +169,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     const { themeRoot, assetsRoot } = await this.getAssetsRoot()
     const settings = await this.getWebsiteSettings()
 
-    const htmlAsset: (asset: string) => string = (asset: string) => (`${assetsRoot}/${asset}`)
+    const htmlAsset: (asset: string) => string = (asset: string) => (asset.startsWith('https://') ? asset : `${assetsRoot}/${asset}`)
 
     // TODO type
     const res = {
@@ -198,7 +198,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       hero_image_url: '',
       benefits: [
         {
-          icon: '',
+          image_url: '',
           title: '',
           text: ''
         }
@@ -332,7 +332,17 @@ export class SettingsService extends BaseService<SettingsEntity> {
       const arrayFromSettings = _.get(settings, key) ?? []
       const arrayFromConfig = this.configService.get(key, [])
       const arrayValue = arrayFromSettings.length > 0 ? arrayFromSettings : arrayFromConfig
-      _.set(res, key, arrayValue)
+      const finalArrayValue = arrayValue.map(item => {
+        const ret = {};
+        for (const key in item) {
+          const value = item[key];
+          const finalFunc = key.endsWith('url') ? htmlAsset : htmlEncode
+          const finalValue = (typeof value === 'string') ? finalFunc(value) : value
+          ret[key] = finalValue;
+        }
+        return ret;
+      })
+      _.set(res, key, finalArrayValue)
       // TODO encode
     }
 

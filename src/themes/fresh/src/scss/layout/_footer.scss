@@ -2,10 +2,7 @@
 Fresh Footer
 ========================================================================== */
 
-footer.footer-dark {
-    background: $blue-grey;
-    color: $white;
-
+footer {
     .columns {
         margin-top: 35px;
     }
@@ -26,16 +23,42 @@ footer.footer-dark {
                 margin-bottom: 20px;
             }
         }
-
         .link-list {
             line-height: 40px;
             font-size: 1.1rem;
 
             a {
-                color: $light-blue-grey;
+                color: $grey;
                 font-weight: 400;
                 transition: all 0.5s;
 
+                &:hover {
+                    color: $primary;
+                }
+            }
+        }
+
+        .level-item {
+            .icon {
+                color: $grey;
+                transition: all 0.5s;
+
+                &:hover {
+                    color: $primary;
+                }
+            }
+        }
+    }
+}
+footer.footer-dark {
+    background: $blue-grey;
+    color: $white;
+
+    .footer-column {
+
+        .link-list {
+            a {
+                color: $light-blue-grey;
                 &:hover {
                     color: $smoke-white;
                 }
@@ -45,8 +68,6 @@ footer.footer-dark {
         .level-item {
             .icon {
                 color: $smoke-white;
-                transition: all 0.5s;
-
                 &:hover {
                     color: $smoke-white;
                 }
