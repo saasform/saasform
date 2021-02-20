@@ -61,6 +61,9 @@
         </div>
         <div class="navbar-end">
           {% if user_email != "" %}
+          <a href="/user" class="navbar-item is-primary">
+            Account
+          </a>
           <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
             Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
           </a>
@@ -119,6 +122,9 @@
         </div>
         <div class="navbar-end">
           {% if user_email != "" %}
+          <a href="/user" class="navbar-item is-primary">
+            Account
+          </a>
           <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
             Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
           </a>

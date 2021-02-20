@@ -36,6 +36,7 @@ csrf_token: "{{ csrf_token }}"
 # page
 page_title: "{{ page_title }}"
 page_body: "{{ page_body }}"
+user_page: "{{ user_page }}"
 legal_website_url: "{{ legal_website_url }}"
 legal_email: "{{ legal_email }}"
 

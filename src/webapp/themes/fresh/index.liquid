@@ -61,6 +61,9 @@
         </div>
         <div class="navbar-end">
           {% if user_email != "" %}
+          <a href="/user" class="navbar-item is-primary">
+            Account
+          </a>
           <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
             Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
           </a>
@@ -119,6 +122,9 @@
         </div>
         <div class="navbar-end">
           {% if user_email != "" %}
+          <a href="/user" class="navbar-item is-primary">
+            Account
+          </a>
           <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
             Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
           </a>
@@ -207,12 +213,12 @@
         </div>
       </div>
   
-      {% assign len = home.logos.length %}
+      {% assign len = logos.length %}
       {% if len > 0 %}
       <div class="container">
         <div class="tabs is-centered">
           <ul>
-            {% for item in home.logos %}
+            {% for item in logos %}
             <li><a><img class="partner-logo" src="" alt="{{ item.name }}"></a></li>
             {% endfor %}
           </ul>
@@ -478,7 +484,7 @@
     </div>
   </section-->
   
-  <section class="section is-medium section-feature-grey">
+  <!--section class="section is-medium section-feature-grey">
     <div class="overlay"></div>
     <div class="container">
   
@@ -525,44 +531,60 @@
         </div>
       </div>
     </div>
-  </section>
+  </section-->
   
   <section id="pricing" class="section is-medium section-feature-grey">
     <div class="container">
-      <div class="title-wrapper has-text-centered">
-        <h2 class="title is-2">Get Started</h2>
-        <h3 class="subtitle is-5 is-muted">Choose one of our plans</h3>
-        <div class="divider is-centered"></div>
+      <div class="content has-text-centered">
+        <h2 class="title is-2">{{ pricing_title | formatDot }}</h2>
+  
+        <div class="field">
+          Monthly
+          <input id="switchRoundedInfo" type="checkbox" name="switchRoundedInfo" class="switch is-rounded is-info" checked="checked">
+          Annually
+        </div>
+  
+        <h3 class="subtitle is-5 is-muted has-text-weight-normal">
+          {% if pricing_text != '' %}
+            {{ pricing_text | formatNoOrphanDot }}
+          {% elsif pricing_free_trial > 0 %}
+            All plans start with a {{ pricing_free_trial }} day free trial.
+            {% if pricing_credit_card_required == false %}
+              <br/>No credit card required to sign up.
+            {% endif %}
+          {% endif %}
+        </h3>
       </div>
   
       <div class="pricing-wrap">
+      {% for item in pricing_plans %}
         <div class="feature-card is-pricing has-text-centered">
-          <h3 class="plan-name">Starter</h3>
-          <img src="{{ root_assets }}/assets/img/illustrations/pricing/1.svg" alt=""/>
+          <h3 class="plan-name">{{ item.name }}</h3>
           <div class="price">
-            0
+            {% if item.price_text %}
+              {{ item.price_text }}
+            {% else %}
+              <span>$</span>{{ item.price_year }}<span>/mo</span>
+            {% endif %}
           </div>
-          <p>Sign up, get some awesome features and get started now</p>
-          <a class="button is-fullwidth is-bold">Get Started</a>
+  
+          <ul>
+          {% for feature in item.features %}
+            <li>
+              {{ feature }}
+            </li>
+          {% endfor %}
+          </ul>
+  
+          {% if item.primary %}
+          <a class="button is-fullwidth is-bold is-primary">
+          {% else %}
+          <a class="button is-fullwidth is-bold">
+          {% endif %}
+            {{ item.button }}
+          </a>
         </div>
-        <div class="feature-card is-pricing has-text-centered">
-          <h3 class="plan-name">Pro</h3>
-          <img src="{{ root_assets }}/assets/img/illustrations/pricing/2.svg" alt=""/>
-          <div class="price">
-            15
-          </div>
-          <p>Sign up, get some awesome features and get started now</p>
-          <a class="button is-fullwidth primary-btn raised is-bold">Get Started</a>
-        </div>
-        <div class="feature-card is-pricing has-text-centered">
-          <h3 class="plan-name">Business</h3>
-          <img src="{{ root_assets }}/assets/img/illustrations/pricing/3.svg" alt=""/>
-          <div class="price">
-            30
-          </div>
-          <p>Sign up, get some awesome features and get started now</p>
-          <a class="button is-fullwidth is-bold">Get Started</a>
-        </div>
+      {% endfor %}
       </div>
     </div>
   </section>
