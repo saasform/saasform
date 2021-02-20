@@ -35,6 +35,8 @@ export class PublicController {
       csrf_token: req.csrfToken()
     }
 
+    console.log(pageData)
+
     return res.render(`${data.root_theme as string}/index`, pageData)
   }
 
