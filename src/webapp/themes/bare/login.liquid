@@ -3,8 +3,8 @@
 <h1>Login</h1>
 
 <form action="" method="POST">
-    <input type="email" id="email" name="email" placeholder="name@address.com" required>
-    <input type="password" id="password" name="password" placeholder="Enter your password" minlength="8" required>
+    <input type="email" id="email" name="email" value="name@address.com" required>
+    <input type="password" id="password" name="password" value="Enter your password" minlength="8" required>
     <input type="hidden" name="_csrf" value="{{ csrf_token }}">
     <input type="submit" />
 </form>

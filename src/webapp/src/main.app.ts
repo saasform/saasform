@@ -7,6 +7,8 @@ import * as bodyParser from 'body-parser'
 import * as cookieParser from 'cookie-parser'
 import * as csurf from 'csurf'
 
+import { HttpExceptionsFilter } from './filters/http-exceptions.filter'
+
 // import { HttpExceptionsFilter } from './filters/http-exceptions.filter';
 
 // add '.' at the end of the string, unless it's there already
@@ -48,7 +50,8 @@ export function configureApp (app, isTest: boolean = false): void {
     app.use(helmet())
   }
 
-  // app.useGlobalFilters(new HttpExceptionsFilter())
+  app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalFilters(new HttpExceptionsFilter())
 
   const csrf = csurf({ cookie: true, signed: true, secure: true, httpOnly: true, sameSite: true })
   if (isTest) {
