@@ -7,14 +7,14 @@ assignees: ''
 
 ---
 
-**As a...**
+#### As a...
 
 _persona_
 
-**I want to...**
+#### I want to...
 
 _do something_
 
-**So that...**
+#### So that...
 
 _benefit_
