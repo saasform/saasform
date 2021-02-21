@@ -330,7 +330,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     ]
     for (const key of arrayPaths) {
       const arrayFromSettings = _.get(settings, key) ?? []
-      const arrayFromConfig = this.configService.get(key, [])
+      const arrayFromConfig = this.configService.get(key) ?? []
       const arrayValue = arrayFromSettings.length > 0 ? arrayFromSettings : arrayFromConfig
       const finalArrayValue = arrayValue.map(item => {
         const ret = {}
