@@ -24,7 +24,7 @@
   {{ html_google_tag_manager_body }}
 
   <nav x-data="initNavbar()" class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
-    <div class="container">
+    <div class="container is-max-desktop">
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
           <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ name }}</h2>
@@ -72,7 +72,7 @@
             Log in
           </a>
           <a href="/signup" class="navbar-item">
-            <span class="button signup-button primary-btn raised">
+            <span class="button signup-button is-primary raised">
               Sign up
             </span>
           </a>
@@ -85,7 +85,7 @@
       'is-active': scrolled,
       '': !scrolled
     }">
-    <div class="container">
+    <div class="container is-max-desktop">
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
           <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ name }}</h2>
@@ -133,7 +133,7 @@
             Log in
           </a>
           <a href="/signup" class="navbar-item">
-            <span class="button signup-button primary-btn raised">
+            <span class="button signup-button is-primary raised">
               Sign up
             </span>
           </a>
@@ -152,15 +152,33 @@
     </div>
   </section>
   
-  <footer class="footer footer-dark">
-    <div class="container">
-      <div class="columns">
+  <footer class="footer">
+    <div class="container is-max-desktop">
+      <div class="columns content">
         <div class="column">
           <div class="footer-logo">
             <h2 class="is-size-4 has-text-weight-semibold">{{ name }}</h2>
             <!--img src="{{ root_assets }}/img/logo/logo.svg"-->
           </div>
-          &copy; 2020 {{ legal_company_name }}
+          <p>&copy; 2020 {{ legal_company_name }}</p>
+          <!--div class="level-left">
+            <a class="level-item" href="{{ social_github }}">
+              <span class="icon">
+                <ion-icon name="logo-github" size="large"></ion-icon>
+              </span>
+            </a>
+            <a class="level-item" href="{{ social_twitter }}">
+              <span class="icon">
+                <ion-icon name="logo-twitter" size="large"></ion-icon>
+              </span>
+            </a>
+            <a class="level-item" href="{{ social_linkedin }}">
+              <span class="icon">
+                <ion-icon name="logo-linkedin" size="large"></ion-icon>
+              </span>
+            </a>
+          </div-->
+  
         </div>
         <div class="column">
           <div class="footer-column">
