@@ -76,7 +76,7 @@ pricing_plans:
       - Unlimited shares
   - name: Unlimited
     price_year: 9.99
-    price_month: 11.99
+    price_month: 12.00
     price_decimals: 2
     button: Choose
     primary: true

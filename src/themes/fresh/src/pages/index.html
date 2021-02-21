@@ -10,7 +10,7 @@ layout: index
           <h1 class="title is-1 is-bold is-spaced">
             {{ website.title }}
           </h1>
-          <h2 class="subtitle is-5 is-muted">{{ website.hero_subtitle }}</h2>
+          <h2 class="subtitle is-size-5 has-text-grey">{{ website.hero_subtitle }}</h2>
           <div class="button-wrap">
             <a href="/signup" class="button is-primary is-medium raised">
               {{ website.hero_cta }}
@@ -81,9 +81,9 @@ layout: index
       </div>
       {% endif %}
 
-      <div class="column">
-        <h3 class="title is-4 mb-20 is-title-reveal">{{ item.title }}</h3>
-        <p class="subtitle is-5 is-muted">{{ item.text }}</p>
+      <div class="column content">
+        <h3 class="title is-size-3 has-text-weight-normal">{{ item.title }}</h3>
+        <p class="is-size-5 has-text-grey">{{ item.text }}</p>
       </div>
 
       {% if item.position == 'left' %}
@@ -98,14 +98,14 @@ layout: index
 </section>
 {% endif %}
 
-<section id="pricing" class="section is-medium is-front">
+<section id="pricing" class="section is-front">
   <div class="container is-max-desktop">
     <div class="content has-text-centered">
       <h2 class="title is-2">{{ website.pricing_title }}</h2>
 
       <div class="field">
         <span>Monthly&nbsp;</span>
-        <input id="priceSwitch" name="priceSwitch" type="checkbox" class="switch is-rounded" checked="checked">
+        <input id="priceSwitch" name="priceSwitch" type="checkbox" class="switch is-rounded" checked="checked" x-data="{checked: true}" @click="$dispatch('pricing-recount', { month: checked })" x-model="checked">
         <label for="priceSwitch">Annually</label>
       </div>
 
@@ -124,27 +124,31 @@ layout: index
     <div class="pricing-wrap">
     {% for item in pricing_plans %}
       <div class="feature-card is-pricing has-text-centered">
-        <h3 class="plan-name">{{ item.name }}</h3>
-        <div class="price">
+        <h3 class="tag is-primary is-light is-uppercase">{{ item.name }}</h3>
+        <div class="price has-text-weight-normal">
           {% if item.price_text %}
             {{ item.price_text }}
           {% else %}
-            <span>$</span>{{ item.price_year }}<span>/mo</span>
+            <span class="pricing-currency">$ </span><span id="pricing{{ item.name }}" class="pricing-count"
+              x-data="{ price_year: {{ item.price_year }}, price_month: {{ item.price_month }}, price_decimals: {{ item.price_decimals }} }" x-on:pricing-recount.window="window.pricingUpdate($el, $event.detail.month ? price_month : price_year, price_decimals)">{{ item.price_year }}</span><span class="pricing-monthly"> /mo</span>
           {% endif %}
         </div>
 
-        <ul>
+        <ul class="pricing-features has-text-left">
         {% for feature in item.features %}
           <li>
+            <span class="tag is-success is-light is-rounded">
+              <ion-icon name="checkmark-outline"></ion-icon>
+            </span>
             {{ feature.name }}
           </li>
         {% endfor %}
         </ul>
 
         {% if item.primary %}
-        <a class="button is-fullwidth is-bold is-primary" href="{{{ item.button_href }}}">
+        <a class="button is-fullwidth is-medium is-primary" href="{{{ item.button_href }}}">
         {% else %}
-        <a class="button is-fullwidth is-bold" href="{{{ item.button_href }}}">
+        <a class="button is-fullwidth is-medium is-primary is-light" href="{{{ item.button_href }}}">
         {% endif %}
           {{ item.button }}
         </a>
@@ -184,77 +188,3 @@ layout: index
     </div>
   </div>
 </section>
-
-<!--section class="section section-light-grey is-medium">
-  <div class="container">
-    <div class="title-wrapper has-text-centered">
-      <h2 class="title is-2 is-spaced">Drop us a line or two </h2>
-      <h3 class="subtitle is-5 is-muted">We'd love to hear from You</h3>
-      <div class="divider is-centered"></div>
-    </div>
-
-    <div class="content-wrapper">
-      <div class="columns">
-        <div class="column is-6 is-offset-3">
-          <form>
-            <div class="columns is-multiline">
-              <div class="column is-6">
-                <input class="input is-medium" type="text" placeholder="First Name *">
-              </div>
-              <div class="column is-6">
-                <input class="input is-medium" type="text" placeholder="Last Name *">
-              </div>
-              <div class="column is-6">
-                <input class="input is-medium" type="text" placeholder="Email *">
-              </div>
-              <div class="column is-6">
-                <input class="input is-medium" type="email" placeholder="Company">
-              </div>
-              <div class="column is-12">
-                <textarea class="textarea" rows="6" placeholder=""></textarea>
-              </div>
-              <div class="column is-12">
-                <div class="form-footer has-text-right mt-10">
-                  <button class="button cta is-large primary-btn form-button raised is-clear">Send Message</button>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-</section-->
-
-<!--div id="auth-modal" class="modal">
-  <div class="modal-background modal-dismiss"></div>
-  <div class="modal-content">
-    <div class="flex-card auth-card">
-      <div class="tabs-wrapper">
-        <div class="tabs">
-          <ul>
-            <li class="is-active" data-tab="login-tab"><a>Login</a></li>
-            <li data-tab="register-tab"><a>Register</a></li>
-          </ul>
-        </div>
-        <div id="login-tab" class="tab-content is-active">
-          <div class="field">
-            <label>Username</label>
-            <div class="control">
-              <input type="text" class="input is-medium" placeholder="Enter username">
-            </div>
-          </div>
-          <div class="field">
-            <label>Password</label>
-            <div class="control">
-              <input type="password" class="input is-medium" placeholder="Enter password">
-            </div>
-          </div>
-
-          <a class="button is-fullwidth secondary-btn is-rounded raised">Log in</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
-</div-->
