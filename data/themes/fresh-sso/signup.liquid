@@ -46,29 +46,31 @@
   
             <!-- Email -->
             <div class="field">
-              <label for="email" class="label is-medium has-text-weight-normal">
+              <label for="email" class="label has-text-weight-normal">
                 Email address
               </label>
               <div class="control">
-                <input type="email" class="input is-medium" id="email" name="email" placeholder="name@address.com" required>
+                <input type="email" class="input" id="email" name="email" placeholder="name@address.com" required>
               </div>
+              <p id="error-email" class="help is-danger">{{ error.email | formatDot }}</p>
             </div>
   
             <!-- Password -->
             <div class="field">
-              <label for="password" class="label is-medium has-text-weight-normal">
+              <label for="password" class="label has-text-weight-normal">
                 Password
               </label>
               <div class="control">
-                <input type="password" class="input is-medium" id="password" name="password" placeholder="Enter your password" minlength="8" required>
+                <input type="password" class="input" id="password" name="password" placeholder="Enter your password" minlength="8" required>
               </div>
+              <p id="error-password" class="help is-danger">{{ error.password | formatDot }}</p>
             </div>
   
             <!-- Submit -->
             <input type="hidden" name="_csrf" value="{{ csrf_token }}">
             <div class="field">
               <div class="control">
-                <button class="button is-primary is-medium is-fullwidth" type="submit">Sign up</button>
+                <button class="button is-primary is-fullwidth" type="submit">Sign up</button>
               </div>
             </div>
   
@@ -77,8 +79,9 @@
             <!-- Social Auth -->
             <div class="field">
               <div class="control">
-                <a id="google-signin" class="button is-primary is-light is-medium is-fullwidth">Sign up with Google</a>
+                <a id="google-signin" class="button is-primary is-light is-fullwidth">Sign up with Google</a>
               </div>
+              <p id="error-google" class="help is-danger">{{ error.google | formatDot }}</p>
             </div>
           </form>
   

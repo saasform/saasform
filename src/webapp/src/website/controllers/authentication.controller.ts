@@ -29,6 +29,11 @@ export class AuthenticationController {
     const pageData = {
       ...data,
       csrf_token: req.csrfToken()
+      // error: {
+      //   email: 'Invalid email address',
+      //   password: 'Invalid email or password',
+      //   google: 'Error signing in with Google. Try again later',
+      // }
     }
 
     return res.render(`${data.root_theme as string}/login`, pageData)
@@ -52,6 +57,11 @@ export class AuthenticationController {
     const pageData = {
       ...data,
       csrf_token: req.csrfToken()
+      // error: {
+      //   email: 'Invalid email address',
+      //   password: 'Invalid email or password',
+      //   google: 'Error signing in with Google. Try again later',
+      // }
     }
 
     return res.render(`${data.root_theme as string}/signup`, pageData)
@@ -64,7 +74,15 @@ export class AuthenticationController {
 
     const user = await this.authService.registerUser(email, password, account)
     if (user == null) { // TODO: redirect to error page
-      return res.render(`${data.root_theme as string}/error`, { error: 'User already registered' })
+      const error = {
+        email: 'User already registered. Log in.'
+      }
+      const pageData = {
+        ...data,
+        csrf_token: req.csrfToken(),
+        error
+      }
+      return res.render(`${data.root_theme as string}/signup`, pageData)
     }
 
     const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
