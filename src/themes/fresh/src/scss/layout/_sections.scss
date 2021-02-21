@@ -167,6 +167,27 @@ Section Styles
     margin-top: 60px;
 }
 
+.price {
+  line-height: 0.5;
+  margin: 1.5rem 0;
+}
+
+.pricing-currency {
+  font-size: 1.5rem;
+  vertical-align: top;
+}
+
+.pricing-monthly {
+  font-size: 1.5rem;
+}
+
+.pricing-features {
+  margin: 2rem 0;
+  > li {
+    margin-bottom: 1rem;
+  }
+}
+
 .feature-card {
     &.is-pricing {
         //border: 1px solid darken($fade-grey, 4%);
