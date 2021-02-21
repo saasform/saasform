@@ -28,7 +28,7 @@ function formatNoOrphanDot (s: string): string {
 }
 
 export function configureApp (app, isTest: boolean = false): void {
-  const engine = new Liquid()
+  const engine = new Liquid({ jsTruthy: true })
   engine.registerFilter('formatDot', formatDot)
   engine.registerFilter('formatNoOrphanDot', formatNoOrphanDot)
 

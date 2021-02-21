@@ -36,6 +36,7 @@ layout: default
             <div class="control">
               <input type="email" class="input" id="email" name="email" placeholder="name@address.com" required>
             </div>
+            <p id="error-email" class="help is-danger">{{ error.email }}</p>
           </div>
 
           <!-- Password -->
@@ -46,6 +47,7 @@ layout: default
             <div class="control">
               <input type="password" class="input" id="password" name="password" placeholder="Enter your password" minlength="8" required>
             </div>
+            <p id="error-password" class="help is-danger">{{ error.password }}</p>
           </div>
 
           <!-- Submit -->
@@ -63,6 +65,7 @@ layout: default
             <div class="control">
               <a id="google-signin" class="button is-primary is-light is-fullwidth">Sign in with Google</a>
             </div>
+            <p id="error-google" class="help is-danger">{{ error.google }}</p>
           </div>
         </form>
 
