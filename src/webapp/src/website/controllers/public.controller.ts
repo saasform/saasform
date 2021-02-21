@@ -4,7 +4,8 @@ import {
   Request,
   Res,
   UseGuards,
-  NotFoundException
+  NotFoundException,
+  InternalServerErrorException
   //   Param
 } from '@nestjs/common'
 import { Response } from 'express'
@@ -25,6 +26,23 @@ export class PublicController {
   ) {}
 
   @UseGuards(UserOptionalAuthGuard)
+  @Get('__health')
+  getHealth (): string {
+    console.log('health check')
+    return 'ok'
+  }
+
+  @UseGuards(UserOptionalAuthGuard)
+  @Get('__error')
+  async getError (@Request() req): Promise<any> {
+    // TODO move in middleware, cf. #53
+    const data = await this.settingsService.getWebsiteRenderingVariables()
+    req.renderVar = data
+
+    throw new InternalServerErrorException()
+  }
+
+  @UseGuards(UserOptionalAuthGuard)
   @Get('/')
   async getHome (@Request() req, @Res() res: Response): Promise<any> {
     const data = await this.settingsService.getWebsiteRenderingVariables()
@@ -40,8 +58,11 @@ export class PublicController {
 
   @UseGuards(UserOptionalAuthGuard)
   @Get('*')
-  async getPrivacyPolicy (@Request() req, @Res() res: Response): Promise<any> {
+  async getStar (@Request() req, @Res() res: Response): Promise<any> {
     const name: string = req.params[0]
+    // TODO move in middleware, cf. #53
+    const data = await this.settingsService.getWebsiteRenderingVariables()
+    req.renderVar = data
 
     // try to find a md file
     let mdFile
@@ -65,7 +86,6 @@ export class PublicController {
     }
 
     // regular Saasform rendering variables
-    const data = await this.settingsService.getWebsiteRenderingVariables()
     const pageData = {
       ...data
     }

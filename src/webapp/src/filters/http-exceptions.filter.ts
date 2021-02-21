@@ -12,7 +12,7 @@ import { Request, Response } from 'express'
 
 @Catch()
 export class HttpExceptionsFilter implements ExceptionFilter {
-  catch (exception: Error, host: ArgumentsHost): any {
+  async catch (exception: Error, host: ArgumentsHost): Promise<any> {
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
     const request: any = ctx.getRequest<Request>()
@@ -46,16 +46,16 @@ export class HttpExceptionsFilter implements ExceptionFilter {
         .json(e.getResponse())
     }
 
-    const themeRoot = 'default'
-    const assetsRoot = `/${themeRoot}`
+    const themeRoot = request?.renderVar?.themeRoot as string ?? 'default'
+    const assetsRoot: string = request?.renderVar?.assetsRoot ?? `/${themeRoot}`
+    const renderVar = request?.renderVar ?? { assetsRoot }
 
     if (
       // view doesn't exist for tenant, revert to default
       exception.message.startsWith('Failed to lookup view')
     ) {
-      const assetsRoot = '/default'
       response.statusCode = 500
-      response.render(`${themeRoot}/500`, { assetsRoot })
+      response.render(`${themeRoot}/500`, renderVar)
     } else if (
       exception instanceof UnauthorizedException ||
       exception instanceof ForbiddenException
@@ -84,13 +84,13 @@ export class HttpExceptionsFilter implements ExceptionFilter {
           }
       }
     } else if (exception instanceof NotFoundException) {
-      // TODO settingsService.getWebsiteRenderingVariables
+      // request.renderVar is set by publicController.getStar
       response.statusCode = 404
-      response.render(`${themeRoot}/404`, { assetsRoot })
+      response.render(`${themeRoot}/404`, renderVar)
     } else {
       console.log(exception)
       response.statusCode = 500
-      response.render(`${themeRoot}/500`, { assetsRoot })
+      response.render(`${themeRoot}/500`, renderVar)
     }
   }
 }
