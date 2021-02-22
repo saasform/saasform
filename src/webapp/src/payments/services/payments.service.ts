@@ -122,17 +122,23 @@ export class PaymentsService extends BaseService<PaymentEntity> {
 
   async createPaymentMethod (customer: string, card: any): Promise<any> { // TODO: return a proper type
     const { number, exp_month, exp_year, cvc } = card // eslint-disable-line
-    const paymentMethod = await this.stripeService.client.paymentMethods.create({
-      type: 'card',
-      card: {
-        number, exp_month, exp_year, cvc
-      }
-    })
+    try {
+      const paymentMethod = await this.stripeService.client.paymentMethods.create({
+        type: 'card',
+        card: {
+          number, exp_month, exp_year, cvc
+        }
+      })
 
-    await this.stripeService.client.paymentMethods.attach(
-      paymentMethod.id,
-      { customer }
-    )
+      await this.stripeService.client.paymentMethods.attach(
+        paymentMethod.id,
+        { customer }
+      )
+
+      return paymentMethod
+    } catch (error) {
+      console.error('paymentsService - createPaymentMethod - error', error)
+    }
 
     // TODO: check errors
 
@@ -144,8 +150,6 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     },
   });
     */
-
-    return paymentMethod
   }
 
   async subscribeToPlan (customer: string, paymentMethod: any, price: any): Promise<any> { // TODO: return a proper type

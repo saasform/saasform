@@ -225,7 +225,7 @@ export class AccountsService extends BaseService<AccountEntity> {
   }
 
   async subscribeToPlan (account: AccountEntity, subscription: any): Promise<any> { // TODO: return a proper type
-    const paymentMethod = account.data.payments_methods.filter(p => p.id === subscription.method)[0]
+    const paymentMethod = account.data.payments_methods.filter(p => p?.id === subscription.method)[0]
     const price = await this.plansService.getPriceByProductAndAnnual(subscription.plan, subscription.monthly)
     await this.paymentsService.subscribeToPlan(account.data.stripe.id, paymentMethod, price)
     // TODO: check errors

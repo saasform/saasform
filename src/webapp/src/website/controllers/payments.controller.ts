@@ -72,7 +72,7 @@ export class PaymentsController {
 
     await this.accountsService.subscribeToPlan(account, req.body)
 
-    await this.accountsService.addPaymentsMethods(account.id, req.body)
+    // await this.accountsService.addPaymentsMethods(account.id, req.body)
 
     return res.redirect('/')
   }
