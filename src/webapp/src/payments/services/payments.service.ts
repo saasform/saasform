@@ -122,17 +122,23 @@ export class PaymentsService extends BaseService<PaymentEntity> {
 
   async createPaymentMethod (customer: string, card: any): Promise<any> { // TODO: return a proper type
     const { number, exp_month, exp_year, cvc } = card // eslint-disable-line
-    const paymentMethod = await this.stripeService.client.paymentMethods.create({
-      type: 'card',
-      card: {
-        number, exp_month, exp_year, cvc
-      }
-    })
+    try {
+      const paymentMethod = await this.stripeService.client.paymentMethods.create({
+        type: 'card',
+        card: {
+          number, exp_month, exp_year, cvc
+        }
+      })
 
-    await this.stripeService.client.paymentMethods.attach(
-      paymentMethod.id,
-      { customer }
-    )
+      await this.stripeService.client.paymentMethods.attach(
+        paymentMethod.id,
+        { customer }
+      )
+
+      return paymentMethod
+    } catch (error) {
+      console.error('paymentsService - createPaymentMethod - error', error)
+    }
 
     // TODO: check errors
 
@@ -144,20 +150,29 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     },
   });
     */
-
-    return paymentMethod
   }
 
   async subscribeToPlan (customer: string, paymentMethod: any, price: any): Promise<any> { // TODO: return a proper type
-    await this.stripeService.client.subscriptions.create({
-      customer,
-      default_payment_method: paymentMethod.id,
-      items: [
-        { price: price.id }
-      ]
-    })
+    try {
+      const subscription = await this.stripeService.client.subscriptions.create({
+        customer,
+        default_payment_method: paymentMethod.id,
+        items: [
+          { price: price.id }
+        ],
+        expand: ['latest_invoice.payment_intent']
+      })
 
-    // TODO: check errors
+      if (subscription == null) {
+        console.error('paymentService - subscribeToPlan - error while creating subscription')
+        return null
+      }
+
+      return subscription
+    } catch (error) {
+      console.error('paymentService - subscribeToPlan - exception while creating subscription', error)
+      return null
+    }
   }
 
   async createStripeCustomer (customer): Promise<any> { // TODO: return a proper type

@@ -12,13 +12,15 @@ import { SettingsService } from '../../settings/settings.service'
 import { UserRequiredAuthGuard } from '../../auth/auth.guard'
 import { AccountsService } from '../../accounts/services/accounts.service'
 import { PlansService } from '../../payments/services/plans.service'
+import { ConfigService } from '@nestjs/config'
 
 @Controller()
 export class PaymentsController {
   constructor (
     private readonly settingsService: SettingsService,
     private readonly accountsService: AccountsService,
-    private readonly plansService: PlansService
+    private readonly plansService: PlansService,
+    public configService: ConfigService
   ) {}
 
   @UseGuards(UserRequiredAuthGuard)
@@ -59,6 +61,7 @@ export class PaymentsController {
       account,
       plans,
       user: req.user,
+      stripePublishableKey: this.configService.get('STRIPE_PUBLISHABLE_KEY'),
       csrfToken: req.csrfToken()
     }
 
@@ -72,7 +75,7 @@ export class PaymentsController {
 
     await this.accountsService.subscribeToPlan(account, req.body)
 
-    await this.accountsService.addPaymentsMethods(account.id, req.body)
+    // await this.accountsService.addPaymentsMethods(account.id, req.body)
 
     return res.redirect('/')
   }
