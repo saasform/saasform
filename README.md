@@ -1,7 +1,7 @@
 # Saasform
 
 [![License](https://img.shields.io/github/license/saasform/saasform.svg)](https://github.com/saasform/saasform/blob/master/LICENSE)
-[![Slack Chat](https://img.shields.io/badge/chat-Slack-green.svg)](https://join.slack.com/t/saasformers/shared_invite/zt-ktzmotjp-Bit5MMInRNyJ~lxfeupd7Q)
+[![Discord Chat](https://img.shields.io/badge/chat-Discord-green.svg)](https://discord.gg/cbWW8akyW9)
 
 Saasform is a state-of-the-art website for your SaaS, with authentication, payments and common growth & marketing tools.
 
