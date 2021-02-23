@@ -1,8 +1,53 @@
-<!DOCTYPE html><html><head><title>{{ title }}</title>  <link rel="stylesheet" href="{{ root_assets }}/assets/style.css"></head><body>
+<!DOCTYPE html><html><head><title>{{ title }}</title> 
+  <link rel="stylesheet" href="{{ root_assets }}/assets/style.css">
+  <script src="{{ root_assets }}/assets/stripe.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    // This will create stipe client needed to perform 3dS checks.
+    // Please, copy exacly this way
+    let  stripe = Stripe("{{stripePublishableKey}}");
+  </script>
+  <script type="module">
+    // This is where your scripr might change. It must fetch from your page
+    // the plan id and the payment method id. In addition it can accept a monthly flag
+    // to indicate that the monthly payment is required.
+    // Finally, it needs the CSRF token.
+
+    // 1. Attaching a listener to the form submit event
+    const paymentForm = document.getElementById('payment-form');
+    if (paymentForm) {
+      paymentForm.addEventListener('submit', function (evt) {
+        // We will handle the submit ourself
+        evt.preventDefault();
+
+        // Getting value out of form.
+        const data = new FormData(document.getElementById('payment-form'));
+        const params = {}
+        for (const [name,value] of data) {
+          params[name] = value
+        }
+
+        if(params.plan && params.method) {
+          // here we call the Stripe library passing: 
+          // 1. the parameters we got from our page
+          // 2. a success callback
+          // 3. an error callback
+          createSubscription(
+            params,
+            _ => alert('Purchase completed'),
+            event => alert(event.error.message)
+          )
+        }
+        else
+          alert('Choose a plan and a payment method')
+      });
+    }
+  </script>
+</head><body>
 
 <h1>Subscribe to plan</h1>
 
-<form action="/user/billing/subscribe" method="POST">
+<form action="/user/billing/subscribe" id="payment-form" method="POST">
   <div>
     <h2>Choose plan</h2>
 
@@ -11,7 +56,7 @@
       {% for plan in plans %}
         <!-- Single plan view -->
         <li>
-          <input type="radio" id="huey" name="plan" value="{{plan.id}}" />
+          <input type="radio" id="plan" name="plan" value="{{plan.id}}" />
           <label for="{{plan.id}}">{{plan.name}} {{plan.price_year}} ({{plan.price_month}} when billed monthly)</label>
         </li>
       {% endfor %}
@@ -26,7 +71,7 @@
       {% for method in account.payments_methods %}
       <!-- Single method view -->
       <li>
-        <input type="radio" id="huey" name="method" value="{{method.id}}" />
+        <input type="radio" id="method" name="method" value="{{method.id}}" />
         <label for="{{method.id}}">xxxx-xxxx-xxxx-{{ method.card.last4 }} expiring on {{ method.card.exp_month }}/{{ method.card.exp_year }}</label>
       </li>
       {% endfor %}
@@ -37,7 +82,7 @@
     <label for="monthly">Pay monthly</label>
   </div>
 
-  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+  <input type="hidden" id="_csrf" name="_csrf" value="{{ csrfToken }}">
 
   <input type="submit" />
 </form>
