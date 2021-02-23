@@ -1,7 +1,7 @@
 import { Strategy } from 'passport-local'
 import { PassportStrategy } from '@nestjs/passport'
 import { ContextIdFactory, ModuleRef } from '@nestjs/core'
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { RequestUser } from './interfaces/user.interface'
 
@@ -25,7 +25,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     const user = await authService.validateUser(email, password)
     if (user == null) {
       console.error('local.strategy - validate - invalid email or password', email)
-      throw new UnauthorizedException('Invalid email or password')
+      return null
     }
 
     const requestUser = await authService.getTokenPayloadFromUserModel(user)
