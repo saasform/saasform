@@ -2,13 +2,83 @@
 layout: page
 ---
 
-<section class="section">
-  <div class="container content">
-    <h1 class="title">
-      Account Settings
-    </h1>
-    {{ website.user_email }}
+<div class="notification is-warning has-text-centered mb-0">
+  <!--button class="delete"></button-->
+  Your email is not verified yet. Verify your email.
+</div>
 
-    <h2>{{ website.user_page }}</h2>
+<section class="hero is-dark">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+    	<div class="columns is-vcentered">
+    	  <div class="column">
+
+          <h1 class="title">
+            Account Settings
+          </h1>
+
+          <p>{{ website.user_email }}</p>
+
+        </div>
+        <div class="column has-text-right">
+          <a href="/logout" class="button is-light">Log out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section has-background-white-bis">
+  <div class="container is-max-desktop">
+    <div class="columns">
+
+      <div class="column is-one-quarter">
+
+        <div class="card">
+          <div class="card-content">
+
+            <aside class="menu">
+              <p class="menu-label">
+                Accounts
+              </p>
+              <ul class="menu-list">
+
+                {% if user_page == 'general' %}
+                <li><a href="/user" class="is-active">General</a></li>
+                {% else %}
+                <li><a href="/user">General</a></li>
+                {% endif %}
+
+                {% if user_page == 'security' %}
+                <li><a href="/user/security" class="is-active">Security</a></li>
+                {% else %}
+                <li><a href="/user/security">Security</a></li>
+                {% endif %}
+
+                {% if user_page == 'billing' %}
+                <li><a href="/user/billing" class="is-active">Billing</a></li>
+                {% else %}
+                <li><a href="/user/billing">Billing</a></li>
+                {% endif %}
+
+                {% if user_page == 'team' %}
+                <li><a href="/user/team" class="is-active">Users</a></li>
+                {% else %}
+                <li><a href="/user/team">Users</a></li>
+                {% endif %}
+
+              </ul>
+            </aside>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="column">
+        {{ website.user_page }}
+      </div>
+
+    </div>
   </div>
 </section>
