@@ -14,6 +14,8 @@ import { AuthService } from '../..//auth/auth.service'
 import { UsersService } from '../../accounts/services/users.service'
 import { AccountsService } from '../../accounts/services/accounts.service'
 
+import { renderPage } from '../utilities/render'
+
 @Controller('/')
 export class AuthenticationController {
   constructor (
@@ -23,16 +25,21 @@ export class AuthenticationController {
     private readonly settingsService: SettingsService
   ) {}
 
-  async renderPage (req, res, page: string, data: {}): Promise<Response> {
-    const siteData = await this.settingsService.getWebsiteRenderingVariables()
+  // async renderPage (req, res, page: string, data = {}): Promise<Response> {
+  //   const siteData = req.websiteData
 
-    const pageData = {
-      ...siteData,
-      ...data,
-      csrf_token: req.csrfToken()
-    }
-    return res.render(`${siteData.root_theme as string}/${page}`, pageData)
-  }
+  //   const pageData = {
+  //     ...siteData,
+  //     ...data,
+  //     csrf_token: req.csrfToken()
+  //     // error: {
+  //     //   email: 'Invalid email address',
+  //     //   password: 'Invalid email or password',
+  //     //   google: 'Error signing in with Google. Try again later',
+  //     // }
+  //   }
+  //   return res.render(`${siteData.root_theme as string}/${page}`, pageData)
+  // }
 
   async issueJwtAndRediret (req, res, user): Promise<Response> {
     const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
@@ -54,18 +61,7 @@ export class AuthenticationController {
 
   @Get('/login')
   async getLogin (@Request() req, @Res() res: Response): Promise<any> {
-    const data = await this.settingsService.getWebsiteRenderingVariables()
-    const pageData = {
-      ...data,
-      csrf_token: req.csrfToken()
-      // error: {
-      //   email: 'Invalid email address',
-      //   password: 'Invalid email or password',
-      //   google: 'Error signing in with Google. Try again later',
-      // }
-    }
-
-    return res.render(`${data.root_theme as string}/login`, pageData)
+    return renderPage(req, res, 'login')
   }
 
   // @UseGuards(LoginAuthGuard)
@@ -74,7 +70,7 @@ export class AuthenticationController {
     const { email, password } = req.body
 
     if (email == null) {
-      return await this.renderPage(req, res, 'signup', {
+      return renderPage(req, res, 'signup', {
         error: {
           email: 'Email not valid.'
         }
@@ -82,7 +78,7 @@ export class AuthenticationController {
     }
 
     if (password == null) {
-      return await this.renderPage(req, res, 'signup', {
+      return renderPage(req, res, 'signup', {
         error: {
           password: 'Password not valid.'
         }
@@ -91,9 +87,9 @@ export class AuthenticationController {
 
     const user = await this.authService.validateUser(email, password)
     if (user == null) {
-      return await this.renderPage(req, res, 'login', {
+      return renderPage(req, res, 'login', {
         error: {
-          password: 'Wrong username or password'
+          password: 'Invalid username or password'
         }
       })
     }
@@ -103,25 +99,14 @@ export class AuthenticationController {
 
   @Get('/signup')
   async getSignup (@Request() req, @Res() res: Response): Promise<any> {
-    const data = await this.settingsService.getWebsiteRenderingVariables()
-    const pageData = {
-      ...data,
-      csrf_token: req.csrfToken()
-      // error: {
-      //   email: 'Invalid email address',
-      //   password: 'Invalid email or password',
-      //   google: 'Error signing in with Google. Try again later',
-      // }
-    }
-
-    return res.render(`${data.root_theme as string}/signup`, pageData)
+    return renderPage(req, res, 'signup')
   }
 
   @Post('/signup')
   async postSignup (@Request() req, @Res() res: Response): Promise<any> {
     const { email, password, account } = req.body
     if (email == null) {
-      return await this.renderPage(req, res, 'signup', {
+      return renderPage(req, res, 'signup', {
         error: {
           email: 'Email not valid.'
         }
@@ -129,7 +114,7 @@ export class AuthenticationController {
     }
 
     if (password == null) {
-      return await this.renderPage(req, res, 'signup', {
+      return renderPage(req, res, 'signup', {
         error: {
           password: 'Password not valid.'
         }
@@ -138,7 +123,7 @@ export class AuthenticationController {
 
     const user = await this.authService.registerUser(email, password, account)
     if (user == null) {
-      return await this.renderPage(req, res, 'signup', {
+      return renderPage(req, res, 'signup', {
         error: {
           email: 'User already registered. Log in.'
         }
@@ -151,7 +136,7 @@ export class AuthenticationController {
   @UseGuards(UserOptionalAuthGuard)
   @Get('verify-email/:token')
   async verifyEmailToken (@Request() req, @Res() res: Response, @Param('token') token: string): Promise<any> {
-    const data = await this.settingsService.getWebsiteRenderingVariables()
+    const data = req.websiteData
     try {
       const user = await this.usersService.confirmEmail(token)
 
@@ -196,13 +181,7 @@ export class AuthenticationController {
 
   @Get('/reset-password')
   async resetPassword (@Request() req, @Res() res: Response): Promise<any> {
-    const data = await this.settingsService.getWebsiteRenderingVariables()
-    const pageData = {
-      ...data,
-      csrf_token: req.csrfToken()
-    }
-
-    return res.render(`${data.root_theme as string}/reset-password`, pageData)
+    return renderPage(req, res, 'reset-password')
   }
 
   @Post('/reset-password')
@@ -210,19 +189,18 @@ export class AuthenticationController {
     const { email } = req.body
 
     await this.usersService.sendResetPasswordEmail(email)
-    res.redirect('/') // TODO
+    return renderPage(req, res, 'reset-password',
+      {
+        alert: {
+          type: 'notice',
+          text: 'A reset email has been sent'
+        }
+      })
   }
 
   @Get('reset-password/:token')
   async resetPasswordToken (@Request() req, @Res() res: Response, @Param('token') token: string): Promise<any> {
-    const data = await this.settingsService.getWebsiteRenderingVariables()
-    const pageData = {
-      ...data,
-      token,
-      csrf_token: req.csrfToken()
-    }
-
-    return res.render(`${data.root_theme as string}/resetPasswordToken`, pageData)
+    return renderPage(req, res, 'resetPasswordToken', { token })
   }
 
   @Post('/reset-password-finish')

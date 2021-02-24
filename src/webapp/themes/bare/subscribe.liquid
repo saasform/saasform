@@ -47,6 +47,10 @@
 
 <h1>Subscribe to plan</h1>
 
+<div>
+  {{ alert.text }}
+</div>
+
 <form action="/user/billing/subscribe" id="payment-form" method="POST">
   <div>
     <h2>Choose plan</h2>
@@ -82,7 +86,7 @@
     <label for="monthly">Pay monthly</label>
   </div>
 
-  <input type="hidden" id="_csrf" name="_csrf" value="{{ csrfToken }}">
+  <input type="hidden" id="_csrf" name="_csrf" value="{{ csrf_token }}">
 
   <input type="submit" />
 </form>
@@ -104,7 +108,7 @@
     <input  name="exp_year" id="modalPaymentDate" type="text" value="2023">
     <input  name="cvc" id="modalPaymentDate" type="text" value="123">
 
-    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
 
     <input type="submit" />
   </form>

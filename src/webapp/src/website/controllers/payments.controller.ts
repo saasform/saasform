@@ -8,16 +8,16 @@ import {
   //   Param
 } from '@nestjs/common'
 import { Response } from 'express'
-import { SettingsService } from '../../settings/settings.service'
 import { UserRequiredAuthGuard } from '../../auth/auth.guard'
 import { AccountsService } from '../../accounts/services/accounts.service'
 import { PlansService } from '../../payments/services/plans.service'
 import { ConfigService } from '@nestjs/config'
 
+import { renderPage } from '../utilities/render'
+
 @Controller()
 export class PaymentsController {
   constructor (
-    private readonly settingsService: SettingsService,
     private readonly accountsService: AccountsService,
     private readonly plansService: PlansService,
     public configService: ConfigService
@@ -28,15 +28,7 @@ export class PaymentsController {
   async getPaymentMethodList (@Request() req, @Res() res: Response): Promise<any> {
     const account = await this.accountsService.findByOwnerEmail(req.user.email)
 
-    const data = await this.settingsService.getWebsiteRenderingVariables()
-    const pageData = {
-      ...data,
-      account,
-      user: req.user,
-      csrfToken: req.csrfToken()
-    }
-
-    return res.render(`${data.root_theme as string}/payment-methods`, pageData)
+    return renderPage(req, res, 'payment-methods', { account })
   }
 
   @UseGuards(UserRequiredAuthGuard)
@@ -55,17 +47,12 @@ export class PaymentsController {
     const account = await this.accountsService.findByOwnerEmail(req.user.email)
     const plans = this.plansService.getPlans()
 
-    const data = await this.settingsService.getWebsiteRenderingVariables()
-    const pageData = {
-      ...data,
+    return renderPage(req, res, 'subscribe', {
       account,
       plans,
       user: req.user,
-      stripePublishableKey: this.configService.get('STRIPE_PUBLISHABLE_KEY'),
-      csrfToken: req.csrfToken()
-    }
-
-    return res.render(`${data.root_theme as string}/subscribe`, pageData)
+      stripePublishableKey: this.configService.get('STRIPE_PUBLISHABLE_KEY')
+    })
   }
 
   @UseGuards(UserRequiredAuthGuard)
@@ -74,8 +61,6 @@ export class PaymentsController {
     const account = await this.accountsService.findByOwnerEmail(req.user.email)
 
     await this.accountsService.subscribeToPlan(account, req.body)
-
-    // await this.accountsService.addPaymentsMethods(account.id, req.body)
 
     return res.redirect('/')
   }
