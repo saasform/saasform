@@ -76,7 +76,23 @@ layout: page
       </div>
 
       <div class="column">
-        {{ website.user_page }}
+
+        {% if user_page == 'general' %}
+        {{> user-general}}
+        {% endif %}
+
+        {% if user_page == 'security' %}
+        {{> user-security}}
+        {% endif %}
+
+        {% if user_page == 'billing' %}
+        {{> user-billing}}
+        {% endif %}
+
+        {% if user_page == 'team' %}
+        {{> user-team}}
+        {% endif %}
+
       </div>
 
     </div>
