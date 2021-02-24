@@ -37,10 +37,6 @@ export class PublicController {
   @UseGuards(UserOptionalAuthGuard)
   @Get('__error')
   async getError (@Request() req): Promise<any> {
-    // TODO move in middleware, cf. #53
-    const data = req.websiteData
-    req.renderVar = data
-
     throw new InternalServerErrorException()
   }
 
@@ -56,9 +52,6 @@ export class PublicController {
   @Get('*')
   async getStar (@Request() req, @Res() res: Response): Promise<any> {
     const name: string = req.params[0]
-    // TODO move in middleware, cf. #53
-    const data = req.websiteData
-    req.renderVar = data
 
     // try to find a md file
     let mdFile
@@ -82,6 +75,7 @@ export class PublicController {
     }
 
     // regular Saasform rendering variables
+    const data = req.websiteData
     const pageData = {
       ...data
     }
