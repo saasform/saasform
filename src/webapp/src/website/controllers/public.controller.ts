@@ -19,6 +19,8 @@ import * as yaml from 'js-yaml'
 import { SettingsService } from '../../settings/settings.service'
 import { UserOptionalAuthGuard } from '../../auth/auth.guard'
 
+import { renderPage } from '../utilities/render'
+
 @Controller()
 export class PublicController {
   constructor (
@@ -36,7 +38,7 @@ export class PublicController {
   @Get('__error')
   async getError (@Request() req): Promise<any> {
     // TODO move in middleware, cf. #53
-    const data = await this.settingsService.getWebsiteRenderingVariables()
+    const data = req.websiteData
     req.renderVar = data
 
     throw new InternalServerErrorException()
@@ -45,15 +47,9 @@ export class PublicController {
   @UseGuards(UserOptionalAuthGuard)
   @Get('/')
   async getHome (@Request() req, @Res() res: Response): Promise<any> {
-    const data = await this.settingsService.getWebsiteRenderingVariables()
-
-    const pageData = {
-      ...data,
-      user: req.user,
-      csrf_token: req.csrfToken()
-    }
-
-    return res.render(`${data.root_theme as string}/index`, pageData)
+    return renderPage(req, res, 'index', {
+      user: req.user
+    })
   }
 
   @UseGuards(UserOptionalAuthGuard)
@@ -61,7 +57,7 @@ export class PublicController {
   async getStar (@Request() req, @Res() res: Response): Promise<any> {
     const name: string = req.params[0]
     // TODO move in middleware, cf. #53
-    const data = await this.settingsService.getWebsiteRenderingVariables()
+    const data = req.websiteData
     req.renderVar = data
 
     // try to find a md file
