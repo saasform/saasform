@@ -1,8 +1,8 @@
-{% assign size = "is-medium" %}
+{% assign size = "" %}
 <div class="card mb-6">
   <div class="card-content content">
 
-    <h2 class="has-text-weight-normal">Basic information</h2><br/>
+    <h2 class="has-text-weight-normal">Basic Information</h2><br/>
 
     <form action="" method="POST" class="mb-40">
       <div class="field">
@@ -13,7 +13,7 @@
               First name
             </label>
             <div class="control">
-              <input type="first" class="input {{ website.size }}" id="first" name="first" placeholder="First name" value="{{ website.user_first_name }}">
+              <input type="text" class="input {{ website.size }}" id="first" name="first" placeholder="First name" value="{{ website.user_first_name }}">
             </div>
             <p id="error-first" class="help is-danger">{{ error.first }}</p>
           </div>
@@ -23,7 +23,7 @@
               Last name
             </label>
             <div class="control">
-              <input type="last" class="input {{ website.size }}" id="last" name="last" placeholder="Last name" value="{{ website.user_last_name }}">
+              <input type="text" class="input {{ website.size }}" id="last" name="last" placeholder="Last name" value="{{ website.user_last_name }}">
             </div>
             <p id="error-last" class="help is-danger">{{ error.last }}</p>
           </div>
