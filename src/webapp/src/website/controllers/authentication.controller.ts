@@ -93,7 +93,7 @@ export class AuthenticationController {
     if (user == null) {
       return await this.renderPage(req, res, 'login', {
         error: {
-          message: 'Wrong username or password'
+          password: 'Wrong username or password'
         }
       })
     }

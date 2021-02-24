@@ -24,8 +24,8 @@ const DB_INIT: string = `
 INSERT INTO settings VALUES (1,'website','{"name": "Uplom", "domain_primary": "uplom.com"}', NOW(), NOW());
 INSERT INTO users (id, email, password, isAdmin, isActive, emailConfirmationToken, resetPasswordToken,data) VALUES (101,'admin@uplom.com','password',1,1,1,1,'{}'),(102,'user@gmail.com','password',0,1,1,'1k-X4PTtCQ7lGQ','{"resetPasswordToken": "1k-X4PTtCQ7lGQ", "resetPasswordTokenExp": "1708940883080"}'),(111,'nosub@gmail.com','password',0,1,1,1,'{}');
 INSERT INTO accounts (id, owner_id, data) VALUES (201, 101, '{}'),(211, 111, '{}');
-INSERT INTO accountsUsers (account_id, user_id) VALUES (201, 101),(201, 102),(211, 111);
-INSERT INTO usersCredentials (credential, userId, json) VALUES ('admin@uplom.com',101,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}'),('user@gmail.com',102,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}'),('nosub@gmail.com',111,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
+INSERT INTO accounts_users (account_id, user_id) VALUES (201, 101),(201, 102),(211, 111);
+INSERT INTO users_credentials (credential, userId, json) VALUES ('admin@uplom.com',101,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}'),('user@gmail.com',102,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}'),('nosub@gmail.com',111,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
 `
 
 const existingUser = 'email=admin@uplom.com&password=password'
@@ -91,7 +91,7 @@ describe('Authentication (e2e)', () => {
     return agent
       .post('/api/v1/login')
       .send(existingUser)
-      .expect(201)
+      .expect(302)
   })
 
   it('login not existing user', () => {
@@ -122,7 +122,7 @@ describe('Authentication (e2e)', () => {
             agent
               .post('/api/v1/login')
               .send(newUser)
-              .expect(201)
+              .expect(302)
           )
       )
   })
