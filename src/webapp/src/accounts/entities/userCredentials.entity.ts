@@ -11,7 +11,7 @@ class CredentialsJSON {
   encryptedPassword: string
 };
 
-@Entity('usersCredentials')
+@Entity('users_credentials')
 export class UserCredentialsEntity {
   @PrimaryGeneratedColumn()
   id: number

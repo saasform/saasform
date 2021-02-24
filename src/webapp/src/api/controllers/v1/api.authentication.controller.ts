@@ -1,7 +1,6 @@
-import { Controller, Get, Post, UseGuards, Request, Res } from '@nestjs/common'
+import { Controller, Get, Post, Request, Res } from '@nestjs/common'
 import { Response } from 'express'
 import { SettingsService } from '../../../settings/settings.service'
-import { LoginAuthGuard } from '../../../auth/auth.guard'
 import { AuthService } from '../../../auth/auth.service'
 
 @Controller('/api/v1')
@@ -19,13 +18,46 @@ export class ApiV1AutheticationController {
     })
   }
 
-  @UseGuards(LoginAuthGuard)
+  async issueJwtAndRedirect (req, res, user): Promise<Response> {
+    const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
+    if (requestUser == null) {
+      console.error('API V1 - issueJwtAndRediret - requestUser not valid')
+      return res.status(500).json({
+        statusCode: 500,
+        message: 'Server error'
+      })
+    }
+
+    await this.authService.setJwtCookie(req, res, requestUser)
+    const redirect = await this.settingsService.getRedirectAfterLogin()
+
+    return res.status(302).json({
+      statusCode: 302,
+      message: 'Found',
+      redirect
+    })
+  }
+
   @Post('login')
   async handleLogin (@Request() req, @Res() res: Response): Promise<any> {
-    return res.json({
-      statusCode: 200,
-      message: 'Hello, small World!'
-    })
+    const { email, password } = req.body
+
+    if (email == null || password == null) {
+      return res.status(400).json({
+        statusCode: 400,
+        message: 'Missing parameters (email or password)'
+      })
+    }
+
+    const user = await this.authService.validateUser(email, password)
+    if (user == null) {
+      return res.status(401).json({
+        statusCode: 401,
+        message: 'Unauthorized'
+      })
+    }
+
+    return await this.issueJwtAndRedirect(req, res, user)
   }
 
   @Post('signup')
@@ -34,7 +66,7 @@ export class ApiV1AutheticationController {
     const { email, password, account } = req.body
 
     if (email == null || password == null) {
-      return response.json({
+      return response.status(400).json({
         statusCode: 400,
         message: 'Missing parameters (email or password)'
       })
@@ -42,31 +74,13 @@ export class ApiV1AutheticationController {
 
     const user = await this.authService.registerUser(email, password, account)
     if (user == null) {
-      console.log('returning 409')
       return response.status(409).json({
         statusCode: 409,
         message: 'Already registered'
       })
     }
 
-    const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
-    if (requestUser == null) {
-      console.error('API V1 - handleSignup - requestUser not valid')
-      return response.status(500).json({
-        statusCode: 500,
-        message: 'Server error'
-      })
-    }
-
-    await this.authService.setJwtCookie(req, res, requestUser)
-    // SETTINGS
-    const redirect = await this.settingsService.getRedirectAfterLogin()
-
-    return response.status(302).json({
-      statusCode: 302,
-      message: 'Found',
-      redirect
-    })
+    return await this.issueJwtAndRedirect(req, res, user)
   }
 
   @Get('/public-key')

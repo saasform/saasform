@@ -8,7 +8,7 @@ import {
   Param
 //   Param
 } from '@nestjs/common'; import { Response } from 'express'
-import { LoginAuthGuard, UserOptionalAuthGuard } from '../..//auth/auth.guard'
+import { UserOptionalAuthGuard } from '../..//auth/auth.guard'
 import { SettingsService } from '../../settings/settings.service'
 import { AuthService } from '../..//auth/auth.service'
 import { UsersService } from '../../accounts/services/users.service'
@@ -22,6 +22,35 @@ export class AuthenticationController {
     private readonly usersService: UsersService,
     private readonly settingsService: SettingsService
   ) {}
+
+  async renderPage (req, res, page: string, data: {}): Promise<Response> {
+    const siteData = await this.settingsService.getWebsiteRenderingVariables()
+
+    const pageData = {
+      ...siteData,
+      ...data,
+      csrf_token: req.csrfToken()
+    }
+    return res.render(`${siteData.root_theme as string}/${page}`, pageData)
+  }
+
+  async issueJwtAndRediret (req, res, user): Promise<Response> {
+    const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
+    if (requestUser == null) {
+      console.error('authenticationController - handleSignup - requestUser not valid')
+      return res.redirect('/error')
+    }
+
+    await this.authService.setJwtCookie(req, res, requestUser)
+
+    const next = req.query.next
+    if (next != null && next[0] === '/') {
+      return res.redirect(next)
+    } else {
+      const redirect = await this.settingsService.getRedirectAfterLogin() ?? '/'
+      return res.redirect(redirect)
+    }
+  }
 
   @Get('/login')
   async getLogin (@Request() req, @Res() res: Response): Promise<any> {
@@ -39,16 +68,37 @@ export class AuthenticationController {
     return res.render(`${data.root_theme as string}/login`, pageData)
   }
 
-  @UseGuards(LoginAuthGuard)
+  // @UseGuards(LoginAuthGuard)
   @Post('/login')
   async postLogin (@Request() req, @Res() res: Response): Promise<any> {
-    const next = req.query.next
-    if (next != null && next[0] === '/') {
-      return res.redirect(next)
-    } else {
-      const redirect = await this.settingsService.getRedirectAfterLogin() ?? '/'
-      return res.redirect(redirect)
+    const { email, password } = req.body
+
+    if (email == null) {
+      return await this.renderPage(req, res, 'signup', {
+        error: {
+          email: 'Email not valid.'
+        }
+      })
     }
+
+    if (password == null) {
+      return await this.renderPage(req, res, 'signup', {
+        error: {
+          password: 'Password not valid.'
+        }
+      })
+    }
+
+    const user = await this.authService.validateUser(email, password)
+    if (user == null) {
+      return await this.renderPage(req, res, 'login', {
+        error: {
+          password: 'Wrong username or password'
+        }
+      })
+    }
+
+    return await this.issueJwtAndRediret(req, res, user)
   }
 
   @Get('/signup')
@@ -70,36 +120,32 @@ export class AuthenticationController {
   @Post('/signup')
   async postSignup (@Request() req, @Res() res: Response): Promise<any> {
     const { email, password, account } = req.body
-    const data = await this.settingsService.getWebsiteRenderingVariables()
+    if (email == null) {
+      return await this.renderPage(req, res, 'signup', {
+        error: {
+          email: 'Email not valid.'
+        }
+      })
+    }
+
+    if (password == null) {
+      return await this.renderPage(req, res, 'signup', {
+        error: {
+          password: 'Password not valid.'
+        }
+      })
+    }
 
     const user = await this.authService.registerUser(email, password, account)
-    if (user == null) { // TODO: redirect to error page
-      const error = {
-        email: 'User already registered. Log in.'
-      }
-      const pageData = {
-        ...data,
-        csrf_token: req.csrfToken(),
-        error
-      }
-      return res.render(`${data.root_theme as string}/signup`, pageData)
+    if (user == null) {
+      return await this.renderPage(req, res, 'signup', {
+        error: {
+          email: 'User already registered. Log in.'
+        }
+      })
     }
 
-    const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
-    if (requestUser == null) {
-      console.error('authenticationController - handleSignup - requestUser not valid')
-      return res.redirect('/error')
-    }
-
-    await this.authService.setJwtCookie(req, res, requestUser)
-
-    const next = req.query.next
-    if (next != null && next[0] === '/') {
-      return res.redirect(next)
-    } else {
-      const redirect = await this.settingsService.getRedirectAfterLogin() ?? '/'
-      return res.redirect(redirect)
-    }
+    return await this.issueJwtAndRediret(req, res, user)
   }
 
   @UseGuards(UserOptionalAuthGuard)
