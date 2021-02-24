@@ -9,7 +9,6 @@ import { initNavbar } from './libs/components/navbar';
 import { initSidebar } from './libs/components/sidebar';
 import { initBackToTop } from './libs/components/backtotop';
 import { initPricing } from './libs/components/pricing';
-// import { CountUp } from './libs/libs/countUp';
 const feather = require('feather-icons');
 
 window.initNavbar = initNavbar;

@@ -2,10 +2,20 @@
 layout: page
 ---
 
-<div class="notification is-warning has-text-centered mb-0">
-  <!--button class="delete"></button-->
-  Your email is not verified yet. Verify your email.
-</div>
+{% if alert and alert.text %}
+  {% case alert.type %}
+    {% when "critical" %}
+      {% assign alert_class = "is-danger" %}
+    {% when "warning" %}
+      {% assign alert_class = "is-warning" %}
+    {% else %}
+      {% assign alert_class = "is-danger" %}
+  {% endcase %}
+  <div class="notification {{ alert_class }} has-text-centered mb-0">
+    {{ alert.text }}
+    <a class="" href="{{ alert.link_url }}">{{ alert.link_text }}</a>
+  </div>
+{% endif %}
 
 <section class="hero is-dark">
   <div class="hero-body">
@@ -17,7 +27,7 @@ layout: page
             Account Settings
           </h1>
 
-          <p>{{ website.user_email }}</p>
+          <p>Settings for {{ website.user_email }}</p>
 
         </div>
         <div class="column has-text-right">
@@ -28,8 +38,8 @@ layout: page
   </div>
 </section>
 
-<section class="section has-background-white-bis">
-  <div class="container is-max-desktop">
+<section class="section has-background-white-bis" style="overflow: visible!important;">
+  <div class="container is-max-desktop" style="margin-top: -120px;">
     <div class="columns">
 
       <div class="column is-one-quarter">

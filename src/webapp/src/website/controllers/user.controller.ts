@@ -23,10 +23,15 @@ export class UserController {
   @UseGuards(UserRequiredAuthGuard)
   @Get('/')
   async getUser (@Request() req, @Res() res: Response): Promise<any> {
-    // return res.render(`${data.root_theme as string}/user`, pageData)
-    return renderPage(req, res, 'payment-methods', {
+    return renderPage(req, res, 'user', {
       user: req.user,
-      user_page: 'general'
+      csrf_token: req.csrfToken(),
+      user_page: 'general',
+      // alert: {
+      //   text: 'Your free trial is expired.',
+      //   link_url: '/user/billing',
+      //   link_text: 'Upgrade your plan.',
+      // }
     })
   }
 
