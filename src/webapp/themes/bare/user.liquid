@@ -1,0 +1,18 @@
+<!DOCTYPE html><html><head><title>{{ title }}</title> 
+  <link rel="stylesheet" href="{{ root_assets }}/assets/style.css">
+</head><body>
+
+<h1>User profile</h1>
+
+{{ alert.text }}
+
+<h2>Team</h2>
+
+<ul>
+{% for user in account_users %}
+  <li>{{ user.email }}</li>
+{% endfor %}
+</ul>
+
+</body>
+</html>

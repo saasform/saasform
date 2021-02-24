@@ -104,7 +104,11 @@ export class AccountsService extends BaseService<AccountEntity> {
     }
   }
 
-  async getUsers (id: number): Promise<any[]> { // TODO: fix return value
+  /**
+   * Get users of a given account
+   * @param id Id of the account to search
+   */
+  async getUsers (id: number): Promise<Array<UserEntity | undefined>> { // TODO: fix undefined return value. It should be null
     // 1. get users id from accountUsers table
     const usersIds = await this.accountsUsersService.query({
       filter: { account_id: { eq: id } }
@@ -113,9 +117,13 @@ export class AccountsService extends BaseService<AccountEntity> {
     // 2. get all info for each user
     const users = await Promise.all(
       usersIds.map(async u =>
-        await this.usersService.query({ filter: { id: { eq: u.user_id } } })
+        await this.usersService.findById(u.user_id)
       )
     )
+    if (users == null) {
+      // No users for account. This should never happend
+      return []
+    }
 
     return users
   }
