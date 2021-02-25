@@ -6,11 +6,14 @@ import { Repository } from 'typeorm'
 import * as bcrypt from 'bcrypt'
 
 import { UserEntity } from '../entities/user.entity'
-import { NewUserInput } from '../dto/new-user.input'
+import { NewUserInput, UserJson } from '../dto/new-user.input'
 import { UserCredentialsService } from '../services/userCredentials.service'
 import { BaseService } from '../../utilities/base.service'
 import { SettingsService } from '../../settings/settings.service'
 import { NotificationsService } from '../../notifications/notifications.service'
+
+import { password } from '../../utilities/random'
+
 @QueryService(UserEntity)
 @Injectable({ scope: Scope.REQUEST })
 export class UsersService extends BaseService<UserEntity> {
@@ -42,40 +45,60 @@ export class UsersService extends BaseService<UserEntity> {
     return result
   }
 
-  async findOrCreateUser (email: string): Promise<UserEntity | null> {
-    let user
-    user = await this.findByEmail(email)
+  /**
+   * If a user exists on the DB reutrns it.
+   * It it doesn't, creates it.
+   * If data is passed, assign data to the user data.
+   * @param email emaiil of the user
+   * @param data additional data of the user
+   */
+  async findOrCreateUser (data: UserJson): Promise<UserEntity | null> {
+    const user = await this.findByEmail(data.email)
 
-    if (user === null || user === []) {
-      return null
+    if (user != null) {
+      return user
     }
 
-    user = new UserEntity()
-    user.email = email
-    await user.setResetPasswordToken()
-
     try {
-      user = await this.addUser(user)
-      if (typeof user === 'undefined') {
+      const user = await this.addUser({
+        email: data.email,
+        password: password(10),
+        data
+      }, true)
+      if (user == null) {
         return null
       }
 
       return user
     } catch (err) {
       console.error(
-        'accounts.service - inviteUser - Error while inviting new user (creating new user)',
-        email,
+        'usersService - findOrCreateUser - Error while adding new user',
+        data.email,
         err
       )
       return null
     }
   }
 
-  async addUser (newUser: NewUserInput): Promise<UserEntity | null> {
+  /**
+   * Add a new user
+   * @param newUser data of the user
+   * @param resetPassword flag indicating if password must be resetted during creation. Default to false (see below)
+   */
+  async addUser (newUser: NewUserInput, resetPassword = false): Promise<UserEntity | null> {
     const user = new UserEntity()
     user.email = newUser.email
     user.password = await bcrypt.hash(newUser.password, 12)
     user.data.name = newUser?.data?.name ?? ''
+
+    // TODO: consider whether to move this elsewhere.
+    // So far this flag is only set to true during the invitation,
+    // while this function is also used during the signup, so maybe
+    // it's better to move the password reset into the invitation flow;
+    // it was put here to save a DB update.
+    if (resetPassword) {
+      await user.setResetPasswordToken()
+    }
 
     try {
       const res = await this.createOne(user)

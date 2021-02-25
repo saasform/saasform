@@ -10,9 +10,29 @@
 
 <ul>
 {% for user in account_users %}
-  <li>{{ user.email }}</li>
+  <li>{{ user.name }}, {{ user.email }}</li>
 {% endfor %}
 </ul>
+
+<h3>Add user to the teaam</h3>
+
+<form action="/user/team" method="POST">
+  <div>
+      <input type="email" id="email" name="email" value="name@address.com" required>
+      {{error.email}}
+  </div>
+  <div>
+      <input type="text" id="name" name="name" value="John" required>
+      {{error.name}}
+  </div>
+  <div>
+    <input type="text" id="extra" name="extra" value="extra" required>
+    {{error.name}}
+</div>
+
+  <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+  <input type="submit" />
+</form>
 
 </body>
 </html>
