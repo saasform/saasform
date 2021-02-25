@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Request,
   Res,
   UseGuards
@@ -26,7 +27,7 @@ export class UserController {
     return renderPage(req, res, 'user', {
       user: req.user,
       csrf_token: req.csrfToken(),
-      user_page: 'general',
+      user_page: 'general'
       // alert: {
       //   text: 'Your free trial is expired.',
       //   link_url: '/user/billing',
@@ -57,9 +58,19 @@ export class UserController {
   async getUserTeam (@Request() req, @Res() res: Response): Promise<any> {
     const account_users = await this.accountService.getUsers(req.user.account_id) // eslint-disable-line
 
-    console.log(account_users)
-
     return renderPage(req, res, 'user', { account_users })
+  }
+
+  @UseGuards(UserRequiredAuthGuard)
+  @Post('/team')
+  async addUserTeam (@Request() req, @Res() res: Response): Promise<any> {
+    const invitedUser = await this.accountService.inviteUser(req.body, req.user.account_id)
+
+    if (invitedUser == null) {
+      return res.redirect('/error')
+    }
+
+    return res.redirect('/user/team')
   }
 
   @UseGuards(UserRequiredAuthGuard)

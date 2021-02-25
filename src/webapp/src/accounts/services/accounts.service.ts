@@ -14,6 +14,7 @@ import { NotificationsService } from '../../notifications/notifications.service'
 import { SettingsService } from '../..//settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
+import { UserJson } from '../dto/new-user.input'
 
 @QueryService(AccountEntity)
 @Injectable()
@@ -148,12 +149,12 @@ export class AccountsService extends BaseService<AccountEntity> {
    * Invite a user.
    *
    * Create a new user and reset its password.
-   * Then add it to the accountUser model
+   * Then add it to the accountUser model.
    *
    * @param userInput data of the user to invite
    * @param accountId id of the account to add the user to
    */
-  async inviteUser (userInput: any, accountId: number): Promise<UserEntity | null> { // TODO: specify type
+  async inviteUser (userInput: UserJson, accountId: number): Promise<UserEntity | null> { // TODO: specify type
     if (userInput == null) {
       return null
     }
@@ -165,9 +166,7 @@ export class AccountsService extends BaseService<AccountEntity> {
       return null
     }
 
-    const email = userInput.email
-
-    const user = await this.usersService.findOrCreateUser(email)
+    const user = await this.usersService.findOrCreateUser(userInput)
     if (user == null) {
       return null
     }
@@ -184,17 +183,12 @@ export class AccountsService extends BaseService<AccountEntity> {
     }
 
     // send email here (invited user template)
-
-    return user
-  }
-
-  async addUser (user: any, accountId: Number): Promise<UserEntity | null> {
-    const account = await this.findById(accountId as any)
-    if (account === undefined) {
-      return null
+    const link = `${await this.settingsService.getBaseUrl()}/reset-password/${user.resetPasswordToken}`
+    if (await this.notificationService.sendEmail(user.email, 'invitedUser', { account, user, link }) === false) {
+      console.error('accountsService - inviteUser - error while sending email')
     }
 
-    return await this.inviteUser(user, account.id)
+    return user
   }
 
   async findByUserId (userId): Promise<AccountEntity | undefined> {

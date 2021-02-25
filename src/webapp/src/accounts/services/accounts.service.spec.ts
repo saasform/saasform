@@ -247,7 +247,7 @@ describe('Accounts Service', () => {
       })
 
       describe('Invite an existing User', () => {
-        it('Should not create a new User', async () => {
+        it('Should find or create a new User', async () => {
           jest.clearAllMocks()
           const repoSpy = jest.spyOn(mockedUserRepo, 'findOrCreateUser')
 
@@ -256,7 +256,7 @@ describe('Accounts Service', () => {
           expect(repoSpy).toBeCalledTimes(1)
         })
 
-        it('The new User should have not requested a reset password', async () => {
+        it.skip('The new User should have not requested a reset password', async () => {
           jest.clearAllMocks()
           // It would be better if we could mock the whole UserEntity
           // to have a better control on who calles who. IMPROVE HERE.

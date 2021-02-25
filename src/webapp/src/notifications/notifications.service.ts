@@ -45,40 +45,45 @@ export class NotificationsService {
    * by the caller of the notification setting.
    */
   templates = {
-    confirmation: async (data: any) => ({
+    confirmation: async (settings: any, data: any) => ({
       subject: `Welcome to ${data.title as string}`,
       text: `Welcome to ${data.title as string}. Click on the following link to confirm your email. To confirm your email visit ${data.link as string}.`,
-      html: await this.renderLiquidTemplate('confirm_email', data)
+      html: await this.renderLiquidTemplate('confirm_email', settings, data) ?? ''
     }),
-    resetPassword: async (data: any) => ({
+    resetPassword: async (settings, data: any) => ({
       subject: `Reset Password for ${data.user.email as string}`,
       text: `Click on ${data.link as string} to reset your password.`,
-      html: await this.renderLiquidTemplate('reset_email', data)
+      html: await this.renderLiquidTemplate('reset_email', settings, data) ?? ''
     }),
-    newAccount: async (data: any) => ({
+    newAccount: async (settings, data: any) => ({
       subject: `New account on ${data.title as string}`,
       text: `Welcome to ${data.title as string}. Click on the following link to confirm your email. To confirm your email visit ${data.link as string}.`,
-      html: await this.renderLiquidTemplate('new_account', data)
+      html: await this.renderLiquidTemplate('new_account', settings, data) ?? ''
+    }),
+    invitedUser: async (settings, data: any) => ({
+      subject: `You have been invited to ${settings.title as string}!`,
+      text: `Click on ${data.link as string} to accept the invitation and set your password.`,
+      html: await this.renderLiquidTemplate('invited_user', settings, data) ?? '<html></html>'
     })
   }
 
-  async renderLiquidTemplate (template: string, data: any): Promise<string | null> {
-    const settings = await this.settingsService.getWebsiteRenderingVariables()
-
+  async renderLiquidTemplate (template: string, settings: any, data: any): Promise<string | null> {
     try {
       const engine = new Liquid({
         root: resolve(__dirname, THEMES_DIR),
         extname: '.liquid'
       })
 
-      return await engine.renderFile(`${settings.themeRoot as string}/${EMAIL_TEMPLATES_DIR}/${template}`, data)
+      return await engine.renderFile(`${settings.root_theme as string}/${EMAIL_TEMPLATES_DIR}/${template}`, { ...settings, ...data })
     } catch (err) {
-      console.error('renderLiquidTemplate - error rendering email template', template, data)
+      console.error('renderLiquidTemplate - error rendering email template', err, template, data)
       return null
     }
   }
 
   async sendEmail (to: string, template: string, data: any): Promise<Boolean> {
+    const settings = await this.settingsService.getWebsiteRenderingVariables()
+
     if (this.isCertainlyInvalidApiKey()) {
       console.error('notificationService - sendEmail - api key not configured')
       return false
@@ -92,7 +97,7 @@ export class NotificationsService {
     const msg = {
       to,
       from: this.sendFrom,
-      ...(await this.templates[template](data))
+      ...(await this.templates[template](settings, data))
     }
 
     await (async () => {
