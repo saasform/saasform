@@ -10,6 +10,7 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "coverageDirectory": "../coverage",
+  "coverageDirectory": "../coverage/",
+  "collectCoverage": true,
   "testEnvironment": "node"
 }
