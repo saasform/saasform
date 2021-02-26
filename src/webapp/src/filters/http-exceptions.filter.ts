@@ -49,13 +49,17 @@ export class HttpExceptionsFilter implements ExceptionFilter {
     const themeRoot = request?.websiteData?.themeRoot as string ?? 'default'
     const assetsRoot: string = request?.websiteData?.assetsRoot ?? `/${themeRoot}`
     const websiteData = request?.websiteData ?? { assetsRoot }
+    const data = {
+      ...websiteData,
+      user: request.user
+    }
 
     if (
       // view doesn't exist for tenant, revert to default
       exception.message.startsWith('Failed to lookup view')
     ) {
       response.statusCode = 500
-      response.render(`${themeRoot}/500`, websiteData)
+      response.render(`${themeRoot}/500`, data)
     } else if (
       exception instanceof UnauthorizedException ||
       exception instanceof ForbiddenException
@@ -84,13 +88,12 @@ export class HttpExceptionsFilter implements ExceptionFilter {
           }
       }
     } else if (exception instanceof NotFoundException) {
-      // request.websiteData is set by publicController.getStar
       response.statusCode = 404
-      response.render(`${themeRoot}/404`, websiteData)
+      response.render(`${themeRoot}/404`, data)
     } else {
       console.log(exception)
       response.statusCode = 500
-      response.render(`${themeRoot}/500`, websiteData)
+      response.render(`${themeRoot}/500`, data)
     }
   }
 }

@@ -43,9 +43,7 @@ export class PublicController {
   @UseGuards(UserOptionalAuthGuard)
   @Get('/')
   async getHome (@Request() req, @Res() res: Response): Promise<any> {
-    return renderPage(req, res, 'index', {
-      user: req.user
-    })
+    return renderPage(req, res, 'index')
   }
 
   @UseGuards(UserOptionalAuthGuard)
@@ -74,20 +72,16 @@ export class PublicController {
       }
     }
 
-    // regular Saasform rendering variables
-    const data = req.websiteData
-    const pageData = {
-      ...data
-    }
-
     const md = new MarkdownIt({ linkify: true })
     const liquid = new Liquid()
 
-    // title from md header
-    pageData.page_title = mdVars.title ?? ''
-    // body first via liquid (to replace Saasform variable) then markdown-it
-    pageData.page_body = md.render(await liquid.parseAndRender(mdBody, pageData))
+    const pageData = {
+      // title from md header
+      page_title: mdVars.title ?? '',
+      // body first via liquid (to replace Saasform variable) then markdown-it
+      page_body: md.render(await liquid.parseAndRender(mdBody, req.websiteData))
+    }
 
-    return res.render(`${data.root_theme as string}/page`, pageData)
+    return renderPage(req, res, 'page', pageData)
   }
 }

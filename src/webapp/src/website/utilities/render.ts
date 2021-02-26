@@ -12,12 +12,10 @@ const renderPage = (req, res, page: string, data = {}): Response => {
   const pageData = {
     ...siteData,
     ...data,
+    user: {
+      ...req.user
+    },
     csrf_token: req.csrfToken()
-    // error: {
-    //   email: 'Invalid email address',
-    //   password: 'Invalid email or password',
-    //   google: 'Error signing in with Google. Try again later',
-    // }
   }
   return res.render(`${siteData.root_theme as string}/${page}`, pageData)
 }
