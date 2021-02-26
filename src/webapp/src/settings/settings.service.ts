@@ -132,7 +132,6 @@ export class SettingsService extends BaseService<SettingsEntity> {
     return keys.jwt_private_key
   }
 
-  // TODO: TDD this
   async getBaseUrl (cachedSettings?): Promise<string> {
     const configuredBaseUrl = this.configService.get<string>('SAASFORM_BASE_URL') ?? ''
     const settings = cachedSettings ?? await this.getWebsiteSettings()

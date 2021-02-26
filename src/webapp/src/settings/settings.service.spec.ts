@@ -123,6 +123,26 @@ describe('SettingsService', () => {
     result = await service.getRedirectAfterLogin()
     expect(result).toEqual('/')
   })
+
+  it('getBaseUrl', async () => {
+    // Default
+    let result = await service.getBaseUrl()
+    expect(result).toEqual('/')
+
+    // Config wins on default
+    service.configService.get = jest.fn(_ => 'mockedHost')
+    result = await service.getBaseUrl()
+    expect(result).toEqual('mockedHost')
+
+    // DB wins on config
+    service.query = jest.fn(q => ([{
+      category: 'website',
+      domain_primary: 'mysite.com'
+    }])) as any
+
+    result = await service.getBaseUrl()
+    expect(result).toEqual('https://mysite.com')
+  })
 })
 
 describe('SettingsService (aux functions)', () => {
