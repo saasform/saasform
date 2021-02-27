@@ -60,7 +60,7 @@
           </a>
         </div>
         <div class="navbar-end">
-          {% if user_email != "" %}
+          {% if user.email %}
           <a href="/user" class="navbar-item is-primary">
             Account
           </a>
@@ -121,7 +121,7 @@
           </a>
         </div>
         <div class="navbar-end">
-          {% if user_email != "" %}
+          {% if user.email %}
           <a href="/user" class="navbar-item is-primary">
             Account
           </a>
@@ -143,14 +143,477 @@
     </div>  </nav>
 
   
-  <section class="section">
-    <div class="container content">
-      <h1 class="title">
-        Account Settings
-      </h1>
-      {{ user_email }}
+  {% if alert and alert.text %}
+    {% case alert.type %}
+      {% when "critical" %}
+        {% assign alert_class = "is-danger" %}
+      {% when "warning" %}
+        {% assign alert_class = "is-warning" %}
+      {% else %}
+        {% assign alert_class = "is-danger" %}
+    {% endcase %}
+    <div class="notification  has-text-centered mb-0">
+      {{ alert.text }}
+      <a class="" href="{{ alert.link_url }}">{{ alert.link_text }}</a>
+    </div>
+  {% endif %}
   
-      <h2>{{ user_page }}</h2>
+  <section class="hero is-dark">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+      	<div class="columns is-vcentered">
+      	  <div class="column">
+  
+            <h1 class="title">
+              Account Settings
+            </h1>
+  
+            <p>Settings for {{ user.email }}</p>
+  
+          </div>
+          <div class="column has-text-right">
+            <a href="/logout" class="button is-light">Log out</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="section has-background-white-bis" style="overflow: visible!important;">
+    <div class="container is-max-desktop" style="margin-top: -120px;">
+      <div class="columns">
+  
+        <div class="column is-one-quarter">
+  
+          <div class="card">
+            <div class="card-content">
+  
+              <aside class="menu">
+                <p class="menu-label">
+                  Accounts
+                </p>
+                <ul class="menu-list">
+  
+                  {% if user_page == 'general' %}
+                  <li><a href="/user" class="is-active">General</a></li>
+                  {% else %}
+                  <li><a href="/user">General</a></li>
+                  {% endif %}
+  
+                  {% if user_page == 'security' %}
+                  <li><a href="/user/security" class="is-active">Security</a></li>
+                  {% else %}
+                  <li><a href="/user/security">Security</a></li>
+                  {% endif %}
+  
+                  {% if user_page == 'billing' %}
+                  <li><a href="/user/billing" class="is-active">Billing</a></li>
+                  {% else %}
+                  <li><a href="/user/billing">Billing</a></li>
+                  {% endif %}
+  
+                  {% if user_page == 'team' %}
+                  <li><a href="/user/team" class="is-active">Users</a></li>
+                  {% else %}
+                  <li><a href="/user/team">Users</a></li>
+                  {% endif %}
+  
+                </ul>
+              </aside>
+  
+            </div>
+          </div>
+  
+        </div>
+  
+        <div class="column">
+  
+          {% if user_page == 'general' %}
+          {% assign size = "" %}
+          <div class="card mb-6">
+            <div class="card-content content">
+          
+              <h3 class="has-text-weight-normal">Basic Information</h3><br/>
+          
+              <form action="" method="POST" class="mb-40">
+                <div class="field">
+                  <div class="field-body">
+          
+                    <div class="field">
+                      <label for="first" class="label {{ size }} has-text-weight-normal">
+                        First name
+                      </label>
+                      <div class="control">
+                        <input type="text" class="input {{ size }}" id="first" name="first" placeholder="First name" value="">
+                      </div>
+                      <p id="error-first" class="help is-danger"></p>
+                    </div>
+          
+                    <div class="field">
+                      <label for="first" class="label {{ size }} has-text-weight-normal">
+                        Last name
+                      </label>
+                      <div class="control">
+                        <input type="text" class="input {{ size }}" id="last" name="last" placeholder="Last name" value="">
+                      </div>
+                      <p id="error-last" class="help is-danger"></p>
+                    </div>
+          
+                  </div>
+                </div>
+          
+                <div class="field">
+                  <label for="company" class="label {{ size }} has-text-weight-normal">
+                    Company
+                  </label>
+                  <div class="control">
+                    <input type="company" class="input {{ size }}" id="company" name="company" placeholder="Company" value="">
+                  </div>
+                  <p id="error-company" class="help is-danger"></p>
+                </div>
+          
+                <div class="field">
+                  <label for="email" class="label {{ size }} has-text-weight-normal">
+                    Email address
+                  </label>
+                  <div class="field has-addons">
+                    <div class="control is-expanded">
+                      <input type="email" class="input {{ size }}" id="email" name="email" placeholder="name@address.com" value="{{ user.email }}" disabled>
+                    </div>
+                    <div class="control">
+                      <a class="button {{ size }}  is-dark">
+                        Change
+                      </a>
+                    </div>
+                  </div>
+                  <p id="error-email" class="help is-danger">{{ error.email | formatDot }}</p>
+                </div>
+          
+                <br/>
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                <div class="field">
+                  <div class="control">
+                    <button class="button {{ size }} is-primary" type="submit">Save changes</button>
+                  </div>
+                </div>
+              </form>
+          
+            </div>
+          </div>
+          
+          <p class="has-text-centered">
+            If you no longer want to use {{ name }}, you can <a class="has-text-danger">delete your account</a>.
+          </p>
+          {% endif %}
+  
+          {% if user_page == 'security' %}
+          {% assign size = "" %}
+          <div class="card mb-6">
+            <div class="card-content content">
+          
+              <h3 class="has-text-weight-normal">Change Password</h3><br/>
+          
+              <form action="" method="POST" class="mb-40">
+          
+                <div class="field">
+                  <label for="password" class="label {{ size }} has-text-weight-normal">
+                    Current password
+                  </label>
+                  <div class="control">
+                    <input type="password" class="input {{ size }}" id="password" name="password">
+                  </div>
+                  <p id="error-password" class="help is-danger">{{ error.password | formatDot }}</p>
+                </div>
+          
+                <div class="field">
+                  <label for="password-new" class="label {{ size }} has-text-weight-normal">
+                    New password
+                  </label>
+                  <div class="control">
+                    <input type="password" class="input {{ size }}" id="password-new" name="password-new">
+                  </div>
+                  <p id="error-password-new" class="help is-danger"></p>
+                </div>
+          
+                <div class="field">
+                  <label for="password-confirm" class="label {{ size }} has-text-weight-normal">
+                    Confirm new password
+                  </label>
+                  <div class="control">
+                    <input type="password" class="input {{ size }}" id="password-confirm" name="password-confirm">
+                  </div>
+                  <p id="error-password-confirm" class="help is-danger"></p>
+                </div>
+          
+                <br/>
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                <div class="field">
+                  <div class="control">
+                    <button class="button {{ size }} is-primary" type="submit">Update password</button>
+                  </div>
+                </div>
+              </form>
+          
+            </div>
+          </div>
+          {% endif %}
+  
+          {% if user_page == 'billing' %}
+          <div class="card mb-5">
+            <div class="card-content content">
+          
+            	<div class="level">
+                <div class="level-left">
+                  <h3 class="has-text-weight-normal">Current Plan</h3>
+                </div>
+                <div class="level-right">
+                  <h3 class="has-text-weight-normal">$2.99/mo</h3>
+                </div>
+              </div>
+          
+              <div class="level">
+                <div class="level-left">
+                  <div>
+                    <h3 class="has-text-weight-normal mb-0">Starter</h3>
+                    <p class="has-text-grey">Next payment on 03/03/2021</p>
+                  </div>
+                </div>
+                <div class="level-right">
+                  <a class="button is-primary">
+                    Change plan
+                  </a>
+                </div>
+              </div>
+          
+              <ul class="pricing-features has-text-left" style="list-style-type: none; margin: 0">
+                <li>
+                  <span class="tag is-success is-light is-rounded">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                  </span>
+                  3 articles
+                </li>
+                <li>
+                  <span class="tag is-success is-light is-rounded">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                  </span>
+                  3 images/article
+                </li>
+                <li>
+                  <span class="tag is-success is-light is-rounded">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                  </span>
+                  Unlimited shares
+                </li>
+          
+              {% for feature in xfeatures %}
+                <li>
+                  <span class="tag is-success is-light is-rounded">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                  </span>
+                  {{ feature }}
+                </li>
+              {% endfor %}
+              </ul>
+          
+            </div>
+          </div>
+          
+          <div class="card mb-5">
+            <div class="card-content content">
+          
+              <div class="level">
+                <div class="level-left">
+                  <h3 class="has-text-weight-normal mb-0">Payment Methods</h3>
+                </div>
+                <div class="level-right">
+                  <a class="button is-primary">
+                    Add new
+                  </a>
+                </div>
+              </div>
+          
+              <ul style="list-style-type: none; margin: 0">
+                <li>
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <img class="img-fluid" src="{{ root_assets }}/assets/img/icons/payment-methods/visa.svg" alt="Visa" style="max-width: 40px;">
+                      </div>
+                      <div class="level-item">
+                        <div>
+                          <p class="mb-0">Visa ending in 1234</p>
+                          <p class="has-text-grey">Expires 03/2024</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <span class="tag">
+                          Default
+                        </span>
+                      </div>
+                      <div class="level-item">
+                        <span>...</span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <img class="img-fluid" src="{{ root_assets }}/assets/img/icons/payment-methods/mastercard.svg" alt="Mastercard" style="max-width: 40px;">
+                      </div>
+                      <div class="level-item">
+                        <div>
+                          <p class="mb-0">Mastercard ending in 1234</p>
+                          <p class="has-text-grey">Expires 03/2024</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <span>...</span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+          
+          
+              {% for item in xpayments %}
+                <li>
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <img class="img-fluid" src="{{ root_assets }}/assets/img/icons/payment-methods/mastercard.svg" alt="Mastercard" style="max-width: 40px;">
+                      </div>
+                      <div class="level-item">
+                        <div>
+                          <p class="mb-0">Mastercard ending in 1234</p>
+                          <p class="has-text-grey">Expires 03/2024</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <span>...</span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              {% endfor %}
+              </ul>
+          
+            </div>
+          </div>
+          
+          {% if false %}
+          <div class="card">
+            <div class="card-content content">
+          
+              <h3 class="has-text-weight-normal">Invoices</h3><br/>
+          
+            </div>
+          </div>
+          {% endif %}
+          {% endif %}
+  
+          {% if user_page == 'team' %}
+          <div class="card">
+            <div class="card-content content">
+          
+              <div class="level">
+                <div class="level-left">
+                  <h3 class="has-text-weight-normal mb-0">Your Team</h3>
+                </div>
+                <div class="level-right">
+                  <a class="button is-primary">
+                    Add new
+                  </a>
+                </div>
+              </div>
+          
+              <ul style="list-style-type: none; margin: 0">
+                <li class="mb-20">
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <figure class="image is-64x64 ml-0 mr-4">
+                          <img class="is-rounded" src="https://secure.gravatar.com/avatar/3e9f1c9c15f480a0154faa891c4eab10?size=128">
+                        </figure>
+                      </div>
+                      <div class="level-item">
+                        <div>
+                          <p class="mb-0">Davide Vernizzi</p>
+                          <p class="has-text-grey">dave@saasform.dev</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <figure class="image is-64x64 ml-0 mr-4">
+                          <img class="is-rounded" src="https://secure.gravatar.com/avatar/cc2478972b310a5d7aceb97b5725edc3?size=128">
+                        </figure>
+                      </div>
+                      <div class="level-item">
+                        <div>
+                          <p class="mb-0">Emanuele Cesena</p>
+                          <p class="has-text-grey">ec@saasform.dev</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+          
+          
+              {% for item in xusers %}
+                <li>
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <figure class="image is-64x64 ml-0 mr-4">
+                          <img class="is-rounded" src="https://secure.gravatar.com/avatar/cc2478972b310a5d7aceb97b5725edc3?size=128">
+                        </figure>
+                      </div>
+                      <div class="level-item">
+                        <div>
+                          <p class="mb-0">Emanuele Cesena</p>
+                          <p class="has-text-grey">ec@saasform.dev</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              {% endfor %}
+              </ul>
+          
+              <br/>
+            </div>
+          </div>
+          {% endif %}
+  
+        </div>
+  
+      </div>
     </div>
   </section>
   
