@@ -4887,7 +4887,6 @@ var _pricing = require("./libs/components/pricing");
 
 // import { env } from './libs/utils/constants';
 // import { initPageLoader } from './libs/components/pageloader';
-// import { CountUp } from './libs/libs/countUp';
 var feather = require('feather-icons');
 
 window.initNavbar = _navbar.initNavbar;
