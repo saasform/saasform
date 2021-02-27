@@ -1,9 +1,90 @@
 <div class="card">
   <div class="card-content content">
 
-    <h3 class="has-text-weight-normal">Your Team</h3><br/>
+    <div class="level">
+      <div class="level-left">
+        <h3 class="has-text-weight-normal mb-0">Your Team</h3>
+      </div>
+      <div class="level-right">
+        <a class="button is-primary">
+          Add new
+        </a>
+      </div>
+    </div>
 
-    <p>Coming soon!</p>
+    <ul style="list-style-type: none; margin: 0">
+      <li class="mb-20">
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <figure class="image is-64x64 ml-0 mr-4">
+                <img class="is-rounded" src="https://secure.gravatar.com/avatar/3e9f1c9c15f480a0154faa891c4eab10?size=128">
+              </figure>
+            </div>
+            <div class="level-item">
+              <div>
+                <p class="mb-0">Davide Vernizzi</p>
+                <p class="has-text-grey">dave@saasform.dev</p>
+              </div>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <figure class="image is-64x64 ml-0 mr-4">
+                <img class="is-rounded" src="https://secure.gravatar.com/avatar/cc2478972b310a5d7aceb97b5725edc3?size=128">
+              </figure>
+            </div>
+            <div class="level-item">
+              <div>
+                <p class="mb-0">Emanuele Cesena</p>
+                <p class="has-text-grey">ec@saasform.dev</p>
+              </div>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </li>
 
+
+    {% for item in xusers %}
+      <li>
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <figure class="image is-64x64 ml-0 mr-4">
+                <img class="is-rounded" src="https://secure.gravatar.com/avatar/cc2478972b310a5d7aceb97b5725edc3?size=128">
+              </figure>
+            </div>
+            <div class="level-item">
+              <div>
+                <p class="mb-0">Emanuele Cesena</p>
+                <p class="has-text-grey">ec@saasform.dev</p>
+              </div>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+    </ul>
+
+    <br/>
   </div>
 </div>

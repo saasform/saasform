@@ -71,7 +71,7 @@
       </div>
     </div>
 
-    <ul class="pricing-features has-text-left" style="list-style-type: none; margin: 0">
+    <ul style="list-style-type: none; margin: 0">
       <li>
         <div class="level">
           <div class="level-left">
@@ -119,12 +119,26 @@
       </li>
 
 
-    {% for feature in xfeatures %}
+    {% for item in xpayments %}
       <li>
-        <span class="tag is-success is-light is-rounded">
-          <ion-icon name="checkmark-outline"></ion-icon>
-        </span>
-        {{ feature.name }}
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <img class="img-fluid" src="{{ root }}/assets/img/icons/payment-methods/mastercard.svg" alt="Mastercard" style="max-width: 40px;">
+            </div>
+            <div class="level-item">
+              <div>
+                <p class="mb-0">Mastercard ending in 1234</p>
+                <p class="has-text-grey">Expires 03/2024</p>
+              </div>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <span>...</span>
+            </div>
+          </div>
+        </div>
       </li>
     {% endfor %}
     </ul>
