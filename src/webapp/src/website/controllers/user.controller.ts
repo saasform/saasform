@@ -12,7 +12,7 @@ import { SettingsService } from '../../settings/settings.service'
 import { UserRequiredAuthGuard } from '../../auth/auth.guard'
 
 import { AccountsService } from '../../accounts/services/accounts.service'
-import { renderPage } from '../utilities/render'
+import { renderUserPage } from '../utilities/render'
 
 @Controller('/user')
 export class UserController {
@@ -24,8 +24,7 @@ export class UserController {
   @UseGuards(UserRequiredAuthGuard)
   @Get('/')
   async getUser (@Request() req, @Res() res: Response): Promise<any> {
-    return renderPage(req, res, 'user', {
-      user_page: 'general'
+    return renderUserPage(req, res, 'general', {
       // alert: {
       //   text: 'Your free trial is expired.',
       //   link_url: '/user/billing',
@@ -37,8 +36,7 @@ export class UserController {
   @UseGuards(UserRequiredAuthGuard)
   @Get('/security')
   async getUserSecurity (@Request() req, @Res() res: Response): Promise<any> {
-    return renderPage(req, res, 'user', {
-      user_page: 'security'
+    return renderUserPage(req, res, 'security', {
     })
   }
 
@@ -47,8 +45,7 @@ export class UserController {
   async getUserTeam (@Request() req, @Res() res: Response): Promise<any> {
     const account_users = await this.accountService.getUsers(req.user.account_id) // eslint-disable-line
 
-    return renderPage(req, res, 'user', {
-      user_page: 'team',
+    return renderUserPage(req, res, 'team', {
       account_users
     })
   }
@@ -68,8 +65,7 @@ export class UserController {
   @UseGuards(UserRequiredAuthGuard)
   @Get('/billing')
   async getUserBilling (@Request() req, @Res() res: Response): Promise<any> {
-    return renderPage(req, res, 'user', {
-      user_page: 'billing'
+    return renderUserPage(req, res, 'billing', {
     })
   }
 }

@@ -72,11 +72,13 @@
     </div>
 
     <ul style="list-style-type: none; margin: 0">
-      <li>
+      <li class="mb-5">
         <div class="level">
           <div class="level-left">
             <div class="level-item">
-              <img class="img-fluid" src="{{ root }}/assets/img/icons/payment-methods/visa.svg" alt="Visa" style="max-width: 40px;">
+              <figure class="image ml-0 mr-4">
+                <img src="{{ root }}/assets/img/icons/payment-methods/visa.svg" alt="Visa" style="max-width: 40px;">
+              </figure>
             </div>
             <div class="level-item">
               <div>
@@ -87,21 +89,20 @@
           </div>
           <div class="level-right">
             <div class="level-item">
-              <span class="tag">
+              <span class="tag is-rounded">
                 Default
               </span>
-            </div>
-            <div class="level-item">
-              <span>...</span>
             </div>
           </div>
         </div>
       </li>
-      <li>
+      <li class="mb-5">
         <div class="level">
           <div class="level-left">
             <div class="level-item">
-              <img class="img-fluid" src="{{ root }}/assets/img/icons/payment-methods/mastercard.svg" alt="Mastercard" style="max-width: 40px;">
+              <figure class="image ml-0 mr-4">
+                <img src="{{ root }}/assets/img/icons/payment-methods/mastercard.svg" alt="Mastercard" style="max-width: 40px;">
+              </figure>
             </div>
             <div class="level-item">
               <div>
@@ -111,16 +112,13 @@
             </div>
           </div>
           <div class="level-right">
-            <div class="level-item">
-              <span>...</span>
-            </div>
           </div>
         </div>
       </li>
 
 
     {% for item in xpayments %}
-      <li>
+      <li class="mb-5">
         <div class="level">
           <div class="level-left">
             <div class="level-item">
