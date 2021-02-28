@@ -18,7 +18,7 @@
         </div>
       </div>
       <div class="level-right">
-        <a class="button is-primary">
+        <a class="button is-primary modal-trigger" data-modal="plans-modal">
           Change plan
         </a>
       </div>
@@ -117,3 +117,20 @@
   </div>
 </div>
 {% endif %}
+
+<div id="plans-modal" class="modal">
+  <div class="modal-background modal-dismiss"></div>
+  <div class="container is-max-desktop">
+    <div class="modal-card" style="width: 100%;">
+      <section class="modal-card-body" style="border-radius: 8px; flex-grow: 0; margin-top: 100px;">
+        <div class="content has-text-centered">
+          <h2 class="title is-2">Choose a plan</h2>
+        </div>
+        {{> pricing}}
+      </section>
+    </div>
+  </div>
+  <div class="container is-max-desktop">
+    <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+  </div>
+</div>

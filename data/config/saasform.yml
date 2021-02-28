@@ -11,4 +11,4 @@ TYPEORM_PASSWORD: saasformp
 SENDGRID_API_KEY: SG.xxx
 SENDGRID_SEND_FROM: hello@beautifulsaas.com
 
-STRIPE_API_KEY: sk_xxx
+STRIPE_API_KEY: sk_test_51HMfz8H8nkbB9IbKiUani395Bto2p0QXmxl1SjoY9lGpJlJTHfUlOJvuPfBQF8wCdQnCoAG45mgXDTloE3nlt2ap00qoN895uP

@@ -1,0 +1,42 @@
+    <div class="content has-text-centered">
+      <div class="field">
+        <span>Monthly&nbsp;</span>
+        <input id="priceSwitch" name="priceSwitch" type="checkbox" class="switch is-rounded" checked="checked" x-data="{checked: true}" @click="$dispatch('pricing-recount', { month: checked })" x-model="checked">
+        <label for="priceSwitch">Annually</label>
+      </div>
+    </div>
+
+    <div class="pricing-wrap">
+    {% for item in pricing_plans %}
+      <div class="feature-card is-pricing has-text-centered">
+        <h3 class="tag is-primary is-light is-uppercase">{{ item.name }}</h3>
+        <div class="price has-text-weight-normal">
+          {% if item.price_text %}
+            {{ item.price_text }}
+          {% else %}
+            <span class="pricing-currency">$ </span><span id="pricing{{ item.name }}" class="pricing-count"
+              x-data="{ price_year: {{ item.price_year }}, price_month: {{ item.price_month }}, price_decimals: {{ item.price_decimals }} }" x-on:pricing-recount.window="window.pricingUpdate($el, $event.detail.month ? price_month : price_year, price_decimals)">{{ item.price_year }}</span><span class="pricing-monthly"> /mo</span>
+          {% endif %}
+        </div>
+
+        <ul class="pricing-features has-text-left">
+        {% for feature in item.features %}
+          <li>
+            <span class="tag is-success is-light is-rounded">
+              <ion-icon name="checkmark-outline"></ion-icon>
+            </span>
+            {{ feature.name }}
+          </li>
+        {% endfor %}
+        </ul>
+
+        {% if item.primary %}
+        <a class="button is-fullwidth is-medium is-primary" href="{{{ item.button_href }}}">
+        {% else %}
+        <a class="button is-fullwidth is-medium is-primary is-light" href="{{{ item.button_href }}}">
+        {% endif %}
+          {{ item.button }}
+        </a>
+      </div>
+    {% endfor %}
+    </div>
