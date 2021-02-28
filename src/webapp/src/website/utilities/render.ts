@@ -17,6 +17,7 @@ const renderPage = (req, res, page: string, data = {}): Response => {
     },
     csrf_token: req.csrfToken()
   }
+  // console.log(pageData)
   return res.render(`${siteData.root_theme as string}/${page}`, pageData)
 }
 
@@ -27,10 +28,11 @@ const renderPage = (req, res, page: string, data = {}): Response => {
  * @param page A string representing the name of the template to display
  * @param data An optional object containing the page-specific data to pass to the template
  */
-const renderUserPage = (req, res, page: string, data = {}): Response => {
+const renderUserPage = (req, res, page: string, data = {} as any): Response => {
   const userPageData = {
     user_page: page,
-    ...data,
+    // important - we must guarantee that payment_methods is an array
+    payment_methods: data?.account?.payments_methods ?? [],
   }
   return renderPage(req, res, 'user', userPageData)
 }
