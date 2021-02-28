@@ -1,0 +1,77 @@
+    <form action="" method="POST" class="mb-20">
+
+      <div class="field">
+        <div class="field-body">
+
+          <div class="field">
+            <div class="control">
+              <a id="apple" class="button is-fullwidth is-black"><ion-icon name="logo-apple"></ion-icon>&nbsp;Pay</a>
+            </div>
+            <p id="error-apple" class="help is-danger">{{ error.apple }}</p>
+          </div>
+          <div class="field">
+            <div class="control">
+              <a id="paypal" class="button is-fullwidth is-info">PayPal</a>
+            </div>
+            <p id="error-paypal" class="help is-danger">{{ error.paypal }}</p>
+          </div>
+
+        </div>
+      </div>
+
+      <p class="has-text-centered mt-20 mb-20">or</p>
+
+      <div class="field">
+        <label for="full-name" class="label has-text-weight-normal">
+          Name on card
+        </label>
+        <div class="control">
+          <input type="text" class="input" id="full-name" name="full-name" placeholder="First Last" value="{{ user.full_name }}">
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-body columns is-variable is-1">
+
+          <div class="field column is-half">
+            <label for="card-number" class="label has-text-weight-normal">
+              Card
+            </label>
+            <div class="control">
+              <input type="text" class="input" id="card-number" name="card-number" placeholder="Card number">
+            </div>
+          </div>
+
+          <div class="field column">
+            <label for="expiry" class="label has-text-weight-normal">
+              &nbsp;
+            </label>
+            <div class="control">
+              <input type="text" class="input" id="expiry" name="expiry" placeholder="MM / YY">
+            </div>
+          </div>
+
+          <div class="field column">
+            <label for="cvc" class="label has-text-weight-normal">
+              &nbsp;
+            </label>
+            <div class="control">
+              <input type="text" class="input" id="cvc" name="cvc" placeholder="CVC">
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <p id="error-card-number mb-0" class="help is-danger">{{ error.card }}</p>
+
+      <br/>
+      <input type="hidden" name="_csrf" value="{{ website.csrf_token }}">
+      <div class="field">
+        <div class="control">
+          <button class="button is-primary" type="submit">Add card</button>
+        </div>
+      </div>
+    </form>
+
+
+  </form>
