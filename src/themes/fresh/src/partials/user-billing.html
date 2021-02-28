@@ -65,7 +65,7 @@
         <h3 class="has-text-weight-normal mb-0">Payment Methods</h3>
       </div>
       <div class="level-right">
-        <a class="button is-primary">
+        <a class="button is-primary modal-trigger" data-modal="payment-modal">
           Add new
         </a>
       </div>
@@ -73,7 +73,7 @@
 
     {% assign len = payment_methods.length %}
     {% if len <= 0 %}
-    <p><a>Add a payment method.</a></p>
+    <p><a class="modal-trigger" data-modal="payment-modal">Add a payment method.</a></p>
     {% else %}
 
     <ul style="list-style-type: none; margin: 0">
@@ -124,11 +124,26 @@
     <div class="modal-card" style="width: 100%;">
       <section class="modal-card-body" style="border-radius: 8px; flex-grow: 0; margin-top: 100px;">
         <div class="content has-text-centered">
-          <h2 class="title is-2">Choose a plan</h2>
+          <h2 class="">Choose a plan</h2>
         </div>
         {{> pricing}}
       </section>
     </div>
+  </div>
+  <div class="container is-max-desktop">
+    <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+  </div>
+</div>
+
+<div id="payment-modal" class="modal is-active">
+  <div class="modal-background modal-dismiss"></div>
+  <div class="modal-card">
+    <section class="modal-card-body" style="border-radius: 8px; margin-top: 100px;">
+      <div class="content has-text-centered">
+        <h2 class="">Add a payment method</h2><br/>
+      </div>
+      {{> payment}}
+    </section>
   </div>
   <div class="container is-max-desktop">
     <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
