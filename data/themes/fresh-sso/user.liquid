@@ -267,7 +267,7 @@
                     Company
                   </label>
                   <div class="control">
-                    <input type="company" class="input {{ size }}" id="company" name="company" placeholder="Company" value="">
+                    <input type="text" class="input {{ size }}" id="company" name="company" placeholder="Company" value="">
                   </div>
                   <p id="error-company" class="help is-danger"></p>
                 </div>
@@ -379,7 +379,7 @@
                   </div>
                 </div>
                 <div class="level-right">
-                  <a class="button is-primary">
+                  <a class="button is-primary modal-trigger" data-modal="plans-modal">
                     Change plan
                   </a>
                 </div>
@@ -426,83 +426,45 @@
                   <h3 class="has-text-weight-normal mb-0">Payment Methods</h3>
                 </div>
                 <div class="level-right">
-                  <a class="button is-primary">
+                  <a class="button is-primary modal-trigger" data-modal="payment-modal">
                     Add new
                   </a>
                 </div>
               </div>
           
+              {% assign len = payment_methods.length %}
+              {% if len <= 0 %}
+              <p><a class="modal-trigger" data-modal="payment-modal">Add a payment method.</a></p>
+              {% else %}
+          
               <ul style="list-style-type: none; margin: 0">
-                <li>
+              {% for method in payment_methods %}
+              {% assign item = method.card %}
+                <li class="mb-5">
                   <div class="level">
                     <div class="level-left">
                       <div class="level-item">
-                        <img class="img-fluid" src="{{ root_assets }}/assets/img/icons/payment-methods/visa.svg" alt="Visa" style="max-width: 40px;">
+                        <figure class="image ml-0 mr-4">
+                          <img class="img-fluid" src="{{ root_assets }}/assets/img/icons/payment-methods/{{ item.brand }}.svg" alt="{{ item.brand | capitalize }}" style="max-width: 40px;">
+                        </figure>
                       </div>
                       <div class="level-item">
                         <div>
-                          <p class="mb-0">Visa ending in 1234</p>
-                          <p class="has-text-grey">Expires 03/2024</p>
+                          <p class="mb-0">{{ item.brand | capitalize }} ending in {{ item.last4 }}</p>
+                          <p class="has-text-grey">Expires {{ item.exp_month }}/{{ item.exp_year }}</p>
                         </div>
                       </div>
                     </div>
                     <div class="level-right">
                       <div class="level-item">
-                        <span class="tag">
-                          Default
-                        </span>
-                      </div>
-                      <div class="level-item">
-                        <span>...</span>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div class="level">
-                    <div class="level-left">
-                      <div class="level-item">
-                        <img class="img-fluid" src="{{ root_assets }}/assets/img/icons/payment-methods/mastercard.svg" alt="Mastercard" style="max-width: 40px;">
-                      </div>
-                      <div class="level-item">
-                        <div>
-                          <p class="mb-0">Mastercard ending in 1234</p>
-                          <p class="has-text-grey">Expires 03/2024</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="level-right">
-                      <div class="level-item">
-                        <span>...</span>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-          
-          
-              {% for item in xpayments %}
-                <li>
-                  <div class="level">
-                    <div class="level-left">
-                      <div class="level-item">
-                        <img class="img-fluid" src="{{ root_assets }}/assets/img/icons/payment-methods/mastercard.svg" alt="Mastercard" style="max-width: 40px;">
-                      </div>
-                      <div class="level-item">
-                        <div>
-                          <p class="mb-0">Mastercard ending in 1234</p>
-                          <p class="has-text-grey">Expires 03/2024</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="level-right">
-                      <div class="level-item">
-                        <span>...</span>
+                        <span></span>
                       </div>
                     </div>
                   </div>
                 </li>
               {% endfor %}
               </ul>
+              {% endif %}
           
             </div>
           </div>
@@ -516,6 +478,155 @@
             </div>
           </div>
           {% endif %}
+          
+          <div id="plans-modal" class="modal">
+            <div class="modal-background modal-dismiss"></div>
+            <div class="container is-max-desktop">
+              <div class="modal-card" style="width: 100%;">
+                <section class="modal-card-body" style="border-radius: 8px; flex-grow: 0; margin-top: 100px;">
+                  <div class="content has-text-centered">
+                    <h2 class="">Choose a plan</h2>
+                  </div>
+                      <div class="content has-text-centered">
+                        <div class="field">
+                          <span>Monthly&nbsp;</span>
+                          <input id="priceSwitch" name="priceSwitch" type="checkbox" class="switch is-rounded" checked="checked" x-data="{checked: true}" @click="$dispatch('pricing-recount', { month: checked })" x-model="checked">
+                          <label for="priceSwitch">Annually</label>
+                        </div>
+                      </div>
+                  
+                      <div class="pricing-wrap">
+                      {% for item in pricing_plans %}
+                        <div class="feature-card is-pricing has-text-centered">
+                          <h3 class="tag is-primary is-light is-uppercase">{{ item.name }}</h3>
+                          <div class="price has-text-weight-normal">
+                            {% if item.price_text %}
+                              {{ item.price_text }}
+                            {% else %}
+                              <span class="pricing-currency">$ </span><span id="pricing{{ item.name }}" class="pricing-count"
+                                x-data="{ price_year: {{ item.price_year }}, price_month: {{ item.price_month }}, price_decimals: {{ item.price_decimals }} }" x-on:pricing-recount.window="window.pricingUpdate($el, $event.detail.month ? price_month : price_year, price_decimals)">{{ item.price_year }}</span><span class="pricing-monthly"> /mo</span>
+                            {% endif %}
+                          </div>
+                  
+                          <ul class="pricing-features has-text-left">
+                          {% for feature in item.features %}
+                            <li>
+                              <span class="tag is-success is-light is-rounded">
+                                <ion-icon name="checkmark-outline"></ion-icon>
+                              </span>
+                              {{ feature }}
+                            </li>
+                          {% endfor %}
+                          </ul>
+                  
+                          {% if item.primary %}
+                          <a class="button is-fullwidth is-medium is-primary" href="{{ item.button_href | default: '/signup' }}">
+                          {% else %}
+                          <a class="button is-fullwidth is-medium is-primary is-light" href="{{ item.button_href | default: '/signup' }}">
+                          {% endif %}
+                            {{ item.button }}
+                          </a>
+                        </div>
+                      {% endfor %}
+                      </div>
+                </section>
+              </div>
+            </div>
+            <div class="container is-max-desktop">
+              <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+            </div>
+          </div>
+          
+          <div id="payment-modal" class="modal is-active">
+            <div class="modal-background modal-dismiss"></div>
+            <div class="modal-card">
+              <section class="modal-card-body" style="border-radius: 8px; margin-top: 100px;">
+                <div class="content has-text-centered">
+                  <h2 class="">Add a payment method</h2><br/>
+                </div>
+                    <form action="" method="POST" class="mb-20">
+                
+                      <div class="field">
+                        <div class="field-body">
+                
+                          <div class="field">
+                            <div class="control">
+                              <a id="apple" class="button is-fullwidth is-black"><ion-icon name="logo-apple"></ion-icon>&nbsp;Pay</a>
+                            </div>
+                            <p id="error-apple" class="help is-danger"></p>
+                          </div>
+                          <div class="field">
+                            <div class="control">
+                              <a id="paypal" class="button is-fullwidth is-info">PayPal</a>
+                            </div>
+                            <p id="error-paypal" class="help is-danger"></p>
+                          </div>
+                
+                        </div>
+                      </div>
+                
+                      <p class="has-text-centered mt-20 mb-20">or</p>
+                
+                      <div class="field">
+                        <label for="full-name" class="label has-text-weight-normal">
+                          Name on card
+                        </label>
+                        <div class="control">
+                          <input type="text" class="input" id="full-name" name="full-name" placeholder="First Last" value="">
+                        </div>
+                      </div>
+                
+                      <div class="field">
+                        <div class="field-body columns is-variable is-1">
+                
+                          <div class="field column is-half">
+                            <label for="card-number" class="label has-text-weight-normal">
+                              Card
+                            </label>
+                            <div class="control">
+                              <input type="text" class="input" id="card-number" name="card-number" placeholder="Card number">
+                            </div>
+                          </div>
+                
+                          <div class="field column">
+                            <label for="expiry" class="label has-text-weight-normal">
+                              &nbsp;
+                            </label>
+                            <div class="control">
+                              <input type="text" class="input" id="expiry" name="expiry" placeholder="MM / YY">
+                            </div>
+                          </div>
+                
+                          <div class="field column">
+                            <label for="cvc" class="label has-text-weight-normal">
+                              &nbsp;
+                            </label>
+                            <div class="control">
+                              <input type="text" class="input" id="cvc" name="cvc" placeholder="CVC">
+                            </div>
+                          </div>
+                
+                        </div>
+                      </div>
+                      <p id="error-card-number mb-0" class="help is-danger"></p>
+                
+                      <br/>
+                      <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                      <div class="field">
+                        <div class="control">
+                          <button class="button is-primary" type="submit">Add card</button>
+                        </div>
+                      </div>
+                    </form>
+                
+                
+                  </form>
+              </section>
+            </div>
+            <div class="container is-max-desktop">
+              <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+            </div>
+          </div>
           {% endif %}
   
           {% if user_page == 'team' %}
@@ -534,7 +645,7 @@
               </div>
           
               <ul style="list-style-type: none; margin: 0">
-                <li class="mb-20">
+                <li class="mb-5">
                   <div class="level">
                     <div class="level-left">
                       <div class="level-item">
@@ -556,7 +667,7 @@
                     </div>
                   </div>
                 </li>
-                <li>
+                <li class="mb-5">
                   <div class="level">
                     <div class="level-left">
                       <div class="level-item">
@@ -581,7 +692,7 @@
           
           
               {% for item in xusers %}
-                <li>
+                <li class="mb-5">
                   <div class="level">
                     <div class="level-left">
                       <div class="level-item">
@@ -606,7 +717,6 @@
               {% endfor %}
               </ul>
           
-              <br/>
             </div>
           </div>
           {% endif %}
