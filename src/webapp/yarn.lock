@@ -2319,6 +2319,13 @@ axios@0.21.1, axios@^0.21.1:
   dependencies:
     follow-redirects "^1.10.0"
 
+axios@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.20.0.tgz#057ba30f04884694993a8cd07fa394cff11c50bd"
+  integrity sha512-ANA4rr2BDcmmAQLOKft2fufrtuvlqR+cXNNinUmvfeSNCOF98PZL+7M/v1zIdGo7OLjEA9J2gXJL+j4zGsl0bA==
+  dependencies:
+    follow-redirects "^1.10.0"
+
 babel-jest@^26.6.3:
   version "26.6.3"
   resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-26.6.3.tgz#d87d25cb0037577a0c89f82e5755c5d293c01056"
@@ -5587,6 +5594,13 @@ jws@^3.2.2:
   dependencies:
     jwa "^1.4.1"
     safe-buffer "^5.0.1"
+
+killbill@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/killbill/-/killbill-0.1.0.tgz#b350afced54f151afed1b92c5729848c563e0828"
+  integrity sha512-3w8y2wZJ5CgqU7cD5Kra4NO/R9ztBiAusUxVcbAEr3clrB3tQ1jrIsyAlISjKg7YuPwG9sZhxzqqlKGSSr55og==
+  dependencies:
+    axios "^0.20.0"
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"

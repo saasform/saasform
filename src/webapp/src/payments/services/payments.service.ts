@@ -8,6 +8,7 @@ import { PaymentEntity /* PaymentStatus */ } from '../entities/payment.entity'
 // TODO: move stripe functions inside this module
 import { AccountEntity } from '../../accounts/entities/account.entity'
 import { StripeService } from './stripe.service'
+import { KillBillService } from './killbill.service'
 
 @QueryService(PaymentEntity)
 @Injectable({ scope: Scope.REQUEST })
@@ -16,7 +17,8 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     @Inject(REQUEST) private readonly req,
     // @InjectRepository(PaymentEntity)
     // private readonly usersRepository: Repository<UserEntity>,
-    private readonly stripeService: StripeService
+    private readonly stripeService: StripeService,
+    private readonly killBillService: KillBillService
   ) {
     super(
       req,
@@ -175,7 +177,27 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     }
   }
 
-  async createStripeCustomer (customer): Promise<any> { // TODO: return a proper type
+  async createBillingCustomer (customer): Promise<any> { // TODO: return a proper type
+    // TODO configuration?
+    return await this.createKillBillCustomer(customer)
+  }
+
+  async createKillBillCustomer (customer): Promise<any> {
+    try {
+      const account = { name: customer.name, currency: 'USD' }
+      const kbCustomer = this.killBillService.accountApi.createAccount(account, 'saasform')
+
+      if (kbCustomer == null) {
+        console.error('paymentService - createKillBillCustomer - error while creating Kill Bill customer', customer)
+      }
+
+      return kbCustomer.data
+    } catch (error) {
+      console.error('paymentService - createKillBillCustomer - error while creating Kill Bill customer', customer, error)
+    }
+  }
+
+  async createStripeCustomer (customer): Promise<any> {
     try {
       const stripeCustomer = await this.stripeService.client.customers.create(
         customer

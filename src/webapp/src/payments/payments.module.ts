@@ -10,18 +10,19 @@ import { PlansService } from './services/plans.service'
 import { PaymentsService } from './services/payments.service'
 import { PaymentDTO } from './dto/payment.dto'
 import { StripeService } from './services/stripe.service'
+import { KillBillService } from './services/killbill.service'
 
 @Global()
 @Module({
   imports: [
     NestjsQueryGraphQLModule.forFeature({
       imports: [NestjsQueryTypeOrmModule.forFeature([PaymentEntity, PlanEntity]), NotificationsModule],
-      services: [PlansService, PaymentsService, StripeService, NotificationsService],
+      services: [PlansService, PaymentsService, StripeService, KillBillService, NotificationsService],
       resolvers: [{ DTOClass: PaymentDTO, ServiceClass: PaymentsService }]
     })
   ],
-  providers: [PlansService, PaymentsService, StripeService],
-  exports: [PlansService, PaymentsService, StripeService]
+  providers: [PlansService, PaymentsService, StripeService, KillBillService],
+  exports: [PlansService, PaymentsService, StripeService, KillBillService]
 })
 export class PaymentsModule {
 

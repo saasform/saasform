@@ -67,18 +67,18 @@ export class AccountsService extends BaseService<AccountEntity> {
     // will be associated with this account.
     account.owner_id = user?.id ?? 0
 
-    // Create a Stripe user for this account
-    const stripeCustomer = await this.paymentsService.createStripeCustomer({
+    // Create a Billing user for this account
+    const billingCustomer = await this.paymentsService.createBillingCustomer({
       name: data.name
     })
 
-    account.data.stripe = stripeCustomer
+    account.data.stripe = billingCustomer // TODO
 
     // Add free tier plan
     const plans = await this.plansService.getPlans()
     await this.paymentsService.createStripeFreeSubscription(
       plans[0],
-      stripeCustomer
+      billingCustomer
     )
 
     try {

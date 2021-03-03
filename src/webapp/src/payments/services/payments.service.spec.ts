@@ -7,6 +7,7 @@ import { PaymentEntity /* PaymentStatus */ } from '../entities/payment.entity'
 import { PaymentsService } from './payments.service'
 import { AccountEntity } from '../../accounts/entities/account.entity'
 import { StripeService } from './stripe.service'
+import { KillBillService } from './killbill.service'
 
 const deletedSubscription = new PaymentEntity()
 const existingSubscription = new PaymentEntity()
@@ -71,6 +72,9 @@ describe('Payments Service', () => {
     customers: { retrieve: jest.fn(_ => ({ subscriptions: { data: subscriptionsArray } })) }
   }
 
+  const mockedKillBill = {
+  }
+
   beforeEach(async () => {
     jest.clearAllMocks()
 
@@ -84,6 +88,10 @@ describe('Payments Service', () => {
         {
           provide: StripeService,
           useValue: mockedStripe
+        },
+        {
+          provide: KillBillService,
+          useValue: mockedKillBill
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
@@ -99,6 +107,7 @@ describe('Payments Service', () => {
     Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
     service.paymentsRepository = repo
     service.stripeService = { client: mockedStripe }
+    service.killbillService = { accountApi: mockedKillBill }
     // Object.keys(mockedStripe).forEach(
     //   f => (service.stripeClient[f] = mockedStripe[f]),
     // );

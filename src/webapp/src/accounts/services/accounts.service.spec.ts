@@ -61,7 +61,7 @@ describe('Accounts Service', () => {
 
   // This depends on Stripe. We need to update this when we support more payment processors
   const mockedPaymentsService = {
-    createStripeCustomer: jest.fn(_ => {}),
+    createBillingCustomer: jest.fn(_ => {}),
     createStripeFreeSubscription: jest.fn(_ => {})
   }
 
