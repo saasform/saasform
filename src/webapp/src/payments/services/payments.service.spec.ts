@@ -68,7 +68,13 @@ describe('Payments Service', () => {
 
   // This depends on Stripe. We need to update this when we support more payment processors
   const mockedStripe = {
-    customers: { retrieve: jest.fn(_ => ({ subscriptions: { data: subscriptionsArray } })) }
+    customers: {
+      retrieve: jest.fn(_ => ({ subscriptions: { data: subscriptionsArray } })),
+      update: jest.fn(_ => {})
+    },
+    paymentMethods: {
+      attach: jest.fn(_ => {})
+    }
   }
 
   beforeEach(async () => {
@@ -185,6 +191,28 @@ describe('Payments Service', () => {
       expect(repoSpy).toBeCalledTimes(1)
       expect(repoSpy).toBeCalledWith(
         2, update
+      )
+    })
+  })
+
+  describe('attachPaymentMethod', () => {
+    it('should attach the payment method to the stripe customer', async () => {
+      const stripeSpy = jest.spyOn(mockedStripe.paymentMethods, 'attach')
+
+      await service.attachPaymentMethod('cus_123', 'met_456')
+      expect(stripeSpy).toBeCalledWith('met_456', { customer: 'cus_123' })
+    })
+
+    it('should set the payment method as default', async () => {
+      const stripeSpy = jest.spyOn(mockedStripe.customers, 'update')
+
+      await service.attachPaymentMethod('cus_123', 'met_456')
+      expect(stripeSpy).toBeCalledWith('cus_123',
+        {
+          invoice_settings: {
+            default_payment_method: 'met_456'
+          }
+        }
       )
     })
   })
