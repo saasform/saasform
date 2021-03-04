@@ -228,12 +228,24 @@ export class PlansService extends BaseService<PlanEntity> {
   async getPlans (): Promise<any[]> {
     let plans = await this.query({})
 
-    if (plans.length === 0) {
-      await this.createFirstBilling()
-      plans = await this.query({})
+    const stripePlans: PlanEntity[] = []
+    const killbillPlans: PlanEntity[] = []
+    for (var plan of plans) {
+      if (JSON.parse(plan.product).killbill === true) {
+        killbillPlans.push(plan)
+      } else {
+        stripePlans.push(plan)
+      }
     }
 
-    return plans.map(this.validatePlan)
+    const createPlan = (this.paymentIntegration === 'killbill' && killbillPlans.length === 0) || (this.paymentIntegration === 'stripe' && stripePlans.length === 0)
+    if (createPlan) {
+      await this.createFirstBilling()
+      plans = await this.query({})
+      return plans.map(this.validatePlan)
+    } else {
+      return (this.paymentIntegration === 'killbill' ? killbillPlans : stripePlans).map(this.validatePlan)
+    }
   }
 
   async getPricingAndPlans (): Promise<any> {
