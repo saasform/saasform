@@ -200,7 +200,15 @@ export class AccountsService extends BaseService<AccountEntity> {
     return account
   }
 
-  async addPaymentsMethods (id: number, card: any): Promise<[any]|any> {
+  /**
+   * Create a payment method and attach to an account.
+   * This SHOULD NOT be used anymore since it requires the credit card data ad input
+   * and is considered unsafe. Use addPaymentsMethods instead
+   * @param id the id of the account
+   * @param card information about the credit card
+   */
+  async createPaymentsMethods (id: number, card: any): Promise<[any]|any> {
+    // DEPRECATED
     try {
       const account = await this.findById(id)
       if (account == null) {
@@ -214,18 +222,61 @@ export class AccountsService extends BaseService<AccountEntity> {
 
       const method = await this.paymentsService.createPaymentMethod(account.data.stripe.id, card)
 
-      // TODO: check errors
-
-      if (account.data.payments_methods == null) { account.data.payments_methods = [method] } else { account.data.payments_methods.push(method) }
-
-      await this.updateOne(id, { data: account.data })
-
-      return account.data.payments_methods
+      return await this.addPaymentsMethods(id, method)
     } catch (error) {
       console.error('getPaymentsMethods - error', id, error)
     }
   }
 
+  /**
+   * Add a Stripe payment method to an account. Note that the payment method should be created elsewhere, possibly on the client.
+   * @param id id of the account
+   * @param method paymentMethod to add as returned by Stripe
+   */
+  async addPaymentsMethods (id: number, method: any): Promise<[any]|null> { // TODO: fix return type
+    try {
+      const account = await this.findById(id)
+      if (account == null) {
+        console.error('accountsService - addPaymentsMethods - account not found')
+        return null
+      }
+      if (account.data == null) {
+        console.error('accountsService - addPaymentsMethods - account format error')
+        return null
+      }
+
+      const customer = await this.paymentsService.attachPaymentMethod(account.data.stripe.id, method.id)
+      if (customer == null) {
+        console.error('accountsService - addPaymentsMethods - error while attaching payment method to customer')
+        return null
+      }
+
+      if (account.data.payments_methods == null) { account.data.payments_methods = [method] } else { account.data.payments_methods.push(method) }
+
+      if (account.data.payments_methods == null) {
+        console.error('accountsService - addPaymentsMethods - error while adding payment method')
+        return null
+      }
+
+      const updatedAccount = await this.updateOne(id, { data: account.data })
+      if (updatedAccount == null) {
+        console.error('accountsService - addPaymentsMethods - error while updating account')
+        return null
+      }
+
+      return account.data.payments_methods
+    } catch (error) {
+      console.error('getPaymentsMethods - error', id, error)
+      return null
+    }
+  }
+
+  /**
+   * Subscribe an account to a plan
+   * @param account account to subscribe
+   * @param subscription subscription to buy
+   */
+  // TODO: better specify the type of subscription
   async subscribeToPlan (account: AccountEntity, subscription: any): Promise<any> { // TODO: return a proper type
     const paymentMethod = account.data.payments_methods.filter(p => p?.id === subscription.method)[0]
     const price = await this.plansService.getPriceByProductAndAnnual(subscription.plan, subscription.monthly)

@@ -40,4 +40,24 @@ export class ApiV1PaymentController {
       message: subscription
     })
   }
+
+  @UseGuards(UserRequiredAuthGuard)
+  @Post('add-payment-token')
+  async handleAddPaymentToken (@Request() req, @Res() res: Response): Promise<any> {
+    const account = await this.accountsService.findByOwnerEmail(req.user.email)
+
+    if (account == null) {
+      return res.json({
+        statusCode: 400,
+        error: 'Account not found'
+      })
+    }
+
+    const methods = await this.accountsService.addPaymentsMethods(account.id, req.body)
+
+    return res.json({
+      statusCode: 200,
+      message: methods
+    })
+  }
 }

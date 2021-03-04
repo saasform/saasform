@@ -71,7 +71,7 @@ export class UserController {
   async getUserBilling (@Request() req, @Res() res: Response): Promise<any> {
     const account = await this.accountsService.findByOwnerEmail(req.user.email)
     return renderUserPage(req, res, 'billing', {
-      account,
+      account
     })
   }
 }

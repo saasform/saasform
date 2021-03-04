@@ -81,6 +81,34 @@ function handlePaymentThatRequiresCustomerAction({
     completed_cb(result);
   }
 
+
+  // Create a token or display an error when the form is submitted.
+
+function createPaymentToken(_csrf) {
+  stripe.createToken(card).then(function(result) {
+    if (result.error) {
+      // Inform the customer that there was an error.
+      var errorElement = document.getElementById('card-errors');
+      errorElement.textContent = result.error.message;
+    } else {
+      // Send the token to your server.
+      // stripeTokenHandler(result.token);
+      console.log('token', result.token)
+      fetch('/api/v1/add-payment-token', {
+        method: 'post',
+        headers: {
+          'Content-type': 'application/json',
+          'CSRF-Token': _csrf // <-- is the csrf token as a header
+        },
+        body: JSON.stringify({
+            plan, method, monthly
+        }),
+      })
+
+    }
+  });
+}
+
 function createSubscription({ plan, method, monthly, _csrf }, completed_cb, error_cb) {
     return (
       fetch('/api/v1/create-subscription', {
