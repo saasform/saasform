@@ -9,21 +9,26 @@ import { PaymentEntity /* PaymentStatus */ } from '../entities/payment.entity'
 import { AccountEntity } from '../../accounts/entities/account.entity'
 import { StripeService } from './stripe.service'
 import { KillBillService } from './killbill.service'
+import { ConfigService } from '@nestjs/config'
 
 @QueryService(PaymentEntity)
 @Injectable({ scope: Scope.REQUEST })
 export class PaymentsService extends BaseService<PaymentEntity> {
+  private readonly paymentIntegration: string
+
   constructor (
     @Inject(REQUEST) private readonly req,
     // @InjectRepository(PaymentEntity)
     // private readonly usersRepository: Repository<UserEntity>,
     private readonly stripeService: StripeService,
-    private readonly killBillService: KillBillService
+    private readonly killBillService: KillBillService,
+    private readonly configService: ConfigService
   ) {
     super(
       req,
       'PaymentEntity'
     )
+    this.paymentIntegration = this.configService.get<string>('PAYMENT_INTEGRATION', 'stripe')
   }
 
   /**
@@ -178,14 +183,17 @@ export class PaymentsService extends BaseService<PaymentEntity> {
   }
 
   async createBillingCustomer (customer): Promise<any> { // TODO: return a proper type
-    // TODO configuration?
-    return await this.createKillBillCustomer(customer)
+    if (this.paymentIntegration === 'killbill') {
+      return await this.createKillBillCustomer(customer)
+    } else {
+      return await this.createStripeCustomer(customer)
+    }
   }
 
   async createKillBillCustomer (customer): Promise<any> {
     try {
       const account = { name: customer.name, currency: 'USD' }
-      const kbCustomer = this.killBillService.accountApi.createAccount(account, 'saasform')
+      const kbCustomer = await this.killBillService.accountApi.createAccount(account, 'saasform')
 
       if (kbCustomer == null) {
         console.error('paymentService - createKillBillCustomer - error while creating Kill Bill customer', customer)
@@ -213,7 +221,28 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     }
   }
 
-  async createStripeFreeSubscription (plan, user): Promise<any> { // TODO: return a proper type
+  async createFreeSubscription (plan, user): Promise<any> { // TODO: return a proper type
+    if (this.paymentIntegration === 'killbill') {
+      return await this.createKillBillFreeSubscription(plan, user)
+    } else {
+      return await this.createStripeFreeSubscription(plan, user)
+    }
+  }
+
+  async createKillBillFreeSubscription (plan, user): Promise<any> {
+    try {
+      // const trialDays = 10 // TODO
+      const subscriptionData = { accountId: user.accountId, planName: `${String(plan.id)}-yearly` }
+      const subscription = await this.killBillService.subscriptionApi.createSubscription(subscriptionData, 'saasform')
+
+      return subscription.data
+    } catch (error) {
+      console.error('paymentService - createKillBillFreeSubscription - error while creating free plan', plan, user, error)
+      return null
+    }
+  }
+
+  async createStripeFreeSubscription (plan, user): Promise<any> {
     // TODO: fix the trial duration
     const trialDays = 10
     const trial_end = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60 // eslint-disable-line @typescript-eslint/naming-convention

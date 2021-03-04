@@ -12,16 +12,18 @@ export class KillBillService {
   private readonly username: string
   private readonly password: string
   public accountApi
+  public catalogApi
+  public subscriptionApi
 
   constructor (
     private readonly settingsService: SettingsService,
     public configService: ConfigService
   ) {
-    this.url = this.configService.get<string>('KB_URL') ?? 'http://127.0.0.1:8080'
-    this.api_key = this.configService.get<string>('KB_API_KEY') ?? 'bob'
-    this.api_secret = this.configService.get<string>('KB_API_SECRET') ?? 'lazar'
-    this.username = this.configService.get<string>('KB_USERNAME') ?? 'admin'
-    this.password = this.configService.get<string>('KB_PASSWORD') ?? 'password'
+    this.url = this.configService.get<string>('KB_URL') ?? ''
+    this.api_key = this.configService.get<string>('KB_API_KEY') ?? ''
+    this.api_secret = this.configService.get<string>('KB_API_SECRET') ?? ''
+    this.username = this.configService.get<string>('KB_USERNAME') ?? ''
+    this.password = this.configService.get<string>('KB_PASSWORD') ?? ''
 
     const killbill = require('killbill') // eslint-disable-line
     const globalAxios = require('axios') // eslint-disable-line
@@ -35,5 +37,7 @@ export class KillBillService {
       basePath: this.url
     })
     this.accountApi = new killbill.AccountApi(config, null, axios)
+    this.catalogApi = new killbill.CatalogApi(config, null, axios)
+    this.subscriptionApi = new killbill.SubscriptionApi(config, null, axios)
   }
 }

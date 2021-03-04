@@ -15,10 +15,13 @@ import { SettingsService } from '../..//settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
 import { UserJson } from '../dto/new-user.input'
+import { ConfigService } from '@nestjs/config'
 
 @QueryService(AccountEntity)
 @Injectable()
 export class AccountsService extends BaseService<AccountEntity> {
+  private readonly paymentIntegration: string
+
   constructor (
     @Inject(REQUEST) private readonly req: any,
     @InjectRepository(AccountEntity)
@@ -28,9 +31,11 @@ export class AccountsService extends BaseService<AccountEntity> {
     private readonly paymentsService: PaymentsService,
     private readonly plansService: PlansService,
     private readonly notificationService: NotificationsService,
-    private readonly settingsService: SettingsService
+    private readonly settingsService: SettingsService,
+    private readonly configService: ConfigService
   ) {
     super(req, 'AccountEntity')
+    this.paymentIntegration = this.configService.get<string>('PAYMENT_INTEGRATION', 'stripe')
   }
 
   async getAll (): Promise<AccountEntity[]> {
@@ -72,11 +77,15 @@ export class AccountsService extends BaseService<AccountEntity> {
       name: data.name
     })
 
-    account.data.stripe = billingCustomer // TODO
+    if (this.paymentIntegration === 'killbill') {
+      account.data.killbill = billingCustomer
+    } else {
+      account.data.stripe = billingCustomer
+    }
 
     // Add free tier plan
     const plans = await this.plansService.getPlans()
-    await this.paymentsService.createStripeFreeSubscription(
+    await this.paymentsService.createFreeSubscription(
       plans[0],
       billingCustomer
     )

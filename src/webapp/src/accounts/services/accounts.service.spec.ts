@@ -18,6 +18,7 @@ import { NotificationsService } from '../../notifications/notifications.service'
 import { SettingsService } from '../../settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
+import { ConfigService } from '@nestjs/config'
 
 const accountsArray = [
   new AccountEntity(),
@@ -62,7 +63,7 @@ describe('Accounts Service', () => {
   // This depends on Stripe. We need to update this when we support more payment processors
   const mockedPaymentsService = {
     createBillingCustomer: jest.fn(_ => {}),
-    createStripeFreeSubscription: jest.fn(_ => {})
+    createFreeSubscription: jest.fn(_ => {})
   }
 
   const mockedPlansService = { getPlans: jest.fn(_ => [{}]) }
@@ -102,6 +103,10 @@ describe('Accounts Service', () => {
         },
         {
           provide: SettingsService,
+          useValue: {}
+        },
+        {
+          provide: ConfigService,
           useValue: {}
         },
         {

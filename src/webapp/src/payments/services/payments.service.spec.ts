@@ -8,6 +8,7 @@ import { PaymentsService } from './payments.service'
 import { AccountEntity } from '../../accounts/entities/account.entity'
 import { StripeService } from './stripe.service'
 import { KillBillService } from './killbill.service'
+import { ConfigService } from '@nestjs/config'
 
 const deletedSubscription = new PaymentEntity()
 const existingSubscription = new PaymentEntity()
@@ -92,6 +93,10 @@ describe('Payments Service', () => {
         {
           provide: KillBillService,
           useValue: mockedKillBill
+        },
+        {
+          provide: ConfigService,
+          useValue: {}
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
