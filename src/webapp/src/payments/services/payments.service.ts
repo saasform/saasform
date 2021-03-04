@@ -261,4 +261,38 @@ export class PaymentsService extends BaseService<PaymentEntity> {
       return null
     }
   };
+
+  /**
+   * Attach a payment method to a Stripe customer and sets as default.
+   * The payment method must already be created before calling this function.
+   * @param customer id of the Stripe customer
+   * @param method id of the payment method
+   */
+  async attachPaymentMethod (customer: string, method: string): Promise<any|null> {
+    try {
+      await this.stripeService.client.paymentMethods.attach(method, {
+        customer
+      })
+    } catch (error) {
+      console.error('paymentsService - attachPaymentMethod - error while attaching')
+      return null
+    }
+
+    try {
+      // Change the default invoice settings on the customer to the new payment method
+      const updatedCustomer = await this.stripeService.client.customers.update(
+        customer,
+        {
+          invoice_settings: {
+            default_payment_method: method
+          }
+        }
+      )
+
+      return updatedCustomer
+    } catch (error) {
+      console.error('paymentsService - attachPaymentMethod - error while setting default payment method')
+      return null
+    }
+  }
 }

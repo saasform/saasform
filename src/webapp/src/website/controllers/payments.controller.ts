@@ -34,9 +34,10 @@ export class PaymentsController {
   @UseGuards(UserRequiredAuthGuard)
   @Post('/user/billing/payment')
   async newPaymentMethod (@Request() req, @Res() res: Response): Promise<any> {
+    // DEPRECATED, see https://stripe.com/docs/payments/accept-a-payment-charges#web-create-token
     const account = await this.accountsService.findByOwnerEmail(req.user.email)
 
-    await this.accountsService.addPaymentsMethods(account.id, req.body)
+    await this.accountsService.createPaymentsMethods(account.id, req.body)
 
     return res.redirect('/user/billing/subscribe')
   }
