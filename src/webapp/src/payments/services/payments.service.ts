@@ -121,6 +121,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
   }
 
   async createPaymentMethod (customer: string, card: any): Promise<any> { // TODO: return a proper type
+    // DEPRECATED
     const { number, exp_month, exp_year, cvc } = card // eslint-disable-line
     try {
       const paymentMethod = await this.stripeService.client.paymentMethods.create({
@@ -138,6 +139,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
       return paymentMethod
     } catch (error) {
       console.error('paymentsService - createPaymentMethod - error', error)
+      return null
     }
 
     // TODO: check errors
@@ -183,11 +185,13 @@ export class PaymentsService extends BaseService<PaymentEntity> {
 
       if (stripeCustomer == null) {
         console.error('paymentService - createStripeCustomer - error while creating stripe customer', customer)
+        return null
       }
 
       return stripeCustomer
     } catch (error) {
       console.error('paymentService - createStripeCustomer - error while creating stripe customer', customer, error)
+      return null
     }
   }
 

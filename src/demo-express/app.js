@@ -6,8 +6,8 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 
-const DEFAULT_SAASFORM_SERVER = 'http://localhost:7000'
-const DEFAULT_SAASFORM_USER_LOGIN = 'http://localhost:7000/login'
+const DEFAULT_SAASFORM_SERVER = 'http://localhost:7000';
+const DEFAULT_SAASFORM_USER_LOGIN = 'http://localhost:7000/login';
 
 
 /* BEGIN Saasform imports */
