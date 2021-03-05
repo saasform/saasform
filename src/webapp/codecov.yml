@@ -1,2 +1,0 @@
-fixes:
-  - "src/webapp/::"        # reduce root e.g., "before/path/" => "path/"

@@ -76,6 +76,9 @@ export class AccountsService extends BaseService<AccountEntity> {
     const billingCustomer = await this.paymentsService.createBillingCustomer({
       name: data.name
     })
+    // TODO: stripeCustomer might be null if Stripe is not configure.
+    // at the moment it fails gracefully, but we should write a more
+    // proper way.
 
     if (this.paymentIntegration === 'killbill') {
       account.data.killbill = billingCustomer
