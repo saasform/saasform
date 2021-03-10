@@ -28,7 +28,16 @@ export class ApiV1AutheticationController {
       })
     }
 
-    await this.authService.setJwtCookie(req, res, requestUser)
+    const requestUserWithSubscription = await this.authService.updateActiveSubscription(requestUser)
+    if (requestUserWithSubscription == null) {
+      console.error('API V1 - issueJwtAndRediret - error while add subscription to token')
+      return res.status(500).json({
+        statusCode: 500,
+        message: 'Server error'
+      })
+    }
+
+    await this.authService.setJwtCookie(req, res, requestUserWithSubscription)
     const redirect = await this.settingsService.getRedirectAfterLogin()
 
     return res.status(302).json({
