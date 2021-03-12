@@ -3,7 +3,7 @@ import { REQUEST } from '@nestjs/core'
 import { Injectable, Scope, Inject } from '@nestjs/common'
 import { QueryService } from '@nestjs-query/core'
 
-import { SettingsEntity, SettingsWebsiteJson, SettingsKeysJson } from './settings.entity'
+import { SettingsEntity, SettingsWebsiteJson, SettingsKeysJson, SettingsUserJson } from './settings.entity'
 
 import { createECKey } from 'ec-key'
 import { BaseService } from '../utilities/base.service'
@@ -97,6 +97,13 @@ export class SettingsService extends BaseService<SettingsEntity> {
 
       const { id, ...entity } = data.keys
       data.keys = await this.updateOne(id, entity)
+    }
+
+    if (data.user == null) {
+      const entity = new SettingsEntity()
+      entity.category = 'user'
+      entity.json = new SettingsUserJson()
+      data.user = await this.createOne(entity)
     }
   }
 

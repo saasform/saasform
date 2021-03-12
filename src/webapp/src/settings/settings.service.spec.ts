@@ -66,7 +66,7 @@ describe('SettingsService', () => {
     expect(data.keys).toBeDefined()
     expect(data.keys.jwt_private_key).toBeDefined()
 
-    expect(mockQueryService.createOne).toHaveBeenCalledTimes(2)
+    expect(mockQueryService.createOne).toHaveBeenCalledTimes(3)
     expect(mockQueryService.updateOne).toHaveBeenCalledTimes(1)
   })
 

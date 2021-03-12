@@ -21,6 +21,8 @@ class UserJson {
 
   name: string
   email: string
+
+  [key: string]: any
 };
 
 @Entity('users')

@@ -57,7 +57,15 @@ export const mockedCommunicationService = {
   sendEmail: jest.fn(_ => [])
 }
 export const mockedSettingRepo = {
-  getWebsiteRenderingVariables: jest.fn(_ => [])
+  getWebsiteRenderingVariables: jest.fn(_ => []),
+  getSettings: jest.fn(
+    category => {
+      switch (category) {
+        case 'user': return { allowedKeys: ['email', 'unused'] }
+        default: return {}
+      }
+    }
+  )
 }
 export const mockedRandom = {
   password: _ => 'password'
