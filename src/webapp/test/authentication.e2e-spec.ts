@@ -199,8 +199,14 @@ describe('Authentication (e2e)', () => {
                   .split(' ')[0]
                 try {
                   const decoded: any = jwt_decode(jwt)
-                  console.log('decoded', decoded);
-                  // return decoded.status === 'active'
+
+                  expect(decoded.id).toBe(112)
+                  expect(decoded.account_id).toBe(212)
+                  expect(decoded.account_name).toBe('new@uplom.com')
+                  expect(decoded.status).toBe('active')
+                  expect(decoded.email).toBe('new@uplom.com')
+                  expect(decoded.email_verified).toBe(false)
+                  expect(decoded.staff).toBe(false)
                 } catch (err) {
                   console.log('err', err)
                   return false
