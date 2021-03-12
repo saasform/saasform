@@ -13,9 +13,13 @@ app_facebook_pixel_id: 123xxx
 
 # footer
 legal_company_name: Saasform Inc.
-social_github: https://github.com/saasform/saasform
-social_twitter: https://twitter.com/saasform
-social_linkedin: https://linkedin.com/company/saasform
+socials:
+  - name: github
+    url: https://github.com/saasform/saasform
+  - name: twitter
+    url: https://twitter.com/saasform
+  - name: linkedin
+    url: https://linkedin.com/company/saasform
 
 # home
 hero_image_url: assets/img/illustrations/illustration-6.png
@@ -105,3 +109,26 @@ cta_badge: Get started
 cta_title: Get MultiPreview now!
 cta_text: Share your articles over and over, but keep them click-worthy with fresh images
 cta_button: Get started for free
+
+# footer menu
+# footer:
+#   - title: Industries
+#     links:
+#       - name: SaaS
+#         url: /industry-saas
+#       - name: Productivity
+#         url: /industry-productivity
+#       - name: Security
+#         url: /industry-security
+#       - name: Finance
+#         url: /industry-finance
+#   - title: Company
+#     links:
+#       - name: About us
+#         url: /about
+#       - name: Mission
+#         url: /mission
+#       - name: Team
+#         url: /team
+#       - name: Contact us
+#         url: /contact
