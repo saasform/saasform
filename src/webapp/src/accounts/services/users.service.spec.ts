@@ -77,6 +77,55 @@ describe('UsersService', () => {
   })
 
   describe('user creation', () => {
+    it('should add the email', async () => {
+      // the allowed keys are 'email' and 'unused'
+      const repoSpy = jest.spyOn(mockedRepo, 'createOne')
+      const userInput = {
+        email: 'foo@email.com',
+        password: 'password',
+        username: 'username',
+        data: { name: 'foo', email: 'foo@email.com' }
+      }
+
+      await service.addUser(userInput)
+
+      const addedUser: UserEntity = repoSpy.mock.calls[0][0]
+      expect(repoSpy).toBeCalledTimes(1)
+      expect(addedUser.email).toBe(userInput.email)
+    })
+
+    it('should add the username if passed', async () => {
+      // the allowed keys are 'email' and 'unused'
+      const repoSpy = jest.spyOn(mockedRepo, 'createOne')
+      const userInput = {
+        email: 'foo@email.com',
+        password: 'password',
+        data: { username: 'username', name: 'foo', email: 'foo@email.com' }
+      }
+
+      await service.addUser(userInput)
+
+      const addedUser: UserEntity = repoSpy.mock.calls[0][0]
+      expect(repoSpy).toBeCalledTimes(1)
+      expect(addedUser.username).toBe(userInput.data.username)
+    })
+
+    it('should not add the username if not passed', async () => {
+      // the allowed keys are 'email' and 'unused'
+      const repoSpy = jest.spyOn(mockedRepo, 'createOne')
+      const userInput = {
+        email: 'foo@email.com',
+        password: 'password',
+        data: { name: 'foo', email: 'foo@email.com' }
+      }
+
+      await service.addUser(userInput)
+
+      const addedUser: UserEntity = repoSpy.mock.calls[0][0]
+      expect(repoSpy).toBeCalledTimes(1)
+      expect(addedUser.username).toBeUndefined()
+    })
+
     it('should set additional data', async () => {
       // the allowed keys are 'email' and 'unused'
       const repoSpy = jest.spyOn(mockedRepo, 'createOne')
@@ -90,7 +139,7 @@ describe('UsersService', () => {
 
       const addedUser: UserEntity = repoSpy.mock.calls[0][0]
       expect(repoSpy).toBeCalledTimes(1)
-      expect(addedUser.data.email).toBe('foo@email.com')
+      expect(addedUser.data.email).toBe(userInput.email)
       expect(addedUser.data.name).toBeUndefined()
       expect(addedUser.data.unused).toBeUndefined()
     })

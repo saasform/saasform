@@ -89,6 +89,7 @@ export class UsersService extends BaseService<UserEntity> {
   async addUser (newUser: any, resetPassword = false): Promise<UserEntity | null> {
     const user = new UserEntity()
     user.email = newUser.email
+    user.username = newUser.data.username != null && newUser.data.username !== '' ? newUser.data.username : undefined
     user.password = await bcrypt.hash(newUser.password, 12)
     const userSettings = await this.settingsService.getSettings('user') as unknown as SettingsUserJson
     userSettings.allowedKeys.forEach(

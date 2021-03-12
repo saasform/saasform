@@ -34,6 +34,9 @@ export class UserEntity {
   @IsEmail()
   email: string
 
+  @Column({ unique: true, nullable: true })
+  username: string
+
   @Column()
   @IsNotEmpty()
   password: string
