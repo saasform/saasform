@@ -31,13 +31,9 @@ export class ApiV1AutheticationController {
     const requestUserWithSubscription = await this.authService.updateActiveSubscription(requestUser)
     if (requestUserWithSubscription == null) {
       console.error('API V1 - issueJwtAndRediret - error while add subscription to token')
-      return res.status(500).json({
-        statusCode: 500,
-        message: 'Server error'
-      })
     }
 
-    await this.authService.setJwtCookie(req, res, requestUserWithSubscription)
+    await this.authService.setJwtCookie(req, res, requestUserWithSubscription ?? requestUser)
     const redirect = await this.settingsService.getRedirectAfterLogin()
 
     return res.status(302).json({
@@ -72,7 +68,7 @@ export class ApiV1AutheticationController {
   @Post('signup')
   async handleSignup (@Request() req, @Res() res: Response): Promise<any> {
     const response = res
-    const { email, password, account } = req.body
+    const { email, password } = req.body
 
     if (email == null || password == null) {
       return response.status(400).json({
@@ -81,7 +77,7 @@ export class ApiV1AutheticationController {
       })
     }
 
-    const user = await this.authService.registerUser(email, password, account)
+    const user = await this.authService.registerUser(req.body)
     if (user == null) {
       return response.status(409).json({
         statusCode: 409,
