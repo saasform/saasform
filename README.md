@@ -68,4 +68,4 @@ We love any type of contribution, bug fixes, new integrations and better docs. S
 
 ## Saasform Cloud
 
-Saasform Cloud is our hosted solution and we're onboarding beta customers. Sign up for updates at [saasform.dev](https://saasform.dev).
+Saasform Cloud is our hosted solution and we're onboarding beta customers. Join our [Discord channel](https://img.shields.io/badge/chat-Discord-green.svg)](https://discord.gg/cbWW8akyW9) or drop us a line at [hello@saasform.dev](mailto:hello@saasform.dev).
