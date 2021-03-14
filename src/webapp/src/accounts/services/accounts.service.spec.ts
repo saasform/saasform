@@ -87,9 +87,9 @@ describe('Accounts Service', () => {
 
   // This depends on Stripe. We need to update this when we support more payment processors
   const mockedPaymentsService = {
-    createBillingCustomer: jest.fn(_ => {}),
+    createBillingCustomer: jest.fn(_ => [{}, null]),
     createFreeSubscription: jest.fn(_ => {}),
-    attachPaymentMethod: jest.fn((customer, _) => customer),
+    attachPaymentMethod: jest.fn((account, _) => account.data.stripe.id),
     subscribeToPlan: jest.fn(_ => {})
   }
 
@@ -198,7 +198,7 @@ describe('Accounts Service', () => {
 
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
-          data: { name: 'foo bar' }
+          data: { name: 'foo bar', stripe: {} }
         })
       )
     })
@@ -209,7 +209,7 @@ describe('Accounts Service', () => {
 
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
-          data: { name: undefined },
+          data: { name: undefined, stripe: {} },
           owner_id: 101
         })
       )

@@ -185,16 +185,21 @@ export class PaymentsService extends BaseService<PaymentEntity> {
   }
 
   async createBillingCustomer (customer): Promise<any> { // TODO: return a proper type
+    const stripeCustomer = await this.createStripeCustomer(customer)
+
+    // Always create the customer in Stripe, even if the Kill Bill integration is enabled. While not strictly needed,
+    // this makes the integration with Saasform easier (as the stripe.id is expected in a lot of places).
     if (this.paymentIntegration === 'killbill') {
-      return await this.createKillBillCustomer(customer)
-    } else {
-      return await this.createStripeCustomer(customer)
+      const kbCustomer = await this.createKillBillCustomer(customer, stripeCustomer)
+      return [stripeCustomer, kbCustomer]
     }
+
+    return [stripeCustomer, null]
   }
 
-  async createKillBillCustomer (customer): Promise<any> {
+  async createKillBillCustomer (customer, stripeCustomer): Promise<any> {
     try {
-      const account = { name: customer.name, currency: 'USD' }
+      const account = { name: customer.name, externalKey: stripeCustomer.id, currency: 'USD' }
       const kbCustomer = await this.killBillService.accountApi.createAccount(account, 'saasform')
 
       if (kbCustomer == null) {
@@ -233,20 +238,20 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     }
   }
 
-  async createKillBillFreeSubscription (plan, user): Promise<any> {
+  async createKillBillFreeSubscription (plan, kbAccountId): Promise<any> {
     try {
       // const trialDays = 10 // TODO
-      const subscriptionData = { accountId: user.accountId, planName: `${String(plan.id)}-yearly` }
+      const subscriptionData = { accountId: kbAccountId, planName: `${String(plan.id)}-yearly` }
       const subscription = await this.killBillService.subscriptionApi.createSubscription(subscriptionData, 'saasform')
 
       return subscription.data
     } catch (error) {
-      console.error('paymentService - createKillBillFreeSubscription - error while creating free plan', plan, user, error)
+      console.error('paymentService - createKillBillFreeSubscription - error while creating free plan', plan, kbAccountId, error)
       return null
     }
   }
 
-  async createStripeFreeSubscription (plan, user): Promise<any> {
+  async createStripeFreeSubscription (plan, stripeId): Promise<any> {
     // TODO: fix the trial duration
     const trialDays = 10
     const trial_end = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60 // eslint-disable-line @typescript-eslint/naming-convention
@@ -254,14 +259,14 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     try {
       // TODO: fix the price to use
       const subscription = await this.stripeService.client.subscriptions.create({
-        customer: user.id,
+        customer: stripeId,
         items: [{ price: plan.prices.year.id }],
         trial_end
       })
 
       return subscription
     } catch (error) {
-      console.error('paymentService - createStripeCustomer - error while creating free plan', plan, user, error)
+      console.error('paymentService - createStripeCustomer - error while creating free plan', plan, stripeId, error)
       return null
     }
   };
@@ -269,10 +274,30 @@ export class PaymentsService extends BaseService<PaymentEntity> {
   /**
    * Attach a payment method to a Stripe customer and sets as default.
    * The payment method must already be created before calling this function.
-   * @param customer id of the Stripe customer
+   * @param account of the user
    * @param method id of the payment method
    */
-  async attachPaymentMethod (customer: string, method: string): Promise<any|null> {
+  async attachPaymentMethod (account: AccountEntity, method: string): Promise<any|null> {
+    const response = await this.attachPaymentMethodInStripe(account.data.stripe.id, method)
+
+    if (this.paymentIntegration === 'killbill') {
+      await this.attachPaymentMethodInKillBill(account.data.killbill.accountId, method)
+    }
+
+    return response
+  }
+
+  async attachPaymentMethodInKillBill (kbAccountId: string, stripePmId: string): Promise<any|null> {
+    try {
+      const pm = { isDefault: true, pluginName: 'killbill-stripe', pluginInfo: { externalPaymentMethodId: stripePmId } }
+      await this.killBillService.accountApi.createPaymentMethod(pm, kbAccountId, 'saasform')
+    } catch (error) {
+      console.error('paymentService - attachPaymentMethodInKillBill - error while syncing Stripe payment methods', kbAccountId, error)
+      return null
+    }
+  }
+
+  async attachPaymentMethodInStripe (customer: string, method: string): Promise<any|null> {
     try {
       await this.stripeService.client.paymentMethods.attach(method, {
         customer

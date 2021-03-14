@@ -73,24 +73,23 @@ export class AccountsService extends BaseService<AccountEntity> {
     account.owner_id = user?.id ?? 0
 
     // Create a Billing user for this account
-    const billingCustomer = await this.paymentsService.createBillingCustomer({
+    const billingCustomers = await this.paymentsService.createBillingCustomer({
       name: data.name
     })
     // TODO: stripeCustomer might be null if Stripe is not configure.
     // at the moment it fails gracefully, but we should write a more
     // proper way.
 
+    account.data.stripe = billingCustomers[0]
     if (this.paymentIntegration === 'killbill') {
-      account.data.killbill = billingCustomer
-    } else {
-      account.data.stripe = billingCustomer
+      account.data.killbill = billingCustomers[1]
     }
 
     // Add free tier plan
     const plans = await this.plansService.getPlans()
     await this.paymentsService.createFreeSubscription(
       plans[0],
-      billingCustomer
+      (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id)
     )
 
     try {
@@ -257,7 +256,7 @@ export class AccountsService extends BaseService<AccountEntity> {
         return null
       }
 
-      const customer = await this.paymentsService.attachPaymentMethod(account.data.stripe.id, method.id)
+      const customer = await this.paymentsService.attachPaymentMethod(account, method.id)
       if (customer == null) {
         console.error('accountsService - addPaymentsMethods - error while attaching payment method to customer')
         return null

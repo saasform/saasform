@@ -213,14 +213,16 @@ describe('Payments Service', () => {
     it('should attach the payment method to the stripe customer', async () => {
       const stripeSpy = jest.spyOn(mockedStripe.paymentMethods, 'attach')
 
-      await service.attachPaymentMethod('cus_123', 'met_456')
+      const account = { data: { stripe: { id: 'cus_123' } } }
+      await service.attachPaymentMethod(account, 'met_456')
       expect(stripeSpy).toBeCalledWith('met_456', { customer: 'cus_123' })
     })
 
     it('should set the payment method as default', async () => {
       const stripeSpy = jest.spyOn(mockedStripe.customers, 'update')
 
-      await service.attachPaymentMethod('cus_123', 'met_456')
+      const account = { data: { stripe: { id: 'cus_123' } } }
+      await service.attachPaymentMethod(account, 'met_456')
       expect(stripeSpy).toBeCalledWith('cus_123',
         {
           invoice_settings: {
