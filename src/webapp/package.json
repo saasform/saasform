@@ -18,7 +18,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --runInBand --config ./test/jest-e2e.json",
+    "test:e2e": "node --require ts-node/register ./node_modules/typeorm/cli.js schema:drop -c test && node --require ts-node/register ./node_modules/typeorm/cli.js migration:run -c test && jest --runInBand --config ./test/jest-e2e.json",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "migrate": "node --require ts-node/register ./node_modules/typeorm/cli.js migration:run"
   },
@@ -77,6 +77,8 @@
     "eslint-config-prettier": "7.1.0",
     "eslint-plugin-prettier": "^3.1.4",
     "jest": "^26.6.3",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^3.1.2",
     "pinst": "^2.1.2",
     "supertest": "^6.0.0",
     "ts-jest": "^26.4.3",
