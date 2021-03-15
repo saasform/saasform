@@ -9,6 +9,11 @@ import json
 from flask_login import LoginManager, login_required, UserMixin, current_user
 import jwt
 
+# Setting up secrets for the session
+import secrets
+secret = secrets.token_urlsafe(32)
+app.secret_key = secret
+
 # The user required by flask-login must have a set of properties.
 # You can inherit from UserMixin to have all the required properies.
 class SaasformUser(UserMixin):
@@ -23,6 +28,9 @@ pubkey = requests.get(uri).json()['message']
 
 # Creating login manager
 login_manager = LoginManager()
+
+# Redirect to Saasform to authenticate if unauthorized
+login_manager.login_view = os.environ['SAASFORM_SERVER'] + "/login"
 
 # Custom handler to parse Saasform response
 @login_manager.request_loader
@@ -46,7 +54,7 @@ def load_user_from_request(request):
 
         return user
     
-    # Toekn not found, user not autheticated
+    # Token not found, user not autheticated
     return None
 
 login_manager.init_app(app)
