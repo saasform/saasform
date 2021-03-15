@@ -21,6 +21,8 @@ class UserJson {
 
   name: string
   email: string
+
+  [key: string]: any
 };
 
 @Entity('users')
@@ -31,6 +33,9 @@ export class UserEntity {
   @Column({ unique: true })
   @IsEmail()
   email: string
+
+  @Column({ unique: true, nullable: true })
+  username: string
 
   @Column()
   @IsNotEmpty()

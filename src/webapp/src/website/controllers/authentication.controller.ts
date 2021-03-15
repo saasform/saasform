@@ -104,7 +104,7 @@ export class AuthenticationController {
 
   @Post('/signup')
   async postSignup (@Request() req, @Res() res: Response): Promise<any> {
-    const { email, password, account } = req.body
+    const { email, password } = req.body
     if (email == null) {
       return renderPage(req, res, 'signup', {
         error: {
@@ -121,7 +121,7 @@ export class AuthenticationController {
       })
     }
 
-    const user = await this.authService.registerUser(email, password, account)
+    const user = await this.authService.registerUser(req.body)
     if (user == null) {
       return renderPage(req, res, 'signup', {
         error: {

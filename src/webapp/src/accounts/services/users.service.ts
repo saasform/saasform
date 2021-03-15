@@ -6,7 +6,7 @@ import { Repository } from 'typeorm'
 import * as bcrypt from 'bcrypt'
 
 import { UserEntity } from '../entities/user.entity'
-import { NewUserInput, UserJson } from '../dto/new-user.input'
+import { UserJson } from '../dto/new-user.input'
 import { UserCredentialsService } from '../services/userCredentials.service'
 import { BaseService } from '../../utilities/base.service'
 import { SettingsService } from '../../settings/settings.service'
@@ -85,11 +85,20 @@ export class UsersService extends BaseService<UserEntity> {
    * @param newUser data of the user
    * @param resetPassword flag indicating if password must be resetted during creation. Default to false (see below)
    */
-  async addUser (newUser: NewUserInput, resetPassword = false): Promise<UserEntity | null> {
+  async addUser (newUser: any, resetPassword = false): Promise<UserEntity | null> {
     const user = new UserEntity()
     user.email = newUser.email
+    user.username = newUser.data.username != null && newUser.data.username !== '' ? newUser.data.username : undefined
     user.password = await bcrypt.hash(newUser.password, 12)
-    user.data.name = newUser?.data?.name ?? ''
+    const userSettings = await this.settingsService.getUserSettings()
+    userSettings.allowedKeys.forEach(
+      key => {
+        if (key in newUser.data) {
+          const castedKey: string = key
+          user.data[castedKey] = newUser.data[key]
+        }
+      }
+    )
 
     // TODO: consider whether to move this elsewhere.
     // So far this flag is only set to true during the invitation,

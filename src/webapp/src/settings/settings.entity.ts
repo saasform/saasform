@@ -24,6 +24,10 @@ enum ReqFullNameFormField {
   Last = 'required_last_name',
 }
 
+export class SettingsUserJson {
+  // user
+  allowedKeys: any = ['email']
+}
 export class SettingsWebsiteJson {
   // website
   title: string
@@ -99,7 +103,7 @@ export class SettingsEntity {
   category!: string
 
   @Column('json')
-  json?: SettingsWebsiteJson | SettingsAdminJson | SettingsKeysJson
+  json?: SettingsWebsiteJson | SettingsAdminJson | SettingsKeysJson | SettingsUserJson
 
   @CreateDateColumn()
   created!: Date

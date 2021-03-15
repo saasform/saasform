@@ -12,6 +12,10 @@ const settingsData = [
   },
   {
     category: 'keys'
+  },
+  {
+    category: 'user',
+    allowedKeys: ['key1', 'key2']
   }
 ]
 
@@ -66,8 +70,15 @@ describe('SettingsService', () => {
     expect(data.keys).toBeDefined()
     expect(data.keys.jwt_private_key).toBeDefined()
 
-    expect(mockQueryService.createOne).toHaveBeenCalledTimes(2)
+    expect(mockQueryService.createOne).toHaveBeenCalledTimes(3)
     expect(mockQueryService.updateOne).toHaveBeenCalledTimes(1)
+  })
+
+  it('getUserSettings', async () => {
+    const result = await service.getUserSettings()
+
+    expect(mockQueryService.query).toHaveBeenCalled()
+    expect(result.allowedKeys).toEqual(['key1', 'key2'])
   })
 
   it('getWebsiteRenderingVariables (TODO)', async () => {

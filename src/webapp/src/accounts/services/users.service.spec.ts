@@ -7,7 +7,7 @@ import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { UsersService } from './users.service'
 import { UserEntity } from '../entities/user.entity'
 import { NewUserInput } from '../dto/new-user.input'
-import { mockedCommunicationService, mockedRandom, mockedRepo, mockedUser, mockedUserExpiredToken, mockUserCredentialsEntity } from '../test/testData'
+import { mockedCommunicationService, mockedRandom, mockedRepo, mockedUser, mockedUserExpiredToken, mockUserCredentialsEntity, mockedSettingRepo } from '../test/testData'
 import { UserCredentialsService } from '../services/userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 import { NotificationsService } from '../../notifications/notifications.service'
@@ -15,7 +15,7 @@ import { SettingsService } from '../../settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
 
-// const mockRepository = {}
+const mockedUserCredentialsService = { ...mockUserCredentialsEntity, changePassword: jest.fn(), addUserCredentials: jest.fn() }
 
 describe('UsersService', () => {
   let service // Removed type AccountsService because we must overwrite the accountsRepository property
@@ -34,7 +34,7 @@ describe('UsersService', () => {
         UserCredentialsService,
         {
           provide: getRepositoryToken(UserCredentialsEntity),
-          useValue: { ...mockUserCredentialsEntity, changePassword: jest.fn() }
+          useValue: mockedUserCredentialsService
         },
         {
           provide: NotificationsService,
@@ -42,7 +42,7 @@ describe('UsersService', () => {
         },
         {
           provide: SettingsService,
-          useValue: {}
+          useValue: mockedSettingRepo
         },
         {
           provide: PaymentsService,
@@ -65,14 +65,101 @@ describe('UsersService', () => {
     // We must manually set the following because extending TypeOrmQueryService seems to break it
     Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
     service.accountsRepository = repo
-    service.userCredentialsService = { ...mockUserCredentialsEntity, changePassword: jest.fn() }
+    service.userCredentialsService = mockedUserCredentialsService
     service.communicationService = mockedCommunicationService
+    service.settingsService = mockedSettingRepo
     service.random = { ...mockedRandom }
   })
 
   it('should be defined', () => {
     expect(service).toBeDefined()
     expect(service.accountsRepository).toEqual(repo)
+  })
+
+  describe('user creation', () => {
+    it('should add the email', async () => {
+      // the allowed keys are 'email' and 'unused'
+      const repoSpy = jest.spyOn(mockedRepo, 'createOne')
+      const userInput = {
+        email: 'foo@email.com',
+        password: 'password',
+        username: 'username',
+        data: { name: 'foo', email: 'foo@email.com' }
+      }
+
+      await service.addUser(userInput)
+
+      const addedUser: UserEntity = repoSpy.mock.calls[0][0]
+      expect(repoSpy).toBeCalledTimes(1)
+      expect(addedUser.email).toBe(userInput.email)
+    })
+
+    it('should add the username if passed', async () => {
+      // the allowed keys are 'email' and 'unused'
+      const repoSpy = jest.spyOn(mockedRepo, 'createOne')
+      const userInput = {
+        email: 'foo@email.com',
+        password: 'password',
+        data: { username: 'username', name: 'foo', email: 'foo@email.com' }
+      }
+
+      await service.addUser(userInput)
+
+      const addedUser: UserEntity = repoSpy.mock.calls[0][0]
+      expect(repoSpy).toBeCalledTimes(1)
+      expect(addedUser.username).toBe(userInput.data.username)
+    })
+
+    it('should not add the username if not passed', async () => {
+      // the allowed keys are 'email' and 'unused'
+      const repoSpy = jest.spyOn(mockedRepo, 'createOne')
+      const userInput = {
+        email: 'foo@email.com',
+        password: 'password',
+        data: { name: 'foo', email: 'foo@email.com' }
+      }
+
+      await service.addUser(userInput)
+
+      const addedUser: UserEntity = repoSpy.mock.calls[0][0]
+      expect(repoSpy).toBeCalledTimes(1)
+      expect(addedUser.username).toBeUndefined()
+    })
+
+    it('should set additional data', async () => {
+      // the allowed keys are 'email' and 'unused'
+      const repoSpy = jest.spyOn(mockedRepo, 'createOne')
+      const userInput = {
+        email: 'foo@email.com',
+        password: 'password',
+        data: { name: 'foo', email: 'foo@email.com' }
+      }
+
+      await service.addUser(userInput)
+
+      const addedUser: UserEntity = repoSpy.mock.calls[0][0]
+      expect(repoSpy).toBeCalledTimes(1)
+      expect(addedUser.data.email).toBe(userInput.email)
+      expect(addedUser.data.name).toBeUndefined()
+      expect(addedUser.data.unused).toBeUndefined()
+    })
+
+    it('should add user credentials', async () => {
+      const repoSpy = jest.spyOn(mockedUserCredentialsService, 'addUserCredentials')
+      const userInput = {
+        email: 'foo@email.com',
+        password: 'password',
+        data: { name: 'foo', email: 'foo@email.com' }
+      }
+
+      await service.addUser(userInput)
+
+      const userCredential: any = repoSpy.mock.calls[0][0]
+      expect(repoSpy).toBeCalledTimes(1)
+      expect(userCredential?.credential).toBe(userInput.email)
+      expect(userCredential.json.encryptedPassword).not.toBeUndefined()
+      expect(userCredential.json.encryptedPassword).not.toBe(userInput.password)
+    })
   })
 
   describe('Email confirmation', () => {

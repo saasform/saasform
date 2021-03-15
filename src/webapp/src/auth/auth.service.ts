@@ -141,20 +141,22 @@ export class AuthService {
     return email != null ? user : null
   }
 
-  async registerUser (email: string, password: string = '', accountEmail: string = ''): Promise<ValidUser | null> {
+  async registerUser (newUser: any): Promise<ValidUser | null> {
+    const { email } = newUser
     if (email == null) {
-      console.error('auth.service - registerUser - missing parameters', email, accountEmail)
+      console.error('auth.service - registerUser - missing parameters', email)
       return null
     }
 
     const credential = await this.userCredentialsService.findUserCredentials(email)
     if (credential != null) {
       // if user already present return immediately
-      console.error('auth.service - registerUser - user already registered', email, accountEmail)
+      console.error('auth.service - registerUser - user already registered', email)
       return null
     }
 
-    const user = await this.usersService.addUser({ email, password, data: { name: '', email } })
+    const { password, _csrf, accountEmail, ...data } = newUser
+    const user = await this.usersService.addUser({ email, password, data })
     if (user == null) {
       console.error('auth.service - registerUser - error while creating user', email, accountEmail)
       return null
