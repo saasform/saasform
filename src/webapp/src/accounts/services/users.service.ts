@@ -13,7 +13,6 @@ import { SettingsService } from '../../settings/settings.service'
 import { NotificationsService } from '../../notifications/notifications.service'
 
 import { password } from '../../utilities/random'
-import { SettingsUserJson } from 'src/settings/settings.entity'
 
 @QueryService(UserEntity)
 @Injectable({ scope: Scope.REQUEST })
@@ -91,7 +90,7 @@ export class UsersService extends BaseService<UserEntity> {
     user.email = newUser.email
     user.username = newUser.data.username != null && newUser.data.username !== '' ? newUser.data.username : undefined
     user.password = await bcrypt.hash(newUser.password, 12)
-    const userSettings = await this.settingsService.getSettings('user') as unknown as SettingsUserJson
+    const userSettings = await this.settingsService.getUserSettings()
     userSettings.allowedKeys.forEach(
       key => {
         if (key in newUser.data) {

@@ -58,6 +58,7 @@ export const mockedCommunicationService = {
 }
 export const mockedSettingRepo = {
   getWebsiteRenderingVariables: jest.fn(_ => []),
+  getUserSettings: jest.fn(_ => ({ allowedKeys: ['email', 'unused'] })),
   getSettings: jest.fn(
     category => {
       switch (category) {

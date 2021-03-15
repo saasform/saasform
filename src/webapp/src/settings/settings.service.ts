@@ -119,6 +119,11 @@ export class SettingsService extends BaseService<SettingsEntity> {
     return data[category]
   }
 
+  async getUserSettings (): Promise<SettingsUserJson> {
+    const result = this.getSettings('user')
+    return result as unknown as SettingsUserJson
+  }
+
   async getWebsiteSettings (): Promise<SettingsWebsiteJson> {
     const result = this.getSettings('website')
     return result as unknown as SettingsWebsiteJson
