@@ -6,6 +6,7 @@ import {
 export class AccountData {
   name?: string
   stripe?: any
+  killbill?: any
   payments_methods?: any
   billing_info?: any
 }

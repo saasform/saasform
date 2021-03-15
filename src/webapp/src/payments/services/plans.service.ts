@@ -11,24 +11,31 @@ import { PlanEntity } from '../entities/plan.entity'
 import { Plan } from '../entities/plan.model'
 import { PaymentEntity } from '../entities/payment.entity'
 import { StripeService } from './stripe.service'
+import { KillBillService } from './killbill.service'
+import { SimplePlan, SimplePlanCurrencyEnum, SimplePlanBillingPeriodEnum, SimplePlanProductCategoryEnum } from 'killbill'
+import { ConfigService } from '@nestjs/config'
 
 @QueryService(PlanEntity)
 @Injectable({ scope: Scope.REQUEST })
 export class PlansService extends BaseService<PlanEntity> {
   private readonly planRepository = getConnection().getRepository(PlanEntity)
   private readonly tenantId = 'default'
+  private readonly paymentIntegration: string
 
   constructor (
     @Inject(REQUEST) private readonly req,
     // @InjectRepository(PlanEntity)
     // private readonly productsRepository: Repository<PlanEntity>,
-    private readonly stripeService: StripeService
+    private readonly stripeService: StripeService,
+    private readonly killBillService: KillBillService,
+    private readonly configService: ConfigService
   ) {
     super(
       req,
       'PlanEntity'
     )
     // this.tenantId = req.req ? req.req.tenantId : req.tenantId
+    this.paymentIntegration = this.configService.get<string>('PAYMENT_INTEGRATION', 'stripe')
   }
 
   createPlan (id, name, description, _prices, features, extra): any {
@@ -61,6 +68,60 @@ export class PlansService extends BaseService<PlanEntity> {
   }
 
   async addPlan (name, description, monthAmount, yearAmount, features, extra): Promise<any> { // TODO: return a proper type
+    if (this.paymentIntegration === 'killbill') {
+      await this.addKillBillPlan(name, description, monthAmount, yearAmount, features, extra)
+    } else {
+      await this.addStripePlan(name, description, monthAmount, yearAmount, features, extra)
+    }
+  }
+
+  async addKillBillPlan (name, description, monthAmount, yearAmount, features, extra): Promise<any> {
+    try {
+      let planData: SimplePlan
+      planData = {
+        planId: `${String(name)}-monthly`,
+        productName: name,
+        productCategory: SimplePlanProductCategoryEnum.BASE,
+        currency: SimplePlanCurrencyEnum.USD,
+        amount: monthAmount,
+        billingPeriod: SimplePlanBillingPeriodEnum.MONTHLY,
+        trialLength: 0
+      }
+      await this.killBillService.catalogApi.addSimplePlan(planData, 'saasform')
+
+      planData = {
+        planId: `${String(name)}-yearly`,
+        productName: name,
+        productCategory: SimplePlanProductCategoryEnum.BASE,
+        currency: SimplePlanCurrencyEnum.USD,
+        amount: yearAmount,
+        billingPeriod: SimplePlanBillingPeriodEnum.ANNUAL,
+        trialLength: 0
+      }
+      await this.killBillService.catalogApi.addSimplePlan(planData, 'saasform')
+
+      // For now, make it look like a Stripe plan (the Kill Bill data model is quite different though)
+      const product = { id: name, description: description, killbill: true }
+      const monthPrice = { type: 'recurring', unit_amount: monthAmount, recurring: { interval: 'month', interval_count: 1 }, killbill: true }
+      const yearPrice = { type: 'recurring', unit_amount: monthAmount, recurring: { interval: 'year', interval_count: 1 }, killbill: true }
+      const _plan = this.createPlan(
+        product.id, name, description,
+        [monthPrice, yearPrice],
+        features,
+        extra
+      )
+      const plan = new PlanEntity()
+      plan.product = JSON.stringify(product)
+      plan.prices = JSON.stringify([monthPrice, yearPrice])
+      plan.plan = JSON.stringify(_plan)
+      await this.createOne(plan)
+    } catch (err) {
+      console.error('Error while creating plan', name, description, monthAmount, yearAmount, features, err)
+      return null
+    }
+  }
+
+  async addStripePlan (name, description, monthAmount, yearAmount, features, extra): Promise<any> {
     try {
     // TODO: if yearAmount is 0, use standard discount
       const product = await this.stripeService.client.products.create({
@@ -167,12 +228,24 @@ export class PlansService extends BaseService<PlanEntity> {
   async getPlans (): Promise<any[]> {
     let plans = await this.query({})
 
-    if (plans.length === 0) {
-      await this.createFirstBilling()
-      plans = await this.query({})
+    const stripePlans: PlanEntity[] = []
+    const killbillPlans: PlanEntity[] = []
+    for (var plan of plans) {
+      if (JSON.parse(plan.product).killbill === true) {
+        killbillPlans.push(plan)
+      } else {
+        stripePlans.push(plan)
+      }
     }
 
-    return plans.map(this.validatePlan)
+    const createPlan = (this.paymentIntegration === 'killbill' && killbillPlans.length === 0) || (this.paymentIntegration === 'stripe' && stripePlans.length === 0)
+    if (createPlan) {
+      await this.createFirstBilling()
+      plans = await this.query({})
+      return plans.map(this.validatePlan)
+    } else {
+      return (this.paymentIntegration === 'killbill' ? killbillPlans : stripePlans).map(this.validatePlan)
+    }
   }
 
   async getPricingAndPlans (): Promise<any> {

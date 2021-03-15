@@ -5,3 +5,7 @@ secrets.local
 JOURNAL.md
 
 data/config/saasform.yml
+
+.idea
+data/themes/fresh-sso/dist/
+data/themes/fresh/dist/

@@ -11,5 +11,13 @@ TYPEORM_PASSWORD: saasformp
 SENDGRID_API_KEY: SG.xxx
 SENDGRID_SEND_FROM: xxx@yyy
 
+PAYMENT_INTEGRATION: stripe
+
 STRIPE_API_KEY: sk_test_xxx
 STRIPE_PUBLISHABLE_KEY: pk_test_xxx
+
+KB_URL: http://127.0.0.1:8080
+KB_API_KEY: bob
+KB_API_SECRET: lazar
+KB_USERNAME: admin
+KB_PASSWORD: password

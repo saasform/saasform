@@ -6,6 +6,8 @@ import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { PlanEntity } from '../entities/plan.entity'
 import { PlansService } from './plans.service'
 import { StripeService } from './stripe.service'
+import { KillBillService } from './killbill.service'
+import { ConfigService } from '@nestjs/config'
 
 const mockedRepo = {
   find: jest.fn().mockResolvedValue([]),
@@ -26,6 +28,14 @@ describe('PlansService', () => {
         },
         {
           provide: StripeService,
+          useValue: {}
+        },
+        {
+          provide: KillBillService,
+          useValue: {}
+        },
+        {
+          provide: ConfigService,
           useValue: {}
         },
         // TODO: Also stripe goes here

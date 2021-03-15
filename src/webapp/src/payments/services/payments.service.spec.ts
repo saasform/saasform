@@ -7,6 +7,8 @@ import { PaymentEntity /* PaymentStatus */ } from '../entities/payment.entity'
 import { PaymentsService } from './payments.service'
 import { AccountEntity } from '../../accounts/entities/account.entity'
 import { StripeService } from './stripe.service'
+import { KillBillService } from './killbill.service'
+import { ConfigService } from '@nestjs/config'
 
 const deletedSubscription = new PaymentEntity()
 const existingSubscription = new PaymentEntity()
@@ -77,6 +79,9 @@ describe('Payments Service', () => {
     }
   }
 
+  const mockedKillBill = {
+  }
+
   beforeEach(async () => {
     jest.clearAllMocks()
 
@@ -90,6 +95,14 @@ describe('Payments Service', () => {
         {
           provide: StripeService,
           useValue: mockedStripe
+        },
+        {
+          provide: KillBillService,
+          useValue: mockedKillBill
+        },
+        {
+          provide: ConfigService,
+          useValue: {}
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
@@ -105,6 +118,7 @@ describe('Payments Service', () => {
     Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
     service.paymentsRepository = repo
     service.stripeService = { client: mockedStripe }
+    service.killbillService = { accountApi: mockedKillBill }
     // Object.keys(mockedStripe).forEach(
     //   f => (service.stripeClient[f] = mockedStripe[f]),
     // );
@@ -199,14 +213,16 @@ describe('Payments Service', () => {
     it('should attach the payment method to the stripe customer', async () => {
       const stripeSpy = jest.spyOn(mockedStripe.paymentMethods, 'attach')
 
-      await service.attachPaymentMethod('cus_123', 'met_456')
+      const account = { data: { stripe: { id: 'cus_123' } } }
+      await service.attachPaymentMethod(account, 'met_456')
       expect(stripeSpy).toBeCalledWith('met_456', { customer: 'cus_123' })
     })
 
     it('should set the payment method as default', async () => {
       const stripeSpy = jest.spyOn(mockedStripe.customers, 'update')
 
-      await service.attachPaymentMethod('cus_123', 'met_456')
+      const account = { data: { stripe: { id: 'cus_123' } } }
+      await service.attachPaymentMethod(account, 'met_456')
       expect(stripeSpy).toBeCalledWith('cus_123',
         {
           invoice_settings: {

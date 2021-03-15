@@ -18,6 +18,7 @@ import { NotificationsService } from '../../notifications/notifications.service'
 import { SettingsService } from '../../settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
+import { ConfigService } from '@nestjs/config'
 
 const accountsArray = [
   new AccountEntity(),
@@ -86,9 +87,9 @@ describe('Accounts Service', () => {
 
   // This depends on Stripe. We need to update this when we support more payment processors
   const mockedPaymentsService = {
-    createStripeCustomer: jest.fn(_ => {}),
-    createStripeFreeSubscription: jest.fn(_ => {}),
-    attachPaymentMethod: jest.fn((customer, _) => customer),
+    createBillingCustomer: jest.fn(_ => [{}, null]),
+    createFreeSubscription: jest.fn(_ => {}),
+    attachPaymentMethod: jest.fn((account, _) => account.data.stripe.id),
     subscribeToPlan: jest.fn(_ => {})
   }
 
@@ -132,6 +133,10 @@ describe('Accounts Service', () => {
         },
         {
           provide: SettingsService,
+          useValue: {}
+        },
+        {
+          provide: ConfigService,
           useValue: {}
         },
         {
@@ -193,7 +198,7 @@ describe('Accounts Service', () => {
 
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
-          data: { name: 'foo bar' }
+          data: { name: 'foo bar', stripe: {} }
         })
       )
     })
@@ -204,7 +209,7 @@ describe('Accounts Service', () => {
 
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
-          data: { name: undefined },
+          data: { name: undefined, stripe: {} },
           owner_id: 101
         })
       )

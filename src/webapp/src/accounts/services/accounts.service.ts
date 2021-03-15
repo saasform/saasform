@@ -15,10 +15,13 @@ import { SettingsService } from '../..//settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
 import { UserJson } from '../dto/new-user.input'
+import { ConfigService } from '@nestjs/config'
 
 @QueryService(AccountEntity)
 @Injectable()
 export class AccountsService extends BaseService<AccountEntity> {
+  private readonly paymentIntegration: string
+
   constructor (
     @Inject(REQUEST) private readonly req: any,
     @InjectRepository(AccountEntity)
@@ -28,9 +31,11 @@ export class AccountsService extends BaseService<AccountEntity> {
     private readonly paymentsService: PaymentsService,
     private readonly plansService: PlansService,
     private readonly notificationService: NotificationsService,
-    private readonly settingsService: SettingsService
+    private readonly settingsService: SettingsService,
+    private readonly configService: ConfigService
   ) {
     super(req, 'AccountEntity')
+    this.paymentIntegration = this.configService.get<string>('PAYMENT_INTEGRATION', 'stripe')
   }
 
   async getAll (): Promise<AccountEntity[]> {
@@ -67,21 +72,24 @@ export class AccountsService extends BaseService<AccountEntity> {
     // will be associated with this account.
     account.owner_id = user?.id ?? 0
 
-    // Create a Stripe user for this account
-    const stripeCustomer = await this.paymentsService.createStripeCustomer({
+    // Create a Billing user for this account
+    const billingCustomers = await this.paymentsService.createBillingCustomer({
       name: data.name
     })
     // TODO: stripeCustomer might be null if Stripe is not configure.
     // at the moment it fails gracefully, but we should write a more
     // proper way.
 
-    account.data.stripe = stripeCustomer
+    account.data.stripe = billingCustomers[0]
+    if (this.paymentIntegration === 'killbill') {
+      account.data.killbill = billingCustomers[1]
+    }
 
     // Add free tier plan
     const plans = await this.plansService.getPlans()
-    await this.paymentsService.createStripeFreeSubscription(
+    await this.paymentsService.createFreeSubscription(
       plans[0],
-      stripeCustomer
+      (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id)
     )
 
     try {
@@ -248,7 +256,7 @@ export class AccountsService extends BaseService<AccountEntity> {
         return null
       }
 
-      const customer = await this.paymentsService.attachPaymentMethod(account.data.stripe.id, method.id)
+      const customer = await this.paymentsService.attachPaymentMethod(account, method.id)
       if (customer == null) {
         console.error('accountsService - addPaymentsMethods - error while attaching payment method to customer')
         return null
