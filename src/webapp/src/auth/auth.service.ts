@@ -56,6 +56,11 @@ export class AuthService {
   }
 
   async getTokenPayloadFromUserModel (validUser: ValidUser): Promise<RequestUser | null> {
+    const { allowedKeys } = await this.settingsService.getUserSettings()
+    const userData = allowedKeys.reduce((acc, key: string) => {
+      acc[`user_${key}`] = validUser.user.data[key] ?? '' // using user_${key} to flatten the jwt data
+      return acc
+    }, {})
     return {
       nonce: '', // TODO
       id: validUser.user.id,
@@ -64,7 +69,8 @@ export class AuthService {
       status: 'active', // TODO: use actual value
       email: validUser.user.email,
       email_verified: validUser.user?.data.emailConfirmed ?? false,
-      staff: validUser.user?.isAdmin ?? false
+      staff: validUser.user?.isAdmin ?? false,
+      ...userData
     }
   }
 

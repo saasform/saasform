@@ -76,7 +76,3 @@ export const mockUserCredentialsService = {
   findUserCredentials: jest.fn((email) => email === mockedUserCredentials.credential ? mockedUserCredentials : undefined),
   isRegistered: jest.fn((userCredentials, password) => userCredentials.credential === mockedUserCredentials.credential && password === 'password' ? mockedUserCredentials : undefined)
 }
-
-export const settingsServiceMock = {
-
-}
