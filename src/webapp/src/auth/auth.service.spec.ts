@@ -3,7 +3,7 @@ import { AuthService } from './auth.service'
 import { UsersService } from '../accounts/services/users.service'
 import { JwtService } from '@nestjs/jwt'
 import { AccountsService } from '../accounts/services/accounts.service'
-import { mockedRepo, mockedUserCredentials, mockUserCredentialsService, settingsServiceMock } from '../accounts/test/testData'
+import { mockedRepo, mockedSettingRepo, mockedUserCredentials, mockUserCredentialsService } from '../accounts/test/testData'
 import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { UserCredentialsService } from '../accounts/services/userCredentials.service'
 import { SettingsService } from '../settings/settings.service'
@@ -14,7 +14,7 @@ const mockJwtService = {}
 const mockAccountsService = {}
 
 describe('AuthService', () => {
-  let service: AuthService
+  let service: any
 
   beforeEach(async () => {
     jest.clearAllMocks()
@@ -29,7 +29,7 @@ describe('AuthService', () => {
         { provide: JwtService, useValue: mockJwtService },
         { provide: AccountsService, useValue: mockAccountsService },
         { provide: UserCredentialsService, useValue: mockUserCredentialsService },
-        { provide: SettingsService, useValue: settingsServiceMock },
+        { provide: SettingsService, useValue: mockedSettingRepo },
         {
           provide: PaymentsService,
           useValue: {}
@@ -41,7 +41,10 @@ describe('AuthService', () => {
       ]
     }).compile()
 
-    service = await module.get<AuthService>(AuthService)
+    const _service = await module.get<AuthService>(AuthService)
+    service = _service
+
+    service.settingsService = mockedSettingRepo
   })
 
   it('should be defined', () => {
@@ -89,6 +92,32 @@ describe('AuthService', () => {
           const expUser = await service.validateUser('werqw@email.com', '')
           expect(expUser).toBeNull()
         })
+      })
+    })
+
+    describe('JWT generation', () => {
+      it('Must add user data', async () => {
+        // console.log('us', service['settingsService'].getUserSettings())
+        const validUser = {
+          user: { id: 1, email: 'main@email', data: { email: 'inside@email' } },
+          credential: {},
+          account: { id: 101, data: { name: 'account name' } }
+        }
+        const jwtData = await service.getTokenPayloadFromUserModel(validUser)
+        expect(jwtData).toMatchObject(
+          {
+            nonce: '',
+            id: 1,
+            account_id: 101,
+            account_name: 'account name',
+            email: 'main@email',
+            email_verified: false,
+            staff: false,
+            status: 'active',
+            user_email: 'inside@email',
+            user_unused: ''
+          }
+        )
       })
     })
   })
