@@ -37,10 +37,23 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const contextId = ContextIdFactory.getByRequest(request)
     const authService = await this.moduleRef.resolve(AuthService, contextId)
 
-    // Validate subscriptions here
+    const validUser = await authService.getUserInfo(payload.email)
+
+    if (validUser == null) {
+      console.log('jwtStrategy - cannot get a valid user')
+      return null
+    }
+
+    // update jwt here
     // if payload is not up to date wrt models, issue a new jwt
     // this happens if anything changes after login, like a plan change
-    const requestUserWithSubscription = await authService.updateActiveSubscription(payload)
+    const requestUser = await authService.getTokenPayloadFromUserModel(validUser)
+    if (requestUser == null) {
+      console.error('localStrategy - validate - error while creating token')
+      return null
+    }
+
+    const requestUserWithSubscription = await authService.updateActiveSubscription(requestUser)
     if (requestUserWithSubscription == null) {
       console.error('jwtStrategy - validate - error while add subscription to token')
       return null
