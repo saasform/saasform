@@ -86,11 +86,15 @@ export class AccountsService extends BaseService<AccountEntity> {
     }
 
     // Add free tier plan
-    const plans = await this.plansService.getPlans()
-    await this.paymentsService.createFreeSubscription(
-      plans[0],
-      (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id)
-    )
+    try {
+      const plans = await this.plansService.getPlans()
+      await this.paymentsService.createFreeSubscription(
+        plans[0],
+        (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id)
+      )
+    } catch (err) {
+      console.error('accountsService - cannot create free subscription')
+    }
 
     try {
       const res = await this.createOne(account)
