@@ -4,6 +4,20 @@
 
 <h1>User profile</h1>
 
+<form action="/user/profile" method="POST">
+  <div>
+      <input type="text" name="username" value="{{user.user_username}}" required>
+  </div>
+  <div>
+    <input type="text" name="region" value="{{user.user_region}}" required>
+  </div>
+
+  <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+  <input type="submit" />
+</form>
+
+
+
 {{ alert.text }}
 
 <h2>Team</h2>
@@ -22,13 +36,11 @@
       {{error.email}}
   </div>
   <div>
-      <input type="text" id="name" name="name" value="John" required>
-      {{error.name}}
+    <input type="text" name="username" value="John" required>
   </div>
   <div>
-    <input type="text" id="extra" name="extra" value="extra" required>
-    {{error.name}}
-</div>
+    <input type="text" name="region" value="EU" required>
+  </div>
 
   <input type="hidden" name="_csrf" value="{{ csrf_token }}">
   <input type="submit" />

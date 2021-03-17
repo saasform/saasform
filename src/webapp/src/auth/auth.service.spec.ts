@@ -99,7 +99,7 @@ describe('AuthService', () => {
       it('Must add user data', async () => {
         // console.log('us', service['settingsService'].getUserSettings())
         const validUser = {
-          user: { id: 1, email: 'main@email', data: { email: 'inside@email' } },
+          user: { id: 1, email: 'main@email', data: { profile: { email: 'inside@email' } } },
           credential: {},
           account: { id: 101, data: { name: 'account name' } }
         }

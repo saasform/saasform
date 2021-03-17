@@ -7,7 +7,7 @@ import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { UsersService } from './users.service'
 import { UserEntity } from '../entities/user.entity'
 import { NewUserInput } from '../dto/new-user.input'
-import { mockedCommunicationService, mockedRandom, mockedRepo, mockedUser, mockedUserExpiredToken, mockUserCredentialsEntity, mockedSettingRepo } from '../test/testData'
+import { mockedCommunicationService, mockedRandom, mockedRepo, mockedUser, mockedUserExpiredToken, mockedUserWithLargeProfile, mockUserCredentialsEntity, mockedSettingRepo } from '../test/testData'
 import { UserCredentialsService } from '../services/userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 import { NotificationsService } from '../../notifications/notifications.service'
@@ -139,9 +139,9 @@ describe('UsersService', () => {
 
       const addedUser: UserEntity = repoSpy.mock.calls[0][0]
       expect(repoSpy).toBeCalledTimes(1)
-      expect(addedUser.data.email).toBe(userInput.email)
-      expect(addedUser.data.name).toBeUndefined()
-      expect(addedUser.data.unused).toBeUndefined()
+      expect(addedUser.data.profile.email).toBe(userInput.email)
+      expect(addedUser.data.profile.name).toBeUndefined()
+      expect(addedUser.data.profile.unused).toBeUndefined()
     })
 
     it('should add user credentials', async () => {
@@ -159,6 +159,45 @@ describe('UsersService', () => {
       expect(userCredential?.credential).toBe(userInput.email)
       expect(userCredential.json.encryptedPassword).not.toBeUndefined()
       expect(userCredential.json.encryptedPassword).not.toBe(userInput.password)
+    })
+  })
+
+  describe('user update', () => {
+    it('should update the user data', async () => {
+      // the allowed keys are 'email' and 'unused'
+      const repoSpy = jest.spyOn(mockedRepo, 'updateOne')
+      const userUpdate = {
+        name: 'foo',
+        email: 'foo@email.com'
+      }
+
+      await service.updateUserProfile(userUpdate, mockedUser.id)
+
+      const expectedData = {
+        data: {
+          ...mockedUser.data,
+          profile: {
+            email: 'foo@email.com',
+            unused: ''
+          }
+        }
+      }
+
+      expect(repoSpy).toBeCalledTimes(1)
+      expect(repoSpy).toBeCalledWith(1, expectedData)
+    })
+
+    it('should keep the user data when not present in the updated data', async () => {
+      // the allowed keys are 'email' and 'unused'
+      const repoSpy = jest.spyOn(mockedRepo, 'updateOne')
+      const userUpdate = {
+        name: 'foo'
+      }
+
+      await service.updateUserProfile(userUpdate, mockedUserWithLargeProfile.id)
+
+      const updatedUser: UserEntity = repoSpy.mock.calls[0][1]
+      expect(updatedUser.data.profile.email).toBe(mockedUserWithLargeProfile.data.profile.email)
     })
   })
 

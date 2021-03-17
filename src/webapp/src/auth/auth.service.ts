@@ -24,43 +24,59 @@ export class AuthService {
     private readonly plansService: PlansService
   ) {}
 
-  async validateUser (email: string, inputPassword: string): Promise<ValidUser | null> {
-    if (email == null || inputPassword == null) {
+  async getUserInfo (email): Promise<ValidUser | null> {
+    if (email == null) {
       return null
     }
     const credential = await this.userCredentialsService.findUserCredentials(email)
     if (credential == null) {
-      console.error('auth.service - validateUser - credentials not valid', email)
-      return null
-    }
-
-    const isRegistered = await this.userCredentialsService.isRegistered(credential, inputPassword)
-    if (!isRegistered) {
-      console.error('auth.service - validateUser - credentials not registered', email)
+      console.error('auth.service - getUserInfo - credentials not valid', email)
       return null
     }
 
     const user = await this.usersService.findById(credential.userId)
     if (user == null) {
-      console.error('auth.service - validateUser - userInfo not found', email)
+      console.error('auth.service - getUserInfo - userInfo not found', email)
       return null
     }
 
     const account = await this.accountsService.findByUserId(user.id)
     if (account == null) {
-      console.error('auth.service - registerUser - account not found', user)
+      console.error('auth.service - getUserInfo - account not found', user)
       return null
     }
 
     return { user, credential, account }
   }
 
+  async validateUser (email: string, inputPassword: string): Promise<ValidUser | null> {
+    if (email == null || inputPassword == null) {
+      return null
+    }
+
+    const validUser = await this.getUserInfo(email)
+    if (validUser == null) {
+      console.error('auth.service - validateUser - cannon get valid user info', email)
+      return null
+    }
+
+    const isRegistered = await this.userCredentialsService.isRegistered(validUser.credential, inputPassword)
+    if (!isRegistered) {
+      console.error('auth.service - validateUser - credentials not registered', email)
+      return null
+    }
+
+    return validUser
+  }
+
   async getTokenPayloadFromUserModel (validUser: ValidUser): Promise<RequestUser | null> {
     const { allowedKeys } = await this.settingsService.getUserSettings()
-    const userData = allowedKeys.reduce((acc, key: string) => {
-      acc[`user_${key}`] = validUser.user.data[key] ?? '' // using user_${key} to flatten the jwt data
-      return acc
-    }, {})
+    const userData = validUser.user.data.profile != null
+      ? allowedKeys.reduce((acc, key: string) => {
+        acc[`user_${key}`] = validUser.user.data.profile[key] ?? '' // using user_${key} to flatten the jwt data
+        return acc
+      }, {})
+      : {}
     return {
       nonce: '', // TODO
       id: validUser.user.id,
@@ -79,9 +95,10 @@ export class AuthService {
     // we would keep old data if subscription changed.
     const { subscription_id, subscription_plan, subscription_status, ...tokenWithOutSubscription } = token // eslint-disable-line
 
+    // TODO: next lines should be removed when we have web hooks from stripe
     const account = await this.accountsService.getById(token.account_id)
-    // TODO: next line should be removed when we have web hooks from stripe
     await this.paymentsService.refreshPaymentsFromStripe(account)
+
     const payment = await this.paymentsService.getActivePayments(token.account_id)
 
     if (payment == null) {
