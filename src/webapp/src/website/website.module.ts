@@ -1,4 +1,5 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common'
+import { Module, NestModule, MiddlewareConsumer, Scope } from '@nestjs/common'
+import { APP_INTERCEPTOR } from '@nestjs/core'
 
 import { AccountsModule } from '../accounts/accounts.module'
 import { AuthModule } from '../auth/auth.module'
@@ -10,14 +11,23 @@ import { UserController } from './controllers/user.controller'
 import { PublicController } from './controllers/public.controller'
 import { WebsiteDataMiddleware } from 'src/middlewares/websiteData.middleware'
 
+import { JwtInterceptor } from '../interceptors/jwt.interceptor'
+
 @Module({
-  imports: [SettingsModule, AuthModule, AccountsModule],
+  imports: [AuthModule, SettingsModule, AccountsModule],
   controllers: [
     CommonController,
     AuthenticationController,
     PaymentsController,
     UserController,
     PublicController
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: JwtInterceptor,
+      scope: Scope.TRANSIENT
+    }
   ]
 })
 export class WebsiteModule implements NestModule {
