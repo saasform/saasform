@@ -11,6 +11,7 @@ import { Response } from 'express'
 
 import { UserRequiredAuthGuard } from '../../auth/auth.guard'
 import { AccountsService } from '../../accounts/services/accounts.service'
+import { UsersService } from '../../accounts/services/users.service'
 import { PlansService } from '../../payments/services/plans.service'
 import { SettingsService } from '../../settings/settings.service'
 
@@ -20,8 +21,9 @@ import { renderUserPage } from '../utilities/render'
 export class UserController {
   constructor (
     private readonly accountsService: AccountsService,
-    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
     private readonly plansService: PlansService,
+    private readonly configService: ConfigService,
     private readonly settingsService: SettingsService
   ) {}
 
@@ -52,6 +54,18 @@ export class UserController {
     return renderUserPage(req, res, 'team', {
       account_users
     })
+  }
+
+  @UseGuards(UserRequiredAuthGuard)
+  @Post('/profile')
+  async updateUserProfile (@Request() req, @Res() res: Response): Promise<any> {
+    const updatedUser = await this.usersService.updateUserProfile(req.body, req.user.id)
+
+    if (updatedUser == null) {
+      return res.redirect('/error')
+    }
+
+    return res.redirect('/user/team')
   }
 
   @UseGuards(UserRequiredAuthGuard)

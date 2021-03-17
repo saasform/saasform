@@ -20,9 +20,22 @@ mockedUserExpiredToken.resetPasswordToken = 'anotherAnother@'
 mockedUserExpiredToken.data.resetPasswordTokenExp = new Date().getTime() - 10 * 1000 * 60
 mockedUserExpiredToken.data.resetPasswordToken = 'anotherAnother@'
 
+export const mockedUserWithLargeProfile: UserEntity = new UserEntity()
+mockedUserWithLargeProfile.id = 3
+mockedUserWithLargeProfile.email = 'user@gmail.com'
+mockedUserWithLargeProfile.password = 'password'
+mockedUserWithLargeProfile.emailConfirmationToken = 'okToken'
+mockedUserWithLargeProfile.data.profile = { foo: 'foo', email: 'internal@email' }
+
 export const mockedRepo = {
   find: jest.fn(_ => []),
-  findById: jest.fn((id) => id === mockedUser.id ? mockedUser : undefined),
+  findById: jest.fn((id) => {
+    switch (id) {
+      case mockedUser.id: return mockedUser
+      case mockedUserWithLargeProfile.id: return mockedUserWithLargeProfile
+      default: return undefined
+    }
+  }),
   createOne: jest.fn((user: UserEntity) => user),
   findByEmail: jest.fn((email) => email === mockedUser.email ? mockedUser : undefined),
   updateOne: jest.fn((id, user: UserEntity) => Object.assign(new UserEntity(), user)),

@@ -11,6 +11,10 @@ import { BooleanLiteral } from 'typescript'
 
 import { password } from '../../utilities/random'
 
+class UserProfile { //eslint-disable-line
+  [key: string]: any
+}
+
 class UserJson {
   isActive: BooleanLiteral
   resetPasswordToken: string
@@ -22,7 +26,7 @@ class UserJson {
   name: string
   email: string
 
-  [key: string]: any
+  profile: UserProfile
 };
 
 @Entity('users')
@@ -68,6 +72,7 @@ export class UserEntity {
       console.error('User Entity - constructor - error while setting confirmation token', err)
     })
     this.resetPasswordToken = ''
+    this.data.profile = {}
   }
 
   /**

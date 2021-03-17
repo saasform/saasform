@@ -90,12 +90,12 @@ export class UsersService extends BaseService<UserEntity> {
     user.email = newUser.email
     user.username = newUser.data.username != null && newUser.data.username !== '' ? newUser.data.username : undefined
     user.password = await bcrypt.hash(newUser.password, 12)
-    const userSettings = await this.settingsService.getUserSettings()
-    userSettings.allowedKeys.forEach(
+    const { allowedKeys } = await this.settingsService.getUserSettings()
+    allowedKeys.forEach(
       key => {
         if (key in newUser.data) {
           const castedKey: string = key
-          user.data[castedKey] = newUser.data[key]
+          user.data.profile[castedKey] = newUser.data[key]
         }
       }
     )
@@ -119,6 +119,42 @@ export class UsersService extends BaseService<UserEntity> {
       return res
     } catch (err) {
       console.error('Error while inserting new user', err)
+      return null
+    }
+  }
+
+  async updateUserProfile (data: any, userId: number): Promise<any> {
+    const user = await this.findById(userId)
+    if (user == null) {
+      console.error('usersService - updateUserProfile - User not found')
+      return null
+    }
+
+    // Get allowedKeys and update those values
+    const { allowedKeys } = await this.settingsService.getUserSettings()
+    const updatedProfile = allowedKeys.reduce((acc, property) => {
+      if (property in data) {
+        acc[property] = data[property]
+      } else if (property in user.data.profile) {
+        acc[property] = user.data.profile[property]
+      } else {
+        acc[property] = ''
+      }
+
+      return acc
+    }, {})
+
+    user.data.profile = updatedProfile
+
+    try {
+      const res = await this.updateOne(userId, {
+        data: user.data
+      })
+
+      res.setValuesFromJson()
+      return res
+    } catch (err) {
+      console.error('Error while updating user profile', err)
       return null
     }
   }
