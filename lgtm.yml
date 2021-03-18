@@ -5,3 +5,4 @@ extraction:
         - dist
       filters:
         - exclude: "**/*bundle.js"
+        - exclude: "**/fontawesome/*.js"
