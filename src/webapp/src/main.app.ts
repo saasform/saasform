@@ -55,10 +55,10 @@ export function configureApp (app, isTest: boolean = false): void {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-eval'", "www.googletagmanager.com", "connect.facebook.net"],
-          styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
-          fontSrc: ["'self'", "fonts.gstatic.com"],
-          imgSrc: ["'self'", "data:", "www.facebook.com"]
+          scriptSrc: ["'self'", "'unsafe-eval'", 'www.googletagmanager.com', 'connect.facebook.net'],
+          styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+          fontSrc: ["'self'", 'fonts.gstatic.com'],
+          imgSrc: ["'self'", 'data:', 'secure.gravatar.com', 'www.facebook.com']
         }
       }
     }))
