@@ -5,9 +5,9 @@
     </h1>
     
     <div>
-        {% if user %}
-            Hello {{ user_email }}.
-            {% if user_email_verified == false %}
+        {% if user.email %}
+            Hello {{ user.email }}.
+            {% if user.email_verified == false %}
                 <div>
                     Please verify your email
                 </div>

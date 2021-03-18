@@ -48,15 +48,17 @@ export class HttpExceptionsFilter implements ExceptionFilter {
 
     const themeRoot = request?.websiteData?.themeRoot as string ?? 'default'
     const assetsRoot: string = request?.websiteData?.assetsRoot ?? `/${themeRoot}`
-    const websiteData = request?.websiteData ?? { assetsRoot }
+    const websiteData = request?.websiteData ?? { root_assets: assetsRoot }
     const data = {
       ...websiteData,
       user: request.user
     }
 
     if (
-      // view doesn't exist for tenant, revert to default
-      exception.message.startsWith('Failed to lookup view')
+      // view doesn't exist
+      exception.message.startsWith('Failed to lookup view') ||
+      // csrf token
+      exception.message.startsWith('invalid csrf token')
     ) {
       response.statusCode = 500
       response.render(`${themeRoot}/500`, data)

@@ -31,6 +31,7 @@ html_google_tag_manager_header: "{{ html_google_tag_manager_header }}"
 html_google_tag_manager_body: "{{ html_google_tag_manager_body }}"
 html_facebook_pixel: "{{ html_facebook_pixel }}"
 csrf_token: "{{ csrf_token }}"
+token: "{{ token }}"
 
 # page
 page_title: "{{ page_title }}"

@@ -336,65 +336,76 @@
   <footer class="footer">
     <div class="container is-max-desktop">
       <div class="columns content">
-        <div class="column">
+        <div class="column is-one-quarter">
           <div class="footer-logo">
-            <h2 class="is-size-4 has-text-weight-semibold">{{ name }}</h2>
+            <h3 class="is-size-4 has-text-weight-semibold">{{ name }}</h3>
             <!--img src="{{ root_assets }}/img/logo/logo.svg"-->
           </div>
           <p>&copy; 2020 {{ legal_company_name }}</p>
-          <!--div class="level-left">
-            <a class="level-item" href="{{ social_github }}">
+          <div class="level-left">
+            {% if social_github %}
+            <a class="level-item has-text-grey" href="{{ social_github }}">
               <span class="icon">
                 <ion-icon name="logo-github" size="large"></ion-icon>
               </span>
             </a>
-            <a class="level-item" href="{{ social_twitter }}">
+            {% endif %}
+            {% if social_twitter %}
+            <a class="level-item has-text-grey" href="{{ social_twitter }}">
               <span class="icon">
                 <ion-icon name="logo-twitter" size="large"></ion-icon>
               </span>
             </a>
-            <a class="level-item" href="{{ social_linkedin }}">
+            {% endif %}
+            {% if social_linkedin %}
+            <a class="level-item has-text-grey" href="{{ social_linkedin }}">
               <span class="icon">
                 <ion-icon name="logo-linkedin" size="large"></ion-icon>
               </span>
             </a>
-          </div-->
+            {% endif %}
+            {% for item in socials %}
+            <a class="level-item has-text-grey" href="{{ item.url }}">
+              <span class="icon">
+                <ion-icon name="logo-{{ item.name }}" size="large"></ion-icon>
+              </span>
+            </a>
+            {% endfor %}
+          </div>
   
         </div>
         <div class="column">
-          <div class="footer-column">
-            <div class="footer-header">
-              <h3>Legal</h3>
-            </div>
-            <ul class="link-list">
-              <li><a href="/privacy-policy">Privacy policy</a></li>
-              <li><a href="/terms-of-service">Terms of service</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="column">
-          <div class="footer-column">
-            <div class="footer-header">
-              <h3>Follow us</h3>
-              <nav class="level is-mobile">
-                <div class="level-left">
-                  <a class="level-item" href="{{ social_github }}">
-                    <span class="icon">
-                      <ion-icon name="logo-github" size="large"></ion-icon>
-                    </span>
-                  </a>
-                  <a class="level-item" href="{{ social_twitter }}">
-                    <span class="icon">
-                      <ion-icon name="logo-twitter" size="large"></ion-icon>
-                    </span>
-                  </a>
-                  <a class="level-item" href="{{ social_linkedin }}">
-                    <span class="icon">
-                      <ion-icon name="logo-linkedin" size="large"></ion-icon>
-                    </span>
-                  </a>
+          <div class="columns mt-0">
+  
+            {% for menu in footer %}
+            <div class="column pt-0">
+              <div class="level-right">
+                <div>
+                  <div class="footer-header">
+                    <h3 class="is-size-5 has-text-weight-normal is-uppercase" style="line-height: 1.75rem;margin-bottom: 1rem">{{ menu.title }}</h3>
+                  </div>
+                  <ul class="is-unstyled">
+                    {% for item in menu.links %}
+                    <li><a class="has-text-grey" href="{{ item.url }}">{{ item.name }}</a></li>
+                    {% endfor %}
+                  </ul>
                 </div>
-              </nav>
+              </div>
+            </div>
+            {% endfor %}
+  
+            <div class="column pt-0">
+            <div class="level-right">
+            <div>
+              <div class="footer-header">
+                <h3 class="is-size-5 has-text-weight-normal is-uppercase" style="line-height: 1.75rem;margin-bottom: 1rem">Legal</h3>
+              </div>
+              <ul class="is-unstyled">
+                <li><a class="has-text-grey" href="/privacy-policy">Privacy policy</a></li>
+                <li><a class="has-text-grey" href="/terms-of-service">Terms of service</a></li>
+              </ul>
+            </div>
+            </div>
             </div>
           </div>
         </div>

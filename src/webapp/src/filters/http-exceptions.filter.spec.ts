@@ -90,7 +90,7 @@ describe('HttpExceptionsFilter', () => {
     const mockResponse = mockHost.switchToHttp().getResponse()
     filter.catch(exception, mockHost)
     expect(mockResponse.render).toHaveBeenCalledWith('default/404', {
-      assetsRoot: '/default'
+      root_assets: '/default'
     })
   })
 
@@ -100,7 +100,7 @@ describe('HttpExceptionsFilter', () => {
     const mockResponse = mockHost.switchToHttp().getResponse()
     filter.catch(exception, mockHost)
     expect(mockResponse.render).toHaveBeenCalledWith('default/500', {
-      assetsRoot: '/default'
+      root_assets: '/default'
     })
   })
 
@@ -110,7 +110,7 @@ describe('HttpExceptionsFilter', () => {
     const mockResponse = mockHost.switchToHttp().getResponse()
     filter.catch(exception, mockHost)
     expect(mockResponse.render).toHaveBeenCalledWith('default/500', {
-      assetsRoot: '/default'
+      root_assets: '/default'
     })
   })
 

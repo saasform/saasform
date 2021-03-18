@@ -179,17 +179,17 @@ export class AuthenticationController {
     res.redirect('/')
   }
 
-  @Get('/reset-password')
+  @Get('/password-reset')
   async resetPassword (@Request() req, @Res() res: Response): Promise<any> {
-    return renderPage(req, res, 'reset-password')
+    return renderPage(req, res, 'password-reset')
   }
 
-  @Post('/reset-password')
+  @Post('/password-reset')
   async postResetPassword (@Request() req, @Res() res: Response): Promise<any> {
     const { email } = req.body
 
     await this.usersService.sendResetPasswordEmail(email)
-    return renderPage(req, res, 'reset-password',
+    return renderPage(req, res, 'password-reset',
       {
         alert: {
           type: 'notice',
@@ -198,17 +198,28 @@ export class AuthenticationController {
       })
   }
 
-  @Get('reset-password/:token')
+  @Get('/password-change/:token')
   async resetPasswordToken (@Request() req, @Res() res: Response, @Param('token') token: string): Promise<any> {
-    return renderPage(req, res, 'resetPasswordToken', { token })
+    return renderPage(req, res, 'password-change', { token })
   }
 
-  @Post('/reset-password-finish')
+  @Post('/password-change/:token')
   async postResetPasswordToken (@Request() req, @Res() res: Response): Promise<any> {
     const { token, password, confirmation } = req.body
 
+    let error
+    if (password == null) {
+      error = {
+        password: 'Password not valid.'
+      }
+      return renderPage(req, res, 'password-change', { token, error })
+    }
+
     if (password !== confirmation) {
-      return res.redirect('/error')
+      error = {
+        confirmation: 'Confirmation password doesn\'t match'
+      }
+      return renderPage(req, res, 'password-change', { token, error })
     }
 
     await this.usersService.resetPassword(token, password)
