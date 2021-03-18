@@ -65,7 +65,10 @@
             Account
           </a>
           <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
-            Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
+            Dashboard&nbsp;&nbsp;
+            <span class="icon is-small">
+              <i class="fa fa-arrow-right"></i>
+            </span>
           </a>
           {% else %}
           <a href="/login" class="navbar-item is-primary">
@@ -126,7 +129,10 @@
             Account
           </a>
           <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
-            Dashboard <ion-icon name="arrow-forward-outline" size="small"></ion-icon>
+            Dashboard&nbsp;&nbsp;
+            <span class="icon is-small">
+              <i class="fa fa-arrow-right"></i>
+            </span>
           </a>
           {% else %}
           <a href="/login" class="navbar-item is-primary">
@@ -388,19 +394,25 @@
               <ul class="pricing-features has-text-left" style="list-style-type: none; margin: 0">
                 <li>
                   <span class="tag is-success is-light is-rounded">
-                    <ion-icon name="checkmark-outline"></ion-icon>
+                    <span class="icon is-small">
+                      <i class="fa fa-check"></i>
+                    </span>
                   </span>
                   3 articles
                 </li>
                 <li>
                   <span class="tag is-success is-light is-rounded">
-                    <ion-icon name="checkmark-outline"></ion-icon>
+                    <span class="icon is-small">
+                      <i class="fa fa-check"></i>
+                    </span>
                   </span>
                   3 images/article
                 </li>
                 <li>
                   <span class="tag is-success is-light is-rounded">
-                    <ion-icon name="checkmark-outline"></ion-icon>
+                    <span class="icon is-small">
+                      <i class="fa fa-check"></i>
+                    </span>
                   </span>
                   Unlimited shares
                 </li>
@@ -408,7 +420,9 @@
               {% for feature in xfeatures %}
                 <li>
                   <span class="tag is-success is-light is-rounded">
-                    <ion-icon name="checkmark-outline"></ion-icon>
+                    <span class="icon is-small">
+                      <i class="fa fa-check"></i>
+                    </span>
                   </span>
                   {{ feature }}
                 </li>
@@ -511,8 +525,10 @@
                           <ul class="pricing-features has-text-left">
                           {% for feature in item.features %}
                             <li>
-                              <span class="tag is-success is-light is-rounded">
-                                <ion-icon name="checkmark-outline"></ion-icon>
+                              <span class="tag is-success is-light is-rounded">  
+                                <span class="icon is-small">
+                                  <i class="fa fa-check"></i>
+                                </span>
                               </span>
                               {{ feature }}
                             </li>
@@ -740,28 +756,28 @@
             {% if social_github %}
             <a class="level-item has-text-grey" href="{{ social_github }}">
               <span class="icon">
-                <ion-icon name="logo-github" size="large"></ion-icon>
+                <i class="fab fa-lg fa-github"></i>
               </span>
             </a>
             {% endif %}
             {% if social_twitter %}
             <a class="level-item has-text-grey" href="{{ social_twitter }}">
               <span class="icon">
-                <ion-icon name="logo-twitter" size="large"></ion-icon>
+                <i class="fab fa-lg fa-twitter"></i>
               </span>
             </a>
             {% endif %}
             {% if social_linkedin %}
             <a class="level-item has-text-grey" href="{{ social_linkedin }}">
               <span class="icon">
-                <ion-icon name="logo-linkedin" size="large"></ion-icon>
+                <i class="fab fa-lg fa-linkedin"></i>
               </span>
             </a>
             {% endif %}
             {% for item in socials %}
             <a class="level-item has-text-grey" href="{{ item.url }}">
               <span class="icon">
-                <ion-icon name="logo-{{ item.name }}" size="large"></ion-icon>
+                <i class="fab fa-lg fa-{{ item.name }}"></i>
               </span>
             </a>
             {% endfor %}
@@ -807,7 +823,6 @@
     </div>
   </footer>
 
-  <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
   <script src="{{ root_assets }}/assets/js/bundle.js"></script>
 </body>
 </html>

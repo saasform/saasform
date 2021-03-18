@@ -22,8 +22,10 @@
         <ul class="pricing-features has-text-left">
         {% for feature in item.features %}
           <li>
-            <span class="tag is-success is-light is-rounded">
-              <ion-icon name="checkmark-outline"></ion-icon>
+            <span class="tag is-success is-light is-rounded">  
+              <span class="icon is-small">
+                <i class="fa fa-check"></i>
+              </span>
             </span>
             {{ feature.name }}
           </li>
