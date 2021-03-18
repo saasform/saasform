@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="x-apple-disable-message-reformatting">
-  <title></title>
+  <title>{{ email_subject }}</title>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,300,500"/>
   <style>
@@ -101,7 +101,7 @@
       <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 600px;">
         <tr>
           <td bgcolor="#f1f6f9" height='60' align="center">
-            <h1 style="color:#335eea">{{ settings.name }}</h1>
+            <h1 style="color:#335eea">{{ name }}</h1>
           </td>
         </tr>
         <tr>
@@ -112,27 +112,7 @@
               <tr>
                 <td style="padding: 40px; font-family: 'Lato', sans-serif; font-size: 15px; line-height: 20px; color: #444444;">
 
-                <b>Welcome to {{ settings.name }}!</b>
-<br><br>
-Please take a second to make sure we've got your email right.
-<br><br>
-<br>
-
-<table>
-  <tr>
-    <td>
-      <table border="0" cellspacing="0" cellpadding="0">
-        <tr>
-          <td align="center" style="border-radius: 43px;" bgcolor="#335eea"><a href="{{ link }}" target="_blank" style="font-size: 16px; font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif; color: #ffffff; text-decoration: none; text-decoration: none;border-radius: 43px; padding: 12px 36px; border: 1px solid #335eea; display: inline-block;">Confirm your email</a></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
-
-<br>
-
-
+                {{ email_body }}
 
                 </td>
               </tr>
@@ -159,7 +139,7 @@ Please take a second to make sure we've got your email right.
               <a
                 href="https://{{ domain_primary }}"
                 style="color:#666666;text-decoration:none"
-                >{{ settings.domain_primary }}</a
+                >{{ domain_primary }}</a
               >
             </td>
           </tr>

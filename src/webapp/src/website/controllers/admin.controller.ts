@@ -53,7 +53,7 @@ export class AdminController {
 
     // extract variables from md header, e.g. title
     const mdParts = mdFile.split(/---\n/)
-    let mdVars = { title: '' }
+    let mdVars = { subject: '', button_url: '', action_url: '' }
     let mdBody = mdFile
     if (mdParts.length === 3) {
       try {
@@ -64,17 +64,23 @@ export class AdminController {
       }
     }
 
-    const md = new MarkdownIt({ linkify: true })
-    const liquid = new Liquid()
+    const md = new MarkdownIt({ linkify: true, html: true })
+    const liquid = new Liquid({ root: join(__dirname, '..', '..', '..', 'emails'), extname: '.liquid' })
+
+    // data passed to render subject & body
+    const varData = {
+      ...req.websiteData,
+      action_url: 'https://example.com/'
+    }
 
     const pageData = {
       // title from md header
-      page_title: mdVars.title ?? '',
+      email_subject: mdVars.subject != null ? await liquid.parseAndRender(mdVars.subject, varData) : '',
       // body first via liquid (to replace Saasform variable) then markdown-it
-      page_body: md.render(await liquid.parseAndRender(mdBody, req.websiteData))
+      email_body: md.render(await liquid.parseAndRender(mdBody, varData))
     }
 
-    return renderPage(req, res, 'page', pageData)
+    return renderPage(req, res, '../../emails/default', pageData)
   }
 
   @Get('*')
