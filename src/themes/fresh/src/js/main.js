@@ -9,7 +9,6 @@ import { initNavbar } from './libs/components/navbar';
 import { initSidebar } from './libs/components/sidebar';
 import { initBackToTop } from './libs/components/backtotop';
 import { initPricing } from './libs/components/pricing';
-const feather = require('feather-icons');
 
 window.initNavbar = initNavbar;
 window.initSidebar = initSidebar;
@@ -23,9 +22,6 @@ document.onreadystatechange = function () {
 
     //Switch backgrounds
     insertBgImages();
-
-    //Feather Icons
-    feather.replace();
 
     // Add modal windows
     initModals();

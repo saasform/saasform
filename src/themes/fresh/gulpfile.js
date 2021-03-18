@@ -175,7 +175,7 @@ function javascriptBuild() {
   // Start by calling browserify with our entry pointing to our main javascript file
   return (
     browserify({
-      entries: [`${options.paths.src.js}/main.js`],
+      entries: [`${options.paths.src.js}/main.js`, `${options.paths.src.js}/fontawesome/all.js`],
       // Pass babelify as a transform and set its preset to @babel/preset-env
       transform: [babelify.configure({ presets: ["@babel/preset-env"] })]
     })

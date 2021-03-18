@@ -47,7 +47,17 @@ export function configureApp (app, isTest: boolean = false): void {
   if (process.env.NODE_ENV === 'development') { // TODO: better check for development mode
     console.warn('NOT USING HELMET. DO NOT DO THIS IN PRODUCTION')
   } else {
-    app.use(helmet())
+    app.use(helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-eval'"],
+          styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+          fontSrc: ["'self'", 'fonts.gstatic.com'],
+          imgSrc: ["'self'", 'data:']
+        }
+      }
+    }))
   }
 
   app.useGlobalPipes(new ValidationPipe())
