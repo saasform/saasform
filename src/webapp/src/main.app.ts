@@ -48,13 +48,17 @@ export function configureApp (app, isTest: boolean = false): void {
     console.warn('NOT USING HELMET. DO NOT DO THIS IN PRODUCTION')
   } else {
     app.use(helmet({
+      // support:
+      // - Google Analytics & Google Tag Manager
+      // - Facebook Pixel, including fallback image
+      // - Google Fonts
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-eval'"],
-          styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
-          fontSrc: ["'self'", 'fonts.gstatic.com'],
-          imgSrc: ["'self'", 'data:']
+          scriptSrc: ["'self'", "'unsafe-eval'", "www.googletagmanager.com", "connect.facebook.net"],
+          styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
+          fontSrc: ["'self'", "fonts.gstatic.com"],
+          imgSrc: ["'self'", "data:", "www.facebook.com"]
         }
       }
     }))
