@@ -12,8 +12,7 @@ import sgMail = require('@sendgrid/mail')
 
 // const path = require('path');
 
-const THEMES_DIR = '../../themes/'
-const EMAIL_TEMPLATES_DIR = 'email'
+const EMAIL_TEMPLATES_DIR = '../../emails'
 
 @Injectable()
 export class NotificationsService {
@@ -70,11 +69,11 @@ export class NotificationsService {
   async renderLiquidTemplate (template: string, settings: any, data: any): Promise<string | null> {
     try {
       const engine = new Liquid({
-        root: resolve(__dirname, THEMES_DIR),
+        root: resolve(__dirname, EMAIL_TEMPLATES_DIR),
         extname: '.liquid'
       })
 
-      return await engine.renderFile(`${settings.root_theme as string}/${EMAIL_TEMPLATES_DIR}/${template}`, { ...settings, ...data })
+      return await engine.renderFile(template, { ...settings, ...data })
     } catch (err) {
       console.error('renderLiquidTemplate - error rendering email template', err, template, data)
       return null

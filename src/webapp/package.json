@@ -14,11 +14,11 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "ts-standard --fix",
-    "test": "jest",
+    "test": "jest --silent",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "node --require ts-node/register ./node_modules/typeorm/cli.js schema:drop -c test && node --require ts-node/register ./node_modules/typeorm/cli.js migration:run -c test && jest --runInBand --config ./test/jest-e2e.json",
+    "test:e2e": "node --require ts-node/register ./node_modules/typeorm/cli.js schema:drop -c test && node --require ts-node/register ./node_modules/typeorm/cli.js migration:run -c test && jest --silent --runInBand --config ./test/jest-e2e.json",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "migrate": "node --require ts-node/register ./node_modules/typeorm/cli.js migration:run"
   },
@@ -62,6 +62,9 @@
     "typeorm": "^0.2.30",
     "urlsafe-base64": "^1.0.0",
     "yarn": "^1.22.10"
+  },
+  "resolutions": {
+    "killbill/axios": "^0.21.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.1",

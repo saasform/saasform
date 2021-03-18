@@ -11,7 +11,7 @@
           Current password
         </label>
         <div class="control">
-          <input type="password" class="input {{ website.size }}" id="password" name="password">
+          <input type="password" class="input {{ website.size }}" id="password" name="password" minlength="8" required>
         </div>
         <p id="error-password" class="help is-danger">{{ error.password }}</p>
       </div>
@@ -21,9 +21,9 @@
           New password
         </label>
         <div class="control">
-          <input type="password" class="input {{ website.size }}" id="password-new" name="password-new">
+          <input type="password" class="input {{ website.size }}" id="password-new" name="password-new" minlength="8" required>
         </div>
-        <p id="error-password-new" class="help is-danger">{{ error.password-new }}</p>
+        <p id="error-password-new" class="help is-danger">{{ error.password_new }}</p>
       </div>
 
       <div class="field">
@@ -31,9 +31,9 @@
           Confirm new password
         </label>
         <div class="control">
-          <input type="password" class="input {{ website.size }}" id="password-confirm" name="password-confirm">
+          <input type="password" class="input {{ website.size }}" id="password-confirm" name="password-confirm" minlength="8" required>
         </div>
-        <p id="error-password-confirm" class="help is-danger">{{ error.password-confirm }}</p>
+        <p id="error-password-confirm" class="help is-danger">{{ error.password_confirm }}</p>
       </div>
 
       <br/>

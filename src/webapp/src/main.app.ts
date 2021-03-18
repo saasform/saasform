@@ -62,7 +62,7 @@ export function configureApp (app, isTest: boolean = false): void {
     })
   } else {
     app.use((req, res, next) => {
-      if (req.path.indexOf('/graphql') >= 0 || req.path.indexOf('/api') >= 0) { // TODO: refacotr this
+      if (req.path.indexOf('/graphql') >= 0 || req.path.indexOf('/api') >= 0) { // TODO: refactor this
         next()
       } else {
         csrf(req, res, next)
