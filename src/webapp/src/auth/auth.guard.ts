@@ -46,7 +46,7 @@ export class UserOptionalAuthGuard extends AuthGuard('jwt') {
 export class AdminRequiredAuthGuard extends AuthGuard('jwt') {
   handleRequest (err, user, info, context): any {
     const u = super.handleRequest(err, user, info, context)
-    if (u?.staff == null) {
+    if (u?.staff == null || u?.staff !== true) {
       throw new UnauthorizedException('admin')
     }
     return u
