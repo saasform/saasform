@@ -9,6 +9,7 @@ import { CommonController } from './controllers/common.controller'
 import { PaymentsController } from './controllers/payments.controller'
 import { UserController } from './controllers/user.controller'
 import { PublicController } from './controllers/public.controller'
+import { AdminController } from './controllers/admin.controller'
 import { WebsiteDataMiddleware } from 'src/middlewares/websiteData.middleware'
 
 import { JwtInterceptor } from '../interceptors/jwt.interceptor'
@@ -20,6 +21,7 @@ import { JwtInterceptor } from '../interceptors/jwt.interceptor'
     AuthenticationController,
     PaymentsController,
     UserController,
+    AdminController,
     PublicController
   ],
   providers: [
