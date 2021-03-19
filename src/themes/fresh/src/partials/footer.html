@@ -1,5 +1,8 @@
 <footer class="footer">
   <div class="container is-max-desktop">
+    {% if made_with_love %}
+    <p class="has-text-centered">{{ website.made_with_love }}</a></p>
+    {% endif %}
     <div class="columns content">
       <div class="column is-one-quarter">
         <div class="footer-logo">

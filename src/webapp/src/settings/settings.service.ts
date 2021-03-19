@@ -198,6 +198,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
 
       // footer
       legal_company_name: '',
+      made_with_love: '',
       socials: [
         {
           name: '',
@@ -399,7 +400,8 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'seo_twitter_description',
       'seo_twitter_image_url',
       'legal_website_url',
-      'legal_email'
+      'legal_email',
+      'made_with_love'
     ]
     for (const key of overridePaths) {
       const value = _.get(settings, key) ?? this.configService.get(key, '')

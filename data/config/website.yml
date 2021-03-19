@@ -13,6 +13,7 @@ app_facebook_pixel_id: 123xxx
 
 # footer
 legal_company_name: Saasform Inc.
+made_with_love: Made with ❤️ and <a href="https://saasform.dev">Saasform</a>.
 socials:
   - name: github
     url: https://github.com/saasform/saasform
