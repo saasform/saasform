@@ -18,7 +18,7 @@ Launch Saasform:
 ```bash
 git clone https://github.com/saasform/saasform
 cd saasform
-docker-compose up
+docker-compose up --build
 ```
 
 Open your browser at [http://localhost:7000](http://localhost:7000).
