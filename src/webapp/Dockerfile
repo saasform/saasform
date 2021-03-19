@@ -1,4 +1,4 @@
-FROM node:12.19.0-stretch-slim AS builder
+FROM node:14.16.0-buster AS builder
 WORKDIR /app
 COPY ./ .
 RUN rm -rf node_modules
@@ -15,7 +15,7 @@ RUN yarn build
 # RUN yarn install
 # RUN yarn build
 
-FROM node:12.19.0-stretch-slim
+FROM node:14.16.0-buster-slim
 RUN apt-get update
 RUN apt-get install -y wait-for-it
 COPY --chown=node:node --from=builder /app/node_modules /app/node_modules
