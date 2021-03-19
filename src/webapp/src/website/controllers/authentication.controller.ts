@@ -50,13 +50,25 @@ export class AuthenticationController {
 
     await this.authService.setJwtCookie(req, res, requestUser)
 
+    const baseUrl = await this.settingsService.getBaseUrl()
+    const appUrl = await this.settingsService.getRedirectAfterLogin()
+
+    // prevent open redirects
     const next = req.query.next
-    if (next != null && next[0] === '/') {
-      return res.redirect(next)
-    } else {
-      const redirect = await this.settingsService.getRedirectAfterLogin() ?? '/'
-      return res.redirect(redirect)
+    if (next != null) {
+      if (
+        // relative path
+        next[0] === '/' ||
+        // absolute url to Saasform
+        next.startsWith(baseUrl) === true ||
+        // absolute url to SaaS
+        next.startsWith(appUrl) === true
+      ) {
+        return res.redirect(next)
+      }
     }
+
+    return res.redirect(appUrl)
   }
 
   @Get('/login')
@@ -70,7 +82,7 @@ export class AuthenticationController {
     const { email, password } = req.body
 
     if (email == null) {
-      return renderPage(req, res, 'signup', {
+      return renderPage(req, res, 'login', {
         error: {
           email: 'Email not valid.'
         }
@@ -78,7 +90,7 @@ export class AuthenticationController {
     }
 
     if (password == null) {
-      return renderPage(req, res, 'signup', {
+      return renderPage(req, res, 'login', {
         error: {
           password: 'Password not valid.'
         }

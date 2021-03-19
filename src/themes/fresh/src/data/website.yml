@@ -11,6 +11,7 @@ legal_company_name: "{{ legal_company_name }}"
 social_github: "{{ social_github }}"
 social_twitter: "{{ social_twitter }}"
 social_linkedin: "{{ social_linkedin }}"
+made_with_love: "{{ made_with_love }}"
 
 # seo
 seo_fb_app_id: "{{ seo_fb_app_id }}"
