@@ -14,7 +14,8 @@ services:
       - ./data/db:/var/lib/mysql:cached
 
   saasform:
-    image: saasform/saasform:latest
+    image: saasform/saasform:localbuild
+    build: ./src/webapp
     restart: always
     depends_on:
       - saasform-db
@@ -37,7 +38,8 @@ services:
     command: ["bash", "/app/bin/startup.sh"]
 
   demo-express:
-    image: saasform/demo-express:latest
+    image: saasform/demo-express:localbuild
+    build: ./src/demo-express
     restart: always
     depends_on:
       - saasform
