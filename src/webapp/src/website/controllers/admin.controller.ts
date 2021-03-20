@@ -13,8 +13,6 @@ import { join } from 'path'
 import { NotificationsService } from '../../notifications/notifications.service'
 import { AdminRequiredAuthGuard } from '../../auth/auth.guard'
 
-import { renderPage } from '../utilities/render'
-
 @Controller('admin')
 @UseGuards(AdminRequiredAuthGuard)
 export class AdminController {
@@ -35,7 +33,7 @@ export class AdminController {
   }
 
   @Get('emails?/:email')
-  async getEmail (@Request() req, @Res() res: Response, @Param('email') email: string): Promise<any> {
+  async getEmail (@Param('email') email: string): Promise<string> {
     const emailData = {
       // the recipient
       user: {
@@ -51,10 +49,7 @@ export class AdminController {
 
     // console.log(renderedEmail.text)
 
-    return renderPage(req, res, '../../emails/default', {
-      email_subject: renderedEmail.subject,
-      email_body: renderedEmail.html
-    })
+    return renderedEmail.html
   }
 
   @Get('*')

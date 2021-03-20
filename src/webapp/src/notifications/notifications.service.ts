@@ -68,11 +68,18 @@ export class NotificationsService {
       ...data
     }
 
+    const subject = mdVars.subject != null ? await liquidHtml.parseAndRender(mdVars.subject, varData) : ''
+    const html = await liquidHtml.renderFile('../emails/default', {
+      subject,
+      html: md.render(await liquidHtml.parseAndRender(mdBody, varData)),
+      ...varData
+    })
+
     return {
       // title from md header
-      subject: mdVars.subject != null ? await liquidHtml.parseAndRender(mdVars.subject, varData) : '',
+      subject,
       // body first via liquid (to replace Saasform variable) then markdown-it
-      html: md.render(await liquidHtml.parseAndRender(mdBody, varData)),
+      html,
       // txt version of the email
       text: await liquidTxt.parseAndRender(mdBody, varData)
     }
@@ -97,9 +104,10 @@ export class NotificationsService {
       return false
     }
 
+    const settings = await this.settingsService.getWebsiteRenderingVariables()
     const msg = {
       to,
-      from: this.sendFrom,
+      from: settings.email ?? this.sendFrom,
       ...renderedEmail
     }
 
