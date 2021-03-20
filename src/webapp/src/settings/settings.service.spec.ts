@@ -8,7 +8,9 @@ import { ConfigService } from '@nestjs/config'
 const settingsData = [
   {
     category: 'website',
-    name: 'Test'
+    name: 'My SaaS',
+    domain_primary: null,
+    logos: ['facebook', 'pinterest']
   },
   {
     category: 'keys'
@@ -85,7 +87,7 @@ describe('SettingsService', () => {
     const result = await service.getWebsiteRenderingVariables()
 
     expect(mockQueryService.query).toHaveBeenCalled()
-    expect(result.name).toEqual('Test')
+    expect(result.name).toEqual('My SaaS')
   })
 
   it('getJWTPublicKey', async () => {

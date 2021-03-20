@@ -206,10 +206,13 @@ export class UsersService extends BaseService<UserEntity> {
     }
 
     await user.setResetPasswordToken()
-    const link = `${await this.settingsService.getBaseUrl()}/password-change/${user.resetPasswordToken}`
 
+    const emailData = {
+      user,
+      action_url: `${await this.settingsService.getBaseUrl()}/password-change/${user.resetPasswordToken}`
+    }
     await this.updateOne(user.id, { resetPasswordToken: user.data.resetPasswordToken, data: { ...user.data } })
-    if (await this.notificationService.sendEmail(email, 'resetPassword', { user, link }) === false) {
+    if (await this.notificationService.sendEmail(email, 'password_reset', emailData) === false) {
       console.error('userService - sendResetPasswordEmail - error while sending email')
     }
   }
