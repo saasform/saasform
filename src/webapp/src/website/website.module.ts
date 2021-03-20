@@ -4,6 +4,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core'
 import { AccountsModule } from '../accounts/accounts.module'
 import { AuthModule } from '../auth/auth.module'
 import { SettingsModule } from '../settings/settings.module'
+import { NotificationsModule } from '../notifications/notifications.module'
 import { AuthenticationController } from './controllers/authentication.controller'
 import { CommonController } from './controllers/common.controller'
 import { PaymentsController } from './controllers/payments.controller'
@@ -15,7 +16,7 @@ import { WebsiteDataMiddleware } from 'src/middlewares/websiteData.middleware'
 import { JwtInterceptor } from '../interceptors/jwt.interceptor'
 
 @Module({
-  imports: [AuthModule, SettingsModule, AccountsModule],
+  imports: [AuthModule, SettingsModule, NotificationsModule, AccountsModule],
   controllers: [
     CommonController,
     AuthenticationController,

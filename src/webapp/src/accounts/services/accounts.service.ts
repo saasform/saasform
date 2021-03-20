@@ -103,13 +103,12 @@ export class AccountsService extends BaseService<AccountEntity> {
       // TODO: refactor this
 
       // send email here (new account template)
-      const settings = await this.settingsService.getWebsiteRenderingVariables()
       const emailData = {
-        title: settings.title,
         user,
-        link: `${await this.settingsService.getBaseUrl()}/verify-email/${user.emailConfirmationToken as string}`
+        action_url: `${await this.settingsService.getBaseUrl()}/verify-email/${user.emailConfirmationToken as string}`
       }
-      if ((await this.notificationService.sendEmail(user.email, 'newAccount', emailData)) === false) {
+
+      if ((await this.notificationService.sendEmail(user.email, 'email_confirm', emailData)) === false) {
         console.error('Error while sending email')
       }
 
@@ -198,8 +197,16 @@ export class AccountsService extends BaseService<AccountEntity> {
     }
 
     // send email here (invited user template)
-    const link = `${await this.settingsService.getBaseUrl()}/reset-password/${user.resetPasswordToken}`
-    if (await this.notificationService.sendEmail(user.email, 'invitedUser', { account, user, link }) === false) {
+    const emailData = {
+      account,
+      user,
+      // TODO #98
+      sender: {
+        display_name: account.data.name
+      },
+      action_url: `${await this.settingsService.getBaseUrl()}/reset-password/${user.resetPasswordToken}`
+    }
+    if (await this.notificationService.sendEmail(user.email, 'user_invite', emailData) === false) {
       console.error('accountsService - inviteUser - error while sending email')
     }
 

@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common'
-// import { settings } from 'cluster';
-import { resolve } from 'path'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
 import { SettingsService } from '../settings/settings.service'
 
 import { Liquid } from 'liquidjs'
+import * as MarkdownIt from 'markdown-it'
 
-// import sgMail from '@sendgrid/mail'
-import sgMail = require('@sendgrid/mail')
+import { readFileSync } from 'fs'
+import { join } from 'path'
+import * as yaml from 'js-yaml'
 
-// const path = require('path');
+import * as sgMail from '@sendgrid/mail'
 
 const EMAIL_TEMPLATES_DIR = '../../emails'
 
@@ -34,55 +34,51 @@ export class NotificationsService {
     return this.apiKey === '' || this.apiKey.endsWith('xxx')
   }
 
-  /**
-   * This array contains one item per template we have.
-   * Each template should return exactly the object expected by sendgrid
-   * and can execute helper functions if necessary (see the `html` key).
-   *
-   * Each template may use a custom `data` structure that contains data
-   * to be used in the template. Data can be anything and must be known
-   * by the caller of the notification setting.
-   */
-  templates = {
-    confirmation: async (settings: any, data: any) => ({
-      subject: `Welcome to ${data.title as string}`,
-      text: `Welcome to ${data.title as string}. Click on the following link to confirm your email. To confirm your email visit ${data.link as string}.`,
-      html: await this.renderLiquidTemplate('confirm_email', settings, data) ?? ''
-    }),
-    resetPassword: async (settings, data: any) => ({
-      subject: `Reset Password for ${data.user.email as string}`,
-      text: `Click on ${data.link as string} to reset your password.`,
-      html: await this.renderLiquidTemplate('reset_email', settings, data) ?? ''
-    }),
-    newAccount: async (settings, data: any) => ({
-      subject: `New account on ${data.title as string}`,
-      text: `Welcome to ${data.title as string}. Click on the following link to confirm your email. To confirm your email visit ${data.link as string}.`,
-      html: await this.renderLiquidTemplate('new_account', settings, data) ?? ''
-    }),
-    invitedUser: async (settings, data: any) => ({
-      subject: `You have been invited to ${settings.title as string}!`,
-      text: `Click on ${data.link as string} to accept the invitation and set your password.`,
-      html: await this.renderLiquidTemplate('invited_user', settings, data) ?? '<html></html>'
-    })
-  }
-
-  async renderLiquidTemplate (template: string, settings: any, data: any): Promise<string | null> {
+  async render (template: string, data: any): Promise<any> {
+    // try to find a md file
+    let mdFile
     try {
-      const engine = new Liquid({
-        root: resolve(__dirname, EMAIL_TEMPLATES_DIR),
-        extname: '.liquid'
-      })
+      mdFile = readFileSync(join(__dirname, EMAIL_TEMPLATES_DIR, `${template}.md`), 'utf8')
+    } catch (e) {
+      throw new NotFoundException()
+    }
 
-      return await engine.renderFile(template, { ...settings, ...data })
-    } catch (err) {
-      console.error('renderLiquidTemplate - error rendering email template', err, template, data)
-      return null
+    const websiteData = await this.settingsService.getWebsiteRenderingVariables()
+
+    // extract variables from md header, e.g. title
+    const mdParts = mdFile.split(/---\n/)
+    let mdVars = { subject: '', button_url: '', action_url: '' }
+    let mdBody = mdFile
+    if (mdParts.length === 3) {
+      try {
+        mdVars = yaml.load(mdParts[1])
+        mdBody = mdParts[2]
+      } catch (_) {
+        mdBody = mdFile
+      }
+    }
+
+    const md = new MarkdownIt({ linkify: true, html: true })
+    const liquidHtml = new Liquid({ root: join(__dirname, EMAIL_TEMPLATES_DIR), extname: '.liquid' })
+    const liquidTxt = new Liquid({ root: join(__dirname, EMAIL_TEMPLATES_DIR), extname: '.txt' })
+
+    // data passed to render subject & body
+    const varData = {
+      ...websiteData,
+      ...data
+    }
+
+    return {
+      // title from md header
+      subject: mdVars.subject != null ? await liquidHtml.parseAndRender(mdVars.subject, varData) : '',
+      // body first via liquid (to replace Saasform variable) then markdown-it
+      html: md.render(await liquidHtml.parseAndRender(mdBody, varData)),
+      // txt version of the email
+      text: await liquidTxt.parseAndRender(mdBody, varData)
     }
   }
 
   async sendEmail (to: string, template: string, data: any): Promise<Boolean> {
-    const settings = await this.settingsService.getWebsiteRenderingVariables()
-
     if (this.isCertainlyInvalidApiKey()) {
       console.error('notificationService - sendEmail - api key not configured')
       return false
@@ -93,10 +89,18 @@ export class NotificationsService {
       return false
     }
 
+    let renderedEmail
+    try {
+      renderedEmail = await this.render(template, data)
+    } catch (error) {
+      console.error('notificationService::sendEmail - Error rendering', error)
+      return false
+    }
+
     const msg = {
       to,
       from: this.sendFrom,
-      ...(await this.templates[template](settings, data))
+      ...renderedEmail
     }
 
     await (async () => {
@@ -107,8 +111,8 @@ export class NotificationsService {
 
         if (error.response != null) {
           console.error('notificationService - sendEmail - Error while sending email', error.response.body)
-          return false
         }
+        return false
       }
     })()
 
