@@ -69,3 +69,5 @@ We love any type of contribution, bug fixes, new integrations and better docs. S
 ## Saasform Cloud
 
 Saasform Cloud is our hosted solution and we're onboarding beta customers. Join our [Discord channel](https://discord.gg/cbWW8akyW9) or drop us a line at [hello@saasform.dev](mailto:hello@saasform.dev).
+
+[![Code quality via LGTM](https://img.shields.io/lgtm/grade/javascript/g/saasform/saasform.svg)](https://lgtm.com/projects/g/saasform/saasform/context:javascript)
