@@ -58,6 +58,10 @@ export class AuthenticationController {
 
   @Get('/login')
   async getLogin (@Request() req, @Res() res: Response): Promise<any> {
+    if (req.user !== false) {
+      const redirect = await this.settingsService.getRedirectAfterLogin()
+      return res.redirect(redirect)
+    }
     return renderPage(req, res, 'login')
   }
 
