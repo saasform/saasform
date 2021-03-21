@@ -17,6 +17,7 @@ import { AccountsService } from '../../accounts/services/accounts.service'
 import { renderPage } from '../utilities/render'
 
 @Controller('/')
+@UseGuards(UserOptionalAuthGuard)
 export class AuthenticationController {
   constructor (
     private readonly authService: AuthService,
@@ -24,22 +25,6 @@ export class AuthenticationController {
     private readonly usersService: UsersService,
     private readonly settingsService: SettingsService
   ) {}
-
-  // async renderPage (req, res, page: string, data = {}): Promise<Response> {
-  //   const siteData = req.websiteData
-
-  //   const pageData = {
-  //     ...siteData,
-  //     ...data,
-  //     csrf_token: req.csrfToken()
-  //     // error: {
-  //     //   email: 'Invalid email address',
-  //     //   password: 'Invalid email or password',
-  //     //   google: 'Error signing in with Google. Try again later',
-  //     // }
-  //   }
-  //   return res.render(`${siteData.root_theme as string}/${page}`, pageData)
-  // }
 
   async issueJwtAndRediret (req, res, user): Promise<Response> {
     const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
@@ -145,7 +130,6 @@ export class AuthenticationController {
     return await this.issueJwtAndRediret(req, res, user)
   }
 
-  @UseGuards(UserOptionalAuthGuard)
   @Get('verify-email/:token')
   async verifyEmailToken (@Request() req, @Res() res: Response, @Param('token') token: string): Promise<any> {
     const data = req.websiteData
@@ -193,6 +177,9 @@ export class AuthenticationController {
 
   @Get('/password-reset')
   async resetPassword (@Request() req, @Res() res: Response): Promise<any> {
+    if (req.user !== false) {
+      return res.redirect('/user/security')
+    }
     return renderPage(req, res, 'password-reset')
   }
 
@@ -212,6 +199,9 @@ export class AuthenticationController {
 
   @Get('/password-change/:token')
   async resetPasswordToken (@Request() req, @Res() res: Response, @Param('token') token: string): Promise<any> {
+    if (req.user !== false) {
+      return res.redirect('/user/security')
+    }
     return renderPage(req, res, 'password-change', { token })
   }
 
