@@ -20,7 +20,7 @@ const mockedUserCredentialsService = {
   ...mockUserCredentialsEntity,
   changePassword: jest.fn(),
   addUserCredentials: jest.fn(),
-  findUserCredentials: jest.fn(email => email === 'user@email.com' ? email : null),
+  findUserCredentialByEmail: jest.fn(email => email === 'user@email.com' ? email : null),
   isRegistered: jest.fn((credential, password) => credential === 'user@email.com' && password === 'password')
 }
 

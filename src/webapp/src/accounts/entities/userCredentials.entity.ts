@@ -8,15 +8,24 @@ import {
 } from 'typeorm'
 
 class CredentialsJSON {
-  encryptedPassword: string
+  encryptedPassword?: string
+  googleId?: string
 };
+
+export enum CredentialType {
+  DEFAULT='username/password',
+  GOOGLE='google'
+}
 
 @Entity('users_credentials')
 export class UserCredentialsEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ unique: true })
+  // @Column({ default: CredentialType.DEFAULT })
+  // credential: string = CredentialType.DEFAULT
+
+  @Column()
   credential: string
 
   @Column()
@@ -36,7 +45,8 @@ export class UserCredentialsEntity {
     }
   }
 
-  constructor (credential: string = '', userId: number = 0, json: CredentialsJSON = { encryptedPassword: '' }) {
+  constructor (credential: string, /* credential: CredentialType = CredentialType.DEFAULT, */ userId: number = 0, json: CredentialsJSON = { encryptedPassword: '', googleId: '' }) {
+    // this.email = email
     this.credential = credential
     this.userId = userId
     this.json = json

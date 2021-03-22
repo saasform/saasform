@@ -147,7 +147,7 @@ describe('AuthService', () => {
           addUser: jest.fn().mockReturnValue({ user: 'mockUser' })
         }
         service.userCredentialsService = {
-          findUserCredentials: jest.fn().mockReturnValue(null)
+          findUserCredentialByEmail: jest.fn().mockReturnValue(null)
         }
 
         const newUser = {
@@ -166,7 +166,7 @@ describe('AuthService', () => {
           addUser: jest.fn().mockReturnValue({ user: 'mockUser' })
         }
         service.userCredentialsService = {
-          findUserCredentials: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
+          findUserCredentialByEmail: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
         }
         service.accountsService = {
           add: jest.fn().mockReturnValue(null)
@@ -188,7 +188,7 @@ describe('AuthService', () => {
           addUser: jest.fn().mockReturnValue({ user: 'mockUser' })
         }
         service.userCredentialsService = {
-          findUserCredentials: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
+          findUserCredentialByEmail: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
         }
         service.accountsService = {
           add: jest.fn().mockReturnValue({ account: 'mockAccount' })
@@ -251,6 +251,46 @@ describe('AuthService', () => {
       const requestHostname = 'uplom.com'
       const primaryDomain = 'beta.uplom.com'
       expect(service.getJwtCookieDomain(requestHostname, primaryDomain)).toBe('uplom.com')
+    })
+  })
+
+  describe('onGoogleSignin', () => {
+    it('with a registered email and a connected google account, should return the expected user model', async () => {
+      service.usersService = {
+        findUser: jest.fn().mockReturnValue({ user: 'mockUser' })
+      }
+      service.userCredentialsService = {
+        attachUserCredentials: jest.fn().mockReturnValue({}),
+        findUserCredentialByEmail: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
+      }
+      service.accountsService = {
+        findByUserId: jest.fn().mockReturnValue({ account: 'mockAccount' })
+      }
+      const expUserModel = await service.onGoogleSignin('user@gmail.com', '20weqa-2123-ps343-121kkl-21212')
+      expect(expUserModel).toBeDefined()
+    })
+    it.skip('with a registered email and without a connected google account, should create the entity and return the expected user model', async () => {
+      service.usersService = {
+        findUser: jest.fn().mockReturnValue({ user: 'mockUser' })
+      }
+      service.userCredentialsService = {
+        attachUserCredentials: jest.fn().mockReturnValue({}),
+        findUserCredentialByEmail: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
+      }
+      const expUserModel = await service.onGoogleSignin('user@gmail.com', '20weqa-2123-ps343-121kkl-21212')
+      expect(expUserModel).toBeDefined()
+    })
+    it('without a registered email, should return a null value', async () => {
+      service.usersService = {
+        findUser: jest.fn().mockReturnValue(null)
+      }
+
+      const expUserModel = await service.onGoogleSignin('ra@gmail.com', '21swq-2123-ps343-121kkl-21212')
+      expect(expUserModel).toBeNull()
+    })
+    it('with null arguments, should return a null value', async () => {
+      const expUserModel = await service.onGoogleSignin(null, null)
+      expect(expUserModel).toBeNull()
     })
   })
 })

@@ -12,6 +12,7 @@ import { SettingsService } from '../settings/settings.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
 import { UserError } from '../utilities/common.model'
+import { CredentialType } from '../accounts/entities/userCredentials.entity'
 
 @Injectable()
 export class AuthService {
@@ -29,7 +30,7 @@ export class AuthService {
     if (email == null) {
       return null
     }
-    const credential = await this.userCredentialsService.findUserCredentials(email)
+    const credential = await this.userCredentialsService.findUserCredentialByEmail(email)
     if (credential == null) {
       console.error('auth.service - getUserInfo - credentials not valid', email)
       return null
@@ -96,6 +97,12 @@ export class AuthService {
     // Remove the subscription details. This is necessary because otherwise
     // we would keep old data if subscription changed.
     const { subscription_id, subscription_plan, subscription_status, ...tokenWithOutSubscription } = token // eslint-disable-line
+
+    if (token.account_id == null) {
+      // This should never happend
+      console.error('AuthService - updateActiveSubscription - No account available')
+      return tokenWithOutSubscription
+    }
 
     // TODO: next lines should be removed when we have web hooks from stripe
     const account = await this.accountsService.getById(token.account_id)
@@ -186,7 +193,7 @@ export class AuthService {
       return user
     }
 
-    const credential = await this.userCredentialsService.findUserCredentials(email)
+    const credential = await this.userCredentialsService.findUserCredentialByEmail(email)
     if (credential == null) {
       console.error('auth.service - registerUser - error while finding user credential', email)
       return null
@@ -200,5 +207,72 @@ export class AuthService {
     }
 
     return { user, credential, account }
+  }
+
+  async onGoogleSignin (email: string, subject: string): Promise<ValidUser | null> {
+    if (email == null || subject == null) {
+      console.error('auth.service - onGoogleSignin - error arguments', email, subject)
+      return null
+    }
+
+    // 1. search for a valid credential for the current user
+    const credential = await this.userCredentialsService.findUserCredentialByEmail(email, `${CredentialType.GOOGLE}:${subject}` as CredentialType)
+    if (credential != null) {
+      // 2. add google id
+      await this.userCredentialsService.attachUserCredentials(
+        email,
+        subject,
+        CredentialType.GOOGLE
+      )
+
+      // 3. fetch user
+      const user = await this.usersService.findUser(credential.userId)
+      if (user == null) {
+        console.error('auth.service - onGoogleSignin - userInfo not found', email)
+        return null
+      }
+
+      // 4. fetch account
+      const account = await this.accountsService.findByUserId(user.id)
+      if (account == null) {
+        console.error('auth.service - onGoogleSignin - account not found', user)
+        return null
+      }
+
+      return { user, credential, account }
+    }
+
+    return null
+    // TODO: create a credential here. At the moment we should not arrive here, but in the future we can support other cases.
+
+    // const googleCredential = await this.userCredentialsService.attachUserCredentials(
+    //   email,
+    //   subject,
+    //   CredentialType.GOOGLE
+    // )
+
+    // return await this.usersService.findUser(googleCredential?.userId ?? -1)
+
+    // return await this.connectWithGoogle(
+    //   email,
+    //   `${CredentialType.GOOGLE}:${subject}` as CredentialType
+    // )
+  }
+
+  private async connectWithGoogle (googleEmail: string, googleSubject: string): Promise<UserEntity | null> {
+    const saasformUserCredential = await this.userCredentialsService.findUserCredentialByEmail(googleEmail, CredentialType.DEFAULT)
+
+    if (saasformUserCredential == null) {
+      console.error('auth.service - connectWithGoogle - error while connect a user to his google account', saasformUserCredential, googleSubject)
+      return null
+    }
+
+    const googleCredential = await this.userCredentialsService.attachUserCredentials(
+      googleEmail,
+      googleSubject,
+      CredentialType.GOOGLE
+    )
+
+    return await this.usersService.findUser(googleCredential?.userId ?? -1)
   }
 }
