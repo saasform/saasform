@@ -9,6 +9,7 @@ import { AccountsService } from '../accounts/services/accounts.service'
 import { SettingsModule } from '../settings/settings.module'
 import { SettingsService } from '../settings/settings.service'
 import { PaymentsModule } from '../payments/payments.module'
+import { GoogleOAuth2Service } from './google.service'
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { PaymentsModule } from '../payments/payments.module'
       inject: [SettingsService, AccountsService]
     })
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, SettingsService],
-  exports: [AuthService/* , GoogleService */]
+  providers: [AuthService, LocalStrategy, JwtStrategy, SettingsService, GoogleOAuth2Service],
+  exports: [AuthService, GoogleOAuth2Service]
 })
 export class AuthModule {}

@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Request, Res } from '@nestjs/common'
+import { Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common'
 import { Response } from 'express'
 import { SettingsService } from '../../../settings/settings.service'
 import { AuthService } from '../../../auth/auth.service'
 import { PaymentsService } from '../../../payments/services/payments.service'
 import { UserError } from '../../../utilities/common.model'
+import { GoogleOAuth2Guard } from '../../../auth/auth.guard'
 
 @Controller('/api/v1')
 export class ApiV1AutheticationController {
@@ -107,5 +108,20 @@ export class ApiV1AutheticationController {
       statusCode: 200,
       message: publicKey
     })
+  }
+
+  @UseGuards(GoogleOAuth2Guard)
+  @Post('google-signin')
+  async handleGoogleSignin (@Request() req, @Res() res: Response): Promise<any> {
+    const { google: { user: guser } } = req
+    const user = await this.authService.onGoogleSignin(guser.email, guser.sub)
+    if (user == null) {
+      return res.status(409).json({
+        statusCode: 409,
+        message: "Ops! You don't have any account in saasform."
+      })
+    }
+
+    return await this.issueJwtAndRedirect(req, res, user)
   }
 }

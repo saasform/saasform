@@ -229,7 +229,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       app_google_analytics: '',
       app_google_tag_manager: '',
       app_facebook_pixel_id: '',
-      app_google_signin_client_id: '',
+      app_google_signin_client_id: this.configService.get('GOOGLE_CLIENT_ID') ?? '',
       app_google_signin_scope: '',
 
       // footer
@@ -481,7 +481,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     }
 
     // html
-    res.signup_show_google = !!(res.app_google_signin_client_id !== '' && !res.app_google_signin_client_id.endsWith('xxx'))
+    res.signup_show_google = !!(res.app_google_signin_client_id !== '' && !res.app_google_signin_client_id.startsWith('xxx')) //eslint-disable-line
 
     res.html_google_tag_manager_header = res.app_google_tag_manager !== '' && !res.app_google_tag_manager.endsWith('xxx')
       ? `

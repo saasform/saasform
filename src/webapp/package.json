@@ -19,6 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "node --require ts-node/register ./node_modules/typeorm/cli.js schema:drop -c test && node --require ts-node/register ./node_modules/typeorm/cli.js migration:run -c test && jest --silent --runInBand --config ./test/jest-e2e.json",
+    "test:e2elog": "node --require ts-node/register ./node_modules/typeorm/cli.js schema:drop -c test && node --require ts-node/register ./node_modules/typeorm/cli.js migration:run -c test && jest --runInBand --config ./test/jest-e2e.json",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "migrate": "node --require ts-node/register ./node_modules/typeorm/cli.js migration:run"
   },
@@ -43,6 +44,7 @@
     "csurf": "^1.11.0",
     "dataloader": "^2.0.0",
     "ec-key": "^0.0.4",
+    "google-auth-library": "^7.0.2",
     "graphql": "^15.5.0",
     "graphql-relay": "^0.6.0",
     "graphql-subscriptions": "^1.1.0",

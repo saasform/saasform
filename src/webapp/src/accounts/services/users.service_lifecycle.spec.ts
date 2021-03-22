@@ -171,7 +171,7 @@ describe('UsersService Lifecycle', () => {
 
       const userCredential: any = repoSpy.mock.calls[0][0]
       expect(repoSpy).toBeCalledTimes(1)
-      expect(userCredential?.credential).toBe(userInput.email)
+      expect(userCredential?.email).toBe(userInput.email)
       expect(userCredential.json.encryptedPassword).not.toBeUndefined()
       expect(userCredential.json.encryptedPassword).not.toBe(userInput.password)
     })

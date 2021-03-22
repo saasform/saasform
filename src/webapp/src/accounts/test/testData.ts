@@ -54,6 +54,13 @@ mockedUserWithLargeProfile.data.profile = { foo: 'foo', email: 'internal@email' 
 
 export const mockedRepo = {
   find: jest.fn(_ => []),
+  findUser: jest.fn((id) => {
+    switch (id) {
+      case mockedUser.id: return mockedUser
+      case mockedUserWithLargeProfile.id: return mockedUserWithLargeProfile
+      default: return undefined
+    }
+  }),
   findById: jest.fn((id) => {
     switch (id) {
       case mockedUser.id: return mockedUser
@@ -83,12 +90,12 @@ export const mockedUserCredentials = new UserCredentialsEntity('user@gmail.com',
 
 export const mockUserCredentialsEntity = {
   find: jest.fn(({ where: { userId } }) => userId === mockedUserCredentials.userId ? mockedUserCredentials : undefined),
-  findOne: jest.fn(({ where: { credential } }) => credential === mockedUserCredentials.credential ? mockedUserCredentials : undefined),
+  findOne: jest.fn(({ where: { email } }) => email === mockedUserCredentials.credential ? mockedUserCredentials : undefined),
   createOne: jest.fn((userCredential) => userCredential),
   updateOne: jest.fn((id) => id === mockedUserCredentials.id ? mockedUserCredentials : undefined),
   deleteMany: jest.fn(filter => ({ deletedCount: 0 })),
   query: jest.fn(query => {
-    const res = [mockedUserCredentials].filter(u => u.credential === query?.filter?.credential?.eq ?? undefined)
+    const res = [mockedUserCredentials].filter(u => ((u.credential === query?.filter?.credential?.eq)) ?? undefined)
     return res
   })
 }
@@ -110,6 +117,6 @@ export const mockedRandom = {
 }
 
 export const mockUserCredentialsService = {
-  findUserCredentials: jest.fn((email) => email === mockedUserCredentials.credential ? mockedUserCredentials : undefined),
-  isRegistered: jest.fn((userCredentials, password) => userCredentials.credential === mockedUserCredentials.credential && password === 'password' ? mockedUserCredentials : undefined)
+  findUserCredentialByEmail: jest.fn((email) => email === mockedUserCredentials.credential ? mockedUserCredentials : undefined),
+  isRegistered: jest.fn((userCredentials, password) => userCredentials.email === mockedUserCredentials.credential && password === 'password' ? mockedUserCredentials : undefined)
 }

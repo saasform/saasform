@@ -42,7 +42,7 @@ export class UsersService extends BaseService<UserEntity> {
 
   async findUser (id: number): Promise<UserEntity | null> {
     const result = await this.findById(id)
-    if (typeof result === 'undefined') {
+    if (result == null) {
       return null
     }
 
@@ -128,7 +128,7 @@ export class UsersService extends BaseService<UserEntity> {
     try {
       const res = await this.createOne(user)
       await this.userCredentialsService.addUserCredentials({
-        credential: user.email,
+        email: user.email,
         userId: res.id,
         json: { encryptedPassword: user.password }
       })
@@ -299,7 +299,7 @@ export class UsersService extends BaseService<UserEntity> {
   }
 
   async changePassword (email: string, password: string, newpassword: string): Promise<boolean> {
-    const userCredential = await this.userCredentialsService.findUserCredentials(email)
+    const userCredential = await this.userCredentialsService.findUserCredentialByEmail(email)
     if (userCredential == null) {
       console.error('userService - changePassword - userCredential not found')
       return false

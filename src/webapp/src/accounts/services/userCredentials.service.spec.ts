@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { mockedUserCredentials, mockUserCredentialsEntity } from '../test/testData'
+import { mockedUserCredentials, mockUserCredentialsEntity, mockValidationService } from '../test/testData'
 import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { UserCredentialsService } from './userCredentials.service'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
+import { ValidationService } from '../../validator/validation.service'
 import { Repository } from 'typeorm'
 
 describe('UserCredentials', () => {
@@ -17,6 +18,10 @@ describe('UserCredentials', () => {
         {
           provide: getRepositoryToken(UserCredentialsEntity),
           useValue: mockUserCredentialsEntity
+        },
+        {
+          provide: ValidationService,
+          useValue: mockValidationService
         }
       ]
     }).compile()
@@ -34,24 +39,28 @@ describe('UserCredentials', () => {
     expect(service).toBeDefined()
   })
 
-  describe('findUserCredentials', () => {
-    describe('with credential', () => {
-      it('with registered user', async () => {
-        const expUser = await service.findUserCredentials('user@gmail.com')
-        expect(expUser).toBeDefined()
-      })
-      it('with unregistered user', async () => {
-        const expUser = await service.findUserCredentials('user@yahoo.com')
-        expect(expUser).toBeNull()
-      })
-      it('with undefined user', async () => {
-        const expUser = await service.findUserCredentials(undefined)
-        expect(expUser).toBeNull()
-      })
-      it('with null user', async () => {
-        const expUser = await service.findUserCredentials(null)
-        expect(expUser).toBeNull()
-      })
+  describe('findUserCredentialByEmail', () => {
+    it('with a registered user, should return the expected user', async () => {
+      service.validationService = {
+        isNilOrEmpty: jest.fn().mockReturnValue(false)
+      }
+      const expUserCredential = await service.findUserCredentialByEmail('user@gmail.com')
+      expect(expUserCredential).toBeDefined()
+    })
+    it('with unregistered user, should not return the expected user', async () => {
+      service.validationService = {
+        isNilOrEmpty: jest.fn().mockReturnValue(true)
+      }
+      const expUserCredential = await service.findUserCredentialByEmail('user@yahoo.com')
+      expect(expUserCredential).toBeNull()
+    })
+    it('with undefined user, should not return the expected user', async () => {
+      const expUserCredential = await service.findUserCredentialByEmail(undefined)
+      expect(expUserCredential).toBeNull()
+    })
+    it('with null user, should not return the expected user', async () => {
+      const expUserCredential = await service.findUserCredentialByEmail(null)
+      expect(expUserCredential).toBeNull()
     })
   })
 

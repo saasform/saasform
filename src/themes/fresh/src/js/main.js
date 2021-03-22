@@ -9,6 +9,7 @@ import { initNavbar } from './libs/components/navbar';
 import { initSidebar } from './libs/components/sidebar';
 import { initBackToTop } from './libs/components/backtotop';
 import { initPricing } from './libs/components/pricing';
+import './libs/auth/google';
 
 window.initNavbar = initNavbar;
 window.initSidebar = initSidebar;

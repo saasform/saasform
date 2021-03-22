@@ -19,6 +19,7 @@ import { ApiV1AutheticationController } from '../src/api/controllers/v1/api.auth
 import { StripeService } from '../src/payments/services/stripe.service'
 
 import jwt_decode from 'jwt-decode'
+import { GoogleOAuth2Service } from '../src/auth/google.service'
 
 // const keys = {
 //   jwt_private_key: '-----BEGIN PRIVATE KEY-----nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgxjRaB1myLLnts/gMj3sPnwwlnF9BxLF86108qAH4g5zqhRANCAAQfUj/9Q1zJBqw+HX0e37+fHo9BoU4sE6MbnE4yKeEua8pncGu53WWZ6ExJ2Ohnf5gPYRoj3f1z3utCDjADPuFSOn-----END PRIVATE KEY-----n',
@@ -116,6 +117,26 @@ describe('Authentication (e2e)', () => {
     }
   }
 
+  const GOOGLE_ID_TOKEN_TO_SIGNIN = 'BAMBIIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX'
+  const GOOGLE_ID_TOKEN_TO_SIGNUP = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX'
+  const GOOGLE_ID_TOKEN_TO_ERROR = 'QQER2jANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX'
+
+  const mockedGoogle = {
+    getUserPayload: jest.fn((idToken) => {
+      let res = {}
+      if (idToken === GOOGLE_ID_TOKEN_TO_SIGNIN) {
+        res = { email: 'user@gmail.com', sub: '21042432312123123' }
+      }
+      if (idToken === GOOGLE_ID_TOKEN_TO_SIGNUP) {
+        res = { email: 'admin@uplom.com', sub: '21011211912123123' }
+      }
+      if (idToken === GOOGLE_ID_TOKEN_TO_ERROR) {
+        res = { email: 'mi@gmail.com', sub: '21011218888823123' }
+      }
+      return res
+    })
+  }
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
@@ -135,8 +156,18 @@ describe('Authentication (e2e)', () => {
         ValidatorModule
       ],
       controllers: [ApiV1AutheticationController],
-      providers: [AppService]
-    }).overrideProvider(StripeService).useValue(mockedStripe).compile()
+      providers: [
+        AppService,
+        {
+          provide: StripeService,
+          useValue: mockedStripe
+        },
+        {
+          provide: GoogleOAuth2Service,
+          useValue: mockedGoogle
+        }
+      ]
+    }).compile()
 
     app = moduleFixture.createNestApplication()
     configureApp(app, true)
@@ -295,5 +326,26 @@ describe('Authentication (e2e)', () => {
       .post('/api/v1/signup')
       .send(existingUser)
       .expect(409)
+  })
+
+  it('with a registered google credential for a registered user, should signin into saasform', () => {
+    return agent
+      .post('/api/v1/google-signin')
+      .send(`idToken=${GOOGLE_ID_TOKEN_TO_SIGNIN}`)
+      .expect(302)
+  })
+
+  it('with a not registered google credential for a registered user, should signup into saasform and redirect into saasform', () => {
+    return agent
+      .post('/api/v1/google-signin')
+      .send(`idToken=${GOOGLE_ID_TOKEN_TO_SIGNUP}`)
+      .expect(302)
+  })
+
+  it('with a not registered google credential for a not registered user, should show an error message', () => {
+    return agent
+      .post('/api/v1/google-signin')
+      .send(`idToken=${GOOGLE_ID_TOKEN_TO_ERROR}`)
+      .expect(409, { statusCode: 409, message: "Ops! You don't have any account in saasform." })
   })
 })
