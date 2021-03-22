@@ -15,7 +15,6 @@ services:
 
   saasform:
     image: saasform/saasform:latest
-    build: ./src/webapp
     restart: always
     depends_on:
       - saasform-db
@@ -39,7 +38,6 @@ services:
 
   demo-express:
     image: saasform/demo-express:latest
-    build: ./src/demo-express
     restart: always
     depends_on:
       - saasform
