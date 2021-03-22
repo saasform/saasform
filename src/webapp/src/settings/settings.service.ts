@@ -316,7 +316,9 @@ export class SettingsService extends BaseService<SettingsEntity> {
       html_google_analytics: '',
       html_google_tag_manager_header: '',
       html_google_tag_manager_body: '',
-      html_facebook_pixel: ''
+      html_facebook_pixel: '',
+
+      subscription_optional: true
     }
 
     const encodedPaths = [

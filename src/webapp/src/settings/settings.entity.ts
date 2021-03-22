@@ -56,6 +56,7 @@ export class SettingsWebsiteJson {
   billing_form_company_name: HidOptDisFormField
   billing_form_address_line2: HidOptDisFormField
   billing_form_phone_number: HidOptDisFormField
+  subscription_optional: boolean
 }
 
 export class SettingsAdminJson {

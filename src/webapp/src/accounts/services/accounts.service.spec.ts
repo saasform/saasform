@@ -19,6 +19,7 @@ import { SettingsService } from '../../settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
 import { ConfigService } from '@nestjs/config'
+import { ValidationService } from '../../validator/validation.service'
 
 const accountsArray = [
   new AccountEntity(),
@@ -146,6 +147,10 @@ describe('Accounts Service', () => {
         {
           provide: PlansService,
           useValue: mockedPlansService
+        },
+        {
+          provide: ValidationService,
+          useValue: {}
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService

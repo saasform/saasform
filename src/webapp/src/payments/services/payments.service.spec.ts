@@ -9,6 +9,8 @@ import { AccountEntity } from '../../accounts/entities/account.entity'
 import { StripeService } from './stripe.service'
 import { KillBillService } from './killbill.service'
 import { ConfigService } from '@nestjs/config'
+import { SettingsService } from '../../settings/settings.service'
+import { ValidationService } from '../../validator/validation.service'
 
 const deletedSubscription = new PaymentEntity()
 const existingSubscription = new PaymentEntity()
@@ -99,6 +101,16 @@ describe('Payments Service', () => {
         {
           provide: KillBillService,
           useValue: mockedKillBill
+        },
+        {
+          provide: SettingsService,
+          useValue: {
+            getWebsiteSettings: jest.fn(_ => {})
+          }
+        },
+        {
+          provide: ValidationService,
+          useValue: {}
         },
         {
           provide: ConfigService,
@@ -230,6 +242,13 @@ describe('Payments Service', () => {
           }
         }
       )
+    })
+  })
+
+  describe('validators', () => {
+    it('should validate subscriptions', async () => {
+      status = await service.isPaymentValid({ status: 'active' })
+      expect(status).toBeTruthy()
     })
   })
 })

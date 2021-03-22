@@ -104,7 +104,7 @@ export class AuthService {
 
     if (payment == null) {
       // No subscription. Returning the token without subscription details
-      console.error('No subscription available')
+      console.error('AuthService - updateActiveSubscription - No subscription available')
       return tokenWithOutSubscription
     }
 
@@ -112,7 +112,7 @@ export class AuthService {
 
     if (plan == null) {
       // this should never happend. TODO: check if this is valid when plans change
-      console.error('No plan for subscription')
+      console.error('AuthService - updateActiveSubscription - No plan for subscription')
       return null
     }
 
