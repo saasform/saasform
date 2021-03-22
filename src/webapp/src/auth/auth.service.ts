@@ -86,6 +86,7 @@ export class AuthService {
       email: validUser.user.email,
       email_verified: validUser.user?.data.emailConfirmed ?? false,
       staff: validUser.user?.isAdmin ?? false,
+      username: validUser.user.username ?? '',
       ...userData
     }
   }

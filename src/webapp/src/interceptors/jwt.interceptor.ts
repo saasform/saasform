@@ -12,7 +12,7 @@ export class JwtInterceptor implements NestInterceptor {
     const ctx = context.switchToHttp()
     const response = ctx.getResponse()
     const request: any = ctx.getRequest<Request>()
-    request.user != null && await this.authService.setJwtCookie(request, response, request.user)
+    request.user != null && request.user !== false && await this.authService.setJwtCookie(request, response, request.user)
 
     return next.handle()
   }
