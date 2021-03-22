@@ -10,6 +10,8 @@ import { AccountEntity } from '../../accounts/entities/account.entity'
 import { StripeService } from './stripe.service'
 import { KillBillService } from './killbill.service'
 import { ConfigService } from '@nestjs/config'
+import { ValidationService } from '../../validator/validation.service'
+import { SettingsService } from '../../settings/settings.service'
 
 @QueryService(PaymentEntity)
 @Injectable({ scope: Scope.REQUEST })
@@ -22,7 +24,9 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     // private readonly usersRepository: Repository<UserEntity>,
     private readonly stripeService: StripeService,
     private readonly killBillService: KillBillService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly settingsService: SettingsService,
+    private readonly validationService: ValidationService
   ) {
     super(
       req,
@@ -323,5 +327,45 @@ export class PaymentsService extends BaseService<PaymentEntity> {
       console.error('paymentsService - attachPaymentMethod - error while setting default payment method')
       return null
     }
+  }
+
+  /**
+   * Checks if a stubscription is active.
+   * This means that the subscription must be not null, nor empty
+   * and must have a valid status
+   * @param subscriptionStatus
+   * @returns true if subscription is active
+   */
+  isPaymentActive (payment): Boolean {
+    return (
+      this.validationService.isNilOrEmpty(payment) === false
+        ? ['active', 'trialing'].includes(payment.status)
+        : false
+    )
+  }
+
+  async isPaymentValid (payment): Promise<Boolean> {
+    const settings = await this.settingsService.getWebsiteSettings()
+    const isNull = this.validationService.isNilOrEmpty(payment)
+
+    // if subscription is required, check for null
+    if (!settings.subscription_optional && isNull === true) {
+      return false
+    }
+
+    // If subscription is not required, we allow for null value.
+    // this should be an exception for enterprise cases. This settings
+    // can be saas-wise or account-wise.
+    // TODO: implement this settings as is not yet implemented in none of the two cases.
+    if (isNull === true) {
+      return true
+    }
+
+    // TODO: how do we handle the case where there is a status different from the
+    // active ones, but subscription is not required? It should not happend; currently
+    // we return false, but we might want to return differently.
+
+    // Otherwise we just return the current status value
+    return this.isPaymentActive(payment)
   }
 }

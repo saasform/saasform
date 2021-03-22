@@ -14,6 +14,7 @@ import { NotificationsService } from '../../notifications/notifications.service'
 import { SettingsService } from '../../settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
+import { ValidationService } from '../../validator/validation.service'
 
 const mockedUserCredentialsService = { ...mockUserCredentialsEntity, changePassword: jest.fn(), addUserCredentials: jest.fn() }
 
@@ -50,6 +51,10 @@ describe('UsersService', () => {
         },
         {
           provide: PlansService,
+          useValue: {}
+        },
+        {
+          provide: ValidationService,
           useValue: {}
         },
         // We must also pass TypeOrmQueryService

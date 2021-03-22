@@ -1,5 +1,10 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+
+import { readFileSync } from 'fs'
+import * as yaml from 'js-yaml'
+import { join } from 'path'
+
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ApiModule } from './api/api.module'
@@ -9,11 +14,8 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { GraphQLModule } from '@nestjs/graphql'
 import { WebsiteModule } from './website/website.module'
 import { NotificationsModule } from './notifications/notifications.module'
-
-import { readFileSync } from 'fs'
-import * as yaml from 'js-yaml'
-import { join } from 'path'
 import { PaymentsModule } from './payments/payments.module'
+import { ValidatorModule } from './validator/validator.module'
 
 const configSaasform = (): any => yaml.load(
   readFileSync(join(__dirname, '..', 'config', 'saasform.yml'), 'utf8')
@@ -53,6 +55,7 @@ const configWebsite = (): any => yaml.load(
       installSubscriptionHandlers: true,
       autoSchemaFile: true
     }),
+    ValidatorModule,
     ApiModule,
     PaymentsModule,
     AccountsModule,

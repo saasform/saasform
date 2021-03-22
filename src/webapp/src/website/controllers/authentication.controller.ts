@@ -15,6 +15,8 @@ import { UsersService } from '../../accounts/services/users.service'
 import { AccountsService } from '../../accounts/services/accounts.service'
 
 import { renderPage } from '../utilities/render'
+import { ValidationService } from '../../validator/validation.service'
+import { PaymentsService } from 'src/payments/services/payments.service'
 
 @Controller('/')
 @UseGuards(UserOptionalAuthGuard)
@@ -22,21 +24,35 @@ export class AuthenticationController {
   constructor (
     private readonly authService: AuthService,
     private readonly accountsService: AccountsService,
+    private readonly paymentsService: PaymentsService,
     private readonly usersService: UsersService,
-    private readonly settingsService: SettingsService
+    private readonly settingsService: SettingsService,
+    private readonly validationService: ValidationService
   ) {}
 
   async issueJwtAndRediret (req, res, user): Promise<Response> {
     const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
     if (requestUser == null) {
-      console.error('authenticationController - handleSignup - requestUser not valid')
+      console.error('authenticationController - issueJwtAndRediret - requestUser not valid')
       return res.redirect('/error')
     }
+
+    // const requestUserWithSubscription = await this.authService.updateActiveSubscription(requestUser)
+    // if (requestUserWithSubscription == null) {
+    //   console.error('authenticationController - issueJwtAndRediret - error while add subscription to token')
+    //   return res.redirect('/error')
+    // }
 
     await this.authService.setJwtCookie(req, res, requestUser)
 
     const baseUrl = await this.settingsService.getBaseUrl()
     const appUrl = await this.settingsService.getRedirectAfterLogin()
+
+    // if subscription is not valid redirect to the billing page
+    const payment = await this.paymentsService.getActivePayments(requestUser.account_id)
+    if (await this.paymentsService.isPaymentValid(payment) === false) {
+      return res.redirect('/user/billing')
+    }
 
     // prevent open redirects
     const next = req.query.next
