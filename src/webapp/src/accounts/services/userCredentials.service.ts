@@ -4,7 +4,7 @@ import { QueryService } from '@nestjs-query/core'
 // import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { UserCredentialsEntity } from '../entities/userCredentials.entity'
+import { CredentialType, UserCredentialsEntity } from '../entities/userCredentials.entity'
 import * as bcrypt from 'bcrypt'
 import { BaseService } from '../../utilities/base.service'
 
@@ -18,13 +18,13 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
     super(req, 'UserCredentialsEntity')
   }
 
-  async findUserCredentials (credential: string): Promise<UserCredentialsEntity | null> {
-    if (credential === null) {
-      console.error('userCredentials.service - findUserCredentials - parameter error')
+  async findUserCredentialByEmail (email: string, credential: CredentialType = CredentialType.DEFAULT): Promise<UserCredentialsEntity | null> {
+    if (!email) {
+      console.error('userCredentials.service - findUserCredentialByEmail - parameter error')
       return null
     }
 
-    const res = await this.query({ filter: { credential: { eq: credential } } })
+    const res = await this.query({ filter: { email: { eq: email }, credential: { eq: credential }}});
     return res[0] ?? null
   }
 
@@ -44,6 +44,7 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
     try {
       return await this.createOne(
         new UserCredentialsEntity(
+          userCredentials.email,
           userCredentials.credential,
           userCredentials.userId,
           userCredentials.json

@@ -1,5 +1,5 @@
 import { UserEntity } from '../entities/user.entity'
-import { UserCredentialsEntity } from '../entities/userCredentials.entity'
+import { CredentialType, UserCredentialsEntity } from '../entities/userCredentials.entity'
 
 export const mockedUser: UserEntity = new UserEntity()
 mockedUser.id = 1
@@ -29,6 +29,13 @@ mockedUserWithLargeProfile.data.profile = { foo: 'foo', email: 'internal@email' 
 
 export const mockedRepo = {
   find: jest.fn(_ => []),
+  findUser: jest.fn((id) => {
+    switch (id) {
+      case mockedUser.id: return mockedUser
+      case mockedUserWithLargeProfile.id: return mockedUserWithLargeProfile
+      default: return undefined
+    }
+  }),
   findById: jest.fn((id) => {
     switch (id) {
       case mockedUser.id: return mockedUser
@@ -53,7 +60,7 @@ export const mockedRepo = {
   })
 }
 
-export const mockedUserCredentials = new UserCredentialsEntity('user@gmail.com', 1, { encryptedPassword: '$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm' })
+export const mockedUserCredentials = new UserCredentialsEntity('user@gmail.com', CredentialType.DEFAULT, 1, { encryptedPassword: '$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm' })
 
 export const mockUserCredentialsEntity = {
   find: jest.fn(({ where: { userId } }) => userId === mockedUserCredentials.userId ? mockedUserCredentials : undefined),
@@ -61,7 +68,7 @@ export const mockUserCredentialsEntity = {
   createOne: jest.fn((userCredential) => userCredential),
   updateOne: jest.fn((id) => id === mockedUserCredentials.id ? mockedUserCredentials : undefined),
   query: jest.fn(query => {
-    const res = [mockedUserCredentials].filter(u => u.credential === query?.filter?.credential?.eq ?? undefined)
+    const res = [mockedUserCredentials].filter(u =>  ((u.credential === query?.filter?.credential?.eq)  &&  (u.email === query?.filter?.email?.eq)) ?? undefined)
     return res
   })
 }
@@ -86,6 +93,6 @@ export const mockedRandom = {
 }
 
 export const mockUserCredentialsService = {
-  findUserCredentials: jest.fn((email) => email === mockedUserCredentials.credential ? mockedUserCredentials : undefined),
+  findUserCredentialByEmail: jest.fn((email) => email === mockedUserCredentials.email ? mockedUserCredentials : undefined),
   isRegistered: jest.fn((userCredentials, password) => userCredentials.credential === mockedUserCredentials.credential && password === 'password' ? mockedUserCredentials : undefined)
 }

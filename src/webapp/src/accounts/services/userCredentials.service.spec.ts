@@ -34,24 +34,22 @@ describe('UserCredentials', () => {
     expect(service).toBeDefined()
   })
 
-  describe('findUserCredentials', () => {
-    describe('with credential', () => {
-      it('with registered user', async () => {
-        const expUser = await service.findUserCredentials('user@gmail.com')
-        expect(expUser).toBeDefined()
-      })
-      it('with unregistered user', async () => {
-        const expUser = await service.findUserCredentials('user@yahoo.com')
-        expect(expUser).toBeNull()
-      })
-      it('with undefined user', async () => {
-        const expUser = await service.findUserCredentials(undefined)
-        expect(expUser).toBeNull()
-      })
-      it('with null user', async () => {
-        const expUser = await service.findUserCredentials(null)
-        expect(expUser).toBeNull()
-      })
+  describe('findUserCredentialByEmail', () => {
+    it('with a registered user, should return the expected user', async () => {
+      const expUserCredential = await service.findUserCredentialByEmail('user@gmail.com')
+      expect(expUserCredential).toBeDefined()
+    })
+    it('with unregistered user, should not return the expected user', async () => {
+      const expUserCredential = await service.findUserCredentialByEmail('user@yahoo.com')
+      expect(expUserCredential).toBeNull()
+    })
+    it('with undefined user, should not return the expected user', async () => {
+      const expUserCredential = await service.findUserCredentialByEmail(undefined)
+      expect(expUserCredential).toBeNull()
+    })
+    it('with null user, should not return the expected user', async () => {
+      const expUserCredential = await service.findUserCredentialByEmail(null)
+      expect(expUserCredential).toBeNull()
     })
   })
 

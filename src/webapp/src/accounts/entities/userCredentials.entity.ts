@@ -11,13 +11,21 @@ class CredentialsJSON {
   encryptedPassword: string
 };
 
+export enum CredentialType {
+  DEFAULT="username/password",
+  GOOGLE="google"
+}
+
 @Entity('users_credentials')
 export class UserCredentialsEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ unique: true })
-  credential: string
+  @Column({ default: CredentialType.DEFAULT })
+  credential: string = CredentialType.DEFAULT;
+
+  @Column()
+  email: string;
 
   @Column()
   // @OneToMany(() => UserEntity, user => user.id)
@@ -36,7 +44,8 @@ export class UserCredentialsEntity {
     }
   }
 
-  constructor (credential: string = '', userId: number = 0, json: CredentialsJSON = { encryptedPassword: '' }) {
+  constructor (email: string, credential:CredentialType = CredentialType.DEFAULT, userId: number = 0, json: CredentialsJSON = { encryptedPassword: '' }) {
+    this.email = email
     this.credential = credential
     this.userId = userId
     this.json = json

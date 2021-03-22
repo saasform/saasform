@@ -11,6 +11,7 @@ import { UserEntity } from '../accounts/entities/user.entity'
 import { SettingsService } from '../settings/settings.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
+import { CredentialType } from '../accounts/entities/userCredentials.entity'
 
 @Injectable()
 export class AuthService {
@@ -28,7 +29,7 @@ export class AuthService {
     if (email == null) {
       return null
     }
-    const credential = await this.userCredentialsService.findUserCredentials(email)
+    const credential = await this.userCredentialsService.findUserCredentialByEmail(email)
     if (credential == null) {
       console.error('auth.service - getUserInfo - credentials not valid', email)
       return null
@@ -95,6 +96,11 @@ export class AuthService {
     // Remove the subscription details. This is necessary because otherwise
     // we would keep old data if subscription changed.
     const { subscription_id, subscription_plan, subscription_status, ...tokenWithOutSubscription } = token // eslint-disable-line
+    
+    if(!token.account_id) {
+      console.error('No account available')
+      return null;
+    }
 
     // TODO: next lines should be removed when we have web hooks from stripe
     const account = await this.accountsService.getById(token.account_id)
@@ -178,7 +184,7 @@ export class AuthService {
       return null
     }
 
-    const credential = await this.userCredentialsService.findUserCredentials(email)
+    const credential = await this.userCredentialsService.findUserCredentialByEmail(email)
     if (credential != null) {
       // if user already present return immediately
       console.error('auth.service - registerUser - user already registered', email)
@@ -200,5 +206,39 @@ export class AuthService {
     }
 
     return { user, credential, account }
+  }
+
+  async onGoogleSignin(email: string, subject: string): Promise<UserEntity | null> {
+    if(!email || !subject) {
+      console.error('auth.service - onGoogleSignin - error arguments', email, subject);
+      return null;
+    }
+
+    const googleUserCredential = await this.userCredentialsService.findUserCredentialByEmail(email, `${CredentialType.GOOGLE}:${subject}` as CredentialType);
+    if(googleUserCredential) {
+      return await this.usersService.findUser(googleUserCredential.userId);
+    }
+
+    return await this.connectWithGoogle(
+      email, 
+      `${CredentialType.GOOGLE}:${subject}` as CredentialType
+    );
+  }
+
+  private async connectWithGoogle(googleEmail: string, googleSubject: string) {
+    const saasformUserCredential = await this.userCredentialsService.findUserCredentialByEmail(googleEmail, CredentialType.DEFAULT);
+
+    if(!saasformUserCredential) {
+      console.error('auth.service - connectWithGoogle - error while connect a user to his google account', saasformUserCredential, googleSubject);
+      return null;
+    }
+
+    const googleCredential = await this.userCredentialsService.addUserCredentials({ 
+        credential: googleSubject,
+        email: saasformUserCredential.email,
+        userId: saasformUserCredential.userId
+    });
+
+    return await this.usersService.findUser(googleCredential?.userId || -1);
   }
 }

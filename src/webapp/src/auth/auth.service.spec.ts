@@ -164,4 +164,23 @@ describe('AuthService', () => {
       expect(service.getJwtCookieDomain(requestHostname, primaryDomain)).toBe('uplom.com')
     })
   })
+
+  describe('onGoogleSignin', () => {
+    it('with a registered email and a connected google account, should return the expected user model', async () => {
+      const expUserModel = await service.onGoogleSignin('user@gmail.com', '20weqa-2123-ps343-121kkl-21212');
+      expect(expUserModel).toBeDefined();
+    });
+    it('with a registered email and without a connected google account, should create the entity and return the expected user model', async () => {
+      const expUserModel = await service.onGoogleSignin('user@gmail.com', '20weqa-2123-ps343-121kkl-21212');
+      expect(expUserModel).toBeDefined();
+    });
+    it('without a registered email, should return a null value', async () => {
+      const expUserModel = await service.onGoogleSignin('ra@gmail.com', '21swq-2123-ps343-121kkl-21212');
+      expect(expUserModel).toBeNull();
+    });
+    it('with null arguments, should return a null value', async () => {
+      const expUserModel = await service.onGoogleSignin(null, null);
+      expect(expUserModel).toBeNull();
+    });
+  });
 })

@@ -13,6 +13,7 @@ import { SettingsService } from '../../settings/settings.service'
 import { NotificationsService } from '../../notifications/notifications.service'
 
 import { password } from '../../utilities/random'
+import { CredentialType } from '../entities/userCredentials.entity'
 
 @QueryService(UserEntity)
 @Injectable({ scope: Scope.REQUEST })
@@ -38,7 +39,7 @@ export class UsersService extends BaseService<UserEntity> {
 
   async findUser (id: number): Promise<UserEntity | null> {
     const result = await this.findById(id)
-    if (typeof result === 'undefined') {
+    if (!result) {
       return null
     }
 
@@ -112,7 +113,8 @@ export class UsersService extends BaseService<UserEntity> {
     try {
       const res = await this.createOne(user)
       await this.userCredentialsService.addUserCredentials({
-        credential: user.email,
+        email: user.email,
+        credential: CredentialType.DEFAULT,
         userId: res.id,
         json: { encryptedPassword: user.password }
       })

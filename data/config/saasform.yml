@@ -21,3 +21,5 @@ KB_API_KEY: bob
 KB_API_SECRET: lazar
 KB_USERNAME: admin
 KB_PASSWORD: password
+
+GOOGLE_CLIENT_ID: 112617093785-v69r982g7f1q742qqe54k8t3gjcdvfu6.apps.googleusercontent.com

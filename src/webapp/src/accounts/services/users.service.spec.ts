@@ -9,7 +9,7 @@ import { UserEntity } from '../entities/user.entity'
 import { NewUserInput } from '../dto/new-user.input'
 import { mockedCommunicationService, mockedRandom, mockedRepo, mockedUser, mockedUserExpiredToken, mockedUserWithLargeProfile, mockUserCredentialsEntity, mockedSettingRepo } from '../test/testData'
 import { UserCredentialsService } from '../services/userCredentials.service'
-import { UserCredentialsEntity } from '../entities/userCredentials.entity'
+import { CredentialType, UserCredentialsEntity } from '../entities/userCredentials.entity'
 import { NotificationsService } from '../../notifications/notifications.service'
 import { SettingsService } from '../../settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
@@ -161,7 +161,8 @@ describe('UsersService', () => {
 
       const userCredential: any = repoSpy.mock.calls[0][0]
       expect(repoSpy).toBeCalledTimes(1)
-      expect(userCredential?.credential).toBe(userInput.email)
+      expect(userCredential?.credential).toBe(CredentialType.DEFAULT)
+      expect(userCredential?.email).toBe(userInput.email)
       expect(userCredential.json.encryptedPassword).not.toBeUndefined()
       expect(userCredential.json.encryptedPassword).not.toBe(userInput.password)
     })

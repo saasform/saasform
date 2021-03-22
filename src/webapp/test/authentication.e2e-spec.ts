@@ -19,6 +19,7 @@ import { ApiV1AutheticationController } from '../src/api/controllers/v1/api.auth
 import { StripeService } from '../src/payments/services/stripe.service'
 
 import jwt_decode from 'jwt-decode'
+import { GoogleOAuth2Service } from '../src/auth/google.service'
 
 // const keys = {
 //   jwt_private_key: '-----BEGIN PRIVATE KEY-----nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgxjRaB1myLLnts/gMj3sPnwwlnF9BxLF86108qAH4g5zqhRANCAAQfUj/9Q1zJBqw+HX0e37+fHo9BoU4sE6MbnE4yKeEua8pncGu53WWZ6ExJ2Ohnf5gPYRoj3f1z3utCDjADPuFSOn-----END PRIVATE KEY-----n',
@@ -43,9 +44,9 @@ INSERT INTO accounts (id, owner_id, data) VALUES (211, 111, '{}');
 INSERT INTO accounts_users (account_id, user_id) VALUES (201, 101);
 INSERT INTO accounts_users (account_id, user_id) VALUES (201, 102);
 INSERT INTO accounts_users (account_id, user_id) VALUES (211, 111);
-INSERT INTO users_credentials (credential, userId, json) VALUES ('admin@uplom.com',101,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
-INSERT INTO users_credentials (credential, userId, json) VALUES ('user@gmail.com',102,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
-INSERT INTO users_credentials (credential, userId, json) VALUES ('nosub@gmail.com',111,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
+INSERT INTO users_credentials (email, userId, json) VALUES ('admin@uplom.com',101,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
+INSERT INTO users_credentials (email, userId, json) VALUES ('user@gmail.com',102,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
+INSERT INTO users_credentials (email, userId, json) VALUES ('nosub@gmail.com',111,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
 INSERT INTO plans (id,created,updated,product,prices,plan) VALUES (401,NOW(),NOW(),'{"id":"prod_J0MI7GCNSSh3eQ","object":"product","active":true,"attributes":[],"created":1614166256,"description":"Starter plan","images":[],"livemode":false,"metadata":{},"name":"Starter","statement_descriptor":null,"type":"service","unit_label":null,"updated":1614166256}','[{"id":"price_1IOLa0H8nkbB9IbKGSbOahRx","object":"price","active":true,"billing_scheme":"per_unit","created":1614166256,"currency":"usd","livemode":false,"lookup_key":null,"metadata":{},"nickname":null,"product":"prod_J0MI7GCNSSh3eQ","recurring":{"aggregate_usage":null,"interval":"month","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"tiers_mode":null,"transform_quantity":null,"type":"recurring","unit_amount":3500,"unit_amount_decimal":"3500"},{"id":"price_1IOLa1H8nkbB9IbKR5c7gSfx","object":"price","active":true,"billing_scheme":"per_unit","created":1614166257,"currency":"usd","livemode":false,"lookup_key":null,"metadata":{},"nickname":null,"product":"prod_J0MI7GCNSSh3eQ","recurring":{"aggregate_usage":null,"interval":"year","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"tiers_mode":null,"transform_quantity":null,"type":"recurring","unit_amount":34800,"unit_amount_decimal":"34800"}]','{"id":"prod_J0MI7GCNSSh3eQ","description":"Starter plan","name":"Starter","features":[{"name":"3 sites"},{"name":"1,000 shares"},{"name":"Email support"}],"button":"Choose","prices":{"month":{"id":"price_1IOLa0H8nkbB9IbKGSbOahRx","unit_amount_decimal":"3500","recurring":{"aggregate_usage":null,"interval":"month","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"product":"prod_J0MI7GCNSSh3eQ","currency":"usd","unit_amount_hr":35},"year":{"id":"price_1IOLa1H8nkbB9IbKR5c7gSfx","unit_amount_decimal":"34800","recurring":{"aggregate_usage":null,"interval":"year","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"product":"prod_J0MI7GCNSSh3eQ","currency":"usd","unit_amount_hr":348}}}');
 INSERT INTO plans (id,created,updated,product,prices,plan) VALUES (402,NOW(),NOW(),'{"id":"prod_J0MIPuMEZ7pG2O","object":"product","active":true,"attributes":[],"created":1614166257,"description":"Pro plan","images":[],"livemode":false,"metadata":{},"name":"Pro","statement_descriptor":null,"type":"service","unit_label":null,"updated":1614166257}','[{"id":"price_1IOLa1H8nkbB9IbKVCb5iqAE","object":"price","active":true,"billing_scheme":"per_unit","created":1614166257,"currency":"usd","livemode":false,"lookup_key":null,"metadata":{},"nickname":null,"product":"prod_J0MIPuMEZ7pG2O","recurring":{"aggregate_usage":null,"interval":"month","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"tiers_mode":null,"transform_quantity":null,"type":"recurring","unit_amount":11900,"unit_amount_decimal":"11900"},{"id":"price_1IOLa2H8nkbB9IbKgGNmAyyq","object":"price","active":true,"billing_scheme":"per_unit","created":1614166258,"currency":"usd","livemode":false,"lookup_key":null,"metadata":{},"nickname":null,"product":"prod_J0MIPuMEZ7pG2O","recurring":{"aggregate_usage":null,"interval":"year","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"tiers_mode":null,"transform_quantity":null,"type":"recurring","unit_amount":118800,"unit_amount_decimal":"118800"}]','{"id":"prod_J0MIPuMEZ7pG2O","description":"Pro plan","name":"Pro","features":[{"name":"100 sites"},{"name":"Unlimited shares"},{"name":"Premium support"}],"button":"Choose","primary":true,"prices":{"month":{"id":"price_1IOLa1H8nkbB9IbKVCb5iqAE","unit_amount_decimal":"11900","recurring":{"aggregate_usage":null,"interval":"month","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"product":"prod_J0MIPuMEZ7pG2O","currency":"usd","unit_amount_hr":119},"year":{"id":"price_1IOLa2H8nkbB9IbKgGNmAyyq","unit_amount_decimal":"118800","recurring":{"aggregate_usage":null,"interval":"year","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"product":"prod_J0MIPuMEZ7pG2O","currency":"usd","unit_amount_hr":1188}}}');
 INSERT INTO plans (id,created,updated,product,prices,plan) VALUES (403,NOW(),NOW(),'{"id":"prod_J0MIdVcEMSWbe4","object":"product","active":true,"attributes":[],"created":1614166258,"description":"Enterprise plan","images":[],"livemode":false,"metadata":{},"name":"Enterprise","statement_descriptor":null,"type":"service","unit_label":null,"updated":1614166258}','[{"id":"price_1IOLa2H8nkbB9IbKst64IUqB","object":"price","active":true,"billing_scheme":"per_unit","created":1614166258,"currency":"usd","livemode":false,"lookup_key":null,"metadata":{},"nickname":null,"product":"prod_J0MIdVcEMSWbe4","recurring":{"aggregate_usage":null,"interval":"month","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"tiers_mode":null,"transform_quantity":null,"type":"recurring","unit_amount":0,"unit_amount_decimal":"0"},{"id":"price_1IOLa3H8nkbB9IbKYtfLXSMf","object":"price","active":true,"billing_scheme":"per_unit","created":1614166259,"currency":"usd","livemode":false,"lookup_key":null,"metadata":{},"nickname":null,"product":"prod_J0MIdVcEMSWbe4","recurring":{"aggregate_usage":null,"interval":"year","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"tiers_mode":null,"transform_quantity":null,"type":"recurring","unit_amount":0,"unit_amount_decimal":"0"}]','{"id":"prod_J0MIdVcEMSWbe4","description":"Enterprise plan","name":"Enterprise","features":[{"name":"All features"},{"name":"Cloud or on-prem"},{"name":"Premium support"}],"button":"Contact us","priceText":"Let talk","prices":{"month":{"id":"price_1IOLa2H8nkbB9IbKst64IUqB","unit_amount_decimal":"0","recurring":{"aggregate_usage":null,"interval":"month","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"product":"prod_J0MIdVcEMSWbe4","currency":"usd","unit_amount_hr":0},"year":{"id":"price_1IOLa3H8nkbB9IbKYtfLXSMf","unit_amount_decimal":"0","recurring":{"aggregate_usage":null,"interval":"year","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"product":"prod_J0MIdVcEMSWbe4","currency":"usd","unit_amount_hr":0}}}');
@@ -108,6 +109,26 @@ describe('Authentication (e2e)', () => {
     }
   }
 
+  const GOOGLE_ID_TOKEN_TO_SIGNIN = "BAMBIIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX";
+  const GOOGLE_ID_TOKEN_TO_SIGNUP = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX";
+  const GOOGLE_ID_TOKEN_TO_ERROR = "QQER2jANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX";
+
+  const mockedGoogle = {
+    getUserPayload: jest.fn((idToken) => {
+      let res = {};
+      if (idToken === GOOGLE_ID_TOKEN_TO_SIGNIN) {
+        res = { email: "user@gmail.com", sub: "21042432312123123" };
+      }  
+      if (idToken === GOOGLE_ID_TOKEN_TO_SIGNUP) { 
+        res = { email: "admin@uplom.com", sub: "21011211912123123" };
+      }
+      if (idToken === GOOGLE_ID_TOKEN_TO_ERROR) {
+        res = { email: "mi@gmail.com", sub: "21011218888823123" };
+      }
+      return res;
+    }),
+  }
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
@@ -127,8 +148,18 @@ describe('Authentication (e2e)', () => {
         ValidatorModule
       ],
       controllers: [ApiV1AutheticationController],
-      providers: [AppService]
-    }).overrideProvider(StripeService).useValue(mockedStripe).compile()
+      providers: [
+        AppService,
+        {
+          provide: StripeService,
+          useValue: mockedStripe,
+        },
+        {
+          provide: GoogleOAuth2Service,
+          useValue: mockedGoogle,
+        },
+      ]
+    }).compile()
 
     app = moduleFixture.createNestApplication()
     configureApp(app, true)
@@ -287,5 +318,26 @@ describe('Authentication (e2e)', () => {
       .post('/api/v1/signup')
       .send(existingUser)
       .expect(409)
+  })
+
+  it('with a registered google credential for a registered user, should signin into saasform', () => {
+    return agent
+      .post('/api/v1/google-signin')
+      .send(`idToken=${GOOGLE_ID_TOKEN_TO_SIGNIN}`)
+      .expect(302)
+  })
+
+  it('with a not registered google credential for a registered user, should signup into saasform and redirect into saasform', () => {
+    return agent
+      .post('/api/v1/google-signin')
+      .send(`idToken=${GOOGLE_ID_TOKEN_TO_SIGNUP}`)
+      .expect(302)
+  })
+
+  it('with a not registered google credential for a not registered user, should show an error message', () => {
+    return agent
+      .post('/api/v1/google-signin')
+      .send(`idToken=${GOOGLE_ID_TOKEN_TO_ERROR}`)
+      .expect(409, { statusCode:409, message: "Ops! You don't have any account in saasform." })
   })
 })
