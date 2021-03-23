@@ -13,10 +13,9 @@ import { SettingsService } from '../../settings/settings.service'
 import { AuthService } from '../..//auth/auth.service'
 import { UsersService } from '../../accounts/services/users.service'
 import { AccountsService } from '../../accounts/services/accounts.service'
+import { PaymentsService } from 'src/payments/services/payments.service'
 
 import { renderPage } from '../utilities/render'
-import { ValidationService } from '../../validator/validation.service'
-import { PaymentsService } from 'src/payments/services/payments.service'
 
 @Controller('/')
 @UseGuards(UserOptionalAuthGuard)
@@ -27,7 +26,6 @@ export class AuthenticationController {
     private readonly paymentsService: PaymentsService,
     private readonly usersService: UsersService,
     private readonly settingsService: SettingsService,
-    private readonly validationService: ValidationService
   ) {}
 
   async issueJwtAndRediret (req, res, user): Promise<Response> {
