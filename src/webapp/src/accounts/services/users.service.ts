@@ -262,8 +262,9 @@ export class UsersService extends BaseService<UserEntity> {
       return false
     }
 
-    const isRegistered = this.userCredentialsService.isRegistered(userCredential, password)
-    if (isRegistered == null) {
+    const isRegistered = await this.userCredentialsService.isRegistered(userCredential, password)
+
+    if (!isRegistered) {
       console.error('userService - changePassword - password not match')
       return false
     }

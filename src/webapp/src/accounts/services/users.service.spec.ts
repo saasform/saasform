@@ -16,7 +16,13 @@ import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
 import { ValidationService } from '../../validator/validation.service'
 
-const mockedUserCredentialsService = { ...mockUserCredentialsEntity, changePassword: jest.fn(), addUserCredentials: jest.fn() }
+const mockedUserCredentialsService = {
+  ...mockUserCredentialsEntity,
+  changePassword: jest.fn(),
+  addUserCredentials: jest.fn(),
+  findUserCredentials: jest.fn(email => email === 'user@email.com' ? email : null),
+  isRegistered: jest.fn((credential, password) => credential === 'user@email.com' && password === 'password')
+}
 
 describe('UsersService', () => {
   let service // Removed type AccountsService because we must overwrite the accountsRepository property
@@ -286,6 +292,26 @@ describe('UsersService', () => {
     it('should not change old password with null password', async () => {
       const isChanged: boolean = await service.resetPassword('unknown', null)
       expect(isChanged).toBeFalsy()
+    })
+  })
+
+  describe('changePassword', () => {
+    it('should not change password with unknown user', async () => {
+      const isChanged: boolean = await service.changePassword('unknown', 'password', 'password')
+      expect(isChanged).toBeFalsy()
+    })
+
+    it('should not change password with wrong password', async () => {
+      const isChanged: boolean = await service.changePassword('user@test', 'password1', 'password2')
+      expect(isChanged).toBeFalsy()
+    })
+
+    it('should change password with correct password', async () => {
+      const repoSpy = jest.spyOn(mockedUserCredentialsService, 'changePassword')
+
+      const isChanged: boolean = await service.changePassword('user@email.com', 'password', 'password2')
+      expect(isChanged).toBeTruthy()
+      expect(repoSpy).toBeCalledWith('user@email.com', 'password2')
     })
   })
 })
