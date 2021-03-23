@@ -156,6 +156,40 @@ describe('SettingsService', () => {
     result = await service.getBaseUrl()
     expect(result).toEqual('https://mysite.com')
   })
+
+  it('getTopLevelUrl', async () => {
+    // Default
+    let result = await service.getTopLevelUrl()
+    expect(result).toEqual('/')
+
+    // Config wins on default
+    service.configService.get = jest.fn(_ => 'mockedHost')
+    result = await service.getTopLevelUrl()
+    expect(result).toEqual('/')
+
+    // Config wins on default
+    service.configService.get = jest.fn(_ => 'localhost:7000')
+    result = await service.getTopLevelUrl()
+    expect(result).toEqual('/')
+
+    // DB wins on config
+    service.query = jest.fn(q => ([{
+      category: 'website',
+      domain_primary: 'mysite.com'
+    }])) as any
+
+    result = await service.getTopLevelUrl()
+    expect(result).toEqual('https://mysite.com')
+
+    // DB wins on config
+    service.query = jest.fn(q => ([{
+      category: 'website',
+      domain_primary: 'account.mysite.com'
+    }])) as any
+
+    result = await service.getTopLevelUrl()
+    expect(result).toEqual('https://mysite.com')
+  })
 })
 
 describe('SettingsService (aux functions)', () => {

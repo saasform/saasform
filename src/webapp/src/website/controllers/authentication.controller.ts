@@ -156,7 +156,7 @@ export class AuthenticationController {
         throw new Error('Account not found')
       }
 
-      if (req.user != null) {
+      if (req.user != null && req.user !== false) {
         // auto login (only if user was already logged in)
         const requestUser = await this.authService.getTokenPayloadFromUserModel({ user, credential: null, account })
         if (requestUser == null) {
@@ -180,7 +180,7 @@ export class AuthenticationController {
   async logout (@Request() req, @Res() res: Response): Promise<any> {
     res.clearCookie('__session', { domain: req.hostname })
     req.logout()
-    res.redirect('/')
+    res.redirect(await this.settingsService.getTopLevelUrl())
   }
 
   @Get('/password-reset')

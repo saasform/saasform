@@ -2,6 +2,7 @@ import { _ } from 'lodash'
 import { REQUEST } from '@nestjs/core'
 import { Injectable, Scope, Inject } from '@nestjs/common'
 import { QueryService } from '@nestjs-query/core'
+import * as tldExtract from 'tld-extract'
 
 import { SettingsEntity, SettingsWebsiteJson, SettingsKeysJson, SettingsUserJson } from './settings.entity'
 
@@ -153,6 +154,18 @@ export class SettingsService extends BaseService<SettingsEntity> {
       return `${configuredBaseUrl}`
     }
     return '/'
+  }
+
+  async getTopLevelUrl (cachedSettings?): Promise<string> {
+    const baseUrl = await this.getBaseUrl(cachedSettings)
+    let domain
+    try {
+      domain = tldExtract(baseUrl)
+    } catch (err) {
+      // pass
+    }
+    const topLevel: string = domain?.domain
+    return topLevel != null ? `https://${topLevel}` : '/'
   }
 
   // TODO: TDD this
