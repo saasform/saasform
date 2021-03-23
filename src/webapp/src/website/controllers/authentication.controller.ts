@@ -25,7 +25,7 @@ export class AuthenticationController {
     private readonly accountsService: AccountsService,
     private readonly paymentsService: PaymentsService,
     private readonly usersService: UsersService,
-    private readonly settingsService: SettingsService,
+    private readonly settingsService: SettingsService
   ) {}
 
   async issueJwtAndRediret (req, res, user): Promise<Response> {
