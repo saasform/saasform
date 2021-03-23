@@ -2,12 +2,14 @@ import { Controller, Get, Post, Request, Res } from '@nestjs/common'
 import { Response } from 'express'
 import { SettingsService } from '../../../settings/settings.service'
 import { AuthService } from '../../../auth/auth.service'
+import { PaymentsService } from '../../../payments/services/payments.service'
 
 @Controller('/api/v1')
 export class ApiV1AutheticationController {
   constructor (
     private readonly authService: AuthService,
-    private readonly settingsService: SettingsService
+    private readonly settingsService: SettingsService,
+    private readonly paymentsService: PaymentsService
   ) {}
 
   @Get()
@@ -34,7 +36,15 @@ export class ApiV1AutheticationController {
     }
 
     await this.authService.setJwtCookie(req, res, requestUserWithSubscription ?? requestUser)
-    const redirect = await this.settingsService.getRedirectAfterLogin()
+
+    let redirect = ''
+    // if subscription is not valid redirect to the billing page
+    const payment = await this.paymentsService.getActivePayments(requestUser.account_id)
+    if (await this.paymentsService.isPaymentValid(payment) === false) {
+      redirect = '/user/billing'
+    } else {
+      redirect = await this.settingsService.getRedirectAfterLogin()
+    }
 
     return res.status(302).json({
       statusCode: 302,
