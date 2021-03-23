@@ -1,10 +1,11 @@
-data/db
+data/db*
 
 node_module
 secrets.local
 JOURNAL.md
 
 data/config/saasform.yml
+data/config/saasform.*.yml
 
 .idea
 data/themes/fresh-sso/dist/
