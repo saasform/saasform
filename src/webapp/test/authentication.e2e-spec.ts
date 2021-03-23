@@ -14,6 +14,7 @@ import { DB_CONFIG } from './config'
 import { configureApp } from '../src/main.app'
 import { AppService } from '../src/app.service'
 import { AuthModule } from '../src/auth/auth.module'
+import { ValidatorModule } from '../src/validator/validator.module'
 import { ApiV1AutheticationController } from '../src/api/controllers/v1/api.authentication.controller'
 import { StripeService } from '../src/payments/services/stripe.service'
 
@@ -112,7 +113,8 @@ describe('Authentication (e2e)', () => {
           isGlobal: true
         }),
         AuthModule,
-        SettingsModule
+        SettingsModule,
+        ValidatorModule
       ],
       controllers: [ApiV1AutheticationController],
       providers: [AppService]

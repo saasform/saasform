@@ -84,6 +84,10 @@ describe('Payments Service', () => {
   const mockedKillBill = {
   }
 
+  const mockedSettingsService = {
+    getWebsiteSettings: jest.fn(_ => ({}))
+  }
+
   beforeEach(async () => {
     jest.clearAllMocks()
 
@@ -104,14 +108,9 @@ describe('Payments Service', () => {
         },
         {
           provide: SettingsService,
-          useValue: {
-            getWebsiteSettings: jest.fn(_ => {})
-          }
+          useValue: mockedSettingsService
         },
-        {
-          provide: ValidationService,
-          useValue: {}
-        },
+        ValidationService,
         {
           provide: ConfigService,
           useValue: {}
@@ -131,6 +130,8 @@ describe('Payments Service', () => {
     service.paymentsRepository = repo
     service.stripeService = { client: mockedStripe }
     service.killbillService = { accountApi: mockedKillBill }
+    service.settingsService = mockedSettingsService
+    service.validationService = await module.get(ValidationService)
     // Object.keys(mockedStripe).forEach(
     //   f => (service.stripeClient[f] = mockedStripe[f]),
     // );
@@ -246,9 +247,30 @@ describe('Payments Service', () => {
   })
 
   describe('validators', () => {
-    it('should validate subscriptions', async () => {
-      status = await service.isPaymentValid({ status: 'active' })
-      expect(status).toBeTruthy()
+    it('should validate active subscriptions', async () => {
+      const paymentStatus = await service.isPaymentValid({ status: 'active' })
+      expect(paymentStatus).toBeTruthy()
+    })
+
+    it('should validate traili subscriptions', async () => {
+      const paymentStatus = await service.isPaymentValid({ status: 'trialing' })
+      expect(paymentStatus).toBeTruthy()
+    })
+
+    it('should not validate missing subscriptions', async () => {
+      const paymentStatus = await service.isPaymentValid(null)
+      expect(paymentStatus).toBeFalsy()
+    })
+
+    it('should not validate inactive subscriptions', async () => {
+      const paymentStatus = await service.isPaymentValid({ status: 'suspended' })
+      expect(paymentStatus).toBeFalsy()
+    })
+
+    it('should validate null subscriptions when subscription is not required', async () => {
+      service.settingsService.getWebsiteSettings = jest.fn(_ => ({ subscription_optional: true }))
+      const paymentStatus = await service.isPaymentValid(null)
+      expect(paymentStatus).toBeTruthy()
     })
   })
 })
