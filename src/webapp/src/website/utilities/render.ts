@@ -33,8 +33,8 @@ const renderUserPage = (req, res, page: string, data = {} as any): Response => {
     user_page: page,
     // important - we must guarantee that payment_methods is an array
     payment_methods: data?.account?.payments_methods ?? [],
-    account_users: data?.account_users ?? []
-
+    account_users: data?.account_users ?? [],
+    error: data.error
   }
   return renderPage(req, res, 'user', userPageData)
 }
