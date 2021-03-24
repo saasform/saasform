@@ -146,8 +146,7 @@ export class AuthService {
     return cookieDomain
   }
 
-  async setJwtCookie (request, response, requestUser: RequestUser): Promise<any> { // TODO: specify type
-    const jwt = await this.jwtService.sign(requestUser)
+  async getJwtCookieOptions (request): Promise<any> {
     const settings = await this.settingsService.getWebsiteSettings()
     const cookieDomain = this.getJwtCookieDomain(request.hostname, settings.domain_primary)
 
@@ -156,6 +155,13 @@ export class AuthService {
     if (process.env.NODE_ENV === 'development') { // TODO: better check for development mode
       options = { secure: false, httpOnly: false, domain: cookieDomain }
     }
+
+    return options
+  }
+
+  async setJwtCookie (request, response, requestUser: RequestUser): Promise<any> { // TODO: specify type
+    const jwt = await this.jwtService.sign(requestUser)
+    const options = await this.getJwtCookieOptions(request)
 
     response.cookie('__session', jwt, options) // TODO: make cookie name parametric
   }

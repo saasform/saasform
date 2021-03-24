@@ -192,7 +192,8 @@ export class AuthenticationController {
 
   @Get('/logout')
   async logout (@Request() req, @Res() res: Response): Promise<any> {
-    res.clearCookie('__session', { domain: req.hostname })
+    const options = await this.authService.getJwtCookieOptions(req)
+    res.clearCookie('__session', options)
     req.logout()
     res.redirect(await this.settingsService.getTopLevelUrl())
   }
