@@ -32,6 +32,14 @@ import { StripeService } from '../src/payments/services/stripe.service'
  * Payments: 501 => user 101
  */
 const DB_INIT: string = `
+TRUNCATE accounts;
+TRUNCATE accounts_users;
+TRUNCATE users;
+TRUNCATE users_credentials;
+TRUNCATE plans;
+TRUNCATE payments;
+TRUNCATE settings;
+
 INSERT INTO settings VALUES (1,'website','{"name": "Uplom", "domain_primary": "uplom.com"}', NOW(), NOW());
 INSERT INTO users (id, email, password, isAdmin, isActive, emailConfirmationToken, resetPasswordToken,data) VALUES (101,'admin@uplom.com','password',1,1,1,1,'{"profile":{}}'),(102,'user@gmail.com','password',0,1,1,'1k-X4PTtCQ7lGQ','{"resetPasswordToken": "1k-X4PTtCQ7lGQ", "resetPasswordTokenExp": "1708940883080", "profile": {}}'),(111,'nosub@gmail.com','password',0,1,1,1,'{}');
 INSERT INTO accounts (id, owner_id, data) VALUES (201, 101, '{}'),(211, 111, '{}');
@@ -44,9 +52,6 @@ INSERT INTO payments (id,account_id,status,data) VALUES (501,201,'trialing','{"i
 `
 
 const existingUser = 'email=admin@uplom.com&password=password'
-const passwordChange = 'email=admin@uplom.com&password=password&newpassword=password1&confirmation=password1'
-const passwordChangeNotMatch = 'email=admin@uplom.com&password=password&newpassword=password1&confirmation=password2'
-const passwordChangeWrongPassword = 'email=admin@uplom.com&password=wrongpassword&newpassword=password1&confirmation=password1'
 
 let agent: any
 
@@ -145,54 +150,40 @@ describe('User (e2e)', () => {
   //     })
   // })
 
-  it('should not allow user to change his password when password provided is wrong', done => {
+  it('should delete a user', done => {
     return agent
       .post('/api/v1/login')
       .send(existingUser)
       .expect(302)
       .then(res => {
         agent
-          .post('/api/v1/user/password-change')
+          .delete('/api/v1/user/101')
           .set('Cookie', res.header['set-cookie'])
-          .send(passwordChangeWrongPassword)
+          .send()
           .then(res => {
-            expect(res.body).toEqual({ error: 'Error while changing password', statusCode: 400 })
-            done()
+            agent
+              .post('/api/v1/login')
+              .send(existingUser)
+              .expect(401)
+              .then(res => done())
           })
       })
   })
 
-  it('should not allow user to change his password when password do not match', done => {
-    return agent
-      .post('/api/v1/login')
-      .send(existingUser)
-      .expect(302)
-      .then(res => {
-        agent
-          .post('/api/v1/user/password-change')
-          .set('Cookie', res.header['set-cookie'])
-          .send(passwordChangeNotMatch)
-          .then(res => {
-            expect(res.body).toEqual({ error: 'Confirmation password doesn\'t match', statusCode: 400 })
-            done()
-          })
-      })
-  })
-
-  it('should allow user to change his password', done => {
-    return agent
-      .post('/api/v1/login')
-      .send(existingUser)
-      .expect(302)
-      .then(res => {
-        agent
-          .post('/api/v1/user/password-change')
-          .set('Cookie', res.header['set-cookie'])
-          .send(passwordChange)
-          .then(res => {
-            expect(res.body).toEqual({ message: 'Password changed', statusCode: 200 })
-            done()
-          })
-      })
+  it('should return an updated team list', done => {
+    // TODO when we have the user team API
+    // return agent
+    //   .post('/api/v1/login')
+    //   .send(existingUser)
+    //   .expect(302)
+    //   .then(res => {
+    //     agent
+    //       .get('/api/v1/user/team')
+    //       .set('Cookie', res.header['set-cookie'])
+    //       .send()
+    //       .then(res => {
+    //       })
+    //   })
+    done()
   })
 })

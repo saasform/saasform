@@ -12,7 +12,7 @@ import { AccountsService } from './accounts.service'
 import { AccountEntity } from '../entities/account.entity'
 import { UserCredentialsService } from './userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
-import { mockUserCredentialsEntity } from '../test/testData'
+import { mockAccountsUsersRepo, mockUserCredentialsEntity } from '../test/testData'
 import { NotificationsService } from '../../notifications/notifications.service'
 import { SettingsService } from '../../settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
@@ -46,7 +46,7 @@ describe('AccountsUsers Service', () => {
         AccountsUsersService,
         {
           provide: getRepositoryToken(AccountUserEntity),
-          useValue: mockedRepo
+          useValue: mockAccountsUsersRepo
         },
         UserCredentialsService,
         {
@@ -88,7 +88,7 @@ describe('AccountsUsers Service', () => {
     )
 
     // We must manually set the following because extending TypeOrmQueryService seems to break it
-    Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
+    Object.keys(mockAccountsUsersRepo).forEach(f => (service[f] = mockAccountsUsersRepo[f]))
     service.accountsUsersRepository = repo
   })
 
@@ -99,14 +99,27 @@ describe('AccountsUsers Service', () => {
 
   describe('getAll', () => {
     it('should return an array of AccountsUsers for the account called', async () => {
-      const repoSpy = jest.spyOn(mockedRepo, 'query')
+      const repoSpy = jest.spyOn(mockAccountsUsersRepo, 'query')
       const accountId = 1
       const accountsUsers = await service.getUsers(accountId)
-      expect(accountsUsers).toEqual([])
+      expect(accountsUsers).toEqual([{}])
       expect(repoSpy).toBeCalledTimes(1)
       expect(repoSpy).toBeCalledWith({
         filter: { account_id: { eq: accountId } }
       })
+    })
+  })
+
+  describe('delete accounts-user relationship', () => {
+    it('should delete all of the user credentials', async () => {
+      const repoSpy = jest.spyOn(mockAccountsUsersRepo, 'deleteMany')
+      const userId = 1
+
+      const res = await service.deleteUser(userId)
+
+      expect(repoSpy).toBeCalledTimes(1)
+      expect(repoSpy).toBeCalledWith({ user_id: { eq: userId } })
+      expect(res).toBe(0) // the value 0 is hardcoded in the mock definition
     })
   })
 })

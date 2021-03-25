@@ -159,6 +159,33 @@ export class UsersService extends BaseService<UserEntity> {
     }
   }
 
+  async deleteUser (userId: number): Promise<Boolean> {
+    const user = this.findById(userId)
+    if (user == null) {
+      console.error('usersService - deleteUser - user not found', userId)
+      return false
+    }
+
+    if (await this.userCredentialsService.deleteUserCredentials(userId) == null) {
+      console.error('usersService - deleteUser - error while removing user credentials', userId)
+      return false
+    }
+
+    try {
+      const deletedUser = await this.deleteOne(userId)
+
+      if (deletedUser == null) {
+        console.error('usersService - deleteUser - error while removing user', userId)
+        return false
+      }
+
+      return true
+    } catch (error) {
+      console.error('usersService - deleteUser - exception  while removing user', userId, error)
+      return false
+    }
+  }
+
   async confirmEmail (token: string): Promise<UserEntity | null> {
     if (token === '') {
       console.error('confirmEmail - error in parameters')

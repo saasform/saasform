@@ -55,6 +55,15 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
     }
   }
 
+  async deleteUserCredentials (userId: number): Promise<number | null> {
+    try {
+      return (await this.deleteMany({ userId: { eq: userId } })).deletedCount
+    } catch (error) {
+      console.error('UserCredentialsService - deleteUserCredentials - error while deleteMany', userId, error)
+      return null
+    }
+  }
+
   async changePassword (credential: string, password: string): Promise<UserCredentialsEntity | null> {
     if (credential === null || password === null) {
       return null

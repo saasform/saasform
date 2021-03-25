@@ -44,11 +44,23 @@
 
 <ul>
 {% for user in account_users %}
-  <li>{{ user.name }}, {{ user.email }}</li>
+  <li>{{ user.name }}, {{ user.email }} <button onclick="
+  fetch('/api/v1/user/{{user.id}}', {
+    method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+  });window.location.reload(false)">delete</button></li>
 {% endfor %}
 </ul>
 
-<h3>Add user to the teaam</h3>
+<h3>Add user to the team</h3>
 
 <form action="/user/team" method="POST">
   <div>

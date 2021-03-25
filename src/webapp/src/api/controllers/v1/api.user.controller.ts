@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Request, Res } from '@nestjs/common'
+import { Controller, Post, Delete, UseGuards, Request, Res, Param } from '@nestjs/common'
 import { Response } from 'express'
 import { SettingsService } from '../../../settings/settings.service'
 import { AccountsService } from '../../../accounts/services/accounts.service'
@@ -55,6 +55,38 @@ export class ApiV1UserController {
     return res.json({
       statusCode: 200,
       message: 'Password changed'
+    })
+  }
+
+  @UseGuards(UserRequiredAuthGuard)
+  @Delete(':userId')
+  async handleDeleteUser (@Request() req, @Res() res: Response, @Param('userId') userId): Promise<any> {
+    if (userId == null) {
+      return res.json({
+        statusCode: 400,
+        error: 'userId not valid'
+      })
+    }
+
+    try {
+      const wasDeleted = await this.usersService.deleteUser(userId)
+      if (wasDeleted !== true) {
+        return res.json({
+          statusCode: 500,
+          message: `Error while removing user ${userId as string}`
+        })
+      }
+    } catch (error) {
+      console.error('ApiV1UserController - handleDeleteUser', error)
+      return res.json({
+        statusCode: 500,
+        message: `err ${error.message as string}`
+      })
+    }
+
+    return res.json({
+      statusCode: 200,
+      error: `User ${userId as string} removed`
     })
   }
 }

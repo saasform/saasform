@@ -1,6 +1,27 @@
 import { UserEntity } from '../entities/user.entity'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 
+const mockGenericRepo = {
+  find: jest.fn(id => id !== 999 ? {} : undefined),
+  findOne: jest.fn().mockReturnValue([{}]),
+  query: jest.fn().mockReturnValue([{}]),
+  createOne: jest.fn(entity => entity),
+  updateOne: jest.fn((id, update) => ({ id, ...update })),
+  deleteOne: jest.fn(id => ({})),
+  deleteMany: jest.fn().mockReturnValue({ deletedCount: 0 })
+}
+
+export const mockAccountsUsersRepo = {
+  ...mockGenericRepo,
+  createOne: jest.fn(accountUser => accountUser)
+}
+
+// TODO: refactor below this point
+
+export const mockedCommunicationService = {
+  sendEmail: jest.fn(_ => [])
+}
+
 export const mockedUser: UserEntity = new UserEntity()
 mockedUser.id = 1
 mockedUser.email = 'user@gmail.com'
@@ -39,6 +60,7 @@ export const mockedRepo = {
   createOne: jest.fn((user: UserEntity) => user),
   findByEmail: jest.fn((email) => email === mockedUser.email ? mockedUser : undefined),
   updateOne: jest.fn((id, user: UserEntity) => Object.assign(new UserEntity(), user)),
+  deleteOne: jest.fn(id => ({})),
   query: jest.fn(query => {
     const res = [mockedUser, mockedUserExpiredToken].filter(u => {
       if (u.emailConfirmationToken === query?.filter?.emailConfirmationToken?.eq) {
@@ -60,15 +82,13 @@ export const mockUserCredentialsEntity = {
   findOne: jest.fn(({ where: { credential } }) => credential === mockedUserCredentials.credential ? mockedUserCredentials : undefined),
   createOne: jest.fn((userCredential) => userCredential),
   updateOne: jest.fn((id) => id === mockedUserCredentials.id ? mockedUserCredentials : undefined),
+  deleteMany: jest.fn(filter => ({ deletedCount: 0 })),
   query: jest.fn(query => {
     const res = [mockedUserCredentials].filter(u => u.credential === query?.filter?.credential?.eq ?? undefined)
     return res
   })
 }
 
-export const mockedCommunicationService = {
-  sendEmail: jest.fn(_ => [])
-}
 export const mockedSettingRepo = {
   getWebsiteRenderingVariables: jest.fn(_ => []),
   getUserSettings: jest.fn(_ => ({ allowedKeys: ['email', 'unused'] })),
