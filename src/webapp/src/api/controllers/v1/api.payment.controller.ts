@@ -15,33 +15,6 @@ export class ApiV1PaymentController {
   ) {}
 
   @UseGuards(UserRequiredAuthGuard)
-  @Post('create-subscription')
-  async handleCreateSubscription (@Request() req, @Res() res: Response): Promise<any> {
-    const account = await this.accountsService.findByOwnerEmail(req.user.email)
-
-    if (account == null) {
-      return res.json({
-        statusCode: 400,
-        error: 'Account not found'
-      })
-    }
-
-    const subscription = await this.accountsService.subscribeToPlan(account, req.body)
-
-    if (subscription == null) {
-      return res.json({
-        statusCode: 400,
-        error: 'Error while creating subscription'
-      })
-    }
-
-    return res.json({
-      statusCode: 200,
-      message: subscription
-    })
-  }
-
-  @UseGuards(UserRequiredAuthGuard)
   @Post('add-payment-token')
   async handleAddPaymentToken (@Request() req, @Res() res: Response): Promise<any> {
     const account = await this.accountsService.findByOwnerEmail(req.user.email)

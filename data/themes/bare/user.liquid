@@ -16,7 +16,27 @@
   <input type="submit" />
 </form>
 
+<h2>Update your password</h2>
 
+<form action="/user/password-change" method="POST">
+  <div>
+    <input type="password" name="password" value="" placeholder="Old password" required>
+    {{error.password}}
+  </div>
+
+  <div>
+    <input type="password" name="newpassword" value="" placeholder="New password" required>
+    {{error.newpassword}}
+  </div>
+  
+  <div>
+    <input type="password" name="confirmation" value="" placeholder="Confirm password" required>
+    {{error.confirmation}}
+  </div>
+
+  <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+  <input type="submit" />
+</form>
 
 {{ alert.text }}
 

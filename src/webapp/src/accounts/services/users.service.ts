@@ -254,4 +254,27 @@ export class UsersService extends BaseService<UserEntity> {
       return false
     }
   }
+
+  async changePassword (email: string, password: string, newpassword: string): Promise<boolean> {
+    const userCredential = await this.userCredentialsService.findUserCredentials(email)
+    if (userCredential == null) {
+      console.error('userService - changePassword - userCredential not found')
+      return false
+    }
+
+    const isRegistered = await this.userCredentialsService.isRegistered(userCredential, password)
+
+    if (!isRegistered) {
+      console.error('userService - changePassword - password not match')
+      return false
+    }
+
+    try {
+      await this.userCredentialsService.changePassword(email, newpassword)
+      return true
+    } catch (err) {
+      console.error('userService - changePassword - error while changing password', err)
+      return false
+    }
+  }
 }
