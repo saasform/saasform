@@ -140,7 +140,7 @@ export class AccountsService extends BaseService<AccountEntity> {
       return []
     }
 
-    return users
+    return users.filter(u => u != null)
   }
 
   async setOwner (account: AccountEntity, userId: number): Promise<any> {
@@ -220,6 +220,11 @@ export class AccountsService extends BaseService<AccountEntity> {
     const account = await this.findById(users[0]?.account_id)
 
     return account
+  }
+
+  async deleteUser (userId: number): Promise<Boolean> {
+    // TODO: implement this
+    return true
   }
 
   /**

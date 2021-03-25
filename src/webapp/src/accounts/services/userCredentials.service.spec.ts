@@ -111,4 +111,17 @@ describe('UserCredentials', () => {
       expect(expUser).toBeNull()
     })
   })
+
+  describe('delete user credentials', () => {
+    it('should delete all of the user credentials', async () => {
+      const repoSpy = jest.spyOn(mockUserCredentialsEntity, 'deleteMany')
+      const userId = 1
+
+      const res = await service.deleteUserCredentials(userId)
+
+      expect(repoSpy).toBeCalledTimes(1)
+      expect(repoSpy).toBeCalledWith({ userId: { eq: userId } })
+      expect(res).toBe(0) // the value 0 is hardcoded in the mock definition
+    })
+  })
 })
