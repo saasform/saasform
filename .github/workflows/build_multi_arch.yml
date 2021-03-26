@@ -1,10 +1,9 @@
-name: build multi arch
+name: Build multi-arch Docker image
 
 on:
   push:
     branches:
       - 'main'
-      - 'wip/create-docker-autobuild-to-support-arm64'
     tags:
       - '*.*.*'
     pull_request:
@@ -22,8 +21,9 @@ jobs:
       uses: crazy-max/ghaction-docker-meta@v1
       with:
         images: |
-          psmiraglia/saasform
-        tag-sha: true
+          saasform/saasform
+        label-custom: |
+          maintainer=hello@saasform.dev
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v1
