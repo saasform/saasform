@@ -1,4 +1,5 @@
-FROM node:14.16.0-buster AS builder
+ARG ARCH=
+FROM ${ARCH}node:14.16.0-buster-slim AS builder
 
 WORKDIR /app
 COPY . .
@@ -13,7 +14,7 @@ RUN npm i -g @nestjs/cli@7.5.6 \
     && yarn build
 
 
-FROM node:14.16.0-buster-slim
+FROM ${ARCH}node:14.16.0-buster-slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
