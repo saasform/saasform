@@ -35,7 +35,7 @@ export class AccountsService extends BaseService<AccountEntity> {
     private readonly configService: ConfigService
   ) {
     super(req, 'AccountEntity')
-    this.paymentIntegration = this.configService.get<string>('PAYMENT_INTEGRATION', 'stripe')
+    this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
   }
 
   async getAll (): Promise<AccountEntity[]> {

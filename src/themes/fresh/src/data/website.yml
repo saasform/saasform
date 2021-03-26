@@ -69,4 +69,4 @@ prelaunch_message: "{{ prelaunch_message }}"
 prelaunch_background_url: "{{ prelaunch_background_url }}"
 
 # internals
-size: "{{ size }}"
+size:

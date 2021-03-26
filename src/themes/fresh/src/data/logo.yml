@@ -1,0 +1,2 @@
+name: "{{ logo.name }}"
+url: "{{ logo.url }}"

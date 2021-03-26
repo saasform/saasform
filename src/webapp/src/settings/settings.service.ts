@@ -4,7 +4,7 @@ import { Injectable, Scope, Inject } from '@nestjs/common'
 import { QueryService } from '@nestjs-query/core'
 import * as tldExtract from 'tld-extract'
 
-import { SettingsEntity, SettingsWebsiteJson, SettingsKeysJson, SettingsUserJson } from './settings.entity'
+import { SettingsEntity, SettingsWebsiteJson, SettingsKeysJson, SettingsUserJson, SettingsModulesJson } from './settings.entity'
 
 import { createECKey } from 'ec-key'
 import { BaseService } from '../utilities/base.service'
@@ -125,6 +125,11 @@ export class SettingsService extends BaseService<SettingsEntity> {
     return result as unknown as SettingsUserJson
   }
 
+  async getModulesSettings (): Promise<SettingsModulesJson> {
+    const result = this.getSettings('modules')
+    return result as unknown as SettingsModulesJson
+  }
+
   async getWebsiteSettings (): Promise<SettingsWebsiteJson> {
     const result = this.getSettings('website')
     return result as unknown as SettingsWebsiteJson
@@ -143,6 +148,21 @@ export class SettingsService extends BaseService<SettingsEntity> {
   async getJWTPrivateKey (): Promise<string> {
     const keys = await this.getKeysSettings()
     return keys.jwt_private_key
+  }
+
+  async getHomepageRedirectUrl (): Promise<string | null> {
+    const moduleHomepageConfig = this.configService.get<string>('MODULE_HOMEPAGE') ?? 'saasform'
+    const moduleHomepage = (await this.getModulesSettings())?.homepage ?? moduleHomepageConfig
+    if (moduleHomepage === 'redirect') {
+      return await this.getRedirectAfterLogin()
+    }
+    return null
+  }
+
+  async getUserPageSections (): Promise<string[]> {
+    const moduleUserConfig = this.configService.get<string[]>('MODULE_USER') ?? ['general', 'security']
+    const moduleUser = (await this.getModulesSettings())?.user ?? moduleUserConfig
+    return moduleUser
   }
 
   async getBaseUrl (cachedSettings?): Promise<string> {
@@ -202,12 +222,13 @@ export class SettingsService extends BaseService<SettingsEntity> {
       description: '',
       domain_primary: '',
       email: '',
-      logo_url: '',
 
       // integrations
       app_google_analytics: '',
       app_google_tag_manager: '',
       app_facebook_pixel_id: '',
+      app_google_signin_client_id: '',
+      app_google_signin_scope: '',
 
       // footer
       legal_company_name: '',
@@ -318,7 +339,21 @@ export class SettingsService extends BaseService<SettingsEntity> {
       html_google_tag_manager_body: '',
       html_facebook_pixel: '',
 
-      subscription_optional: true
+      subscription_optional: true,
+
+      // signup fields
+      signup_show_google: false,
+      signup_show_username: false,
+
+      // page /user
+      user_page_sections: [''],
+
+      // dynamic layout
+      layout_nav: '',
+      logo: {
+        name: '',
+        url: ''
+      }
     }
 
     const encodedPaths = [
@@ -349,7 +384,8 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'prelaunch_enabled',
       'prelaunch_cleartext_password',
       'prelaunch_message',
-      'prelaunch_background_url'
+      'prelaunch_background_url',
+      'signup_show_username'
     ]
     for (const key of encodedPaths) {
       const finalFunc = key.endsWith('url') ? htmlAsset : htmlEncode
@@ -429,6 +465,17 @@ export class SettingsService extends BaseService<SettingsEntity> {
     res.root_theme = themeRoot
     res.root_assets = assetsRoot
     res.saas_redirect_url = redirectAfterLogin
+    res.user_page_sections = await this.getUserPageSections()
+
+    // dynamic layout
+    res.layout_nav = themeRoot + '/nav'
+    res.logo = {
+      url: await this.getHomepageRedirectUrl() ?? '/',
+      name: res.name
+    }
+
+    // html
+    res.signup_show_google = !!(res.app_google_signin_client_id !== '' && !res.app_google_signin_client_id.endsWith('xxx'))
 
     res.html_google_tag_manager_header = res.app_google_tag_manager !== '' && !res.app_google_tag_manager.endsWith('xxx')
       ? `

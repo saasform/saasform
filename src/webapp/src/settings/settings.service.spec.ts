@@ -104,6 +104,52 @@ describe('SettingsService', () => {
     expect(result.substr(0, expected.length)).toEqual(expected)
   })
 
+  it('getHomepageRedirectUrl', async () => {
+    let result
+
+    // saasform
+    service.configService.get = jest.fn(key => 'saasform')
+    service.query = jest.fn(q => ([{
+      category: 'website',
+      domain_app: 'myapp.mysite.com'
+    }])) as any
+    result = await service.getHomepageRedirectUrl()
+    expect(result).toEqual(null)
+
+    // redirect
+    service.configService.get = jest.fn(key => 'redirect')
+    service.query = jest.fn(q => ([{
+      category: 'website',
+      domain_app: 'myapp.mysite.com'
+    }])) as any
+    result = await service.getHomepageRedirectUrl()
+    expect(result).toEqual('https://myapp.mysite.com')
+
+    // db: redirect
+    service.configService.get = jest.fn(key => 'saasform')
+    service.query = jest.fn(q => ([{
+      category: 'website',
+      domain_app: 'myapp.mysite.com'
+    }, {
+      category: 'modules',
+      homepage: 'redirect'
+    }])) as any
+    result = await service.getHomepageRedirectUrl()
+    expect(result).toEqual('https://myapp.mysite.com')
+
+    // db: invalid
+    service.configService.get = jest.fn(key => 'redirect')
+    service.query = jest.fn(q => ([{
+      category: 'website',
+      domain_app: 'myapp.mysite.com'
+    }, {
+      category: 'modules',
+      homepage: 'not redirect'
+    }])) as any
+    result = await service.getHomepageRedirectUrl()
+    expect(result).toEqual(null)
+  })
+
   it('getRedirectAfterLogin', async () => {
     const mock = service.query
     let result

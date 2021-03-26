@@ -23,130 +23,7 @@
 <body>
   {{ html_google_tag_manager_body }}
 
-  <nav x-data="initNavbar()" class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
-    <div class="container is-max-desktop">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-          <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ name }}</h2>
-          <!--img src="{{ root_assets }}/img/logo/logo.svg" alt="" width="112" height="28"-->
-        </a>
-        <div class="navbar-burger" @click="openMobileMenu()">
-          <span class="menu-toggle">
-            <span class="icon-box-toggle" :class="{
-                'active': mobileOpen,
-                '': !mobileOpen
-              }">
-              <span class="rotate">
-                <i class="icon-line-top"></i>
-                <i class="icon-line-center"></i>
-                <i class="icon-line-bottom"></i>
-              </span>
-            </span>
-        </div>
-      </div>
-      <div id="navbar-menu" class="navbar-menu is-static" :class="{
-          'is-active': mobileOpen,
-          '': !mobileOpen
-        }">
-        <div class="navbar-end">
-          <a href="/#product" class="navbar-item is-primary">
-            Product
-          </a>
-          <a href="/#pricing" class="navbar-item is-primary">
-            Pricing
-          </a>
-          <a href="/#faq" class="navbar-item is-primary">
-            FAQ
-          </a>
-        </div>
-        <div class="navbar-end">
-          {% if user.email %}
-          <a href="/user" class="navbar-item is-primary">
-            Account
-          </a>
-          <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
-            Dashboard&nbsp;&nbsp;
-            <span class="icon is-small">
-              <i class="fa fa-arrow-right"></i>
-            </span>
-          </a>
-          {% else %}
-          <a href="/login" class="navbar-item is-primary">
-            Log in
-          </a>
-          <a href="/signup" class="navbar-item">
-            <span class="button signup-button is-primary raised">
-              Sign up
-            </span>
-          </a>
-          {% endif %}
-        </div>
-      </div>
-    </div>  </nav>
-  <nav x-data="initNavbar()"  x-on:scroll.window="scroll()" id="navbar-clone"
-    class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation" :class="{
-      'is-active': scrolled,
-      '': !scrolled
-    }">
-    <div class="container is-max-desktop">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-          <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ name }}</h2>
-          <!--img src="{{ root_assets }}/img/logo/logo.svg" alt="" width="112" height="28"-->
-        </a>
-        <div class="navbar-burger" @click="openMobileMenu()">
-          <span class="menu-toggle">
-            <span class="icon-box-toggle" :class="{
-                'active': mobileOpen,
-                '': !mobileOpen
-              }">
-              <span class="rotate">
-                <i class="icon-line-top"></i>
-                <i class="icon-line-center"></i>
-                <i class="icon-line-bottom"></i>
-              </span>
-            </span>
-        </div>
-      </div>
-      <div id="navbar-menu" class="navbar-menu is-static" :class="{
-          'is-active': mobileOpen,
-          '': !mobileOpen
-        }">
-        <div class="navbar-end">
-          <a href="/#product" class="navbar-item is-primary">
-            Product
-          </a>
-          <a href="/#pricing" class="navbar-item is-primary">
-            Pricing
-          </a>
-          <a href="/#faq" class="navbar-item is-primary">
-            FAQ
-          </a>
-        </div>
-        <div class="navbar-end">
-          {% if user.email %}
-          <a href="/user" class="navbar-item is-primary">
-            Account
-          </a>
-          <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
-            Dashboard&nbsp;&nbsp;
-            <span class="icon is-small">
-              <i class="fa fa-arrow-right"></i>
-            </span>
-          </a>
-          {% else %}
-          <a href="/login" class="navbar-item is-primary">
-            Log in
-          </a>
-          <a href="/signup" class="navbar-item">
-            <span class="button signup-button is-primary raised">
-              Sign up
-            </span>
-          </a>
-          {% endif %}
-        </div>
-      </div>
-    </div>  </nav>
+  {% render layout_nav, logo: logo, user: user %}
 
   
   {% if alert and alert.text %}
@@ -200,29 +77,41 @@
                 </p>
                 <ul class="menu-list">
   
+                  {% for page in user_page_sections %}
+  
+                  {% if page == 'general' %}
                   {% if user_page == 'general' %}
                   <li><a href="/user" class="is-active">General</a></li>
                   {% else %}
                   <li><a href="/user">General</a></li>
                   {% endif %}
+                  {% endif %}
   
+                  {% if page == 'security' %}
                   {% if user_page == 'security' %}
                   <li><a href="/user/security" class="is-active">Security</a></li>
                   {% else %}
                   <li><a href="/user/security">Security</a></li>
                   {% endif %}
+                  {% endif %}
   
+                  {% if page == 'billing' %}
                   {% if user_page == 'billing' %}
                   <li><a href="/user/billing" class="is-active">Billing</a></li>
                   {% else %}
                   <li><a href="/user/billing">Billing</a></li>
                   {% endif %}
+                  {% endif %}
   
+                  {% if page == 'team' %}
                   {% if user_page == 'team' %}
                   <li><a href="/user/team" class="is-active">Users</a></li>
                   {% else %}
                   <li><a href="/user/team">Users</a></li>
                   {% endif %}
+                  {% endif %}
+  
+                  {% endfor %}
   
                 </ul>
               </aside>
@@ -246,21 +135,21 @@
                   <div class="field-body">
           
                     <div class="field">
-                      <label for="first" class="label {{ size }} has-text-weight-normal">
+                      <label for="first" class="label  has-text-weight-normal">
                         First name
                       </label>
                       <div class="control">
-                        <input type="text" class="input {{ size }}" id="first" name="first" placeholder="First name" value="">
+                        <input type="text" class="input " id="first" name="first" placeholder="First name" value="{{ user.first_name }}">
                       </div>
                       <p id="error-first" class="help is-danger"></p>
                     </div>
           
                     <div class="field">
-                      <label for="first" class="label {{ size }} has-text-weight-normal">
+                      <label for="first" class="label  has-text-weight-normal">
                         Last name
                       </label>
                       <div class="control">
-                        <input type="text" class="input {{ size }}" id="last" name="last" placeholder="Last name" value="">
+                        <input type="text" class="input " id="last" name="last" placeholder="Last name" value="{{ user.last_name }}">
                       </div>
                       <p id="error-last" class="help is-danger"></p>
                     </div>
@@ -269,25 +158,37 @@
                 </div>
           
                 <div class="field">
-                  <label for="company" class="label {{ size }} has-text-weight-normal">
+                  <label for="company" class="label  has-text-weight-normal">
                     Company
                   </label>
                   <div class="control">
-                    <input type="text" class="input {{ size }}" id="company" name="company" placeholder="Company" value="">
+                    <input type="text" class="input " id="company" name="company" placeholder="Company" value="{{ user.company }}">
                   </div>
                   <p id="error-company" class="help is-danger"></p>
                 </div>
           
+                {% if signup_show_username %}
                 <div class="field">
-                  <label for="email" class="label {{ size }} has-text-weight-normal">
+                  <label for="company" class="label  has-text-weight-normal">
+                    Username
+                  </label>
+                  <div class="control">
+                    <input type="text" class="input " id="username" name="username" placeholder="username" value="{{ user.username }}">
+                  </div>
+                  <p id="error-username" class="help is-danger"></p>
+                </div>
+                {% endif %}
+          
+                <div class="field">
+                  <label for="email" class="label  has-text-weight-normal">
                     Email address
                   </label>
                   <div class="field has-addons">
                     <div class="control is-expanded">
-                      <input type="email" class="input {{ size }}" id="email" name="email" placeholder="name@address.com" value="{{ user.email }}" disabled>
+                      <input type="email" class="input " id="email" name="email" placeholder="name@address.com" value="{{ user.email }}" autocomplete="username" disabled>
                     </div>
                     <div class="control">
-                      <a class="button {{ size }}  is-dark">
+                      <a class="button   is-dark">
                         Change
                       </a>
                     </div>
@@ -299,7 +200,7 @@
                 <input type="hidden" name="_csrf" value="{{ csrf_token }}">
                 <div class="field">
                   <div class="control">
-                    <button class="button {{ size }} is-primary" type="submit">Save changes</button>
+                    <button class="button  is-primary" type="submit">Save changes</button>
                   </div>
                 </div>
               </form>
@@ -322,31 +223,31 @@
               <form action="" method="POST" class="mb-40">
           
                 <div class="field">
-                  <label for="password" class="label {{ size }} has-text-weight-normal">
+                  <label for="password" class="label  has-text-weight-normal">
                     Current password
                   </label>
                   <div class="control">
-                    <input type="password" class="input {{ size }}" id="password" name="password" minlength="8" required>
+                    <input type="password" class="input " id="password" name="password" minlength="8" required>
                   </div>
                   <p id="error-password" class="help is-danger">{{ error.password | formatDot }}</p>
                 </div>
           
                 <div class="field">
-                  <label for="password-new" class="label {{ size }} has-text-weight-normal">
+                  <label for="password-new" class="label  has-text-weight-normal">
                     New password
                   </label>
                   <div class="control">
-                    <input type="password" class="input {{ size }}" id="password-new" name="password-new" minlength="8" required>
+                    <input type="password" class="input " id="password-new" name="password-new" minlength="8" required>
                   </div>
                   <p id="error-password-new" class="help is-danger"></p>
                 </div>
           
                 <div class="field">
-                  <label for="password-confirm" class="label {{ size }} has-text-weight-normal">
+                  <label for="password-confirm" class="label  has-text-weight-normal">
                     Confirm new password
                   </label>
                   <div class="control">
-                    <input type="password" class="input {{ size }}" id="password-confirm" name="password-confirm" minlength="8" required>
+                    <input type="password" class="input " id="password-confirm" name="password-confirm" minlength="8" required>
                   </div>
                   <p id="error-password-confirm" class="help is-danger"></p>
                 </div>
@@ -355,7 +256,7 @@
                 <input type="hidden" name="_csrf" value="{{ csrf_token }}">
                 <div class="field">
                   <div class="control">
-                    <button class="button {{ size }} is-primary" type="submit">Update password</button>
+                    <button class="button  is-primary" type="submit">Update password</button>
                   </div>
                 </div>
               </form>

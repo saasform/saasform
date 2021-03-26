@@ -23,16 +23,7 @@
 <body>
   {{ website.html_google_tag_manager_body }}
 
-  <nav x-data="initNavbar()" class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
-    {{> navbar}}
-  </nav>
-  <nav x-data="initNavbar()"  x-on:scroll.window="scroll()" id="navbar-clone"
-    class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation" :class="{
-      'is-active': scrolled,
-      '': !scrolled
-    }">
-    {{> navbar}}
-  </nav>
+  {% render layout_nav, logo: logo, user: user %}
 
   {{> body}}
   {{> footer}}

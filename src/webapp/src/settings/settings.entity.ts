@@ -92,6 +92,29 @@ export class SettingsKeysJson {
   auth_google_secret: string
 }
 
+enum SettingsModulesHomepage {
+  Saasform = 'saasform',
+  Redirect = 'redirect',
+}
+
+enum SettingsModulesPayment {
+  Stripe = 'stripe',
+  Killbill = 'killbill',
+}
+
+enum SettingsModulesUserValues {
+  Profile = 'profile',
+  Security = 'security',
+  Billing = 'billing',
+  Team = 'team',
+}
+
+export class SettingsModulesJson {
+  homepage: SettingsModulesHomepage
+  payment: SettingsModulesPayment
+  user: SettingsModulesUserValues[]
+}
+
 class SettingsJson extends SettingsWebsiteJson {
 }
 

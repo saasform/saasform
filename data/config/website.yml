@@ -4,12 +4,13 @@ title: Supercharged content sharing.
 description: Share your articles over and over, but keep them click-worthy with fresh images.
 domain_primary: multipreview.com
 email: hello@multipreview.com
-logo_url:
 
 # integrations
 app_google_analytics: G-xxx
 app_google_tag_manager: GTM-xxx
 app_facebook_pixel_id: 123xxx
+app_google_signin_client_id: 123xxx
+app_google_signin_scope: profile email
 
 # footer
 legal_company_name: Saasform Inc.
@@ -110,6 +111,9 @@ cta_badge: Get started
 cta_title: Get MultiPreview now!
 cta_text: Share your articles over and over, but keep them click-worthy with fresh images
 cta_button: Get started for free
+
+# signup
+signup_show_username: false
 
 # footer menu
 # footer:

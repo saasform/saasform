@@ -23,11 +23,11 @@ Once you are up and running, it is time to integrate Saasform. In the tutorial, 
 First, in `saasform.yml`, update the following properties to match the values of your Kill Bill installation:
 
 ```
-KB_URL: http://127.0.0.1:8080
-KB_API_KEY: bob
-KB_API_SECRET: lazar
-KB_USERNAME: admin
-KB_PASSWORD: password
+KILLBILL_URL: http://127.0.0.1:8080
+KILLBILL_API_KEY: bob
+KILLBILL_API_SECRET: lazar
+KILLBILL_USERNAME: admin
+KILLBILL_PASSWORD: password
 ```
 
 If you've been running the tutorial locally, these default values should work out of the box.
@@ -42,5 +42,5 @@ STRIPE_PUBLISHABLE_KEY: pk_xxx
 Finally, set the payment integration to `killbill`:
 
 ```
-PAYMENT_INTEGRATION: killbill
+MODULE_PAYMENT: killbill
 ```
