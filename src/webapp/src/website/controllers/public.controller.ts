@@ -43,6 +43,10 @@ export class PublicController {
   @UseGuards(UserOptionalAuthGuard)
   @Get('/')
   async getHome (@Request() req, @Res() res: Response): Promise<any> {
+    const homeRedirect = await this.settingsService.getHomepageRedirectUrl()
+    if (homeRedirect != null) {
+      return res.redirect(homeRedirect)
+    }
     return renderPage(req, res, 'index')
   }
 

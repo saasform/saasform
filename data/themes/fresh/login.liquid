@@ -74,6 +74,7 @@
               </div>
             </div>
   
+            {% if signup_show_google %}
             <p class="has-text-centered mt-20 mb-20">or</p>
   
             <!-- Social Auth -->
@@ -83,6 +84,7 @@
               </div>
               <p id="error-google" class="help is-danger">{{ error.google | formatDot }}</p>
             </div>
+            {% endif %}
           </form>
   
           <!-- Text -->

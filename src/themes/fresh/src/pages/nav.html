@@ -1,0 +1,10 @@
+  <nav x-data="initNavbar()" class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
+    {{> navbar}}
+  </nav>
+  <nav x-data="initNavbar()"  x-on:scroll.window="scroll()" id="navbar-clone"
+    class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation" :class="{
+      'is-active': scrolled,
+      '': !scrolled
+    }">
+    {{> navbar}}
+  </nav>

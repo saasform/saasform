@@ -50,10 +50,23 @@
                 Email address
               </label>
               <div class="control">
-                <input type="email" class="input" id="email" name="email" placeholder="name@address.com" required>
+                <input type="email" class="input" id="email" name="email" placeholder="name@address.com" autocomplete="username" required>
               </div>
               <p id="error-email" class="help is-danger">{{ error.email | formatDot }}</p>
             </div>
+  
+            {% if signup_show_username %}
+            <!-- Username -->
+            <div class="field">
+              <label for="username" class="label has-text-weight-normal">
+                Username
+              </label>
+              <div class="control">
+                <input type="username" class="input" id="username" name="username" placeholder="mary123" required>
+              </div>
+              <p id="error-username" class="help is-danger"></p>
+            </div>
+            {% endif %}
   
             <!-- Password -->
             <div class="field">
@@ -74,6 +87,7 @@
               </div>
             </div>
   
+            {% if signup_show_google %}
             <p class="has-text-centered mt-20 mb-20">or</p>
   
             <!-- Social Auth -->
@@ -83,6 +97,7 @@
               </div>
               <p id="error-google" class="help is-danger">{{ error.google | formatDot }}</p>
             </div>
+            {% endif %}
           </form>
   
           <!-- Text -->

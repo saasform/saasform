@@ -35,7 +35,7 @@ export class PlansService extends BaseService<PlanEntity> {
       'PlanEntity'
     )
     // this.tenantId = req.req ? req.req.tenantId : req.tenantId
-    this.paymentIntegration = this.configService.get<string>('PAYMENT_INTEGRATION', 'stripe')
+    this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
   }
 
   createPlan (id, name, description, _prices, features, extra): any {

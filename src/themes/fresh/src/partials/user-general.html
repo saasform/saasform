@@ -13,7 +13,7 @@
               First name
             </label>
             <div class="control">
-              <input type="text" class="input {{ website.size }}" id="first" name="first" placeholder="First name" value="{{ website.user_first_name }}">
+              <input type="text" class="input {{ website.size }}" id="first" name="first" placeholder="First name" value="{{ user.first_name }}">
             </div>
             <p id="error-first" class="help is-danger">{{ error.first }}</p>
           </div>
@@ -23,7 +23,7 @@
               Last name
             </label>
             <div class="control">
-              <input type="text" class="input {{ website.size }}" id="last" name="last" placeholder="Last name" value="{{ website.user_last_name }}">
+              <input type="text" class="input {{ website.size }}" id="last" name="last" placeholder="Last name" value="{{ user.last_name }}">
             </div>
             <p id="error-last" class="help is-danger">{{ error.last }}</p>
           </div>
@@ -36,10 +36,22 @@
           Company
         </label>
         <div class="control">
-          <input type="text" class="input {{ website.size }}" id="company" name="company" placeholder="Company" value="{{ website.user_company }}">
+          <input type="text" class="input {{ website.size }}" id="company" name="company" placeholder="Company" value="{{ user.company }}">
         </div>
         <p id="error-company" class="help is-danger">{{ error.company }}</p>
       </div>
+
+      {% if signup_show_username %}
+      <div class="field">
+        <label for="company" class="label {{ website.size }} has-text-weight-normal">
+          Username
+        </label>
+        <div class="control">
+          <input type="text" class="input {{ website.size }}" id="username" name="username" placeholder="username" value="{{ user.username }}">
+        </div>
+        <p id="error-username" class="help is-danger">{{ error.username }}</p>
+      </div>
+      {% endif %}
 
       <div class="field">
         <label for="email" class="label {{ website.size }} has-text-weight-normal">
@@ -47,7 +59,7 @@
         </label>
         <div class="field has-addons">
           <div class="control is-expanded">
-            <input type="email" class="input {{ website.size }}" id="email" name="email" placeholder="name@address.com" value="{{ user.email }}" disabled>
+            <input type="email" class="input {{ website.size }}" id="email" name="email" placeholder="name@address.com" value="{{ user.email }}" autocomplete="username" disabled>
           </div>
           <div class="control">
             <a class="button {{ website.size }}  is-dark">

@@ -32,7 +32,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
       req,
       'PaymentEntity'
     )
-    this.paymentIntegration = this.configService.get<string>('PAYMENT_INTEGRATION', 'stripe')
+    this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
   }
 
   /**
