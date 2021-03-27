@@ -2,11 +2,8 @@ name: Build multi-arch Docker image
 
 on:
   push:
-    branches:
-      - 'main'
     tags:
       - '*.*.*'
-    pull_request:
 
 jobs:
   docker:
