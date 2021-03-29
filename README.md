@@ -69,6 +69,7 @@ We love any type of contribution, bug fixes, new integrations and better docs. S
 ## Office Hours
 
 Dave: Wed, 9:30-11:30 AM CET, https://www.twitch.tv/davevernizzi
+
 Ema: Wed, 8-10 AM PT, TBD
 
 ## Saasform Cloud
