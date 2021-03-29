@@ -1,7 +1,7 @@
 import { UserEntity } from '../entities/user.entity'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 
-const mockGenericRepo = {
+export const mockGenericRepo = {
   find: jest.fn(id => id !== 999 ? {} : undefined),
   findOne: jest.fn().mockReturnValue([{}]),
   query: jest.fn().mockReturnValue([{}]),

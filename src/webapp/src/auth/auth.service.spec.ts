@@ -3,12 +3,13 @@ import { AuthService } from './auth.service'
 import { UsersService } from '../accounts/services/users.service'
 import { JwtService } from '@nestjs/jwt'
 import { AccountsService } from '../accounts/services/accounts.service'
-import { mockedRepo, mockedSettingRepo, mockedUserCredentials, mockUserCredentialsService } from '../accounts/test/testData'
+import { mockedSettingRepo, mockedUserCredentials, mockUserCredentialsService, mockGenericRepo } from '../accounts/test/testData'
 import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { UserCredentialsService } from '../accounts/services/userCredentials.service'
 import { SettingsService } from '../settings/settings.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
+import { UserError, ErrorTypes } from '../utilities/common.model'
 
 const mockJwtService = {}
 const mockAccountsService = {}
@@ -22,22 +23,13 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         TypeOrmQueryService,
-        {
-          provide: UsersService,
-          useValue: mockedRepo
-        },
+        { provide: UsersService, useValue: mockGenericRepo },
         { provide: JwtService, useValue: mockJwtService },
         { provide: AccountsService, useValue: mockAccountsService },
         { provide: UserCredentialsService, useValue: mockUserCredentialsService },
         { provide: SettingsService, useValue: mockedSettingRepo },
-        {
-          provide: PaymentsService,
-          useValue: {}
-        },
-        {
-          provide: PlansService,
-          useValue: {}
-        }
+        { provide: PaymentsService, useValue: {} },
+        { provide: PlansService, useValue: {} }
       ]
     }).compile()
 
@@ -118,6 +110,103 @@ describe('AuthService', () => {
             user_unused: ''
           }
         )
+      })
+    })
+
+    describe('registerUser', () => {
+      it('must fail when addUser fails', async () => {
+        const newUser = {
+          password: 'password',
+          _csrf: '_csrf',
+          accountEmail: 'accountEmail'
+        }
+
+        const res = await service.registerUser(newUser)
+        expect(res).toBeNull()
+      })
+
+      it('must fail when addUser fails', async () => {
+        const userError = new UserError(ErrorTypes.DUPLICATE_EMAIL, 'email already existing')
+        service.usersService = {
+          addUser: jest.fn().mockReturnValue(userError)
+        }
+
+        const newUser = {
+          email: 'foo@email.com',
+          password: 'password',
+          _csrf: '_csrf',
+          accountEmail: 'accountEmail'
+        }
+
+        const res = await service.registerUser(newUser)
+        expect(res).toBe(userError)
+      })
+
+      it('must fail when credential is not found', async () => {
+        service.usersService = {
+          addUser: jest.fn().mockReturnValue({ user: 'mockUser' })
+        }
+        service.userCredentialsService = {
+          findUserCredentials: jest.fn().mockReturnValue(null)
+        }
+
+        const newUser = {
+          email: 'foo@email.com',
+          password: 'password',
+          _csrf: '_csrf',
+          accountEmail: 'accountEmail'
+        }
+
+        const res = await service.registerUser(newUser)
+        expect(res).toBeNull()
+      })
+
+      it('must fail if account is not added', async () => {
+        service.usersService = {
+          addUser: jest.fn().mockReturnValue({ user: 'mockUser' })
+        }
+        service.userCredentialsService = {
+          findUserCredentials: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
+        }
+        service.accountsService = {
+          add: jest.fn().mockReturnValue(null)
+        }
+
+        const newUser = {
+          email: 'foo@email.com',
+          password: 'password',
+          _csrf: '_csrf',
+          accountEmail: 'accountEmail'
+        }
+
+        const res = await service.registerUser(newUser)
+        expect(res).toBeNull()
+      })
+
+      it('must return a ValidUser if there were no errors', async () => {
+        service.usersService = {
+          addUser: jest.fn().mockReturnValue({ user: 'mockUser' })
+        }
+        service.userCredentialsService = {
+          findUserCredentials: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
+        }
+        service.accountsService = {
+          add: jest.fn().mockReturnValue({ account: 'mockAccount' })
+        }
+
+        const newUser = {
+          email: 'foo@email.com',
+          password: 'password',
+          _csrf: '_csrf',
+          accountEmail: 'accountEmail'
+        }
+
+        const res = await service.registerUser(newUser)
+        expect(res).toEqual({
+          user: { user: 'mockUser' },
+          credential: { userCredentials: 'mockUserCredentials' },
+          account: { account: 'mockAccount' }
+        })
       })
     })
   })
