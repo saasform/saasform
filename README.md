@@ -66,6 +66,11 @@ Coming soon!
 
 We love any type of contribution, bug fixes, new integrations and better docs. See CONTRIBUTING.md to get started.
 
+## Office Hours
+
+Dave: Wed, 9:30-11:30 AM CET, https://www.twitch.tv/davevernizzi
+Ema: Wed, 8-10 AM PT, TBD
+
 ## Saasform Cloud
 
 Saasform Cloud is our hosted solution and we're onboarding beta customers. Join our [Discord channel](https://discord.gg/cbWW8akyW9) or drop us a line at [hello@saasform.dev](mailto:hello@saasform.dev).
