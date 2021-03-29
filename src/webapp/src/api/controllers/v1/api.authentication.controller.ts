@@ -3,6 +3,7 @@ import { Response } from 'express'
 import { SettingsService } from '../../../settings/settings.service'
 import { AuthService } from '../../../auth/auth.service'
 import { PaymentsService } from '../../../payments/services/payments.service'
+import { UserError } from '../../../utilities/common.model'
 
 @Controller('/api/v1')
 export class ApiV1AutheticationController {
@@ -88,7 +89,7 @@ export class ApiV1AutheticationController {
     }
 
     const user = await this.authService.registerUser(req.body)
-    if (user == null) {
+    if (user instanceof UserError || user == null) {
       return response.status(409).json({
         statusCode: 409,
         message: 'Already registered'

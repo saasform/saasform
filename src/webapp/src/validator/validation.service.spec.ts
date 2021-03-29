@@ -43,6 +43,10 @@ describe('ValditaionService', () => {
       expect(isNil).toBeTruthy()
     })
 
+    it('with empty array', async () => {
+      const isNil = await service.isNilOrEmpty([])
+      expect(isNil).toBeTruthy()
+    })
     it('with not empty string', async () => {
       const isNil = await service.isNilOrEmpty('something')
       expect(isNil).toBeFalsy()

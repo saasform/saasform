@@ -16,6 +16,10 @@ export const mockAccountsUsersRepo = {
   createOne: jest.fn(accountUser => accountUser)
 }
 
+export const mockValidationService = {
+  isNilOrEmpty: jest.fn().mockReturnValue(false)
+}
+
 // TODO: refactor below this point
 
 export const mockedCommunicationService = {

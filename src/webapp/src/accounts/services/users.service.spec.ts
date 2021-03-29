@@ -24,6 +24,10 @@ const mockedUserCredentialsService = {
   isRegistered: jest.fn((credential, password) => credential === 'user@email.com' && password === 'password')
 }
 
+const mockValidationService = {
+  isNilOrEmpty: jest.fn().mockReturnValue(true)
+}
+
 describe('UsersService', () => {
   let service // Removed type AccountsService because we must overwrite the accountsRepository property
   let repo: Repository<UserEntity>
@@ -61,7 +65,7 @@ describe('UsersService', () => {
         },
         {
           provide: ValidationService,
-          useValue: {}
+          useValue: mockValidationService
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
@@ -79,6 +83,7 @@ describe('UsersService', () => {
     service.userCredentialsService = mockedUserCredentialsService
     service.communicationService = mockedCommunicationService
     service.settingsService = mockedSettingRepo
+    service.validationService = mockValidationService
     service.random = { ...mockedRandom }
   })
 

@@ -13,7 +13,8 @@ import { SettingsService } from '../../settings/settings.service'
 import { AuthService } from '../..//auth/auth.service'
 import { UsersService } from '../../accounts/services/users.service'
 import { AccountsService } from '../../accounts/services/accounts.service'
-import { PaymentsService } from 'src/payments/services/payments.service'
+import { PaymentsService } from '../../payments/services/payments.service'
+import { UserError } from '../../utilities/common.model'
 
 import { renderPage } from '../utilities/render'
 
@@ -141,11 +142,20 @@ export class AuthenticationController {
     }
 
     const user = await this.authService.registerUser(req.body)
-    if (user == null) {
+    if (user instanceof UserError || user == null) {
+      let error
+      switch (user?.name) {
+        case 'duplicate_email':
+          error = { email: 'Email already registered. Log in.' }
+          break
+        case 'duplicate_username':
+          error = { username: 'Username already registered. Log in.' }
+          break
+        default:
+          error = { email: 'Error while registering user.' }
+      }
       return renderPage(req, res, 'signup', {
-        error: {
-          email: 'User already registered. Log in.'
-        }
+        error
       })
     }
 

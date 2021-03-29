@@ -19,7 +19,7 @@ export interface RequestUser {
   subscription_expiration?: number // timestamp
 }
 
-export interface ValidUser {
+export class ValidUser {
   user: any
   credential: any
   account: any
