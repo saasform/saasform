@@ -11,6 +11,7 @@ import { UserEntity } from '../accounts/entities/user.entity'
 import { SettingsService } from '../settings/settings.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
+import { UserError } from '../utilities/common.model'
 
 @Injectable()
 export class AuthService {
@@ -171,24 +172,23 @@ export class AuthService {
     return email != null ? user : null
   }
 
-  async registerUser (newUser: any): Promise<ValidUser | null> {
+  async registerUser (newUser: any): Promise<ValidUser | UserError | null> {
     const { email } = newUser
     if (email == null) {
       console.error('auth.service - registerUser - missing parameters', email)
       return null
     }
 
-    const credential = await this.userCredentialsService.findUserCredentials(email)
-    if (credential != null) {
-      // if user already present return immediately
-      console.error('auth.service - registerUser - user already registered', email)
-      return null
-    }
-
     const { password, _csrf, accountEmail, ...data } = newUser
     const user = await this.usersService.addUser({ email, password, data })
-    if (user == null) {
-      console.error('auth.service - registerUser - error while creating user', email, accountEmail)
+    if (user instanceof UserError || user == null) {
+      console.error('auth.service - registerUser - error while creating user', email, accountEmail, user)
+      return user
+    }
+
+    const credential = await this.userCredentialsService.findUserCredentials(email)
+    if (credential == null) {
+      console.error('auth.service - registerUser - error while finding user credential', email)
       return null
     }
 

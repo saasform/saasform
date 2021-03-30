@@ -14,12 +14,17 @@ import { SettingsService } from '../../settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
 import { ValidationService } from '../../validator/validation.service'
+import { UserError } from '../../utilities/common.model'
 
 const mockedUserCredentialsService = {
   ...mockUserCredentialsEntity,
   changePassword: jest.fn(),
   addUserCredentials: jest.fn(),
   deleteUserCredentials: jest.fn().mockReturnValue(true)
+}
+
+const mockValidationService = {
+  isNilOrEmpty: jest.fn().mockReturnValue(true)
 }
 
 describe('UsersService Lifecycle', () => {
@@ -59,7 +64,7 @@ describe('UsersService Lifecycle', () => {
         },
         {
           provide: ValidationService,
-          useValue: {}
+          useValue: mockValidationService
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
@@ -77,6 +82,7 @@ describe('UsersService Lifecycle', () => {
     service.userCredentialsService = mockedUserCredentialsService
     service.communicationService = mockedCommunicationService
     service.settingsService = mockedSettingRepo
+    service.validationService = mockValidationService
     service.random = { ...mockedRandom }
   })
 
@@ -168,6 +174,38 @@ describe('UsersService Lifecycle', () => {
       expect(userCredential?.credential).toBe(userInput.email)
       expect(userCredential.json.encryptedPassword).not.toBeUndefined()
       expect(userCredential.json.encryptedPassword).not.toBe(userInput.password)
+    })
+
+    it('should fail if duplicate email', async () => {
+      service.query = jest.fn(q => q?.filter?.email?.eq === 'foo@email.com' ? [{ user: 'mockUser' }] : [])
+      service.validationService = {
+        isNilOrEmpty: jest.fn(e => e.length === 0)
+      }
+      const userInput = {
+        email: 'foo@email.com',
+        password: 'password',
+        data: { name: 'foo', email: 'foo@email.com', username: 'foo' }
+      }
+
+      const res = await service.addUser(userInput)
+
+      expect(res).toEqual(new UserError('duplicate_email', 'email already existing'))
+    })
+
+    it('should fail if duplicate username', async () => {
+      service.query = jest.fn(q => q?.filter?.username?.eq === 'foo' ? [{ user: 'mockUser' }] : [])
+      service.validationService = {
+        isNilOrEmpty: jest.fn(e => e.length === 0)
+      }
+      const userInput = {
+        email: 'foo@email.com',
+        password: 'password',
+        data: { name: 'foo', email: 'foo@email.com', username: 'foo' }
+      }
+
+      const res = await service.addUser(userInput)
+
+      expect(res).toEqual(new UserError('duplicate_username', 'username already existing'))
     })
   })
 

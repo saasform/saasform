@@ -12,7 +12,10 @@ import { BaseService } from '../../utilities/base.service'
 import { SettingsService } from '../../settings/settings.service'
 import { NotificationsService } from '../../notifications/notifications.service'
 
+import { UserError, ErrorTypes } from '../../utilities/common.model'
+
 import { password } from '../../utilities/random'
+import { ValidationService } from '../../validator/validation.service'
 
 @QueryService(UserEntity)
 @Injectable({ scope: Scope.REQUEST })
@@ -23,7 +26,8 @@ export class UsersService extends BaseService<UserEntity> {
     private readonly usersRepository: Repository<UserEntity>,
     private readonly userCredentialsService: UserCredentialsService,
     private readonly settingsService: SettingsService,
-    private readonly notificationService: NotificationsService
+    private readonly notificationService: NotificationsService,
+    private readonly validationService: ValidationService
   ) {
     super(
       req,
@@ -65,7 +69,7 @@ export class UsersService extends BaseService<UserEntity> {
         password: password(10),
         data
       }, true)
-      if (user == null) {
+      if (!(user instanceof UserEntity)) {
         return null
       }
 
@@ -85,7 +89,19 @@ export class UsersService extends BaseService<UserEntity> {
    * @param newUser data of the user
    * @param resetPassword flag indicating if password must be resetted during creation. Default to false (see below)
    */
-  async addUser (newUser: any, resetPassword = false): Promise<UserEntity | null> {
+  async addUser (newUser: any, resetPassword = false): Promise<UserEntity | UserError | null> {
+    const sameEmailUser = await this.query({ filter: { email: { eq: newUser.email } } })
+    if (this.validationService.isNilOrEmpty(sameEmailUser) !== true) {
+      console.error('usersService - addUser - email already existing')
+      return new UserError(ErrorTypes.DUPLICATE_EMAIL, 'email already existing')
+    }
+
+    const sameUsernameUser = await this.query({ filter: { username: { eq: newUser.data.username } } })
+    if (this.validationService.isNilOrEmpty(sameUsernameUser) !== true) {
+      console.error('usersService - addUser - username already existing')
+      return new UserError(ErrorTypes.DUPLICATE_USERNAME, 'username already existing')
+    }
+
     const user = new UserEntity()
     user.email = newUser.email
     user.username = newUser.data.username != null && newUser.data.username !== '' ? newUser.data.username : undefined

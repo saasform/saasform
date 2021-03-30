@@ -18,7 +18,14 @@ export class ValidationService {
     if (typeof element === 'string' && validator.isEmpty(element)) {
       return true
     }
+    if (Array.isArray(element) && element.length === 0) {
+      return true
+    }
 
     return false
+  }
+
+  isError (element): Boolean {
+    return element?.isError === true
   }
 }
