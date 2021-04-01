@@ -22,10 +22,7 @@ export class UserCredentialsEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  // @Column({ default: CredentialType.DEFAULT })
-  // credential: string = CredentialType.DEFAULT
-
-  @Column()
+  @Column({ unique: true })
   credential: string
 
   @Column()
