@@ -246,6 +246,36 @@ describe('Payments Service', () => {
     })
   })
 
+  describe('getExpiringPayments', () => {
+    it('should return the payments that are about to expire', async () => {
+      const days = 5 // the default
+      const today = Math.floor(Date.now() / 1000) - days * 3600 * 24
+
+      service.query = jest.fn(q => [
+        { id: 1, data: { trial_end: today - 3600 * 24 } },
+        { id: 2, data: { trial_end: today } },
+        { id: 3, data: { trial_end: today + 3600 * 24 } }
+      ])
+
+      const expiring = await service.getExpiringPayments()
+      expect(expiring).toEqual([{ id: 2, data: { trial_end: today } }])
+    })
+
+    it('should allow to specify a custom number of days', async () => {
+      const days = 6 // the default
+      const today = Math.floor(Date.now() / 1000) - days * 3600 * 24
+
+      service.query = jest.fn(q => [
+        { id: 1, data: { trial_end: today - 3600 * 24 } },
+        { id: 2, data: { trial_end: today } },
+        { id: 3, data: { trial_end: today + 3600 * 24 } }
+      ])
+
+      const expiring = await service.getExpiringPayments(days)
+      expect(expiring).toEqual([{ id: 2, data: { trial_end: today } }])
+    })
+  })
+
   describe('validators', () => {
     it('should validate active subscriptions', async () => {
       const paymentStatus = await service.isPaymentValid({ status: 'active' })

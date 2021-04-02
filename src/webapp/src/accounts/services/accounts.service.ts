@@ -51,6 +51,27 @@ export class AccountsService extends BaseService<AccountEntity> {
     return _result[0]
   }
 
+  async getOwner (id: number): Promise<UserEntity | null> {
+    try {
+      const account = await this.findById(id)
+      if (account == null) {
+        console.error('accountsService - returnOwner - account not found')
+        return null
+      }
+
+      const owner = await this.usersService.findById(account.owner_id)
+      if (owner == null) {
+        console.error('accountsService - returnOwner - owner not found')
+        return null
+      }
+
+      return owner
+    } catch (error) {
+      console.error('accountsService - returnOwner - exception', error, id)
+      return null
+    }
+  }
+
   /**
    * Add an account.
    *

@@ -36,7 +36,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
   }
 
   /**
-   * Retuns the active subcsription for an account.
+   * Retuns the active subscription for an account.
    * @param accountId
    */
   async getActivePayments (accountId: number): Promise<PaymentEntity|null> {
@@ -52,6 +52,31 @@ export class PaymentsService extends BaseService<PaymentEntity> {
       console.error(
         'getActivePayments - error in query',
         accountId,
+        error
+      )
+      return null
+    }
+  }
+
+  /**
+   * Retuns the expiring subscription.
+   * @param days number of days that the subscription must be ending in
+   */
+  async getExpiringPayments (days: number = 5): Promise<PaymentEntity[]|null> {
+    const today = Math.floor(Date.now() / 1000)
+    const after = today - days * 3600 * 24 // Sun Mar 28 2021
+    const before = today - (days - 1) * 3600 * 24 // Mon Mar 29 2021
+
+    try {
+      const payments = await this.query({
+        filter: {
+          status: { in: ['active', 'trialing'] }
+        }
+      })
+      return payments.filter(p => before > p.data.trial_end && p.data.trial_end >= after) ?? null
+    } catch (error) {
+      console.error(
+        'PaymentsService - getExpiringPayments - error in query',
         error
       )
       return null
