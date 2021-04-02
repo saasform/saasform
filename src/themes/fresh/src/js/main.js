@@ -17,7 +17,6 @@ window.initBackToTop = initBackToTop;
 
 document.onreadystatechange = function () {
   if (document.readyState === 'complete') {
-
     //Switch demo images
     // switchDemoImages(env);
 

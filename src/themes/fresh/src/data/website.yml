@@ -27,6 +27,7 @@ seo_twitter_image_url: "{{ seo_twitter_image_url }}"
 
 # computed
 saas_redirect_url: "{{ saas_redirect_url }}"
+html_google_signin_header: "{{ html_google_signin_header }}"
 html_google_analytics: "{{ html_google_analytics }}"
 html_google_tag_manager_header: "{{ html_google_tag_manager_header }}"
 html_google_tag_manager_body: "{{ html_google_tag_manager_body }}"

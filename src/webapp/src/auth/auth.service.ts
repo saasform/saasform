@@ -215,6 +215,8 @@ export class AuthService {
       return null
     }
 
+    console.log(email, subject)
+
     // 1. search for a valid credential for the current user
     const credential = await this.userCredentialsService.findUserCredentialByEmail(email, `${CredentialType.GOOGLE}:${subject}` as CredentialType)
     if (credential != null) {

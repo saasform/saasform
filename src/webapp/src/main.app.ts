@@ -44,25 +44,22 @@ export function configureApp (app, isTest: boolean = false): void {
 
   app.useGlobalPipes(new ValidationPipe())
 
-  if (process.env.NODE_ENV === 'development') { // TODO: better check for development mode
-    console.warn('NOT USING HELMET. DO NOT DO THIS IN PRODUCTION')
-  } else {
-    app.use(helmet({
-      // support:
-      // - Google Analytics & Google Tag Manager
-      // - Facebook Pixel, including fallback image
-      // - Google Fonts
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-eval'", 'www.googletagmanager.com', 'connect.facebook.net'],
-          styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
-          fontSrc: ["'self'", 'fonts.gstatic.com'],
-          imgSrc: ["'self'", 'data:', 'secure.gravatar.com', 'www.facebook.com']
-        }
+  app.use(helmet({
+    // support:
+    // - Google Analytics & Google Tag Manager
+    // - Facebook Pixel, including fallback image
+    // - Google Fonts
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-eval'", 'www.googletagmanager.com', 'apis.google.com', 'connect.facebook.net'],
+        frameSrc: ["'self'", 'accounts.google.com'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+        fontSrc: ["'self'", 'fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'secure.gravatar.com', 'www.facebook.com']
       }
-    }))
-  }
+    }
+  }))
 
   app.useGlobalPipes(new ValidationPipe())
   app.useGlobalFilters(new HttpExceptionsFilter())

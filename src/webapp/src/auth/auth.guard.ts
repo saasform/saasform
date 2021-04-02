@@ -62,10 +62,12 @@ export class GoogleOAuth2Guard implements CanActivate {
 
   async canActivate (context: ExecutionContext): Promise<any> {
     const req = context.switchToHttp().getRequest()
-    const user = await this.googleService.getUserPayload(req.body.idToken)
-    if (user == null || user.email == null) {
+    const googleUser = await this.googleService.getUserPayload(req.body.token)
+    if (googleUser == null || googleUser.email == null) {
       return false
     }
+
+    req.googleUser = googleUser
     return true
   }
 }

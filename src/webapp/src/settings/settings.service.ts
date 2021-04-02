@@ -336,6 +336,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       root_theme: '',
       saas_redirect_url: '',
 
+      html_google_signin_header: '',
       html_google_analytics: '',
       html_google_tag_manager_header: '',
       html_google_tag_manager_body: '',
@@ -483,7 +484,16 @@ export class SettingsService extends BaseService<SettingsEntity> {
     }
 
     // html
+
+    // Google Sign-In
+    // https://developers.google.com/identity/sign-in/web/sign-in
     res.signup_show_google = !!((res.app_google_signin_client_id !== '' && !res.app_google_signin_client_id.endsWith('xxx')))
+    res.html_google_signin_header = res.app_google_signin_client_id !== '' && !res.app_google_signin_client_id.endsWith('xxx')
+      ? `
+      <meta name="google-signin-client_id" content="${res.app_google_signin_client_id}">
+      <script src="https://apis.google.com/js/platform.js?onload=onGoogleStart" async defer></script>
+    `
+      : ''
 
     res.html_google_tag_manager_header = res.app_google_tag_manager !== '' && !res.app_google_tag_manager.endsWith('xxx')
       ? `
