@@ -13,7 +13,7 @@ class CredentialsJSON {
 };
 
 export enum CredentialType {
-  DEFAULT='username/password',
+  DEFAULT='email/password',
   GOOGLE='google'
 }
 
@@ -42,8 +42,7 @@ export class UserCredentialsEntity {
     }
   }
 
-  constructor (credential: string, /* credential: CredentialType = CredentialType.DEFAULT, */ userId: number = 0, json: CredentialsJSON = { encryptedPassword: '', googleId: '' }) {
-    // this.email = email
+  constructor (credential: string, userId: number = 0, json: CredentialsJSON = {}) {
     this.credential = credential
     this.userId = userId
     this.json = json

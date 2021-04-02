@@ -66,8 +66,6 @@ export class GoogleOAuth2Guard implements CanActivate {
     if (user == null || user.email == null) {
       return false
     }
-
-    req.google = { user }
     return true
   }
 }

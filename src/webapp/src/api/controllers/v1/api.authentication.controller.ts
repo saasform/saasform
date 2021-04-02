@@ -118,7 +118,7 @@ export class ApiV1AutheticationController {
     if (user == null) {
       return res.status(409).json({
         statusCode: 409,
-        message: "Ops! You don't have any account in saasform."
+        message: "Ops! You don't have any account."
       })
     }
 

@@ -41,6 +41,3 @@ KILLBILL_API_KEY: bob
 KILLBILL_API_SECRET: lazar
 KILLBILL_USERNAME: admin
 KILLBILL_PASSWORD: password
-
-GOOGLE_CLIENT_ID: xxx.apps.googleusercontent.com
-

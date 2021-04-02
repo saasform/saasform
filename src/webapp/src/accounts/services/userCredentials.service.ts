@@ -52,7 +52,7 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
     try {
       return await this.createOne(
         new UserCredentialsEntity(
-          userCredentials.email,
+          userCredentials.credential,
           userCredentials.userId,
           userCredentials.json
         )

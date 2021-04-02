@@ -118,5 +118,5 @@ export const mockedRandom = {
 
 export const mockUserCredentialsService = {
   findUserCredentialByEmail: jest.fn((email) => email === mockedUserCredentials.credential ? mockedUserCredentials : undefined),
-  isRegistered: jest.fn((userCredentials, password) => userCredentials.email === mockedUserCredentials.credential && password === 'password' ? mockedUserCredentials : undefined)
+  isRegistered: jest.fn((userCredentials, password) => userCredentials.credential === mockedUserCredentials.credential && password === 'password' ? mockedUserCredentials : undefined)
 }
