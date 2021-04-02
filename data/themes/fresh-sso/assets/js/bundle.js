@@ -2278,6 +2278,43 @@ node.removeChild(alreadyProcessedPseudoElement);}var meta=blankMeta();var extra=
 },{"timers":4}],6:[function(require,module,exports){
 "use strict";
 
+function onGoogleStart() {
+  gapi.load("auth2", function () {
+    var auth2 = gapi.auth2.init();
+    var button = document.getElementById("google-signin");
+    auth2.attachClickHandler(button, {}, function (googleUser) {
+      return onGoogleSignIn(googleUser);
+    });
+    gapi.signin2.render(button, button.dataset);
+  });
+}
+
+function onGoogleSignIn(googleUser) {
+  var data = {
+    token: googleUser.getAuthResponse().id_token
+  };
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/v1/google-signin');
+  xhr.setRequestHeader('Content-Type', 'application/json');
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      if (xhr.status == 302) {
+        window.location.href = JSON.parse(xhr.responseText).redirect || '/';
+      } else {
+        document.getElementById('error-google').innerHTML = JSON.parse(xhr.responseText).message;
+      }
+    }
+  };
+
+  xhr.send(JSON.stringify(data));
+}
+
+window.onGoogleStart = onGoogleStart;
+
+},{}],7:[function(require,module,exports){
+"use strict";
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -2309,7 +2346,7 @@ function initBackToTop() {
   };
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2343,7 +2380,7 @@ function initNavbar() {
   };
 }
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2369,7 +2406,7 @@ function initPricing() {
   };
 }
 
-},{"../utils/countUp":10}],9:[function(require,module,exports){
+},{"../utils/countUp":11}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2395,7 +2432,7 @@ function initSidebar() {
   };
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2688,7 +2725,7 @@ function () {
 
 exports.CountUp = CountUp;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2781,7 +2818,7 @@ function initModals() {
   });
 }
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 require("./store/store");
@@ -2797,6 +2834,8 @@ var _sidebar = require("./libs/components/sidebar");
 var _backtotop = require("./libs/components/backtotop");
 
 var _pricing = require("./libs/components/pricing");
+
+require("./libs/auth/google");
 
 // import { env } from './libs/utils/constants';
 // import { initPageLoader } from './libs/components/pageloader';
@@ -2816,7 +2855,7 @@ document.onreadystatechange = function () {
   }
 };
 
-},{"./libs/components/backtotop":6,"./libs/components/navbar":7,"./libs/components/pricing":8,"./libs/components/sidebar":9,"./libs/utils/utils":11,"./store/store":13,"alpinejs":2}],13:[function(require,module,exports){
+},{"./libs/auth/google":6,"./libs/components/backtotop":7,"./libs/components/navbar":8,"./libs/components/pricing":9,"./libs/components/sidebar":10,"./libs/utils/utils":12,"./store/store":14,"alpinejs":2}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2832,4 +2871,4 @@ Spruce.store('app', {
 var _default = Spruce;
 exports["default"] = _default;
 
-},{"@ryangjchandler/spruce":1}]},{},[12,5]);
+},{"@ryangjchandler/spruce":1}]},{},[13,5]);

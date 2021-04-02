@@ -14,9 +14,8 @@
     }
     
     const onSignin = (googleUser) => {
-        const _csrf = document.getElementsByName("_csrf")[0].value;
-        const idToken = googleUser.getAuthResponse().id_token;
-        const data = { _csrf, idToken };
+        const token = googleUser.getAuthResponse().id_token;
+        const data = { token };
     
         const method = "POST";
         const url = "/api/v1/google-signin";

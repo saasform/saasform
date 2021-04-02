@@ -11,6 +11,7 @@
   {{ html_google_tag_manager_header }}
   {{ html_google_analytics }}
   {{ html_facebook_pixel }}
+  {{ html_google_signin_header }}
 
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -93,7 +94,7 @@
             <!-- Social Auth -->
             <div class="field">
               <div class="control">
-                <a id="google-signin" class="button is-primary is-light is-fullwidth">Sign up with Google</a>
+                <div id="google-signin" data-width="auto" data-height="40" data-theme="dark" data-longtitle="true"></div>
               </div>
               <p id="error-google" class="help is-danger">{{ error.google | formatDot }}</p>
             </div>

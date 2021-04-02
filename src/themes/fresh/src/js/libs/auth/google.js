@@ -1,38 +1,36 @@
-const onGoogle = (node) => {
-    const google_client_id = "xxx.apps.googleusercontent.com";
-    const auth2 = gapi.auth2.init({ client_id: google_client_id });
+function onGoogleStart() {
+  gapi.load("auth2", () => {
+    const auth2 = gapi.auth2.init();
+    const button = document.getElementById("google-signin");
     auth2.attachClickHandler(
-        node, 
-        {}, 
-        (googleUser) => onSignin(googleUser), 
-        (error) => alert(JSON.stringify(error, undefined, 2))
+      button,
+      {},
+      (googleUser) => onGoogleSignIn(googleUser),
     );
+    gapi.signin2.render(button, button.dataset);
+  });
 }
 
-const onSignin = (googleUser) => {
-    const _csrf = document.getElementsByName("_csrf")[0].value;
-    const idToken = googleUser.getAuthResponse().id_token;
-    const data = { _csrf, idToken };
+function onGoogleSignIn(googleUser) {
+  const data = {
+    token: googleUser.getAuthResponse().id_token
+  };
 
-    const method = "POST";
-    const url = "/api/v1/google-signin";
-    const xhr = new XMLHttpRequest();
-    xhr.open(method, url);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-            if(xhr.status == 302) {
-                window.location.href = JSON.parse(xhr.responseText).redirect || '/login';
-            } else {
-                document.getElementById('error-google').innerHTML = JSON.parse(xhr.responseText).message;
-            } 
-        }
-    };
-    
-    xhr.send(JSON.stringify(data));
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/v1/google-signin');
+  xhr.setRequestHeader('Content-Type', 'application/json');
+
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      if(xhr.status == 302) {
+        window.location.href = JSON.parse(xhr.responseText).redirect || '/';
+      } else {
+        document.getElementById('error-google').innerHTML = JSON.parse(xhr.responseText).message;
+      }
+    }
+  };
+
+  xhr.send(JSON.stringify(data));
 }
 
-(() => {
-    gapi.load("auth2", () => onGoogle(document.getElementById("google-signin")));
-})();
+window.onGoogleStart = onGoogleStart

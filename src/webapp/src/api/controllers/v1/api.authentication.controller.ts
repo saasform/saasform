@@ -113,8 +113,8 @@ export class ApiV1AutheticationController {
   @UseGuards(GoogleOAuth2Guard)
   @Post('google-signin')
   async handleGoogleSignin (@Request() req, @Res() res: Response): Promise<any> {
-    const { google: { user: guser } } = req
-    const user = await this.authService.onGoogleSignin(guser.email, guser.sub)
+    const googleUser = req.googleUser
+    const user = await this.authService.onGoogleSignin(googleUser.email, googleUser.sub)
     if (user == null) {
       return res.status(409).json({
         statusCode: 409,
