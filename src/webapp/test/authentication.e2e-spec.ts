@@ -346,6 +346,6 @@ describe('Authentication (e2e)', () => {
     return agent
       .post('/api/v1/google-signin')
       .send(`idToken=${GOOGLE_ID_TOKEN_TO_ERROR}`)
-      .expect(409, { statusCode: 409, message: "Ops! You don't have any account in saasform." })
+      .expect(409, { statusCode: 409, message: "Ops! You don't have any account." })
   })
 })

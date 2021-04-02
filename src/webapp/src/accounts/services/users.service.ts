@@ -128,7 +128,7 @@ export class UsersService extends BaseService<UserEntity> {
     try {
       const res = await this.createOne(user)
       await this.userCredentialsService.addUserCredentials({
-        email: user.email,
+        credential: user.email,
         userId: res.id,
         json: { encryptedPassword: user.password }
       })

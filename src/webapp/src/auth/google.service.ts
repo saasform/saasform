@@ -11,9 +11,9 @@ export class GoogleOAuth2Service {
   ) {}
 
   async getUserPayload (idToken: string): Promise<any> {
-    const keys = await this.settingsService.getKeysSettings()
-    const audience = (keys?.auth_google_client_id) ?? this.configService.get<string>('GOOGLE_CLIENT_ID')
-    const payload = await (await this._verify(idToken, audience)).getPayload()
+    const settings = await this.settingsService.getWebsiteRenderingVariables()
+    const clientId = settings?.app_google_signin_client_id ?? ''
+    const payload = await (await this._verify(idToken, clientId)).getPayload()
     return payload
   }
 
