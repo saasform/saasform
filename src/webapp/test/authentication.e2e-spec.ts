@@ -122,15 +122,15 @@ describe('Authentication (e2e)', () => {
   const GOOGLE_ID_TOKEN_TO_ERROR = 'QQER2jANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX'
 
   const mockedGoogle = {
-    getUserPayload: jest.fn((idToken) => {
+    getUserPayload: jest.fn((token) => {
       let res = {}
-      if (idToken === GOOGLE_ID_TOKEN_TO_SIGNIN) {
+      if (token === GOOGLE_ID_TOKEN_TO_SIGNIN) {
         res = { email: 'user@gmail.com', sub: '21042432312123123' }
       }
-      if (idToken === GOOGLE_ID_TOKEN_TO_SIGNUP) {
+      if (token === GOOGLE_ID_TOKEN_TO_SIGNUP) {
         res = { email: 'admin@uplom.com', sub: '21011211912123123' }
       }
-      if (idToken === GOOGLE_ID_TOKEN_TO_ERROR) {
+      if (token === GOOGLE_ID_TOKEN_TO_ERROR) {
         res = { email: 'mi@gmail.com', sub: '21011218888823123' }
       }
       return res
@@ -331,21 +331,21 @@ describe('Authentication (e2e)', () => {
   it('with a registered google credential for a registered user, should signin into saasform', () => {
     return agent
       .post('/api/v1/google-signin')
-      .send(`idToken=${GOOGLE_ID_TOKEN_TO_SIGNIN}`)
+      .send(`token=${GOOGLE_ID_TOKEN_TO_SIGNIN}`)
       .expect(302)
   })
 
   it('with a not registered google credential for a registered user, should signup into saasform and redirect into saasform', () => {
     return agent
       .post('/api/v1/google-signin')
-      .send(`idToken=${GOOGLE_ID_TOKEN_TO_SIGNUP}`)
+      .send(`token=${GOOGLE_ID_TOKEN_TO_SIGNUP}`)
       .expect(302)
   })
 
   it('with a not registered google credential for a not registered user, should show an error message', () => {
     return agent
       .post('/api/v1/google-signin')
-      .send(`idToken=${GOOGLE_ID_TOKEN_TO_ERROR}`)
+      .send(`token=${GOOGLE_ID_TOKEN_TO_ERROR}`)
       .expect(409, { statusCode: 409, message: "Ops! You don't have any account." })
   })
 })
