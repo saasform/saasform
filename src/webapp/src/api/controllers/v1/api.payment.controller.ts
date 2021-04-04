@@ -47,7 +47,7 @@ export class ApiV1PaymentController {
         const owner = await this.accountsService.getOwner(expiringSubscriptions[i].account_id)
 
         if (owner != null) {
-          await this.notificationService.sendEmail(owner?.email, 'trial_expiring', {})
+          await this.notificationService.sendEmail(owner?.email, 'trial_expiring', { action_url: `${await this.settingsService.getBaseUrl()}/user/billing/subscribe` })
         }
       }
     }
