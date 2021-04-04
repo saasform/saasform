@@ -11,15 +11,15 @@ So that I can buy a subscription
 Make sure:
 
 - expiring trial subscriptions get a reminder email
-- expiring non trial subscription get no email **Q1?**
+- regular (active) subscription get no email
 - email is not sent twice per a subscription
 
 ## Design process
 
 The idea is to send an email just before a subscription expires.
 
-- **Q1?** Only trial subscriptions or any subscription? [probably only trial]
-- **Q2?** Per subscription or per account?
+- trial subscriptions
+- Per subscription or per account?
     Per subscription allows to have more than one email per account, if this makes any sense [probably not]
 
 A possible implementation would:
