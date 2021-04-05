@@ -196,6 +196,15 @@ describe('Accounts Service', () => {
     })
   })
 
+  describe('Account owner', () => {
+    it('should return the owner', async () => {
+      service.findById = jest.fn().mockReturnValue({ id: 1, owner_id: 101 })
+      service.usersService.findById = jest.fn().mockReturnValue({ id: 101 })
+      const res = await service.getOwner()
+      expect(res).toEqual({ id: 101 })
+    })
+  })
+
   describe('Add an account', () => {
     it('should create the account and give the proper name', async () => {
       const repoSpy = jest.spyOn(mockedRepo, 'createOne')

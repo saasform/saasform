@@ -20,6 +20,7 @@ import { StripeService } from '../src/payments/services/stripe.service'
 
 import jwt_decode from 'jwt-decode'
 import { GoogleOAuth2Service } from '../src/auth/google.service'
+import { CronService } from '../src/cron/cron.service'
 
 // const keys = {
 //   jwt_private_key: '-----BEGIN PRIVATE KEY-----nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgxjRaB1myLLnts/gMj3sPnwwlnF9BxLF86108qAH4g5zqhRANCAAQfUj/9Q1zJBqw+HX0e37+fHo9BoU4sE6MbnE4yKeEua8pncGu53WWZ6ExJ2Ohnf5gPYRoj3f1z3utCDjADPuFSOn-----END PRIVATE KEY-----n',
@@ -137,6 +138,10 @@ describe('Authentication (e2e)', () => {
     })
   }
 
+  const mockedCronService = {
+    setupCron: jest.fn(_ => {})
+  }
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
@@ -165,9 +170,12 @@ describe('Authentication (e2e)', () => {
         {
           provide: GoogleOAuth2Service,
           useValue: mockedGoogle
-        }
+        },
+        { provide: CronService, useValue: mockedCronService }
       ]
-    }).compile()
+    })
+      .overrideProvider(StripeService).useValue(mockedStripe)
+      .compile()
 
     app = moduleFixture.createNestApplication()
     configureApp(app, true)
