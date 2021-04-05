@@ -32,6 +32,7 @@ html_google_analytics: "{{ html_google_analytics }}"
 html_google_tag_manager_header: "{{ html_google_tag_manager_header }}"
 html_google_tag_manager_body: "{{ html_google_tag_manager_body }}"
 html_facebook_pixel: "{{ html_facebook_pixel }}"
+html_chatbot: "{{ html_chatbot }}"
 csrf_token: "{{ csrf_token }}"
 token: "{{ token }}"
 

@@ -9,6 +9,7 @@ import { SettingsEntity, SettingsWebsiteJson, SettingsKeysJson, SettingsUserJson
 import { createECKey } from 'ec-key'
 import { BaseService } from '../utilities/base.service'
 import { ConfigService } from '@nestjs/config'
+import { renderChatbotJs } from './chatbot'
 
 const __IS_DEV__ = (process.env.NODE_ENV === 'development') // eslint-disable-line
 
@@ -231,6 +232,8 @@ export class SettingsService extends BaseService<SettingsEntity> {
       app_facebook_pixel_id: '',
       app_google_signin_client_id: '',
       app_google_signin_scope: '',
+      app_chatbot_provider: '',
+      app_chatbot_id: '',
 
       // footer
       legal_company_name: '',
@@ -341,6 +344,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       html_google_tag_manager_header: '',
       html_google_tag_manager_body: '',
       html_facebook_pixel: '',
+      html_chatbot: '',
 
       subscription_optional: true,
 
@@ -372,6 +376,8 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'app_facebook_pixel_id',
       'app_google_signin_client_id',
       'app_google_signin_scope',
+      'app_chatbot_provider',
+      'app_chatbot_id',
       'legal_company_name',
       'hero_title',
       'hero_subtitle',
@@ -548,6 +554,8 @@ export class SettingsService extends BaseService<SettingsEntity> {
       <!-- End Facebook Pixel Code -->
     `
       : ''
+
+    res.html_chatbot = renderChatbotJs(res.app_chatbot_provider, res.app_chatbot_id)
 
     return res
   }

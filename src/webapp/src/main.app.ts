@@ -52,11 +52,47 @@ export function configureApp (app, isTest: boolean = false): void {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-eval'", 'www.googletagmanager.com', 'apis.google.com', 'connect.facebook.net'],
-        frameSrc: ["'self'", 'accounts.google.com'],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-eval'",
+          // google tag manager and analytics
+          'www.googletagmanager.com',
+          // google signin
+          'apis.google.com',
+          // facebook pixel
+          'connect.facebook.net',
+          // hubspot chatbot
+          'js.hs-scripts.com',
+          'js.hs-analytics.net',
+          'js.hscollectedforms.net',
+          'js.usemessages.com',
+          'js.hs-banner.com'
+        ],
+        frameSrc: [
+          "'self'",
+          'accounts.google.com',
+          // hubspot chatbot
+          'app.hubspot.com'
+        ],
         styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
         fontSrc: ["'self'", 'fonts.gstatic.com'],
-        imgSrc: ["'self'", 'data:', 'secure.gravatar.com', 'www.facebook.com']
+        imgSrc: [
+          "'self'",
+          'data:',
+          // gravatar
+          'secure.gravatar.com',
+          // facebook pixel
+          'www.facebook.com',
+          // hubspot chatbot
+          'track.hubspot.com',
+          'forms.hubspot.com'
+        ],
+        connectSrc: [
+          "'self'",
+          // hubspot chatbot
+          'api.hubspot.com',
+          'forms.hubspot.com'
+        ]
       }
     }
   }))
