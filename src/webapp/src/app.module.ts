@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ScheduleModule } from '@nestjs/schedule'
 
 import { readFileSync } from 'fs'
 import * as yaml from 'js-yaml'
@@ -16,6 +17,7 @@ import { WebsiteModule } from './website/website.module'
 import { NotificationsModule } from './notifications/notifications.module'
 import { PaymentsModule } from './payments/payments.module'
 import { ValidatorModule } from './validator/validator.module'
+import { CronModule } from './cron/cron.module'
 
 const configSaasform = (): any => yaml.load(
   readFileSync(join(__dirname, '..', 'config', 'saasform.yml'), 'utf8')
@@ -61,7 +63,9 @@ const configWebsite = (): any => yaml.load(
     AccountsModule,
     AuthModule,
     WebsiteModule,
-    NotificationsModule
+    NotificationsModule,
+    CronModule,
+    ScheduleModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService]

@@ -81,6 +81,8 @@ export class SettingsAdminJson {
   payout_schedule: string
   customer_bill_statement: string
   customer_bill_phone_number: string
+  trial_expiring_cron: string
+  trial_expiring_days: number
 }
 
 export class SettingsKeysJson {

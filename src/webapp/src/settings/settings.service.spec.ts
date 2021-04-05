@@ -4,6 +4,7 @@ import { SettingsService, htmlEncode, mergeAll } from './settings.service'
 import { SettingsEntity } from './settings.entity'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { ConfigService } from '@nestjs/config'
+import { ValidationService } from '../validator/validation.service'
 
 const settingsData = [
   {
@@ -18,6 +19,10 @@ const settingsData = [
   {
     category: 'user',
     allowedKeys: ['key1', 'key2']
+  },
+  {
+    category: 'admin',
+    trial_expiring_cron: '1 2 3 * * *'
   }
 ]
 
@@ -30,7 +35,7 @@ const mockQueryService = {
 }
 
 describe('SettingsService', () => {
-  let service: SettingsService
+  let service
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -50,7 +55,8 @@ describe('SettingsService', () => {
               }
             })
           }
-        }
+        },
+        { provide: ValidationService, useValue: { isNilOrEmpty: jest.fn().mockReturnValue(false) } }
       ]
     }).compile()
 
@@ -72,7 +78,7 @@ describe('SettingsService', () => {
     expect(data.keys).toBeDefined()
     expect(data.keys.jwt_private_key).toBeDefined()
 
-    expect(mockQueryService.createOne).toHaveBeenCalledTimes(3)
+    expect(mockQueryService.createOne).toHaveBeenCalledTimes(4)
     expect(mockQueryService.updateOne).toHaveBeenCalledTimes(1)
   })
 
@@ -81,6 +87,18 @@ describe('SettingsService', () => {
 
     expect(mockQueryService.query).toHaveBeenCalled()
     expect(result.allowedKeys).toEqual(['key1', 'key2'])
+  })
+
+  it('getAdminSettings', async () => {
+    service.validationService = { isNilOrEmpty: jest.fn().mockReturnValue(false) }
+
+    const result = await service.getAdminSettings()
+
+    expect(mockQueryService.query).toHaveBeenCalled()
+    expect(result).toEqual({
+      category: 'admin',
+      trial_expiring_cron: '1 2 3 * * *'
+    })
   })
 
   it('getWebsiteRenderingVariables (TODO)', async () => {

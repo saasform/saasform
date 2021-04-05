@@ -18,6 +18,7 @@ import { AccountsModule } from '../src/accounts/accounts.module'
 import { ApiV1UserController } from '../src/api/controllers/v1/api.user.controller'
 import { ApiV1AutheticationController } from '../src/api/controllers/v1/api.authentication.controller'
 import { StripeService } from '../src/payments/services/stripe.service'
+import { CronService } from '../src/cron/cron.service'
 
 // const keys = {
 //   jwt_private_key: '-----BEGIN PRIVATE KEY-----nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgxjRaB1myLLnts/gMj3sPnwwlnF9BxLF86108qAH4g5zqhRANCAAQfUj/9Q1zJBqw+HX0e37+fHo9BoU4sE6MbnE4yKeEua8pncGu53WWZ6ExJ2Ohnf5gPYRoj3f1z3utCDjADPuFSOn-----END PRIVATE KEY-----n',
@@ -105,6 +106,10 @@ describe('User (e2e)', () => {
     }
   }
 
+  const mockedCronService = {
+    setupCron: jest.fn(_ => {})
+  }
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
@@ -124,8 +129,13 @@ describe('User (e2e)', () => {
         AccountsModule
       ],
       controllers: [ApiV1AutheticationController, ApiV1UserController],
-      providers: [AppService]
-    }).overrideProvider(StripeService).useValue(mockedStripe).compile()
+      providers: [
+        AppService,
+        { provide: CronService, useValue: mockedCronService }
+      ]
+    })
+      .overrideProvider(StripeService).useValue(mockedStripe)
+      .compile()
 
     app = moduleFixture.createNestApplication()
     configureApp(app, true)

@@ -4,11 +4,13 @@ import { Injectable, Scope, Inject } from '@nestjs/common'
 import { QueryService } from '@nestjs-query/core'
 import * as tldExtract from 'tld-extract'
 
-import { SettingsEntity, SettingsWebsiteJson, SettingsKeysJson, SettingsUserJson, SettingsModulesJson } from './settings.entity'
-
 import { createECKey } from 'ec-key'
-import { BaseService } from '../utilities/base.service'
 import { ConfigService } from '@nestjs/config'
+
+import { BaseService } from '../utilities/base.service'
+import { ValidationService } from '../validator/validation.service'
+
+import { SettingsEntity, SettingsWebsiteJson, SettingsAdminJson, SettingsKeysJson, SettingsUserJson, SettingsModulesJson } from './settings.entity'
 
 const __IS_DEV__ = (process.env.NODE_ENV === 'development') // eslint-disable-line
 
@@ -63,7 +65,8 @@ export class SettingsService extends BaseService<SettingsEntity> {
   constructor (
     @Inject(REQUEST) public req: any,
     // @InjectRepository(SettingsEntity)
-    public configService: ConfigService
+    public configService: ConfigService,
+    private readonly validationService: ValidationService
   ) {
     super(req, 'SettingsEntity')
 
@@ -106,6 +109,13 @@ export class SettingsService extends BaseService<SettingsEntity> {
       entity.json = new SettingsUserJson()
       data.user = await this.createOne(entity)
     }
+
+    if (data.admin == null) {
+      const entity = new SettingsEntity()
+      entity.category = 'admin'
+      entity.json = new SettingsAdminJson()
+      data.admin = await this.createOne(entity)
+    }
   }
 
   async getSettings (category: string): Promise<SettingsEntity> {
@@ -138,6 +148,19 @@ export class SettingsService extends BaseService<SettingsEntity> {
   async getKeysSettings (): Promise<SettingsKeysJson> {
     const result = this.getSettings('keys')
     return result as unknown as SettingsKeysJson
+  }
+
+  async getAdminSettings (): Promise<SettingsAdminJson> {
+    const result = await this.getSettings('admin') as unknown as SettingsAdminJson
+
+    if (this.validationService.isNilOrEmpty(result.trial_expiring_cron) === true) {
+      result.trial_expiring_cron = this.configService.get<string>('TRIAL_EXPIRING_CRON') ?? '0 0 2 * * *'
+    }
+    if (this.validationService.isNilOrEmpty(result.trial_expiring_days) === true) {
+      result.trial_expiring_days = this.configService.get<number>('TRIAL_EXPIRING_DAYS') ?? 3
+    }
+
+    return result
   }
 
   async getJWTPublicKey (): Promise<string> {
