@@ -555,7 +555,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     `
       : ''
 
-    res.html_chatbot = renderChatbotJs(res.app_chatbot_provider, res.app_chatbot_id)
+    res.html_chatbot = renderChatbotJs(res.app_chatbot_provider, res.app_chatbot_id, this.req)
 
     return res
   }

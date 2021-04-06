@@ -13,6 +13,7 @@ import { PublicController } from './controllers/public.controller'
 import { AdminController } from './controllers/admin.controller'
 import { WebsiteDataMiddleware } from 'src/middlewares/websiteData.middleware'
 
+import { CspInterceptor } from '../interceptors/csp.interceptor'
 import { JwtInterceptor } from '../interceptors/jwt.interceptor'
 
 @Module({
@@ -26,6 +27,11 @@ import { JwtInterceptor } from '../interceptors/jwt.interceptor'
     PublicController
   ],
   providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CspInterceptor,
+      scope: Scope.TRANSIENT
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: JwtInterceptor,
