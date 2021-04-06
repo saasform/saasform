@@ -11,7 +11,7 @@ app_google_tag_manager: GTM-xxx
 app_facebook_pixel_id: 123xxx
 app_google_signin_client_id: 123xxx
 app_google_signin_scope: profile email
-# app_chatbot_provider: hubspot
+# app_chatbot_provider: hubspot, intercom
 app_chatbot_provider:
 app_chatbot_id: 123xxx
 
