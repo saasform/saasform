@@ -273,4 +273,40 @@ describe('Payments Service', () => {
       expect(paymentStatus).toBeTruthy()
     })
   })
+
+  describe('subscribeToPlan', () => {
+    it('should create a subscription', async () => {
+      const customer = { id: 101 }
+      const paymentMethod = { id: 201 }
+      const price = { id: 301 }
+
+      service.stripeService.client.subscriptions = { create: jest.fn().mockReturnValue({ id: 401 }) }
+
+      const spy = jest.spyOn(service.stripeService.client.subscriptions, 'create')
+
+      const subscription = await service.subscribeToPlan(customer, paymentMethod, price)
+
+      expect(subscription).toEqual({ id: 401 })
+      expect(spy).toBeCalledWith({
+        customer,
+        default_payment_method: paymentMethod.id,
+        items: [
+          { price: price.id }
+        ],
+        expand: ['latest_invoice.payment_intent']
+      })
+    })
+
+    it('should return null if it fails to create a subscription', async () => {
+      const customer = { id: 101 }
+      const paymentMethod = { id: 201 }
+      const price = { id: 301 }
+
+      service.stripeService.client.subscriptions = { create: jest.fn().mockReturnValue(null) }
+
+      const subscription = await service.subscribeToPlan(customer, paymentMethod, price)
+
+      expect(subscription).toBeNull()
+    })
+  })
 })
