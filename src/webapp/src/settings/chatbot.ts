@@ -11,6 +11,25 @@ export const renderChatbotJs = (provider: string, id: string, req): string => {
     return ''
   }
   switch (provider) {
+    case 'chaskiq':
+      
+      const url = "CHASKIQ_DOMAIN"
+      const appId = "xxxxxxxx","
+      return `<script>
+        (function(d,t) {
+          var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+          g.src="https://${url}/embed.js"
+          s.parentNode.insertBefore(g,s);
+          g.onload=function(){
+            new window.ChaskiqMessengerEncrypted({
+              domain: '${url}',
+              ws:  'wss://${url}/cable',
+              app_id: "${appId}",
+              data: {},
+            })
+          }
+        })(document,"script");
+      </script>`
     case 'hubspot':
       req.customCsp.push({
         scriptSrc: [
