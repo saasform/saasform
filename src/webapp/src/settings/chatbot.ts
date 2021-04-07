@@ -6,26 +6,33 @@
  * @param page A string representing the name of the template to display
  * @param data An optional object containing the page-specific data to pass to the template
  */
-export const renderChatbotJs = (provider: string, id: string, req): string => {
+export const renderChatbotJs = (provider: string, id: string, domain: string, req): string => {
   if (String(id).endsWith('xxx')) {
     return ''
   }
   switch (provider) {
     case 'chaskiq':
-      
-      const url = "CHASKIQ_DOMAIN"
-      const appId = "xxxxxxxx","
+      req.customCsp.push({
+        scriptSrc: [
+          "'unsafe-inline'",
+          `https://${domain}`
+        ],
+        connectSrc: [
+          `https://${domain}`,
+          `wss://${domain}`
+        ]
+      })
       return `<script>
         (function(d,t) {
           var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-          g.src="https://${url}/embed.js"
+          g.src="https://${domain}/embed.js"
           s.parentNode.insertBefore(g,s);
           g.onload=function(){
             new window.ChaskiqMessengerEncrypted({
-              domain: '${url}',
-              ws:  'wss://${url}/cable',
-              app_id: "${appId}",
-              data: {},
+              domain: "https://${domain}",
+              ws: "wss://${domain}/cable",
+              app_id: "${id}",
+              data: {}
             })
           }
         })(document,"script");

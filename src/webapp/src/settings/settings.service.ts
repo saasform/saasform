@@ -234,6 +234,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       app_google_signin_scope: '',
       app_chatbot_provider: '',
       app_chatbot_id: '',
+      app_chatbot_domain: '',
 
       // footer
       legal_company_name: '',
@@ -378,6 +379,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'app_google_signin_scope',
       'app_chatbot_provider',
       'app_chatbot_id',
+      'app_chatbot_domain',
       'legal_company_name',
       'hero_title',
       'hero_subtitle',
@@ -555,7 +557,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     `
       : ''
 
-    res.html_chatbot = renderChatbotJs(res.app_chatbot_provider, res.app_chatbot_id, this.req)
+    res.html_chatbot = renderChatbotJs(res.app_chatbot_provider, res.app_chatbot_id, res.app_chatbot_domain, this.req)
 
     return res
   }
