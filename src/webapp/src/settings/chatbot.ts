@@ -20,6 +20,14 @@ export const renderChatbotJs = (provider: string, id: string, domain: string, re
         connectSrc: [
           `https://${domain}`,
           `wss://${domain}`
+        ],
+        imgSrc: [
+          `https://${domain}`,
+          'https://hermessapp.s3.amazonaws.com',
+          'https://unpkg.com'
+        ],
+        mediaSrc: [
+          `https://${domain}`
         ]
       })
       return `<script>
