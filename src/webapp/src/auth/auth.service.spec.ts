@@ -280,13 +280,17 @@ describe('AuthService', () => {
       const expUserModel = await service.onGoogleSignin('user@gmail.com', '20weqa-2123-ps343-121kkl-21212')
       expect(expUserModel).toBeDefined()
     })
-    it('without a registered email, should return a null value', async () => {
+    it('without a registered email, should return a non null value', async () => {
       service.usersService = {
-        findUser: jest.fn().mockReturnValue(null)
+        findUser: jest.fn().mockReturnValue(null),
+        addUser: jest.fn().mockReturnValue({ id: 101 })
       }
 
+      const spy = jest.spyOn(service.usersService, 'findUser')
+
       const expUserModel = await service.onGoogleSignin('ra@gmail.com', '21swq-2123-ps343-121kkl-21212')
-      expect(expUserModel).toBeNull()
+      expect(spy).not.toBeCalled()
+      expect(expUserModel).not.toBeNull()
     })
     it('with null arguments, should return a null value', async () => {
       const expUserModel = await service.onGoogleSignin(null, null)
