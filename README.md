@@ -47,6 +47,7 @@ Open your browser at [http://localhost:7000](http://localhost:7000).
   - [ ] Enterprise SSO / SAML / Okta integration
 - Subscription payments
   - [x] Stripe integration
+  - [x] [Kill Bill](https://killbill.io))
   - [ ] Invoicing
 - Growth tools
   - [x] Google Analytics (new GAv4!)
