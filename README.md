@@ -52,7 +52,7 @@ Open your browser at [http://localhost:7000](http://localhost:7000).
   - [x] Google Analytics (new GAv4!)
   - [x] Facebook Pixel
   - [x] Google Tag Manager
-  - [ ] Chat Bots (Intercom, Chatwoot, Papercups)
+  - [x] Chatbot (Hubspot, Intercom, [Chaskiq](https://chaskiq.io))
 
 ## Screenshots
 
