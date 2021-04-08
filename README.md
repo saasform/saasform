@@ -53,6 +53,8 @@ Open your browser at [http://localhost:7000](http://localhost:7000).
   - [x] Facebook Pixel
   - [x] Google Tag Manager
   - [x] Chatbot (Hubspot, Intercom, [Chaskiq](https://chaskiq.io))
+  - [ ] More analytics (Matomo, Plausible, ...)
+  - [ ] CRM (Hubspot, ...)
 
 ## Screenshots
 
