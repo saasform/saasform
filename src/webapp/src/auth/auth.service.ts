@@ -230,13 +230,10 @@ export class AuthService {
       return null
     }
 
-    console.log(email, subject)
-
     // 1. search for a valid credential for the current user
     credential = await this.userCredentialsService.findUserCredentialByEmail(email, `${CredentialType.GOOGLE}:${subject}` as CredentialType)
 
     if (credential == null) {
-      console.log('no user')
       // 2a. We do not already have a user, so we create one
       const userData = {
         email,
@@ -248,8 +245,6 @@ export class AuthService {
         console.error('auth.service - onGoogleSignin - error while creating user')
         return null
       }
-
-      console.log('created user', newUser)
 
       user = newUser.user
       credential = newUser.credential
