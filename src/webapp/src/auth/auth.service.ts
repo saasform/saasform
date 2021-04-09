@@ -242,7 +242,8 @@ export class AuthService {
         email,
         password: ''
       }
-      const newUser = await this.createNewUser(userData)
+      const newUser = await this.registerUser(userData)
+
       if (newUser instanceof UserError || newUser == null) {
         console.error('auth.service - onGoogleSignin - error while creating user')
         return null
