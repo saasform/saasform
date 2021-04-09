@@ -1,0 +1,8 @@
+extraction:
+  javascript:
+    index:
+      exclude:
+        - dist
+      filters:
+        - exclude: "**/*bundle.js"
+        - exclude: "**/fontawesome/*.js"

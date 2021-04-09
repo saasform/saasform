@@ -7,11 +7,26 @@ import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 import { UsersService } from './users.service'
 import { UserEntity } from '../entities/user.entity'
 import { NewUserInput } from '../dto/new-user.input'
-import { mockedCommunicationService, mockedRandom, mockedRepo, mockedUser, mockedUserExpiredToken, mockUserCredentialsEntity } from '../test/testData'
+import { mockedCommunicationService, mockedRandom, mockedRepo, mockedUser, mockedUserExpiredToken, mockUserCredentialsEntity, mockedSettingRepo } from '../test/testData'
 import { UserCredentialsService } from '../services/userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
+import { NotificationsService } from '../../notifications/notifications.service'
+import { SettingsService } from '../../settings/settings.service'
+import { PaymentsService } from '../../payments/services/payments.service'
+import { PlansService } from '../../payments/services/plans.service'
+import { ValidationService } from '../../validator/validation.service'
 
-// const mockRepository = {}
+const mockedUserCredentialsService = {
+  ...mockUserCredentialsEntity,
+  changePassword: jest.fn(),
+  addUserCredentials: jest.fn(),
+  findUserCredentialByEmail: jest.fn(email => email === 'user@email.com' ? email : null),
+  isRegistered: jest.fn((credential, password) => credential === 'user@email.com' && password === 'password')
+}
+
+const mockValidationService = {
+  isNilOrEmpty: jest.fn().mockReturnValue(true)
+}
 
 describe('UsersService', () => {
   let service // Removed type AccountsService because we must overwrite the accountsRepository property
@@ -30,7 +45,27 @@ describe('UsersService', () => {
         UserCredentialsService,
         {
           provide: getRepositoryToken(UserCredentialsEntity),
-          useValue: { ...mockUserCredentialsEntity, changePassword: jest.fn() }
+          useValue: mockedUserCredentialsService
+        },
+        {
+          provide: NotificationsService,
+          useValue: { sendEmail: jest.fn((to, template, data) => true) }
+        },
+        {
+          provide: SettingsService,
+          useValue: mockedSettingRepo
+        },
+        {
+          provide: PaymentsService,
+          useValue: {}
+        },
+        {
+          provide: PlansService,
+          useValue: {}
+        },
+        {
+          provide: ValidationService,
+          useValue: mockValidationService
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
@@ -45,8 +80,10 @@ describe('UsersService', () => {
     // We must manually set the following because extending TypeOrmQueryService seems to break it
     Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
     service.accountsRepository = repo
-    service.userCredentialsService = { ...mockUserCredentialsEntity, changePassword: jest.fn() }
+    service.userCredentialsService = mockedUserCredentialsService
     service.communicationService = mockedCommunicationService
+    service.settingsService = mockedSettingRepo
+    service.validationService = mockValidationService
     service.random = { ...mockedRandom }
   })
 
@@ -56,7 +93,7 @@ describe('UsersService', () => {
   })
 
   describe('Email confirmation', () => {
-    it.skip('should set the email confirmation token and flag when a user is created', async () => {
+    it('should set the email confirmation token and flag when a user is created', async () => {
       const repoSpy = jest.spyOn(mockedRepo, 'createOne')
       const userInput: NewUserInput = new NewUserInput()
       userInput.email = 'foo@email.com'
@@ -91,7 +128,7 @@ describe('UsersService', () => {
     it('should send the confirmation email', async () => {
     })
 
-    it.skip('should remove the token and set the confirmation token ', async () => {
+    it('should remove the token and set the confirmation token ', async () => {
       const repoSpy = jest.spyOn(mockedRepo, 'updateOne')
       const confirmedUser: UserEntity = await service.confirmEmail(mockedUser.emailConfirmationToken)
 
@@ -102,7 +139,7 @@ describe('UsersService', () => {
       expect(confirmedUser.data.emailConfirmed).toBeTruthy()
     })
 
-    it.skip('should NOT remove the token and set the confirmation token if the token is expired', async () => {
+    it('should NOT remove the token and set the confirmation token if the token is expired', async () => {
       const repoSpy = jest.spyOn(mockedRepo, 'updateOne')
       const confirmedUser: UserEntity = await service.confirmEmail(mockedUserExpiredToken.emailConfirmationToken)
 
@@ -135,6 +172,26 @@ describe('UsersService', () => {
     it('should not change old password with null password', async () => {
       const isChanged: boolean = await service.resetPassword('unknown', null)
       expect(isChanged).toBeFalsy()
+    })
+  })
+
+  describe('changePassword', () => {
+    it('should not change password with unknown user', async () => {
+      const isChanged: boolean = await service.changePassword('unknown', 'password', 'password')
+      expect(isChanged).toBeFalsy()
+    })
+
+    it('should not change password with wrong password', async () => {
+      const isChanged: boolean = await service.changePassword('user@test', 'password1', 'password2')
+      expect(isChanged).toBeFalsy()
+    })
+
+    it('should change password with correct password', async () => {
+      const repoSpy = jest.spyOn(mockedUserCredentialsService, 'changePassword')
+
+      const isChanged: boolean = await service.changePassword('user@email.com', 'password', 'password2')
+      expect(isChanged).toBeTruthy()
+      expect(repoSpy).toBeCalledWith('user@email.com', 'password2')
     })
   })
 })

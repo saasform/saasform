@@ -1,0 +1,122 @@
+---
+layout: page
+---
+
+{% if alert and alert.text %}
+  {% case alert.type %}
+    {% when "critical" %}
+      {% assign alert_class = "is-danger" %}
+    {% when "warning" %}
+      {% assign alert_class = "is-warning" %}
+    {% else %}
+      {% assign alert_class = "is-danger" %}
+  {% endcase %}
+  <div class="notification {{ alert_class }} has-text-centered mb-0">
+    {{ alert.text }}
+    <a class="" href="{{ alert.link_url }}">{{ alert.link_text }}</a>
+  </div>
+{% endif %}
+
+<section class="hero is-dark">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+    	<div class="columns is-vcentered">
+    	  <div class="column">
+
+          <h1 class="title">
+            Account Settings
+          </h1>
+
+          <p>Settings for {{ user.email }}</p>
+
+        </div>
+        <div class="column has-text-right">
+          <a href="/logout" class="button is-light">Log out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section has-background-white-bis" style="overflow: visible!important;">
+  <div class="container is-max-desktop" style="margin-top: -120px;">
+    <div class="columns">
+
+      <div class="column is-one-quarter">
+
+        <div class="card">
+          <div class="card-content">
+
+            <aside class="menu">
+              <p class="menu-label">
+                Accounts
+              </p>
+              <ul class="menu-list">
+
+                {% for page in user_page_sections %}
+
+                {% if page == 'general' %}
+                {% if user_page == 'general' %}
+                <li><a href="/user" class="is-active">General</a></li>
+                {% else %}
+                <li><a href="/user">General</a></li>
+                {% endif %}
+                {% endif %}
+
+                {% if page == 'security' %}
+                {% if user_page == 'security' %}
+                <li><a href="/user/security" class="is-active">Security</a></li>
+                {% else %}
+                <li><a href="/user/security">Security</a></li>
+                {% endif %}
+                {% endif %}
+
+                {% if page == 'billing' %}
+                {% if user_page == 'billing' %}
+                <li><a href="/user/billing" class="is-active">Billing</a></li>
+                {% else %}
+                <li><a href="/user/billing">Billing</a></li>
+                {% endif %}
+                {% endif %}
+
+                {% if page == 'team' %}
+                {% if user_page == 'team' %}
+                <li><a href="/user/team" class="is-active">Users</a></li>
+                {% else %}
+                <li><a href="/user/team">Users</a></li>
+                {% endif %}
+                {% endif %}
+
+                {% endfor %}
+
+              </ul>
+            </aside>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="column">
+
+        {% if user_page == 'general' %}
+        {{> user-general}}
+        {% endif %}
+
+        {% if user_page == 'security' %}
+        {{> user-security}}
+        {% endif %}
+
+        {% if user_page == 'billing' %}
+        {{> user-billing}}
+        {% endif %}
+
+        {% if user_page == 'team' %}
+        {{> user-team}}
+        {% endif %}
+
+      </div>
+
+    </div>
+  </div>
+</section>

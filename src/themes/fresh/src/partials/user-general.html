@@ -1,0 +1,87 @@
+{% assign size = "" %}
+<div class="card mb-6">
+  <div class="card-content content">
+
+    <h3 class="has-text-weight-normal">Basic Information</h3><br/>
+
+    <form action="" method="POST" class="mb-40">
+      <div class="field">
+        <div class="field-body">
+
+          <div class="field">
+            <label for="first" class="label {{ website.size }} has-text-weight-normal">
+              First name
+            </label>
+            <div class="control">
+              <input type="text" class="input {{ website.size }}" id="first" name="first" placeholder="First name" value="{{ user.first_name }}">
+            </div>
+            <p id="error-first" class="help is-danger">{{ error.first }}</p>
+          </div>
+
+          <div class="field">
+            <label for="first" class="label {{ website.size }} has-text-weight-normal">
+              Last name
+            </label>
+            <div class="control">
+              <input type="text" class="input {{ website.size }}" id="last" name="last" placeholder="Last name" value="{{ user.last_name }}">
+            </div>
+            <p id="error-last" class="help is-danger">{{ error.last }}</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="company" class="label {{ website.size }} has-text-weight-normal">
+          Company
+        </label>
+        <div class="control">
+          <input type="text" class="input {{ website.size }}" id="company" name="company" placeholder="Company" value="{{ user.company }}">
+        </div>
+        <p id="error-company" class="help is-danger">{{ error.company }}</p>
+      </div>
+
+      {% if signup_show_username %}
+      <div class="field">
+        <label for="company" class="label {{ website.size }} has-text-weight-normal">
+          Username
+        </label>
+        <div class="control">
+          <input type="text" class="input {{ website.size }}" id="username" name="username" placeholder="username" value="{{ user.username }}">
+        </div>
+        <p id="error-username" class="help is-danger">{{ error.username }}</p>
+      </div>
+      {% endif %}
+
+      <div class="field">
+        <label for="email" class="label {{ website.size }} has-text-weight-normal">
+          Email address
+        </label>
+        <div class="field has-addons">
+          <div class="control is-expanded">
+            <input type="email" class="input {{ website.size }}" id="email" name="email" placeholder="name@address.com" value="{{ user.email }}" autocomplete="username" disabled>
+          </div>
+          <div class="control">
+            <a class="button {{ website.size }}  is-dark">
+              Change
+            </a>
+          </div>
+        </div>
+        <p id="error-email" class="help is-danger">{{ error.email }}</p>
+      </div>
+
+      <br/>
+      <input type="hidden" name="_csrf" value="{{ website.csrf_token }}">
+      <div class="field">
+        <div class="control">
+          <button class="button {{ website.size }} is-primary" type="submit">Save changes</button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<p class="has-text-centered">
+  If you no longer want to use {{ website.name }}, you can <a class="has-text-danger">delete your account</a>.
+</p>

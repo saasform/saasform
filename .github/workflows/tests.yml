@@ -5,7 +5,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
+    branches-ignore: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -29,9 +29,14 @@ jobs:
       with:
         path: '**/node_modules'
         key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+    - name: Install code coverage tool
+      run: npm install -g codecov
     - name: Deps (webapp)
       working-directory: ./src/webapp
       run: yarn install
     - name: Tests (webapp)
       working-directory: ./src/webapp
       run: yarn test
+    - name: Upload codecoverga
+      working-directory: ./src/webapp
+      run: codecov

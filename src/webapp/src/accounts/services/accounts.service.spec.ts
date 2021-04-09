@@ -14,6 +14,12 @@ import { UsersService } from './users.service'
 import { UserCredentialsService } from './userCredentials.service'
 import { UserCredentialsEntity } from '../entities/userCredentials.entity'
 import { mockUserCredentialsEntity } from '../test/testData'
+import { NotificationsService } from '../../notifications/notifications.service'
+import { SettingsService } from '../../settings/settings.service'
+import { PaymentsService } from '../../payments/services/payments.service'
+import { PlansService } from '../../payments/services/plans.service'
+import { ConfigService } from '@nestjs/config'
+import { ValidationService } from '../../validator/validation.service'
 
 const accountsArray = [
   new AccountEntity(),
@@ -29,13 +35,38 @@ describe('Accounts Service', () => {
 
   let user: UserEntity
 
+  enum AccountIds {
+    EXISTING_ACCOUNT=1,
+    EXISTING_ACCOUNT_WITH_PAYMENT_METHODS=2,
+    ACCOUNT_NOT_FOUND=404,
+    MALFORMED_ACCOUNT=500
+  }
+
   const mockedRepo = {
     find: jest.fn().mockResolvedValue(accountsArray),
     createOne: jest.fn(account => account),
     findById: jest.fn(id => {
       const account = new AccountEntity()
       account.id = id
-      return account
+
+      switch (id) {
+        case AccountIds.EXISTING_ACCOUNT_WITH_PAYMENT_METHODS:
+          account.data = {
+            payments_methods: [{ id: 'payment_method' }, { id: 'payment_method 2' }],
+            stripe: { id: 'cus_123' }
+          }
+          return account
+        case AccountIds.ACCOUNT_NOT_FOUND:
+          return undefined
+        case AccountIds.MALFORMED_ACCOUNT:
+          account.data = null
+          return account
+        default:
+          account.data = {
+            stripe: { id: 'cus_123' }
+          }
+          return account
+      }
     }),
     updateOne: jest.fn((id, account) => account)
   }
@@ -53,6 +84,19 @@ describe('Accounts Service', () => {
   const mockedAccountsUsersRepo = {
     addUser: jest.fn((user, account) => user),
     addStripeUser: jest.fn((user, plan) => user)
+  }
+
+  // This depends on Stripe. We need to update this when we support more payment processors
+  const mockedPaymentsService = {
+    createBillingCustomer: jest.fn(_ => [{}, null]),
+    createFreeSubscription: jest.fn(_ => {}),
+    attachPaymentMethod: jest.fn((account, _) => account.data.stripe.id),
+    subscribeToPlan: jest.fn(_ => {})
+  }
+
+  const mockedPlansService = {
+    getPlans: jest.fn(_ => [{}]),
+    getPriceByProductAndAnnual: jest.fn(_ => ({ plan: '1' }))
   }
 
   beforeEach(async () => {
@@ -84,6 +128,30 @@ describe('Accounts Service', () => {
           provide: getRepositoryToken(UserCredentialsEntity),
           useValue: mockUserCredentialsEntity
         },
+        {
+          provide: NotificationsService,
+          useValue: { sendEmail: jest.fn((to, template, data) => true) }
+        },
+        {
+          provide: SettingsService,
+          useValue: {}
+        },
+        {
+          provide: ConfigService,
+          useValue: {}
+        },
+        {
+          provide: PaymentsService,
+          useValue: mockedPaymentsService
+        },
+        {
+          provide: PlansService,
+          useValue: mockedPlansService
+        },
+        {
+          provide: ValidationService,
+          useValue: {}
+        },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
       ]
@@ -105,6 +173,8 @@ describe('Accounts Service', () => {
     service.accountsRepository = repo
     service.usersService = userRepo
     service.accountsUsersService = accountsUsersRepo
+    service.paymentsService = mockedPaymentsService
+    service.plansService = mockedPlansService
   })
 
   afterEach(() => {
@@ -133,7 +203,7 @@ describe('Accounts Service', () => {
 
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
-          data: { name: 'foo bar' }
+          data: { name: 'foo bar', stripe: {} }
         })
       )
     })
@@ -144,7 +214,7 @@ describe('Accounts Service', () => {
 
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
-          data: { name: undefined },
+          data: { name: undefined, stripe: {} },
           owner_id: 101
         })
       )
@@ -217,7 +287,7 @@ describe('Accounts Service', () => {
       })
 
       describe('Invite an existing User', () => {
-        it('Should not create a new User', async () => {
+        it('Should find or create a new User', async () => {
           jest.clearAllMocks()
           const repoSpy = jest.spyOn(mockedUserRepo, 'findOrCreateUser')
 
@@ -226,7 +296,7 @@ describe('Accounts Service', () => {
           expect(repoSpy).toBeCalledTimes(1)
         })
 
-        it('The new User should have not requested a reset password', async () => {
+        it.skip('The new User should have not requested a reset password', async () => {
           jest.clearAllMocks()
           // It would be better if we could mock the whole UserEntity
           // to have a better control on who calles who. IMPROVE HERE.
@@ -238,6 +308,71 @@ describe('Accounts Service', () => {
 
           expect(invitedUser.data.resetPasswordToken).toBeUndefined()
           expect(invitedUser.data.resetPasswordTokenExp).toBeUndefined()
+        })
+      })
+    })
+
+    describe('Subscriptions', () => {
+      describe('Add payments methods', () => {
+        it('Should return error if account is not found', async () => {
+          // const repoSpy = jest.spyOn(mockedUserRepo, 'findOrCreateUser')
+          const res = await service.addPaymentsMethods(AccountIds.ACCOUNT_NOT_FOUND)
+
+          expect(res).toBeNull()
+        })
+
+        it('Should return error if account is malformed', async () => {
+          // const repoSpy = jest.spyOn(mockedUserRepo, 'findOrCreateUser')
+          const res = await service.addPaymentsMethods(AccountIds.MALFORMED_ACCOUNT)
+
+          expect(res).toBeNull()
+        })
+
+        it('Should call the attachPaymentMethod method of paymentsService', async () => {
+          const repoSpy = jest.spyOn(mockedPaymentsService, 'attachPaymentMethod')
+          const res = await service.addPaymentsMethods(AccountIds.EXISTING_ACCOUNT, { id: 'payment_method' })
+
+          expect(res).not.toBeNull()
+          expect(repoSpy).toBeCalledTimes(1)
+        })
+
+        it('Should add a payment method if the account does not yet have any payment method', async () => {
+          const repoSpy = jest.spyOn(mockedRepo, 'updateOne')
+          await service.addPaymentsMethods(AccountIds.EXISTING_ACCOUNT, { id: 'payment_method' })
+
+          expect(repoSpy).toBeCalledWith(
+            AccountIds.EXISTING_ACCOUNT,
+            expect.objectContaining({
+              data: { payments_methods: [{ id: 'payment_method' }], stripe: { id: 'cus_123' } }
+            })
+          )
+        })
+
+        it('Should append a payment method if the account already has a payment method', async () => {
+          const repoSpy = jest.spyOn(mockedRepo, 'updateOne')
+          await service.addPaymentsMethods(AccountIds.EXISTING_ACCOUNT_WITH_PAYMENT_METHODS, { id: 'payment_method 3' })
+
+          expect(repoSpy).toBeCalledWith(
+            AccountIds.EXISTING_ACCOUNT_WITH_PAYMENT_METHODS,
+            expect.objectContaining({
+              data: { payments_methods: [{ id: 'payment_method' }, { id: 'payment_method 2' }, { id: 'payment_method 3' }], stripe: { id: 'cus_123' } }
+            })
+          )
+        })
+      })
+
+      describe('Subscribe to plan', () => {
+        it('Should be possible to subscribe to plan choosing a payment method', async () => {
+          const repoSpy = jest.spyOn(mockedPaymentsService, 'subscribeToPlan')
+          const account = mockedRepo.findById(AccountIds.EXISTING_ACCOUNT_WITH_PAYMENT_METHODS)
+
+          await service.subscribeToPlan(account, { method: 'payment_method 2' })
+
+          expect(repoSpy).toBeCalledWith(
+            account?.data?.stripe?.id,
+            { id: 'payment_method 2' },
+            { plan: '1' }
+          )
         })
       })
     })

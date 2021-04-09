@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{{ seo_title }}</title>
+  <meta name="description" content="{{ seo_description }}">
+  <meta name="keywords" content="">
+  <meta name="author" content="">
+  {{ html_google_tag_manager_header }}
+  {{ html_google_analytics }}
+  {{ html_facebook_pixel }}
+  {{ html_google_signin_header }}
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ root_assets }}/assets/css/bundle.css">
+  <link rel="icon" type="image/png" href="{{ root_assets }}/assets/img/favicon.png" />
+</head>
+<body>
+  {{ html_google_tag_manager_body }}
+
+  <section class="hero is-fullheight">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns is-centered ">
+          <div class="column is-half">
+            <div class="content">
+  
+              <h1 class="is-size-1 has-text-primary">
+                <br/>
+                {{ name }}
+              </h1>
+  
+              <!--h2 class="has-text-weight-normal">
+                {{ title | formatDot }}
+              </h2-->
+  
+              <h3 class="has-text-weight-normal">
+                {{ description }}
+              </h3>
+            </div>
+          </div>
+          <div class="column is-one-third">
+  
+  
+          <!-- Form -->
+          <form action="/login" method="POST" class="mb-40">
+  
+            <!-- Email -->
+            <div class="field">
+              <label for="email" class="label has-text-weight-normal">
+                Email address
+              </label>
+              <div class="control">
+                <input type="email" class="input" id="email" name="email" placeholder="name@address.com" required>
+              </div>
+              <p id="error-email" class="help is-danger">{{ error.email | formatDot }}</p>
+            </div>
+  
+            <!-- Password -->
+            <div class="field">
+              <label for="password" class="label has-text-weight-normal">
+                Password
+              </label>
+              <div class="control">
+                <input type="password" class="input" id="password" name="password" placeholder="Enter your password" minlength="8" required>
+              </div>
+              <p id="error-password" class="help is-danger">{{ error.password | formatDot }}</p>
+            </div>
+  
+            <!-- Submit -->
+            <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+            <div class="field">
+              <div class="control">
+                <button class="button is-primary is-fullwidth" type="submit">Sign in</button>
+              </div>
+            </div>
+  
+            <p class="mt-20 mb-20 has-text-centered">or</p>
+  
+            <!-- Social Auth -->
+            <div class="field">
+              <div class="control">
+                <a id="google-signin" class="button is-primary is-light is-fullwidth">Sign in with Google</a>
+              </div>
+              <p id="error-google" class="help is-danger">{{ error.google | formatDot }}</p>
+            </div>
+          </form>
+  
+          <!-- Text -->
+          <p class="is-size-7 has-text-grey has-text-centered">
+            Forgot your password? <a href="/reset-password">Reset now</a>.
+          </p>
+  
+          <!-- Text -->
+          <p class="is-size-7 has-text-grey has-text-centered">
+            Don't have an account yet? <a href="/signup">Sign up</a>.
+          </p>
+  
+        </div>
+        </div>
+      </div> <!-- / .row -->
+    </div> <!-- / .container -->
+  </section>
+  
+
+  <script src="{{ root_assets }}/assets/js/bundle.js"></script>
+</body>
+</html>

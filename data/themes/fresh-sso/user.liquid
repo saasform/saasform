@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{{ seo_title }}</title>
+  <meta name="description" content="{{ seo_description }}">
+  <meta name="keywords" content="">
+  <meta name="author" content="">
+  {{ html_google_tag_manager_header }}
+  {{ html_google_analytics }}
+  {{ html_facebook_pixel }}
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ root_assets }}/assets/css/bundle.css">
+  <link rel="icon" type="image/png" href="{{ root_assets }}/assets/img/favicon.png" />
+</head>
+<body>
+  {{ html_google_tag_manager_body }}
+
+  {% render layout_nav, logo: logo, user: user %}
+
+  
+  {% if alert and alert.text %}
+    {% case alert.type %}
+      {% when "critical" %}
+        {% assign alert_class = "is-danger" %}
+      {% when "warning" %}
+        {% assign alert_class = "is-warning" %}
+      {% else %}
+        {% assign alert_class = "is-danger" %}
+    {% endcase %}
+    <div class="notification  has-text-centered mb-0">
+      {{ alert.text }}
+      <a class="" href="{{ alert.link_url }}">{{ alert.link_text }}</a>
+    </div>
+  {% endif %}
+  
+  <section class="hero is-dark">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+      	<div class="columns is-vcentered">
+      	  <div class="column">
+  
+            <h1 class="title">
+              Account Settings
+            </h1>
+  
+            <p>Settings for {{ user.email }}</p>
+  
+          </div>
+          <div class="column has-text-right">
+            <a href="/logout" class="button is-light">Log out</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="section has-background-white-bis" style="overflow: visible!important;">
+    <div class="container is-max-desktop" style="margin-top: -120px;">
+      <div class="columns">
+  
+        <div class="column is-one-quarter">
+  
+          <div class="card">
+            <div class="card-content">
+  
+              <aside class="menu">
+                <p class="menu-label">
+                  Accounts
+                </p>
+                <ul class="menu-list">
+  
+                  {% for page in user_page_sections %}
+  
+                  {% if page == 'general' %}
+                  {% if user_page == 'general' %}
+                  <li><a href="/user" class="is-active">General</a></li>
+                  {% else %}
+                  <li><a href="/user">General</a></li>
+                  {% endif %}
+                  {% endif %}
+  
+                  {% if page == 'security' %}
+                  {% if user_page == 'security' %}
+                  <li><a href="/user/security" class="is-active">Security</a></li>
+                  {% else %}
+                  <li><a href="/user/security">Security</a></li>
+                  {% endif %}
+                  {% endif %}
+  
+                  {% if page == 'billing' %}
+                  {% if user_page == 'billing' %}
+                  <li><a href="/user/billing" class="is-active">Billing</a></li>
+                  {% else %}
+                  <li><a href="/user/billing">Billing</a></li>
+                  {% endif %}
+                  {% endif %}
+  
+                  {% if page == 'team' %}
+                  {% if user_page == 'team' %}
+                  <li><a href="/user/team" class="is-active">Users</a></li>
+                  {% else %}
+                  <li><a href="/user/team">Users</a></li>
+                  {% endif %}
+                  {% endif %}
+  
+                  {% endfor %}
+  
+                </ul>
+              </aside>
+  
+            </div>
+          </div>
+  
+        </div>
+  
+        <div class="column">
+  
+          {% if user_page == 'general' %}
+          {% assign size = "" %}
+          <div class="card mb-6">
+            <div class="card-content content">
+          
+              <h3 class="has-text-weight-normal">Basic Information</h3><br/>
+          
+              <form action="" method="POST" class="mb-40">
+                <div class="field">
+                  <div class="field-body">
+          
+                    <div class="field">
+                      <label for="first" class="label  has-text-weight-normal">
+                        First name
+                      </label>
+                      <div class="control">
+                        <input type="text" class="input " id="first" name="first" placeholder="First name" value="{{ user.first_name }}">
+                      </div>
+                      <p id="error-first" class="help is-danger"></p>
+                    </div>
+          
+                    <div class="field">
+                      <label for="first" class="label  has-text-weight-normal">
+                        Last name
+                      </label>
+                      <div class="control">
+                        <input type="text" class="input " id="last" name="last" placeholder="Last name" value="{{ user.last_name }}">
+                      </div>
+                      <p id="error-last" class="help is-danger"></p>
+                    </div>
+          
+                  </div>
+                </div>
+          
+                <div class="field">
+                  <label for="company" class="label  has-text-weight-normal">
+                    Company
+                  </label>
+                  <div class="control">
+                    <input type="text" class="input " id="company" name="company" placeholder="Company" value="{{ user.company }}">
+                  </div>
+                  <p id="error-company" class="help is-danger"></p>
+                </div>
+          
+                {% if signup_show_username %}
+                <div class="field">
+                  <label for="company" class="label  has-text-weight-normal">
+                    Username
+                  </label>
+                  <div class="control">
+                    <input type="text" class="input " id="username" name="username" placeholder="username" value="{{ user.username }}">
+                  </div>
+                  <p id="error-username" class="help is-danger"></p>
+                </div>
+                {% endif %}
+          
+                <div class="field">
+                  <label for="email" class="label  has-text-weight-normal">
+                    Email address
+                  </label>
+                  <div class="field has-addons">
+                    <div class="control is-expanded">
+                      <input type="email" class="input " id="email" name="email" placeholder="name@address.com" value="{{ user.email }}" autocomplete="username" disabled>
+                    </div>
+                    <div class="control">
+                      <a class="button   is-dark">
+                        Change
+                      </a>
+                    </div>
+                  </div>
+                  <p id="error-email" class="help is-danger">{{ error.email | formatDot }}</p>
+                </div>
+          
+                <br/>
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                <div class="field">
+                  <div class="control">
+                    <button class="button  is-primary" type="submit">Save changes</button>
+                  </div>
+                </div>
+              </form>
+          
+            </div>
+          </div>
+          
+          <p class="has-text-centered">
+            If you no longer want to use {{ name }}, you can <a class="has-text-danger">delete your account</a>.
+          </p>
+          {% endif %}
+  
+          {% if user_page == 'security' %}
+          {% assign size = "" %}
+          <div class="card mb-6">
+            <div class="card-content content">
+          
+              <h3 class="has-text-weight-normal">Change Password</h3><br/>
+          
+              <form action="" method="POST" class="mb-40">
+          
+                <div class="field">
+                  <label for="password" class="label  has-text-weight-normal">
+                    Current password
+                  </label>
+                  <div class="control">
+                    <input type="password" class="input " id="password" name="password" minlength="8" required>
+                  </div>
+                  <p id="error-password" class="help is-danger">{{ error.password | formatDot }}</p>
+                </div>
+          
+                <div class="field">
+                  <label for="password-new" class="label  has-text-weight-normal">
+                    New password
+                  </label>
+                  <div class="control">
+                    <input type="password" class="input " id="password-new" name="password-new" minlength="8" required>
+                  </div>
+                  <p id="error-password-new" class="help is-danger"></p>
+                </div>
+          
+                <div class="field">
+                  <label for="password-confirm" class="label  has-text-weight-normal">
+                    Confirm new password
+                  </label>
+                  <div class="control">
+                    <input type="password" class="input " id="password-confirm" name="password-confirm" minlength="8" required>
+                  </div>
+                  <p id="error-password-confirm" class="help is-danger"></p>
+                </div>
+          
+                <br/>
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                <div class="field">
+                  <div class="control">
+                    <button class="button  is-primary" type="submit">Update password</button>
+                  </div>
+                </div>
+              </form>
+          
+            </div>
+          </div>
+          {% endif %}
+  
+          {% if user_page == 'billing' %}
+          <div class="card mb-5">
+            <div class="card-content content">
+          
+            	<div class="level">
+                <div class="level-left">
+                  <h3 class="has-text-weight-normal">Current Plan</h3>
+                </div>
+                <div class="level-right">
+                  <h3 class="has-text-weight-normal">$2.99/mo</h3>
+                </div>
+              </div>
+          
+              <div class="level">
+                <div class="level-left">
+                  <div>
+                    <h3 class="has-text-weight-normal mb-0">Starter</h3>
+                    <p class="has-text-grey">Next payment on 03/03/2021</p>
+                  </div>
+                </div>
+                <div class="level-right">
+                  <a class="button is-primary modal-trigger" data-modal="plans-modal">
+                    Change plan
+                  </a>
+                </div>
+              </div>
+          
+              <ul class="pricing-features has-text-left" style="list-style-type: none; margin: 0">
+                <li>
+                  <span class="tag is-success is-light is-rounded">
+                    <span class="icon is-small">
+                      <i class="fa fa-check"></i>
+                    </span>
+                  </span>
+                  3 articles
+                </li>
+                <li>
+                  <span class="tag is-success is-light is-rounded">
+                    <span class="icon is-small">
+                      <i class="fa fa-check"></i>
+                    </span>
+                  </span>
+                  3 images/article
+                </li>
+                <li>
+                  <span class="tag is-success is-light is-rounded">
+                    <span class="icon is-small">
+                      <i class="fa fa-check"></i>
+                    </span>
+                  </span>
+                  Unlimited shares
+                </li>
+          
+              {% for feature in xfeatures %}
+                <li>
+                  <span class="tag is-success is-light is-rounded">
+                    <span class="icon is-small">
+                      <i class="fa fa-check"></i>
+                    </span>
+                  </span>
+                  {{ feature }}
+                </li>
+              {% endfor %}
+              </ul>
+          
+            </div>
+          </div>
+          
+          <div class="card mb-5">
+            <div class="card-content content">
+          
+              <div class="level">
+                <div class="level-left">
+                  <h3 class="has-text-weight-normal mb-0">Payment Methods</h3>
+                </div>
+                <div class="level-right">
+                  <a class="button is-primary modal-trigger" data-modal="payment-modal">
+                    Add new
+                  </a>
+                </div>
+              </div>
+          
+              {% assign len = payment_methods.length %}
+              {% if len <= 0 %}
+              <p><a class="modal-trigger" data-modal="payment-modal">Add a payment method.</a></p>
+              {% else %}
+          
+              <ul style="list-style-type: none; margin: 0">
+              {% for method in payment_methods %}
+              {% assign item = method.card %}
+                <li class="mb-5">
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <figure class="image ml-0 mr-4">
+                          <img class="img-fluid" src="{{ root_assets }}/assets/img/icons/payment-methods/{{ item.brand }}.svg" alt="{{ item.brand | capitalize }}" style="max-width: 40px;">
+                        </figure>
+                      </div>
+                      <div class="level-item">
+                        <div>
+                          <p class="mb-0">{{ item.brand | capitalize }} ending in {{ item.last4 }}</p>
+                          <p class="has-text-grey">Expires {{ item.exp_month }}/{{ item.exp_year }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              {% endfor %}
+              </ul>
+              {% endif %}
+          
+            </div>
+          </div>
+          
+          {% if false %}
+          <div class="card">
+            <div class="card-content content">
+          
+              <h3 class="has-text-weight-normal">Invoices</h3><br/>
+          
+            </div>
+          </div>
+          {% endif %}
+          
+          <div id="plans-modal" class="modal">
+            <div class="modal-background modal-dismiss"></div>
+            <div class="container is-max-desktop">
+              <div class="modal-card" style="width: 100%;">
+                <section class="modal-card-body" style="border-radius: 8px; flex-grow: 0; margin-top: 100px;">
+                  <div class="content has-text-centered">
+                    <h2 class="">Choose a plan</h2>
+                  </div>
+                      <div class="content has-text-centered">
+                        <div class="field">
+                          <span>Monthly&nbsp;</span>
+                          <input id="priceSwitch" name="priceSwitch" type="checkbox" class="switch is-rounded" checked="checked" x-data="{checked: true}" @click="$dispatch('pricing-recount', { month: checked })" x-model="checked">
+                          <label for="priceSwitch">Annually</label>
+                        </div>
+                      </div>
+                  
+                      <div class="pricing-wrap">
+                      {% for item in pricing_plans %}
+                        <div class="feature-card is-pricing has-text-centered">
+                          <h3 class="tag is-primary is-light is-uppercase">{{ item.name }}</h3>
+                          <div class="price has-text-weight-normal">
+                            {% if item.price_text %}
+                              {{ item.price_text }}
+                            {% else %}
+                              <span class="pricing-currency">$ </span><span id="pricing{{ item.name }}" class="pricing-count"
+                                x-data="{ price_year: {{ item.price_year }}, price_month: {{ item.price_month }}, price_decimals: {{ item.price_decimals }} }" x-on:pricing-recount.window="window.pricingUpdate($el, $event.detail.month ? price_month : price_year, price_decimals)">{{ item.price_year }}</span><span class="pricing-monthly"> /mo</span>
+                            {% endif %}
+                          </div>
+                  
+                          <ul class="pricing-features has-text-left">
+                          {% for feature in item.features %}
+                            <li>
+                              <span class="tag is-success is-light is-rounded">  
+                                <span class="icon is-small">
+                                  <i class="fa fa-check"></i>
+                                </span>
+                              </span>
+                              {{ feature }}
+                            </li>
+                          {% endfor %}
+                          </ul>
+                  
+                          {% if item.primary %}
+                          <a class="button is-fullwidth is-medium is-primary" href="{{ item.button_href | default: '/signup' }}">
+                          {% else %}
+                          <a class="button is-fullwidth is-medium is-primary is-light" href="{{ item.button_href | default: '/signup' }}">
+                          {% endif %}
+                            {{ item.button }}
+                          </a>
+                        </div>
+                      {% endfor %}
+                      </div>
+                </section>
+              </div>
+            </div>
+            <div class="container is-max-desktop">
+              <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+            </div>
+          </div>
+          
+          <div id="payment-modal" class="modal">
+            <div class="modal-background modal-dismiss"></div>
+            <div class="modal-card">
+              <section class="modal-card-body" style="border-radius: 8px; margin-top: 100px;">
+                <div class="content has-text-centered">
+                  <h2 class="">Add a payment method</h2><br/>
+                </div>
+                    <form action="" method="POST" class="mb-20">
+                
+                      <div class="field">
+                        <div class="field-body">
+                
+                          <div class="field">
+                            <div class="control">
+                              <a id="apple" class="button is-fullwidth is-black"><i class="fab fa-apple"></i>&nbsp;Pay</a>
+                            </div>
+                            <p id="error-apple" class="help is-danger"></p>
+                          </div>
+                          <div class="field">
+                            <div class="control">
+                              <a id="paypal" class="button is-fullwidth is-info">PayPal</a>
+                            </div>
+                            <p id="error-paypal" class="help is-danger"></p>
+                          </div>
+                
+                        </div>
+                      </div>
+                
+                      <p class="has-text-centered mt-20 mb-20">or</p>
+                
+                      <div class="field">
+                        <label for="full-name" class="label has-text-weight-normal">
+                          Name on card
+                        </label>
+                        <div class="control">
+                          <input type="text" class="input" id="full-name" name="full-name" placeholder="First Last" value="">
+                        </div>
+                      </div>
+                
+                      <div class="field">
+                        <div class="field-body columns is-variable is-1">
+                
+                          <div class="field column is-half">
+                            <label for="card-number" class="label has-text-weight-normal">
+                              Card
+                            </label>
+                            <div class="control">
+                              <input type="text" class="input" id="card-number" name="card-number" placeholder="Card number">
+                            </div>
+                          </div>
+                
+                          <div class="field column">
+                            <label for="expiry" class="label has-text-weight-normal">
+                              &nbsp;
+                            </label>
+                            <div class="control">
+                              <input type="text" class="input" id="expiry" name="expiry" placeholder="MM / YY">
+                            </div>
+                          </div>
+                
+                          <div class="field column">
+                            <label for="cvc" class="label has-text-weight-normal">
+                              &nbsp;
+                            </label>
+                            <div class="control">
+                              <input type="text" class="input" id="cvc" name="cvc" placeholder="CVC">
+                            </div>
+                          </div>
+                
+                        </div>
+                      </div>
+                      <p id="error-card-number" class="help is-danger mb-0"></p>
+                
+                      <br/>
+                      <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                      <div class="field">
+                        <div class="control">
+                          <button class="button is-primary" type="submit">Add card</button>
+                        </div>
+                      </div>
+                    </form>
+                
+                
+                  </form>
+              </section>
+            </div>
+            <div class="container is-max-desktop">
+              <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+            </div>
+          </div>
+          {% endif %}
+  
+          {% if user_page == 'team' %}
+          <div class="card">
+            <div class="card-content content">
+          
+              <div class="level">
+                <div class="level-left">
+                  <h3 class="has-text-weight-normal mb-0">Your Team</h3>
+                </div>
+                <div class="level-right">
+                  <a class="button is-primary">
+                    Add new
+                  </a>
+                </div>
+              </div>
+          
+              <ul style="list-style-type: none; margin: 0">
+                <li class="mb-5">
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <figure class="image is-64x64 ml-0 mr-4">
+                          <img class="is-rounded" src="https://secure.gravatar.com/avatar/3e9f1c9c15f480a0154faa891c4eab10?size=128">
+                        </figure>
+                      </div>
+                      <div class="level-item">
+                        <div>
+                          <p class="mb-0">Davide Vernizzi</p>
+                          <p class="has-text-grey">dave@saasform.dev</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li class="mb-5">
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <figure class="image is-64x64 ml-0 mr-4">
+                          <img class="is-rounded" src="https://secure.gravatar.com/avatar/cc2478972b310a5d7aceb97b5725edc3?size=128">
+                        </figure>
+                      </div>
+                      <div class="level-item">
+                        <div>
+                          <p class="mb-0">Emanuele Cesena</p>
+                          <p class="has-text-grey">ec@saasform.dev</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+          
+          
+              {% for item in xusers %}
+                <li class="mb-5">
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <figure class="image is-64x64 ml-0 mr-4">
+                          <img class="is-rounded" src="https://secure.gravatar.com/avatar/cc2478972b310a5d7aceb97b5725edc3?size=128">
+                        </figure>
+                      </div>
+                      <div class="level-item">
+                        <div>
+                          <p class="mb-0">Emanuele Cesena</p>
+                          <p class="has-text-grey">ec@saasform.dev</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="level-right">
+                      <div class="level-item">
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              {% endfor %}
+              </ul>
+          
+            </div>
+          </div>
+          {% endif %}
+  
+        </div>
+  
+      </div>
+    </div>
+  </section>
+  
+  <footer class="footer">
+    <div class="container is-max-desktop">
+      <div class="columns content">
+        <div class="column is-one-quarter">
+          <div class="footer-logo">
+            <h3 class="is-size-4 has-text-weight-semibold">{{ name }}</h3>
+            <!--img src="{{ root_assets }}/img/logo/logo.svg"-->
+          </div>
+          <p>&copy; 2020 {{ legal_company_name }}</p>
+          <div class="level-left">
+            {% if social_github %}
+            <a class="level-item has-text-grey" href="{{ social_github }}">
+              <span class="icon">
+                <i class="fab fa-lg fa-github"></i>
+              </span>
+            </a>
+            {% endif %}
+            {% if social_twitter %}
+            <a class="level-item has-text-grey" href="{{ social_twitter }}">
+              <span class="icon">
+                <i class="fab fa-lg fa-twitter"></i>
+              </span>
+            </a>
+            {% endif %}
+            {% if social_linkedin %}
+            <a class="level-item has-text-grey" href="{{ social_linkedin }}">
+              <span class="icon">
+                <i class="fab fa-lg fa-linkedin"></i>
+              </span>
+            </a>
+            {% endif %}
+            {% for item in socials %}
+            <a class="level-item has-text-grey" href="{{ item.url }}">
+              <span class="icon">
+                <i class="fab fa-lg fa-{{ item.name }}"></i>
+              </span>
+            </a>
+            {% endfor %}
+          </div>
+  
+        </div>
+        <div class="column">
+          <div class="columns mt-0">
+  
+            {% for menu in footer %}
+            <div class="column pt-0">
+              <div class="level-right">
+                <div>
+                  <div class="footer-header">
+                    <h3 class="is-size-5 has-text-weight-normal is-uppercase" style="line-height: 1.75rem;margin-bottom: 1rem">{{ menu.title }}</h3>
+                  </div>
+                  <ul class="is-unstyled">
+                    {% for item in menu.links %}
+                    <li><a class="has-text-grey" href="{{ item.url }}">{{ item.name }}</a></li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+  
+            <div class="column pt-0">
+            <div class="level-right">
+            <div>
+              <div class="footer-header">
+                <h3 class="is-size-5 has-text-weight-normal is-uppercase" style="line-height: 1.75rem;margin-bottom: 1rem">Legal</h3>
+              </div>
+              <ul class="is-unstyled">
+                <li><a class="has-text-grey" href="/privacy-policy">Privacy policy</a></li>
+                <li><a class="has-text-grey" href="/terms-of-service">Terms of service</a></li>
+              </ul>
+            </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ root_assets }}/assets/js/bundle.js"></script>
+  {{ html_chatbot }}
+</body>
+</html>

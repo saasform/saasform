@@ -1,0 +1,4 @@
+email: "{{ error.email | formatDot }}"
+password: "{{ error.password | formatDot }}"
+google: "{{ error.google | formatDot }}"
+confirmation: "{{ error.confirmation | formatDot }}"

@@ -60,6 +60,15 @@ export class AccountsUsersService extends BaseService<AccountUserEntity> {
     return accountUser
   }
 
+  async deleteUser (userId: number): Promise<number | null> {
+    try {
+      return (await this.deleteMany({ user_id: { eq: userId } })).deletedCount
+    } catch (error) {
+      console.error('AccountsUsersService - deleteUser - error while deleteMany', userId, error)
+      return null
+    }
+  }
+
   /**
    * Get user by email
    *

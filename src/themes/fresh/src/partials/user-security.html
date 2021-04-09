@@ -1,0 +1,49 @@
+{% assign size = "" %}
+<div class="card mb-6">
+  <div class="card-content content">
+
+    <h3 class="has-text-weight-normal">Change Password</h3><br/>
+
+    <form action="" method="POST" class="mb-40">
+
+      <div class="field">
+        <label for="password" class="label {{ website.size }} has-text-weight-normal">
+          Current password
+        </label>
+        <div class="control">
+          <input type="password" class="input {{ website.size }}" id="password" name="password" minlength="8" required>
+        </div>
+        <p id="error-password" class="help is-danger">{{ error.password }}</p>
+      </div>
+
+      <div class="field">
+        <label for="password-new" class="label {{ website.size }} has-text-weight-normal">
+          New password
+        </label>
+        <div class="control">
+          <input type="password" class="input {{ website.size }}" id="password-new" name="password-new" minlength="8" required>
+        </div>
+        <p id="error-password-new" class="help is-danger">{{ error.password_new }}</p>
+      </div>
+
+      <div class="field">
+        <label for="password-confirm" class="label {{ website.size }} has-text-weight-normal">
+          Confirm new password
+        </label>
+        <div class="control">
+          <input type="password" class="input {{ website.size }}" id="password-confirm" name="password-confirm" minlength="8" required>
+        </div>
+        <p id="error-password-confirm" class="help is-danger">{{ error.password_confirm }}</p>
+      </div>
+
+      <br/>
+      <input type="hidden" name="_csrf" value="{{ website.csrf_token }}">
+      <div class="field">
+        <div class="control">
+          <button class="button {{ website.size }} is-primary" type="submit">Update password</button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>

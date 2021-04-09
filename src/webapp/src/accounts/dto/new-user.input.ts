@@ -2,7 +2,7 @@ import { Field, InputType } from '@nestjs/graphql'
 import { MaxLength } from 'class-validator'
 
 @InputType()
-class UserJson {
+export class UserJson {
   @Field()
   name: string
 

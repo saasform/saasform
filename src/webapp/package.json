@@ -10,15 +10,18 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start:dev": "NODE_ENV=development nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "ts-standard --fix",
-    "test": "jest",
+    "test": "jest --silent",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "node --require ts-node/register ./node_modules/typeorm/cli.js schema:drop -c test && node --require ts-node/register ./node_modules/typeorm/cli.js migration:run -c test && jest --silent --runInBand --config ./test/jest-e2e.json",
+    "test:e2elog": "node --require ts-node/register ./node_modules/typeorm/cli.js schema:drop -c test && node --require ts-node/register ./node_modules/typeorm/cli.js migration:run -c test && jest --runInBand --config ./test/jest-e2e.json",
+    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
+    "migrate": "node --require ts-node/register ./node_modules/typeorm/cli.js migration:run"
   },
   "dependencies": {
     "@nestjs-query/query-graphql": "^0.21.2",
@@ -31,15 +34,24 @@
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.5.1",
     "@nestjs/typeorm": "^7.1.5",
+    "@sendgrid/mail": "^7.4.2",
     "add": "^2.0.6",
     "apollo-server-express": "^2.19.2",
     "bcrypt": "^5.0.0",
     "class-transformer": "^0.3.2",
     "class-validator": "^0.13.1",
+    "cookie-parser": "^1.4.5",
+    "csurf": "^1.11.0",
     "dataloader": "^2.0.0",
+    "ec-key": "^0.0.4",
+    "google-auth-library": "^7.0.2",
     "graphql": "^15.5.0",
     "graphql-relay": "^0.6.0",
     "graphql-subscriptions": "^1.1.0",
+    "helmet": "^4.4.1",
+    "killbill": "^0.1.0",
+    "liquidjs": "^9.20.1",
+    "markdown-it": "^12.0.4",
     "mysql": "^2.18.1",
     "parse-domain": "^3.0.3",
     "passport": "^0.4.1",
@@ -48,9 +60,15 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3",
+    "stripe": "^8.135.0",
+    "tld-extract": "^2.0.1",
     "typeorm": "^0.2.30",
     "urlsafe-base64": "^1.0.0",
+    "validator": "^13.5.2",
     "yarn": "^1.22.10"
+  },
+  "resolutions": {
+    "killbill/axios": "^0.21.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.1",
@@ -66,6 +84,8 @@
     "eslint-config-prettier": "7.1.0",
     "eslint-plugin-prettier": "^3.1.4",
     "jest": "^26.6.3",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^3.1.2",
     "pinst": "^2.1.2",
     "supertest": "^6.0.0",
     "ts-jest": "^26.4.3",
@@ -93,6 +113,9 @@
     "testEnvironment": "node"
   },
   "ts-standard": {
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.json",
+    "ignore": [
+      "themes/**/*.js"
+    ]
   }
 }

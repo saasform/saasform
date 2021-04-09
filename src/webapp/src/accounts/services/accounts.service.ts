@@ -10,18 +10,32 @@ import { UsersService } from './users.service'
 import { UserEntity } from '../entities/user.entity'
 import { AccountsUsersService } from './accountsUsers.service'
 import { BaseService } from '../../utilities/base.service'
+import { NotificationsService } from '../../notifications/notifications.service'
+import { SettingsService } from '../..//settings/settings.service'
+import { PaymentsService } from '../../payments/services/payments.service'
+import { PlansService } from '../../payments/services/plans.service'
+import { UserJson } from '../dto/new-user.input'
+import { ConfigService } from '@nestjs/config'
 
 @QueryService(AccountEntity)
 @Injectable()
 export class AccountsService extends BaseService<AccountEntity> {
+  private readonly paymentIntegration: string
+
   constructor (
     @Inject(REQUEST) private readonly req: any,
     @InjectRepository(AccountEntity)
     private readonly accountsRepository: Repository<AccountEntity>,
     private readonly accountsUsersService: AccountsUsersService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly paymentsService: PaymentsService,
+    private readonly plansService: PlansService,
+    private readonly notificationService: NotificationsService,
+    private readonly settingsService: SettingsService,
+    private readonly configService: ConfigService
   ) {
     super(req, 'AccountEntity')
+    this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
   }
 
   async getAll (): Promise<AccountEntity[]> {
@@ -58,11 +72,45 @@ export class AccountsService extends BaseService<AccountEntity> {
     // will be associated with this account.
     account.owner_id = user?.id ?? 0
 
+    // Create a Billing user for this account
+    const billingCustomers = await this.paymentsService.createBillingCustomer({
+      name: data.name
+    })
+    // TODO: stripeCustomer might be null if Stripe is not configure.
+    // at the moment it fails gracefully, but we should write a more
+    // proper way.
+
+    account.data.stripe = billingCustomers[0]
+    if (this.paymentIntegration === 'killbill') {
+      account.data.killbill = billingCustomers[1]
+    }
+
+    // Add free tier plan
+    try {
+      const plans = await this.plansService.getPlans()
+      await this.paymentsService.createFreeSubscription(
+        plans[0],
+        (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id)
+      )
+    } catch (err) {
+      console.error('accountsService - cannot create free subscription')
+    }
+
     try {
       const res = await this.createOne(account)
       // If a user is specified add the user as owner
       if (user !== undefined) await this.accountsUsersService.addUser(user, res)
       // TODO: refactor this
+
+      // send email here (new account template)
+      const emailData = {
+        user,
+        action_url: `${await this.settingsService.getBaseUrl()}/verify-email/${user.emailConfirmationToken as string}`
+      }
+
+      if ((await this.notificationService.sendEmail(user.email, 'email_confirm', emailData)) === false) {
+        console.error('Error while sending email')
+      }
 
       return res
     } catch (err) {
@@ -71,7 +119,11 @@ export class AccountsService extends BaseService<AccountEntity> {
     }
   }
 
-  async getUsers (id: number): Promise<any[]> { // TODO: fix return value
+  /**
+   * Get users of a given account
+   * @param id Id of the account to search
+   */
+  async getUsers (id: number): Promise<Array<UserEntity | undefined>> { // TODO: fix undefined return value. It should be null
     // 1. get users id from accountUsers table
     const usersIds = await this.accountsUsersService.query({
       filter: { account_id: { eq: id } }
@@ -80,11 +132,15 @@ export class AccountsService extends BaseService<AccountEntity> {
     // 2. get all info for each user
     const users = await Promise.all(
       usersIds.map(async u =>
-        await this.usersService.query({ filter: { id: { eq: u.user_id } } })
+        await this.usersService.findById(u.user_id)
       )
     )
+    if (users == null) {
+      // No users for account. This should never happend
+      return []
+    }
 
-    return users
+    return users.filter(u => u != null)
   }
 
   async setOwner (account: AccountEntity, userId: number): Promise<any> {
@@ -107,12 +163,12 @@ export class AccountsService extends BaseService<AccountEntity> {
    * Invite a user.
    *
    * Create a new user and reset its password.
-   * Then add it to the accountUser model
+   * Then add it to the accountUser model.
    *
    * @param userInput data of the user to invite
    * @param accountId id of the account to add the user to
    */
-  async inviteUser (userInput: any, accountId: number): Promise<UserEntity | null> { // TODO: specify type
+  async inviteUser (userInput: UserJson, accountId: number): Promise<UserEntity | null> { // TODO: specify type
     if (userInput == null) {
       return null
     }
@@ -124,29 +180,37 @@ export class AccountsService extends BaseService<AccountEntity> {
       return null
     }
 
-    const email = userInput.email
-
-    const user = await this.usersService.findOrCreateUser(email)
+    const user = await this.usersService.findOrCreateUser(userInput)
     if (user == null) {
       return null
     }
 
+    // TODO: can it be possible that an invited user is the owner?
+    // maybe yes if it is invited by the saas admin
     await this.setOwner(account, user.id)
 
     if (await this.accountsUsersService.addUser(user, account) == null) {
+      console.error(
+        'accounts.service - inviteUser - Error while inviting new user (add accountUser relationthip)', user.id, account.id
+      )
       return null
+    }
+
+    // send email here (invited user template)
+    const emailData = {
+      account,
+      user,
+      // TODO #98
+      sender: {
+        display_name: account.data.name
+      },
+      action_url: `${await this.settingsService.getBaseUrl()}/reset-password/${user.resetPasswordToken}`
+    }
+    if (await this.notificationService.sendEmail(user.email, 'user_invite', emailData) === false) {
+      console.error('accountsService - inviteUser - error while sending email')
     }
 
     return user
-  }
-
-  async addUser (user: any, accountId: Number): Promise<UserEntity | null> {
-    const account = await this.findById(accountId as any)
-    if (account === undefined) {
-      return null
-    }
-
-    return await this.inviteUser(user, account.id)
   }
 
   async findByUserId (userId): Promise<AccountEntity | undefined> {
@@ -158,13 +222,92 @@ export class AccountsService extends BaseService<AccountEntity> {
     return account
   }
 
-  // TODO: call this from user profile payments method page
-  // async getPaymentsMethods (id: number): Promise<[any] | undefined> {
-  //   try {
-  //     const account = await this.findById(id)
-  //     return account?.data?.payments_methods ?? []
-  //   } catch (error) {
-  //     console.error('getPaymentsMethods - error', id, error)
-  //   }
-  // }
+  async deleteUser (userId: number): Promise<Boolean> {
+    // TODO: implement this
+    return true
+  }
+
+  /**
+   * Create a payment method and attach to an account.
+   * This SHOULD NOT be used anymore since it requires the credit card data ad input
+   * and is considered unsafe. Use addPaymentsMethods instead
+   * @param id the id of the account
+   * @param card information about the credit card
+   */
+  async createPaymentsMethods (id: number, card: any): Promise<[any]|any> {
+    // DEPRECATED
+    try {
+      const account = await this.findById(id)
+      if (account == null) {
+        console.error('addPaymentsMethods - account not found')
+        return null
+      }
+      if (account.data == null) {
+        console.error('addPaymentsMethods - account format error')
+        return null
+      }
+
+      const method = await this.paymentsService.createPaymentMethod(account.data.stripe.id, card)
+
+      return await this.addPaymentsMethods(id, method)
+    } catch (error) {
+      console.error('getPaymentsMethods - error', id, error)
+    }
+  }
+
+  /**
+   * Add a Stripe payment method to an account. Note that the payment method should be created elsewhere, possibly on the client.
+   * @param id id of the account
+   * @param method paymentMethod to add as returned by Stripe
+   */
+  async addPaymentsMethods (id: number, method: any): Promise<[any]|null> { // TODO: fix return type
+    try {
+      const account = await this.findById(id)
+      if (account == null) {
+        console.error('accountsService - addPaymentsMethods - account not found')
+        return null
+      }
+      if (account.data == null) {
+        console.error('accountsService - addPaymentsMethods - account format error')
+        return null
+      }
+
+      const customer = await this.paymentsService.attachPaymentMethod(account, method.id)
+      if (customer == null) {
+        console.error('accountsService - addPaymentsMethods - error while attaching payment method to customer')
+        return null
+      }
+
+      if (account.data.payments_methods == null) { account.data.payments_methods = [method] } else { account.data.payments_methods.push(method) }
+
+      if (account.data.payments_methods == null) {
+        console.error('accountsService - addPaymentsMethods - error while adding payment method')
+        return null
+      }
+
+      const updatedAccount = await this.updateOne(id, { data: account.data })
+      if (updatedAccount == null) {
+        console.error('accountsService - addPaymentsMethods - error while updating account')
+        return null
+      }
+
+      return account.data.payments_methods
+    } catch (error) {
+      console.error('getPaymentsMethods - error', id, error)
+      return null
+    }
+  }
+
+  /**
+   * Subscribe an account to a plan
+   * @param account account to subscribe
+   * @param subscription subscription to buy
+   */
+  // TODO: better specify the type of subscription
+  async subscribeToPlan (account: AccountEntity, subscription: any): Promise<any> { // TODO: return a proper type
+    const paymentMethod = account.data.payments_methods.filter(p => p?.id === subscription.method)[0]
+    const price = await this.plansService.getPriceByProductAndAnnual(subscription.plan, subscription.monthly)
+    return await this.paymentsService.subscribeToPlan(account.data.stripe.id, paymentMethod, price)
+    // TODO: check errors
+  }
 }

@@ -1,0 +1,74 @@
+# layout
+name: "{{ name }}"
+title: "{{ title | formatDot }}"
+description: "{{ description }}"
+domain_primary: "{{ domain_primary }}"
+email: "{{ email }}"
+logo_url: "{{ logo_url }}"
+
+# footer
+legal_company_name: "{{ legal_company_name }}"
+social_github: "{{ social_github }}"
+social_twitter: "{{ social_twitter }}"
+social_linkedin: "{{ social_linkedin }}"
+made_with_love: "{{ made_with_love }}"
+
+# seo
+seo_fb_app_id: "{{ seo_fb_app_id }}"
+seo_title: "{{ seo_title }}"
+seo_description: "{{ seo_description }}"
+seo_og_url: "{{ seo_og_url }}"
+seo_og_title: "{{ seo_og_title }}"
+seo_og_description: "{{ seo_og_description }}"
+seo_og_image_url: "{{ seo_og_image_url }}"
+seo_twitter_title: "{{ seo_twitter_title }}"
+seo_twitter_description: "{{ seo_twitter_description }}"
+seo_twitter_image_url: "{{ seo_twitter_image_url }}"
+
+# computed
+saas_redirect_url: "{{ saas_redirect_url }}"
+html_google_signin_header: "{{ html_google_signin_header }}"
+html_google_analytics: "{{ html_google_analytics }}"
+html_google_tag_manager_header: "{{ html_google_tag_manager_header }}"
+html_google_tag_manager_body: "{{ html_google_tag_manager_body }}"
+html_facebook_pixel: "{{ html_facebook_pixel }}"
+html_chatbot: "{{ html_chatbot }}"
+csrf_token: "{{ csrf_token }}"
+token: "{{ token }}"
+
+# page
+page_title: "{{ page_title }}"
+page_body: "{{ page_body }}"
+user_page: "{{ user_page }}"
+legal_website_url: "{{ legal_website_url }}"
+legal_email: "{{ legal_email }}"
+
+# home
+hero_subtitle: "{{ hero_subtitle | formatNoOrphanDot }}"
+hero_cta: "{{ hero_cta }}"
+hero_image_url: "{{ hero_image_url }}"
+benefits: "{{ benefits }}"
+logos: "{{ logos }}"
+features: "{{ features }}"
+testimonials_title: "{{ testimonials_title | formatDot }}"
+testimonials_text: "{{ testimonials_text | formatNoOrphanDot }}"
+testimonials: "{{ testimonials }}"
+pricing_title: "{{ pricing_title | formatDot }}"
+pricing_text: "{{ pricing_text | formatNoOrphanDot }}"
+pricing_free_trial: "{{ pricing_free_trial }}"
+pricing_credit_card_required: "{{ pricing_credit_card_required }}"
+pricing_plans: "{{ pricing_plans }}"
+faq: "{{ faq }}"
+cta_badge: "{{ cta_badge }}"
+cta_title: "{{ cta_title | formatDot }}"
+cta_text: "{{ cta_text | formatNoOrphanDot }}"
+cta_button: "{{ cta_button }}"
+
+# prelaunch page, if enabled
+prelaunch_enabled: "{{ prelaunch_enabled }}"
+prelaunch_cleartext_password: "{{ prelaunch_cleartext_password }}"
+prelaunch_message: "{{ prelaunch_message }}"
+prelaunch_background_url: "{{ prelaunch_background_url }}"
+
+# internals
+size:

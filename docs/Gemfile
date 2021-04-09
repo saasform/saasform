@@ -7,11 +7,12 @@ source "https://rubygems.org"
 #
 # This will help ensure the proper Jekyll version is running.
 # Happy Jekylling!
-gem "github-pages", "~> 209", group: :jekyll_plugins
+gem "github-pages", "~> 214", group: :jekyll_plugins
 gem "just-the-docs"
 # If you have any plugins, put them here!
 group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.12"
+  gem "jekyll-commonmark-ghpages"
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem

@@ -1,0 +1,38 @@
+[{
+   "name": "default",
+   "type": "mysql",
+   "host": "localhost",
+   "port": 3306,
+   "username": "saasform",
+   "password": "saasformp",
+   "database": "saasform",
+   "synchronize": true,
+   "logging": false,
+   "migrations": [
+      "src/migration/**/*.ts"
+   ],
+   "cli": {
+      "entitiesDir": "src/entity",
+      "migrationsDir": "src/migration",
+      "subscribersDir": "src/subscriber"
+   }
+},
+{
+   "name": "test",
+   "type": "mysql",
+   "host": "localhost",
+   "port": 3306,
+   "username": "saasform",
+   "password": "saasformp",
+   "database": "saasform_test",
+   "synchronize": true,
+   "logging": false,
+   "migrations": [
+      "src/migration/**/*.ts"
+   ],
+   "cli": {
+      "entitiesDir": "src/entity",
+      "migrationsDir": "src/migration",
+      "subscribersDir": "src/subscriber"
+   }
+}]

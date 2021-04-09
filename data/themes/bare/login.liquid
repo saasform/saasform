@@ -1,0 +1,70 @@
+<!DOCTYPE html><html><head><title>{{ title }}</title>  <link rel="stylesheet" href="{{ root_assets }}/assets/style.css"></head><body>
+
+<script src="https://apis.google.com/js/api:client.js"></script>
+<script>
+    const onGoogle = (node) => {
+        const google_client_id = "{{app_google_signin_client_id}}";
+        const auth2 = gapi.auth2.init({ client_id: google_client_id });
+        auth2.attachClickHandler(
+            node,
+            {},
+            (googleUser) => onSignin(googleUser),
+            (error) => alert(JSON.stringify(error, undefined, 2))
+        );
+    }
+    
+    const onSignin = (googleUser) => {
+        const token = googleUser.getAuthResponse().id_token;
+        const data = { token };
+    
+        const method = "POST";
+        const url = "/api/v1/google-signin";
+        const xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.setRequestHeader("Content-Type", "application/json");
+    
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if(xhr.status == 302) {
+                    window.location.href = JSON.parse(xhr.responseText).redirect || '/login';
+                } else {
+                    document.getElementById('error-google').innerHTML = JSON.parse(xhr.responseText).message;
+                }
+            }
+        };
+    
+        xhr.send(JSON.stringify(data));
+    }
+    
+    (() => {
+        gapi.load("auth2", () => onGoogle(document.getElementById("google-signin")));
+    })();
+
+</script>
+
+<h1>Login</h1>
+
+<form action="" method="POST">
+    <div>
+        <input type="email" id="email" name="email" value="name@address.com" required>
+        {{error.email}}
+    </div>
+    <div>
+        <input type="password" id="password" name="password" value="Enter your password" minlength="8" required>
+        {{error.password}}
+    </div>
+
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+    <input type="submit" />
+</form>
+
+<div id="google-signin">Sign in with Google</div>
+
+<div>
+    {{error.message}}
+</div>
+
+<div><a href="/password-reset">Forgot your password?</a></div>
+
+</body>
+</html>

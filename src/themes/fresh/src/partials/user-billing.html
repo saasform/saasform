@@ -1,0 +1,159 @@
+<div class="card mb-5">
+  <div class="card-content content">
+
+  	<div class="level">
+      <div class="level-left">
+        <h3 class="has-text-weight-normal">Current Plan</h3>
+      </div>
+      <div class="level-right">
+        <h3 class="has-text-weight-normal">$2.99/mo</h3>
+      </div>
+    </div>
+
+    <div class="level">
+      <div class="level-left">
+        <div>
+          <h3 class="has-text-weight-normal mb-0">Starter</h3>
+          <p class="has-text-grey">Next payment on 03/03/2021</p>
+        </div>
+      </div>
+      <div class="level-right">
+        <a class="button is-primary modal-trigger" data-modal="plans-modal">
+          Change plan
+        </a>
+      </div>
+    </div>
+
+    <ul class="pricing-features has-text-left" style="list-style-type: none; margin: 0">
+      <li>
+        <span class="tag is-success is-light is-rounded">
+          <span class="icon is-small">
+            <i class="fa fa-check"></i>
+          </span>
+        </span>
+        3 articles
+      </li>
+      <li>
+        <span class="tag is-success is-light is-rounded">
+          <span class="icon is-small">
+            <i class="fa fa-check"></i>
+          </span>
+        </span>
+        3 images/article
+      </li>
+      <li>
+        <span class="tag is-success is-light is-rounded">
+          <span class="icon is-small">
+            <i class="fa fa-check"></i>
+          </span>
+        </span>
+        Unlimited shares
+      </li>
+
+    {% for feature in xfeatures %}
+      <li>
+        <span class="tag is-success is-light is-rounded">
+          <span class="icon is-small">
+            <i class="fa fa-check"></i>
+          </span>
+        </span>
+        {{ feature.name }}
+      </li>
+    {% endfor %}
+    </ul>
+
+  </div>
+</div>
+
+<div class="card mb-5">
+  <div class="card-content content">
+
+    <div class="level">
+      <div class="level-left">
+        <h3 class="has-text-weight-normal mb-0">Payment Methods</h3>
+      </div>
+      <div class="level-right">
+        <a class="button is-primary modal-trigger" data-modal="payment-modal">
+          Add new
+        </a>
+      </div>
+    </div>
+
+    {% assign len = payment_methods.length %}
+    {% if len <= 0 %}
+    <p><a class="modal-trigger" data-modal="payment-modal">Add a payment method.</a></p>
+    {% else %}
+
+    <ul style="list-style-type: none; margin: 0">
+    {% for method in payment_methods %}
+    {% assign item = method.card %}
+      <li class="mb-5">
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <figure class="image ml-0 mr-4">
+                <img class="img-fluid" src="{{ root }}/assets/img/icons/payment-methods/{{ item.brand }}.svg" alt="{{ item.brand_capitalized }}" style="max-width: 40px;">
+              </figure>
+            </div>
+            <div class="level-item">
+              <div>
+                <p class="mb-0">{{ item.brand_capitalized }} ending in {{ item.last4 }}</p>
+                <p class="has-text-grey">Expires {{ item.exp_month }}/{{ item.exp_year }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+
+  </div>
+</div>
+
+{% if false %}
+<div class="card">
+  <div class="card-content content">
+
+    <h3 class="has-text-weight-normal">Invoices</h3><br/>
+
+  </div>
+</div>
+{% endif %}
+
+<div id="plans-modal" class="modal">
+  <div class="modal-background modal-dismiss"></div>
+  <div class="container is-max-desktop">
+    <div class="modal-card" style="width: 100%;">
+      <section class="modal-card-body" style="border-radius: 8px; flex-grow: 0; margin-top: 100px;">
+        <div class="content has-text-centered">
+          <h2 class="">Choose a plan</h2>
+        </div>
+        {{> pricing}}
+      </section>
+    </div>
+  </div>
+  <div class="container is-max-desktop">
+    <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+  </div>
+</div>
+
+<div id="payment-modal" class="modal">
+  <div class="modal-background modal-dismiss"></div>
+  <div class="modal-card">
+    <section class="modal-card-body" style="border-radius: 8px; margin-top: 100px;">
+      <div class="content has-text-centered">
+        <h2 class="">Add a payment method</h2><br/>
+      </div>
+      {{> payment}}
+    </section>
+  </div>
+  <div class="container is-max-desktop">
+    <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+  </div>
+</div>

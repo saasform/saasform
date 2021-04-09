@@ -1,0 +1,82 @@
+<!DOCTYPE html><html><head><title>{{ title }}</title> 
+  <link rel="stylesheet" href="{{ root_assets }}/assets/style.css">
+</head><body>
+
+<h1>User profile</h1>
+
+<form action="/user/profile" method="POST">
+  <div>
+      <input type="text" name="username" value="{{user.user_username}}" required>
+  </div>
+  <div>
+    <input type="text" name="region" value="{{user.user_region}}" required>
+  </div>
+
+  <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+  <input type="submit" />
+</form>
+
+<h2>Update your password</h2>
+
+<form action="/user/password-change" method="POST">
+  <div>
+    <input type="password" name="password" value="" placeholder="Old password" required>
+    {{error.password}}
+  </div>
+
+  <div>
+    <input type="password" name="newpassword" value="" placeholder="New password" required>
+    {{error.newpassword}}
+  </div>
+  
+  <div>
+    <input type="password" name="confirmation" value="" placeholder="Confirm password" required>
+    {{error.confirmation}}
+  </div>
+
+  <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+  <input type="submit" />
+</form>
+
+{{ alert.text }}
+
+<h2>Team</h2>
+
+<ul>
+{% for user in account_users %}
+  <li>{{ user.name }}, {{ user.email }} <button onclick="
+  fetch('/api/v1/user/{{user.id}}', {
+    method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+  });window.location.reload(false)">delete</button></li>
+{% endfor %}
+</ul>
+
+<h3>Add user to the team</h3>
+
+<form action="/user/team" method="POST">
+  <div>
+      <input type="email" id="email" name="email" value="name@address.com" required>
+      {{error.email}}
+  </div>
+  <div>
+    <input type="text" name="username" value="John" required>
+  </div>
+  <div>
+    <input type="text" name="region" value="EU" required>
+  </div>
+
+  <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+  <input type="submit" />
+</form>
+
+</body>
+</html>

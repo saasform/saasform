@@ -1,0 +1,43 @@
+SAAS_REDIRECT_URL: http://localhost:3000
+SAASFORM_BASE_URL: http://localhost:7000
+SAASFORM_THEME: default
+
+# database
+TYPEORM_HOST: localhost
+TYPEORM_PORT: 3306
+TYPEORM_DATABASE: saasform
+TYPEORM_USERNAME: saasform
+TYPEORM_PASSWORD: saasformp
+
+
+###################
+# Saasform modules
+###################
+
+# MODULE_HOMEPAGE values: saasform, redirect
+# saasform   saasform renders homepage
+# redirect   saasform redirects to SAAS_REDIRECT_URL
+MODULE_HOMEPAGE: saasform
+
+# MODULE_PAYMENT values: stripe, killbill
+MODULE_PAYMENT: stripe
+
+# MODULE_USER values: [general, security, billing, team] or any subset
+MODULE_USER: [general, security, billing, team]
+
+
+###########
+# API keys
+###########
+
+SENDGRID_API_KEY: SG.xxx
+SENDGRID_SEND_FROM: hello@example.com
+
+STRIPE_API_KEY: sk_test_xxx
+STRIPE_PUBLISHABLE_KEY: pk_test_xxx
+
+KILLBILL_URL: http://127.0.0.1:8080
+KILLBILL_API_KEY: bob
+KILLBILL_API_SECRET: lazar
+KILLBILL_USERNAME: admin
+KILLBILL_PASSWORD: password

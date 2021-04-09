@@ -6,9 +6,17 @@ import { Repository } from 'typeorm'
 import * as bcrypt from 'bcrypt'
 
 import { UserEntity } from '../entities/user.entity'
-import { NewUserInput } from '../dto/new-user.input'
+import { UserJson } from '../dto/new-user.input'
 import { UserCredentialsService } from '../services/userCredentials.service'
 import { BaseService } from '../../utilities/base.service'
+import { SettingsService } from '../../settings/settings.service'
+import { NotificationsService } from '../../notifications/notifications.service'
+
+import { UserError, ErrorTypes } from '../../utilities/common.model'
+
+import { password } from '../../utilities/random'
+import { ValidationService } from '../../validator/validation.service'
+
 @QueryService(UserEntity)
 @Injectable({ scope: Scope.REQUEST })
 export class UsersService extends BaseService<UserEntity> {
@@ -16,7 +24,10 @@ export class UsersService extends BaseService<UserEntity> {
     @Inject(REQUEST) private readonly req,
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
-    private readonly userCredentialsService: UserCredentialsService
+    private readonly userCredentialsService: UserCredentialsService,
+    private readonly settingsService: SettingsService,
+    private readonly notificationService: NotificationsService,
+    private readonly validationService: ValidationService
   ) {
     super(
       req,
@@ -31,47 +42,88 @@ export class UsersService extends BaseService<UserEntity> {
 
   async findUser (id: number): Promise<UserEntity | null> {
     const result = await this.findById(id)
-    if (typeof result === 'undefined') {
+    if (result == null) {
       return null
     }
 
     return result
   }
 
-  async findOrCreateUser (email: string): Promise<UserEntity | null> {
-    let user
-    user = await this.findByEmail(email)
+  /**
+   * If a user exists on the DB reutrns it.
+   * It it doesn't, creates it.
+   * If data is passed, assign data to the user data.
+   * @param email emaiil of the user
+   * @param data additional data of the user
+   */
+  async findOrCreateUser (data: UserJson): Promise<UserEntity | null> {
+    const user = await this.findByEmail(data.email)
 
-    if (user === null || user === []) {
-      return null
+    if (user != null) {
+      return user
     }
 
-    user = new UserEntity()
-    user.email = email
-    await user.setResetPasswordToken()
-
     try {
-      user = await this.addUser(user)
-      if (typeof user === 'undefined') {
+      const user = await this.addUser({
+        email: data.email,
+        password: password(10),
+        data
+      }, true)
+      if (!(user instanceof UserEntity)) {
         return null
       }
 
       return user
     } catch (err) {
       console.error(
-        'accounts.service - inviteUser - Error while inviting new user (creating new user)',
-        email,
+        'usersService - findOrCreateUser - Error while adding new user',
+        data.email,
         err
       )
       return null
     }
   }
 
-  async addUser (newUser: NewUserInput): Promise<UserEntity | null> {
+  /**
+   * Add a new user
+   * @param newUser data of the user
+   * @param resetPassword flag indicating if password must be resetted during creation. Default to false (see below)
+   */
+  async addUser (newUser: any, resetPassword = false): Promise<UserEntity | UserError | null> {
+    const sameEmailUser = await this.query({ filter: { email: { eq: newUser.email } } })
+    if (this.validationService.isNilOrEmpty(sameEmailUser) !== true) {
+      console.error('usersService - addUser - email already existing')
+      return new UserError(ErrorTypes.DUPLICATE_EMAIL, 'email already existing')
+    }
+
+    const sameUsernameUser = await this.query({ filter: { username: { eq: newUser.data.username } } })
+    if (this.validationService.isNilOrEmpty(sameUsernameUser) !== true) {
+      console.error('usersService - addUser - username already existing')
+      return new UserError(ErrorTypes.DUPLICATE_USERNAME, 'username already existing')
+    }
+
     const user = new UserEntity()
     user.email = newUser.email
+    user.username = newUser.data.username != null && newUser.data.username !== '' ? newUser.data.username : undefined
     user.password = await bcrypt.hash(newUser.password, 12)
-    user.data.name = newUser?.data?.name ?? ''
+    const { allowedKeys } = await this.settingsService.getUserSettings()
+    allowedKeys.forEach(
+      key => {
+        if (key in newUser.data) {
+          const castedKey: string = key
+          user.data.profile[castedKey] = newUser.data[key]
+        }
+      }
+    )
+
+    // TODO: consider whether to move this elsewhere.
+    // So far this flag is only set to true during the invitation,
+    // while this function is also used during the signup, so maybe
+    // it's better to move the password reset into the invitation flow;
+    // it was put here to save a DB update.
+    if (resetPassword) {
+      await user.setResetPasswordToken()
+    }
 
     try {
       const res = await this.createOne(user)
@@ -82,8 +134,129 @@ export class UsersService extends BaseService<UserEntity> {
       })
       return res
     } catch (err) {
-      console.error('Error while inserting new user', newUser, err)
+      console.error('Error while inserting new user', err)
       return null
+    }
+  }
+
+  async updateUserProfile (data: any, userId: number): Promise<any> {
+    const user = await this.findById(userId)
+    if (user == null) {
+      console.error('usersService - updateUserProfile - User not found')
+      return null
+    }
+
+    // Get allowedKeys and update those values
+    const { allowedKeys } = await this.settingsService.getUserSettings()
+    const updatedProfile = allowedKeys.reduce((acc, property) => {
+      if (property in data) {
+        acc[property] = data[property]
+      } else if (property in user.data.profile) {
+        acc[property] = user.data.profile[property]
+      } else {
+        acc[property] = ''
+      }
+
+      return acc
+    }, {})
+
+    user.data.profile = updatedProfile
+
+    try {
+      const res = await this.updateOne(userId, {
+        data: user.data
+      })
+
+      res.setValuesFromJson()
+      return res
+    } catch (err) {
+      console.error('Error while updating user profile', err)
+      return null
+    }
+  }
+
+  async deleteUser (userId: number): Promise<Boolean> {
+    const user = this.findById(userId)
+    if (user == null) {
+      console.error('usersService - deleteUser - user not found', userId)
+      return false
+    }
+
+    if (await this.userCredentialsService.deleteUserCredentials(userId) == null) {
+      console.error('usersService - deleteUser - error while removing user credentials', userId)
+      return false
+    }
+
+    try {
+      const deletedUser = await this.deleteOne(userId)
+
+      if (deletedUser == null) {
+        console.error('usersService - deleteUser - error while removing user', userId)
+        return false
+      }
+
+      return true
+    } catch (error) {
+      console.error('usersService - deleteUser - exception  while removing user', userId, error)
+      return false
+    }
+  }
+
+  async confirmEmail (token: string): Promise<UserEntity | null> {
+    if (token === '') {
+      console.error('confirmEmail - error in parameters')
+    }
+
+    const user = (
+      await this.query({ filter: { emailConfirmationToken: { eq: token } } })
+    )[0]
+
+    if (user == null) {
+      console.error('confirmEmail - User not found')
+      return null
+    }
+
+    const now = new Date().getTime()
+    if (user.data.emailConfirmationTokenExp < now) {
+      console.error('confirmEmail - Token expired', user.data.emailConfirmationTokenExp, now)
+      return null
+    }
+
+    try {
+      const res = await this.updateOne(user.id, {
+        emailConfirmationToken: '',
+        data: {
+          emailConfirmationToken: '',
+          emailConfirmationTokenExp: 0,
+          emailConfirmed: true
+        }
+      })
+
+      // not auto called after updateOne :(
+      res.setValuesFromJson()
+      return res
+    } catch (err) {
+      console.error('Error while confirming token', token, err)
+      return null
+    }
+  }
+
+  async sendResetPasswordEmail (email: string): Promise<any> {
+    const user = await this.findByEmail(email)
+    if (user == null) {
+      console.error('userService - sendResetPasswordEmail - user not found', email)
+      return null
+    }
+
+    await user.setResetPasswordToken()
+
+    const emailData = {
+      user,
+      action_url: `${await this.settingsService.getBaseUrl()}/password-change/${user.resetPasswordToken}`
+    }
+    await this.updateOne(user.id, { resetPasswordToken: user.data.resetPasswordToken, data: { ...user.data } })
+    if (await this.notificationService.sendEmail(email, 'password_reset', emailData) === false) {
+      console.error('userService - sendResetPasswordEmail - error while sending email')
     }
   }
 
@@ -93,11 +266,11 @@ export class UsersService extends BaseService<UserEntity> {
     )[0]
     const now = new Date().getTime()
     if (typeof user === 'undefined') {
-      console.error('resetPassword - User not found', resetPasswordToken)
+      console.error('resetPassword - User not found')
       return false
     }
     if (user.data.resetPasswordTokenExp < now) {
-      console.error('resetPassword - Token expired', resetPasswordToken, user.data.resetPasswordTokenExp, now)
+      console.error('resetPassword - Token expired for user', user.id)
       return false
     }
 
@@ -115,12 +288,35 @@ export class UsersService extends BaseService<UserEntity> {
           resetPasswordTokenExp: 0
         }
       })
-      res.setValuesFromJson()
+      res.setValuesFromJson() // TODO: do we need this?
 
       await this.userCredentialsService.changePassword(user.email, password)
       return true
     } catch (err) {
       console.error('Error while confirming token', resetPasswordToken, err)
+      return false
+    }
+  }
+
+  async changePassword (email: string, password: string, newpassword: string): Promise<boolean> {
+    const userCredential = await this.userCredentialsService.findUserCredentialByEmail(email)
+    if (userCredential == null) {
+      console.error('userService - changePassword - userCredential not found')
+      return false
+    }
+
+    const isRegistered = await this.userCredentialsService.isRegistered(userCredential, password)
+
+    if (!isRegistered) {
+      console.error('userService - changePassword - password not match')
+      return false
+    }
+
+    try {
+      await this.userCredentialsService.changePassword(email, newpassword)
+      return true
+    } catch (err) {
+      console.error('userService - changePassword - error while changing password', err)
       return false
     }
   }

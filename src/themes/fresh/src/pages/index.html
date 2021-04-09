@@ -1,0 +1,152 @@
+---
+layout: index
+---
+
+<section class="hero is-midheight is-default is-bold">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-vcentered">
+        <div class="column is-5 landing-caption">
+          <h1 class="title is-1 is-bold is-spaced">
+            {{ website.title }}
+          </h1>
+          <h2 class="subtitle is-size-5 has-text-grey">{{ website.hero_subtitle }}</h2>
+          <div class="button-wrap">
+            <a href="/signup" class="button is-primary is-medium raised">
+              {{ website.hero_cta }}
+            </a>
+          </div>
+        </div>
+        <div class="column is-offset-1">
+          <figure class="image">
+            <img src="{{ website.hero_image_url }}" alt="{{ website.name }}">
+          </figure>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-foot mb-20">
+    <div class="container is-max-desktop content">
+      <div class="columns">
+        {% for item in benefits %}
+          <div class="column">
+
+            <img src="{{ item.image_url }}" alt="{{ item.title }}" width="50" />
+
+            <h4>
+              {{ item.title }}
+            </h4>
+
+            <p class="is-muted has-text-grey">
+              {{ item.text }}
+            </p>
+
+          </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% assign len = logos.length %}
+{% if len > 0 %}
+<section class="section is-bordered mb-0">
+  <div class="container is-max-desktop">
+    <div class="columns is-vcentered">
+      {% for item in logos %}
+        <div class="column has-text-centered">
+
+          <img class="partner-logo" src="{{ item.image_url }}" alt="{{ item.name }}">
+
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% assign len = features.length %}
+{% if len > 0 %}
+<section id="product" class="section is-medium has-vgradient">
+  <div class="container is-max-desktop">
+    {% for item in features %}
+    <div class="columns is-vcentered">
+
+      {% if item.position != 'left' %}
+      <div class="column">
+        <img src="{{ item.image_url }}" alt="{{ item.title }}">
+      </div>
+      {% endif %}
+
+      <div class="column content">
+        <h3 class="title is-size-3 has-text-weight-normal">{{ item.title }}</h3>
+        <p class="is-size-5 has-text-grey">{{ item.text }}</p>
+      </div>
+
+      {% if item.position == 'left' %}
+      <div class="column">
+        <img src="{{ item.image_url }}" alt="{{ item.title }}">
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+  </div>
+</section>
+{% endif %}
+
+<section id="pricing" class="section is-front">
+  <div class="container is-max-desktop">
+    <div class="content has-text-centered">
+      <h2 class="title is-2">{{ website.pricing_title }}</h2>
+
+      <h3 class="subtitle is-5 is-muted has-text-weight-normal">
+        {% if pricing_text != '' %}
+          {{ website.pricing_text }}
+        {% elsif pricing_free_trial > 0 %}
+          All plans start with a {{ website.pricing_free_trial }} day free trial.
+          {% if pricing_credit_card_required == false %}
+            <br/>No credit card required to sign up.
+          {% endif %}
+        {% endif %}
+      </h3>
+    </div>
+
+    {{> pricing}}
+
+  </div>
+</section>
+
+<section id="faq" class="section has-background-dark is-medium is-back">
+  <div class="container is-max-desktop">
+    <div class="columns">
+
+      <div class="column is-8 is-offset-2 has-text-centered">
+
+      <p class="tag is-dark is-rounded is-uppercase">
+        {{ website.cta_badge }}
+      </p>
+      <br/>
+
+      <p class="has-text-light is-size-2">
+        {{ website.cta_title }}
+      </p>
+      <br/>
+
+      <p class="has-text-grey-light is-size-5">
+        {{ website.cta_text }}
+      </p>
+      <br/>
+
+      <a href="/signup" class="button is-primary is-medium">
+        {{ website.cta_button }}
+      </a>
+
+
+    </div>
+    </div>
+  </div>
+</section>

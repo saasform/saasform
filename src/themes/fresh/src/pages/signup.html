@@ -1,0 +1,90 @@
+---
+layout: default
+---
+<section class="hero is-fullheight">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+
+          <div class="content">
+            <!-- Heading -->
+            <h1 class="has-text-centered">
+              Sign up
+            </h1>
+
+            <!-- Text -->
+            <p class="has-text-centered subtitle">
+
+            </p>
+          </div>
+
+        <!-- Form -->
+        <form action="" method="POST" class="mb-40">
+
+          <!-- Email -->
+          <div class="field">
+            <label for="email" class="label has-text-weight-normal">
+              Email address
+            </label>
+            <div class="control">
+              <input type="email" class="input" id="email" name="email" placeholder="name@address.com" autocomplete="username" required>
+            </div>
+            <p id="error-email" class="help is-danger">{{ error.email }}</p>
+          </div>
+
+          {% if signup_show_username %}
+          <!-- Username -->
+          <div class="field">
+            <label for="username" class="label has-text-weight-normal">
+              Username
+            </label>
+            <div class="control">
+              <input type="username" class="input" id="username" name="username" placeholder="mary123" required>
+            </div>
+            <p id="error-username" class="help is-danger">{{ error.username }}</p>
+          </div>
+          {% endif %}
+
+          <!-- Password -->
+          <div class="field">
+            <label for="password" class="label has-text-weight-normal">
+              Password
+            </label>
+            <div class="control">
+              <input type="password" class="input" id="password" name="password" placeholder="Enter your password" minlength="8" required>
+            </div>
+            <p id="error-password" class="help is-danger">{{ error.password }}</p>
+          </div>
+
+          <!-- Submit -->
+          <input type="hidden" name="_csrf" value="{{ website.csrf_token }}">
+          <div class="field">
+            <div class="control">
+              <button class="button is-primary is-fullwidth" type="submit">Sign up</button>
+            </div>
+          </div>
+
+          {% if signup_show_google %}
+          <p class="has-text-centered mt-20 mb-20">or</p>
+
+          <!-- Social Auth -->
+          <div class="field">
+            <div class="control">
+              <div id="google-signin" data-width="auto" data-height="40" data-theme="dark" data-longtitle="true"></div>
+            </div>
+            <p id="error-google" class="help is-danger">{{ error.google }}</p>
+          </div>
+          {% endif %}
+        </form>
+
+        <!-- Text -->
+        <p class="is-size-7 has-text-centered has-text-grey">
+          Already have an account? <a href="/login">Log in</a>.
+        </p>
+
+      </div>
+      </div>
+    </div> <!-- / .row -->
+  </div> <!-- / .container -->
+</section>
