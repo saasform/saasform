@@ -10,6 +10,7 @@ import { SettingsService } from '../settings/settings.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
 import { UserError, ErrorTypes } from '../utilities/common.model'
+import { CredentialType } from '../accounts/entities/userCredentials.entity'
 
 const mockJwtService = {}
 const mockAccountsService = {}
@@ -277,20 +278,41 @@ describe('AuthService', () => {
         attachUserCredentials: jest.fn().mockReturnValue({}),
         findUserCredentialByEmail: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
       }
+
+      const spyAttach = jest.spyOn(service.userCredentialsService, 'attachUserCredentials')
+
       const expUserModel = await service.onGoogleSignin('user@gmail.com', '20weqa-2123-ps343-121kkl-21212')
       expect(expUserModel).toBeDefined()
+
+      expect(spyAttach).toBeCalledWith('ra@gmail.com',
+        '21swq-2123-ps343-121kkl-21212',
+        CredentialType.GOOGLE)
     })
     it('without a registered email, should return a non null value', async () => {
       service.usersService = {
         findUser: jest.fn().mockReturnValue(null),
         addUser: jest.fn().mockReturnValue({ id: 101 })
       }
+      service.registerUser = jest.fn().mockReturnValue({
+        user: { id: 'mockUser' },
+        credential: { id: 'mockUserCredentials' },
+        account: { id: 'mockAccount' }
+      })
+      service.accountsService.findByUserId = jest.fn().mockReturnValue({ id: 'mockAccount' })
+      service.userCredentialsService = {
+        attachUserCredentials: jest.fn().mockReturnValue({}),
+        findUserCredentialByEmail: jest.fn().mockReturnValue(null)
+      }
 
       const spy = jest.spyOn(service.usersService, 'findUser')
+      const spyAttach = jest.spyOn(service.userCredentialsService, 'attachUserCredentials')
 
       const expUserModel = await service.onGoogleSignin('ra@gmail.com', '21swq-2123-ps343-121kkl-21212')
       expect(spy).not.toBeCalled()
-      expect(expUserModel).toBeNull()
+      expect(spyAttach).toBeCalledWith('ra@gmail.com',
+        '21swq-2123-ps343-121kkl-21212',
+        CredentialType.GOOGLE)
+      expect(expUserModel).not.toBeNull()
     })
     it('with null arguments, should return a null value', async () => {
       const expUserModel = await service.onGoogleSignin(null, null)

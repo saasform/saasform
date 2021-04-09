@@ -350,10 +350,10 @@ describe('Authentication (e2e)', () => {
       .expect(302)
   })
 
-  it('with a not registered google credential for a not registered user, should show an error message', () => {
+  it('with a not registered google credential for a not registered user, should signup into saasform and redirect into saasform', () => {
     return agent
       .post('/api/v1/google-signin')
       .send(`token=${GOOGLE_ID_TOKEN_TO_ERROR}`)
-      .expect(409, { statusCode: 409, message: "Ops! You don't have any account." })
+      .expect(302)
   })
 })
