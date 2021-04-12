@@ -1,7 +1,7 @@
 # Developer guide
 
 To develop Saasform:
-- run docker db `docker-compose -d docker-compose.yml -f docker-compose.dev.yml up saasform-db`
+- run docker db `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up saasform-db`
 - on another shell in `src/webapp` run `yarn start:dev`
 - before commit: `yarn lint && yarn test && yarn test:e2e`
 
