@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{{ website.seo_title }}</title>
+  <meta name="description" content="{{ website.seo_description }}">
+  <meta name="keywords" content="{{ website.seo_keywords }}">
+  <meta name="author" content="{{ website.seo_author }}">
+  {{ website.html_google_analytics }}
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ root }}/assets/css/bundle.css">
+  <link rel="icon" type="image/png" href="{{ root }}/assets/img/favicon.png" />
+</head>
+<body>
+  {% render layout_nav, logo: logo, user: user %}
+
+  {{> body}}
+  {{> footer}}
+
+  <script src="{{ root }}/assets/js/bundle.js"></script>
+</body>
+</html>
