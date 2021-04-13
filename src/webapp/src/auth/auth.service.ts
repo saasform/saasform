@@ -68,6 +68,13 @@ export class AuthService {
       return null
     }
 
+    if (validUser.account.email_verification_required === true) {
+      if (validUser.user.emailConfirmed !== true) {
+        console.error('auth.service - validateUser - email not confirmed, but confirmation is required', email)
+        return null
+      }
+    }
+
     return validUser
   }
 
@@ -212,7 +219,7 @@ export class AuthService {
     const { user, credential } = newUser
     const { email, accountEmail } = userData
     // We create a new acount for this user and add this as owner
-    const account = await this.accountsService.add({ data: { name: accountEmail ?? email }, user })
+    const account = await this.accountsService.addOrAttach({ data: { name: accountEmail ?? email }, user })
     if (account == null) {
       console.error('auth.service - registerUser - error while creating account', email, accountEmail)
       return null

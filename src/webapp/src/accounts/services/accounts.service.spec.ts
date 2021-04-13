@@ -20,6 +20,7 @@ import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
 import { ConfigService } from '@nestjs/config'
 import { ValidationService } from '../../validator/validation.service'
+import { AccountsDomainsService } from './accountsDomains.service'
 
 const accountsArray = [
   new AccountEntity(),
@@ -152,6 +153,7 @@ describe('Accounts Service', () => {
           provide: ValidationService,
           useValue: {}
         },
+        { provide: AccountsDomainsService, useValue: {} },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
       ]
@@ -204,11 +206,40 @@ describe('Accounts Service', () => {
       expect(res).toEqual({ id: 101 })
     })
   })
+  
+  describe('getAccountByEmailDomain', () => {
+    it('should return the account if it is linked', async () => {
+      service.accountsDomainsService = { getAccountIsByEmailDomain: jest.fn().mockReturnValue({ id: 'lilnkedAccount' }) }
+      const account = await service.getAccountByEmailDomain('email@linked.com')
+
+      expect(account).not.toBeNull()
+    })
+
+    it('should return null if it is not linked', async () => {
+      service.accountsDomainsService = { getAccountIsByEmailDomain: jest.fn().mockReturnValue(null) }
+      const account = await service.getAccountByEmailDomain('email@notlinked.com')
+
+      expect(account).toBeNull()
+    })
+  })
+
+  describe('Attach user to an account', () => {
+    it('should attach the user to the account if the email domain is whitlisted', async () => {
+      service.getAccountByEmailDomain = jest.fn().mockReturnValue({ id: 'mockedAccount' })
+      service.accountsUsersService.addUser = jest.fn().mockReturnValue({})
+
+      const res = await service.addOrAttach({ data: { name: 'foo bar' }, user })
+
+      expect(res).toEqual({ id: 'mockedAccount' })
+    })
+  })
 
   describe('Add an account', () => {
     it('should create the account and give the proper name', async () => {
+      service.getAccountByEmailDomain = jest.fn().mockReturnValue(null)
       const repoSpy = jest.spyOn(mockedRepo, 'createOne')
-      await service.add({ data: { name: 'foo bar' } })
+
+      await service.addOrAttach({ data: { name: 'foo bar' } })
 
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
@@ -218,8 +249,9 @@ describe('Accounts Service', () => {
     })
 
     it('should link the account to the owner when called with the owner', async () => {
+      service.getAccountByEmailDomain = jest.fn().mockReturnValue(null)
       const repoSpy = jest.spyOn(mockedRepo, 'createOne')
-      await service.add({ data: {}, user })
+      await service.addOrAttach({ data: {}, user })
 
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
@@ -230,8 +262,9 @@ describe('Accounts Service', () => {
     })
 
     it('should add owner to the AccountUser model, when called with the owner', async () => {
+      service.getAccountByEmailDomain = jest.fn().mockReturnValue(null)
       const repoSpy = jest.spyOn(mockedAccountsUsersRepo, 'addUser')
-      await service.add({ data: { name: 'foo bar' }, user })
+      await service.addOrAttach({ data: { name: 'foo bar' }, user })
 
       expect(repoSpy).toBeCalledTimes(1)
 
@@ -242,8 +275,9 @@ describe('Accounts Service', () => {
     })
 
     it('should not add owner to the AccountUser model, when called without the owner', async () => {
+      service.getAccountByEmailDomain = jest.fn().mockReturnValue(null)
       const repoSpy = jest.spyOn(mockedAccountsUsersRepo, 'addUser')
-      await service.add({ data: { name: 'foo bar' } })
+      await service.addOrAttach({ data: { name: 'foo bar' } })
 
       expect(repoSpy).toBeCalledTimes(0)
     })

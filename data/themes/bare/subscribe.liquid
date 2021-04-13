@@ -81,7 +81,6 @@
           } else {
             // Send the token to your server.
             // stripeTokenHandler(result.token);
-            console.log('card', result)
             fetch('/api/v1/add-payment-token', {
               method: 'post',
               headers: {
@@ -92,11 +91,9 @@
                 ...result.paymentMethod
               }),
             })
-              .then((response) => {
-                console.log(response.json());
-                
-              })
-
+            .then((response) => {
+              console.log(response.json());    
+            })
           }
         });
       });
