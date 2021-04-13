@@ -370,7 +370,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
   }
 
   async isPaymentValid (payment): Promise<Boolean> {
-    const settings = await this.settingsService.getWebsiteSettings()
+    // const settings = await this.settingsService.getWebsiteSettings()
     const isNull = this.validationService.isNilOrEmpty(payment)
 
     // if subscription is required, check for null

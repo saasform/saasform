@@ -59,7 +59,6 @@ export class AuthenticationController {
 
     await this.authService.setJwtCookie(req, res, requestUser)
 
-
     // if subscription is not valid redirect to the billing page
     const payment = await this.paymentsService.getActivePayments(requestUser.account_id)
     if (await this.paymentsService.isPaymentValid(payment) === false) {
