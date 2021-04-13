@@ -103,7 +103,7 @@
   
           <!-- Text -->
           <p class="is-size-7 has-text-centered has-text-grey">
-            Already have an account? <a href="/login">Log in</a>.
+            Already have an account? <a href="/login{% if next_url %}?next={{ next_url | url_encode }}{% endif %}">Log in</a>.
           </p>
   
         </div>

@@ -1,129 +1,125 @@
-    <nav x-data="initNavbar()" class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
-      <div class="container is-max-desktop">
-        <div class="navbar-brand">
-          <a class="navbar-item" href="{{ logo.url }}">
-            <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ logo.name }}</h2>
-            <!--img src="{{ root_assets }}/img/logo/logo.svg" alt="" width="112" height="28"-->
+  <nav x-data="initNavbar()" class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
+    <div class="container is-max-desktop">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="{{ logo.url }}">
+          <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ logo.name }}</h2>
+          <!--img src="{{ root_assets }}/img/logo/logo.svg" alt="" width="112" height="28"-->
+        </a>
+        <div class="navbar-burger" @click="openMobileMenu()">
+          <span class="menu-toggle">
+            <span class="icon-box-toggle" :class="{
+                'active': mobileOpen,
+                '': !mobileOpen
+              }">
+              <span class="rotate">
+                <i class="icon-line-top"></i>
+                <i class="icon-line-center"></i>
+                <i class="icon-line-bottom"></i>
+              </span>
+            </span>
+        </div>
+      </div>
+      <div id="navbar-menu" class="navbar-menu is-static" :class="{
+          'is-active': mobileOpen,
+          '': !mobileOpen
+        }">
+        <div class="navbar-end">
+          <a href="/#product" class="navbar-item is-primary">
+            Product
           </a>
-          <div class="navbar-burger" @click="openMobileMenu()">
-            <span class="menu-toggle">
-              <span class="icon-box-toggle" :class="{
-                  'active': mobileOpen,
-                  '': !mobileOpen
-                }">
-                <span class="rotate">
-                  <i class="icon-line-top"></i>
-                  <i class="icon-line-center"></i>
-                  <i class="icon-line-bottom"></i>
-                </span>
-              </span>
-          </div>
-        </div>
-        <div id="navbar-menu" class="navbar-menu is-static" :class="{
-            'is-active': mobileOpen,
-            '': !mobileOpen
-          }">
-          <div class="navbar-end">
-            <a href="/#product" class="navbar-item is-primary">
-              Product
-            </a>
-            <a href="/#pricing" class="navbar-item is-primary">
-              Pricing
-            </a>
-            <a href="/#faq" class="navbar-item is-primary">
-              FAQ
-            </a>
-          </div>
-          <div class="navbar-end">
-            {% if user.email %}
-            <a href="/user" class="navbar-item is-primary">
-              Account
-            </a>
-            <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
-              Dashboard&nbsp;&nbsp;
-              <span class="icon is-small">
-                <i class="fa fa-arrow-right"></i>
-              </span>
-            </a>
-            {% else %}
-            <a href="/login" class="navbar-item is-primary">
-              Log in
-            </a>
-            <a href="/signup" class="navbar-item">
-              <span class="button signup-button is-primary raised">
-                Sign up
-              </span>
-            </a>
-            {% endif %}
-          </div>
-        </div>
-      </div>  </nav>
-    <nav x-data="initNavbar()"  x-on:scroll.window="scroll()" id="navbar-clone"
-      class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation" :class="{
-        'is-active': scrolled,
-        '': !scrolled
-      }">
-      <div class="container is-max-desktop">
-        <div class="navbar-brand">
-          <a class="navbar-item" href="{{ logo.url }}">
-            <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ logo.name }}</h2>
-            <!--img src="{{ root_assets }}/img/logo/logo.svg" alt="" width="112" height="28"-->
+          <a href="/#pricing" class="navbar-item is-primary">
+            Pricing
           </a>
-          <div class="navbar-burger" @click="openMobileMenu()">
-            <span class="menu-toggle">
-              <span class="icon-box-toggle" :class="{
-                  'active': mobileOpen,
-                  '': !mobileOpen
-                }">
-                <span class="rotate">
-                  <i class="icon-line-top"></i>
-                  <i class="icon-line-center"></i>
-                  <i class="icon-line-bottom"></i>
-                </span>
-              </span>
-          </div>
+          <a href="/#faq" class="navbar-item is-primary">
+            FAQ
+          </a>
         </div>
-        <div id="navbar-menu" class="navbar-menu is-static" :class="{
-            'is-active': mobileOpen,
-            '': !mobileOpen
-          }">
-          <div class="navbar-end">
-            <a href="/#product" class="navbar-item is-primary">
-              Product
-            </a>
-            <a href="/#pricing" class="navbar-item is-primary">
-              Pricing
-            </a>
-            <a href="/#faq" class="navbar-item is-primary">
-              FAQ
-            </a>
-          </div>
-          <div class="navbar-end">
-            {% if user.email %}
-            <a href="/user" class="navbar-item is-primary">
-              Account
-            </a>
-            <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
-              Dashboard&nbsp;&nbsp;
-              <span class="icon is-small">
-                <i class="fa fa-arrow-right"></i>
-              </span>
-            </a>
-            {% else %}
-            <a href="/login" class="navbar-item is-primary">
-              Log in
-            </a>
-            <a href="/signup" class="navbar-item">
-              <span class="button signup-button is-primary raised">
-                Sign up
-              </span>
-            </a>
-            {% endif %}
-          </div>
+        <div class="navbar-end">
+          {% if user.email %}
+          <a href="/user" class="navbar-item is-primary">
+            Account
+          </a>
+          <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
+            Dashboard&nbsp;&nbsp;
+            <span class="icon is-small">
+              <i class="fa fa-arrow-right"></i>
+            </span>
+          </a>
+          {% else %}
+          <a href="/login" class="navbar-item is-primary">
+            Log in
+          </a>
+          <a href="/signup" class="navbar-item">
+            <span class="button signup-button is-primary raised">
+              Sign up
+            </span>
+          </a>
+          {% endif %}
         </div>
-      </div>  </nav>
-  
+      </div>
+    </div>  </nav>
+  <nav x-data="initNavbar()"  x-on:scroll.window="scroll()" id="navbar-clone"
+    class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation" :class="{
+      'is-active': scrolled,
+      '': !scrolled
+    }">
+    <div class="container is-max-desktop">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="{{ logo.url }}">
+          <h2 class="is-size-4 has-text-primary has-text-weight-semibold">{{ logo.name }}</h2>
+          <!--img src="{{ root_assets }}/img/logo/logo.svg" alt="" width="112" height="28"-->
+        </a>
+        <div class="navbar-burger" @click="openMobileMenu()">
+          <span class="menu-toggle">
+            <span class="icon-box-toggle" :class="{
+                'active': mobileOpen,
+                '': !mobileOpen
+              }">
+              <span class="rotate">
+                <i class="icon-line-top"></i>
+                <i class="icon-line-center"></i>
+                <i class="icon-line-bottom"></i>
+              </span>
+            </span>
+        </div>
+      </div>
+      <div id="navbar-menu" class="navbar-menu is-static" :class="{
+          'is-active': mobileOpen,
+          '': !mobileOpen
+        }">
+        <div class="navbar-end">
+          <a href="/#product" class="navbar-item is-primary">
+            Product
+          </a>
+          <a href="/#pricing" class="navbar-item is-primary">
+            Pricing
+          </a>
+          <a href="/#faq" class="navbar-item is-primary">
+            FAQ
+          </a>
+        </div>
+        <div class="navbar-end">
+          {% if user.email %}
+          <a href="/user" class="navbar-item is-primary">
+            Account
+          </a>
+          <a href="{{ saas_redirect_url }}" class="navbar-item is-primary">
+            Dashboard&nbsp;&nbsp;
+            <span class="icon is-small">
+              <i class="fa fa-arrow-right"></i>
+            </span>
+          </a>
+          {% else %}
+          <a href="/login" class="navbar-item is-primary">
+            Log in
+          </a>
+          <a href="/signup" class="navbar-item">
+            <span class="button signup-button is-primary raised">
+              Sign up
+            </span>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>  </nav>
 
-  <script src="{{ root_assets }}/assets/js/bundle.js"></script>
-</body>
-</html>
