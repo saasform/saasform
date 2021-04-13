@@ -9,6 +9,7 @@ export class AccountData {
   killbill?: any
   payments_methods?: any
   billing_info?: any
+  email_verification_required?: boolean
 }
 
 @Entity('accounts')

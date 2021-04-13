@@ -5,13 +5,15 @@ import { AuthService } from '../../../auth/auth.service'
 import { PaymentsService } from '../../../payments/services/payments.service'
 import { UserError } from '../../../utilities/common.model'
 import { GoogleOAuth2Guard } from '../../../auth/auth.guard'
+import { UserCredentialsService } from '../../../accounts/services/userCredentials.service'
 
 @Controller('/api/v1')
 export class ApiV1AutheticationController {
   constructor (
     private readonly authService: AuthService,
     private readonly settingsService: SettingsService,
-    private readonly paymentsService: PaymentsService
+    private readonly paymentsService: PaymentsService,
+    private readonly userCredentialsService: UserCredentialsService
   ) {}
 
   @Get()
@@ -75,6 +77,34 @@ export class ApiV1AutheticationController {
     }
 
     return await this.issueJwtAndRedirect(req, res, user)
+  }
+
+  @Post('get-credential-type')
+  async handleGetCredentialType (@Request() req, @Res() res: Response): Promise<any> {
+    const { email } = req.body
+
+    if (email == null) {
+      return res.status(400).json({
+        statusCode: 400,
+        message: 'Missing parameters (email)'
+      })
+    }
+
+    const credential = await this.userCredentialsService.findUserCredentialByEmail(email)
+
+    if (credential == null) {
+      return res.status(404).json({
+        statusCode: 404,
+        message: 'Not found'
+      })
+    }
+
+    const credentialTypes = Object.keys(credential.json ?? {})
+
+    return res.status(200).json({
+      statusCode: 200,
+      message: { credentialTypes }
+    })
   }
 
   @Post('signup')

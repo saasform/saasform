@@ -19,6 +19,7 @@ import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
 import { ConfigService } from '@nestjs/config'
 import { ValidationService } from '../../validator/validation.service'
+import { AccountsDomainsService } from './accountsDomains.service'
 
 describe('AccountsUsers Service', () => {
   let service // Removed type AccountsService because we must overwrite the accountsRepository property
@@ -77,6 +78,7 @@ describe('AccountsUsers Service', () => {
           provide: ValidationService,
           useValue: {}
         },
+        { provide: AccountsDomainsService, useValue: {} },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
       ]

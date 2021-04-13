@@ -85,6 +85,50 @@ describe('AuthService', () => {
           const expUser = await service.validateUser('werqw@email.com', '')
           expect(expUser).toBeNull()
         })
+
+        it('should allow unverified email when verification is NOT required', async () => {
+          service.getUserInfo = jest.fn().mockReturnValue({
+            user: { id: 'mockedUser', emailConfirmed: false },
+            credential: { id: 'mockedCredential' },
+            account: { id: 'mockedAccount', email_verification_required: false }
+          })
+          service.userCredentialsService.isRegistered = jest.fn().mockReturnValue(true)
+          const expUser = await service.validateUser(mockedUserCredentials.credential, 'password')
+          expect(expUser).not.toBeNull()
+        })
+
+        it('should NOT allow unverified email when verification is required and emailConfirmed is not set', async () => {
+          service.getUserInfo = jest.fn().mockReturnValue({
+            user: { id: 'mockedUser' },
+            credential: { id: 'mockedCredential' },
+            account: { id: 'mockedAccount', email_verification_required: true }
+          })
+          service.userCredentialsService.isRegistered = jest.fn().mockReturnValue(true)
+          const expUser = await service.validateUser(mockedUserCredentials.credential, 'password')
+          expect(expUser).toBeNull()
+        })
+
+        it('should NOT allow unverified email when verification is required and emailConfirmed is false', async () => {
+          service.getUserInfo = jest.fn().mockReturnValue({
+            user: { id: 'mockedUser', emailConfirmed: false },
+            credential: { id: 'mockedCredential' },
+            account: { id: 'mockedAccount', email_verification_required: true }
+          })
+          service.userCredentialsService.isRegistered = jest.fn().mockReturnValue(true)
+          const expUser = await service.validateUser(mockedUserCredentials.credential, 'password')
+          expect(expUser).toBeNull()
+        })
+
+        it('should NOT allow unverified email when verification is required and emailConfirmed is true', async () => {
+          service.getUserInfo = jest.fn().mockReturnValue({
+            user: { id: 'mockedUser', emailConfirmed: true },
+            credential: { id: 'mockedCredential' },
+            account: { id: 'mockedAccount', email_verification_required: true }
+          })
+          service.userCredentialsService.isRegistered = jest.fn().mockReturnValue(true)
+          const expUser = await service.validateUser(mockedUserCredentials.credential, 'password')
+          expect(expUser).not.toBeNull()
+        })
       })
     })
 
@@ -170,7 +214,7 @@ describe('AuthService', () => {
           findUserCredentialByEmail: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
         }
         service.accountsService = {
-          add: jest.fn().mockReturnValue(null)
+          addOrAttach: jest.fn().mockReturnValue(null)
         }
 
         const newUser = {
@@ -192,7 +236,7 @@ describe('AuthService', () => {
           findUserCredentialByEmail: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
         }
         service.accountsService = {
-          add: jest.fn().mockReturnValue({ account: 'mockAccount' })
+          addOrAttach: jest.fn().mockReturnValue({ account: 'mockAccount' })
         }
 
         const newUser = {

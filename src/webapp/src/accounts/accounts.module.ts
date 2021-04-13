@@ -15,17 +15,19 @@ import { NotificationsModule } from '../notifications/notifications.module'
 import { NotificationsService } from '../notifications/notifications.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
+import { AccountsDomainsService } from './services/accountsDomains.service'
+import { AccountDomainEntity } from './entities/accountDomain.entity'
 
 @Module({
   imports: [
     NestjsQueryGraphQLModule.forFeature({
-      imports: [NestjsQueryTypeOrmModule.forFeature([AccountEntity, UserEntity, AccountUserEntity, UserCredentialsEntity]), NotificationsModule],
-      services: [AccountsService, AccountsUsersService, UsersService, PaymentsService, PlansService, UserCredentialsService, NotificationsService],
+      imports: [NestjsQueryTypeOrmModule.forFeature([AccountEntity, UserEntity, AccountUserEntity, AccountDomainEntity, UserCredentialsEntity]), NotificationsModule],
+      services: [AccountsService, AccountsUsersService, UsersService, AccountsDomainsService, PaymentsService, PlansService, UserCredentialsService, NotificationsService],
       resolvers: [{ DTOClass: AccountDTO, ServiceClass: AccountsService }]
     })
   ],
-  providers: [AccountsService, UsersService, AccountsUsersService, UserCredentialsService],
-  exports: [AccountsService, UsersService, AccountsUsersService, UserCredentialsService]
+  providers: [AccountsService, UsersService, AccountsUsersService, AccountsDomainsService, UserCredentialsService],
+  exports: [AccountsService, UsersService, AccountsUsersService, AccountsDomainsService, UserCredentialsService]
 })
 export class AccountsModule {
 

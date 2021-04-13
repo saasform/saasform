@@ -6,16 +6,19 @@ import { Repository } from 'typeorm'
 
 import { AccountEntity, AccountData } from '../entities/account.entity'
 
+import { ConfigService } from '@nestjs/config'
+import { ValidationService } from '../../validator/validation.service'
+
 import { UsersService } from './users.service'
 import { UserEntity } from '../entities/user.entity'
 import { AccountsUsersService } from './accountsUsers.service'
+import { AccountsDomainsService } from './accountsDomains.service'
 import { BaseService } from '../../utilities/base.service'
 import { NotificationsService } from '../../notifications/notifications.service'
 import { SettingsService } from '../..//settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
 import { UserJson } from '../dto/new-user.input'
-import { ConfigService } from '@nestjs/config'
 
 @QueryService(AccountEntity)
 @Injectable()
@@ -28,11 +31,13 @@ export class AccountsService extends BaseService<AccountEntity> {
     private readonly accountsRepository: Repository<AccountEntity>,
     private readonly accountsUsersService: AccountsUsersService,
     private readonly usersService: UsersService,
+    private readonly accountsDomainsService: AccountsDomainsService,
     private readonly paymentsService: PaymentsService,
     private readonly plansService: PlansService,
     private readonly notificationService: NotificationsService,
     private readonly settingsService: SettingsService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly validationService: ValidationService
   ) {
     super(req, 'AccountEntity')
     this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
@@ -73,70 +78,145 @@ export class AccountsService extends BaseService<AccountEntity> {
   }
 
   /**
-   * Add an account.
+   * Return the account that is linked to an email domain, if it exists. Null otherwise.
+   * For instance if a company links the domain "@company.com" every email @company.com
+   * will return the company account
    *
-   * Create a new account
-   * Create a stipe user and add to the account
-   * If a user is specified, add such user as owner (to remove?)
+   * @param email an email to search
+   * @returns the account or null
+   */
+  async getAccountByEmailDomain (email: string): Promise<AccountEntity|null> {
+    const domain = email.split('@')[1]
+    const accountId = await this.accountsDomainsService.getAccountIsByEmailDomain(domain)
+    if (accountId == null) {
+      console.error('accountsService - getAccountByEmailDomain - cannot find account for the domain', domain)
+      return null
+    }
+
+    const account = await this.findById(accountId)
+
+    if (account == null) {
+      // this should never happend
+      console.error('accountsService - getAccountByEmailDomain - cannot find account for the accountId', domain, accountId)
+      return null
+    }
+
+    return account ?? null
+  }
+
+  /**
+   * Link a domain to an account _and_ mark the email verification to true
+   *
+   * @param id Id of the account to link
+   * @param domain domain to link
+   * @returns the linked account or null
+   */
+  async linkDomain (id: number, domain: string): Promise<AccountEntity | null> {
+    const account = await this.findById(id)
+    if (account == null) {
+      console.error('accountsService - linkDomain - cannot find account', id)
+      return null
+    }
+
+    if (await this.accountsDomainsService.link(domain, account.id) == null) {
+      console.error('accountsService - linkDomain - cannot link account', id)
+      return null
+    }
+
+    try {
+      account.data.email_verification_required = true
+      await this.updateOne(account.id, { data: account.data })
+
+      return account
+    } catch (err) {
+      console.error(
+        'accounts.service - linkDomain - Error while setting email_verification_required to true',
+        id,
+        err
+      )
+
+      await this.accountsDomainsService.unlink(domain)
+
+      return null
+    }
+  }
+
+  /**
+   * Add an account and set the user as owner or attach the user
+   * to the corresponding account, if the domain is linked.
+   *
+   * If the domain of the user's email is linked, add the user to the account.
+   * Else, create a new account
+   *    Create a stipe user and add to the account
+   *    If a user is specified, add such user as owner (to remove?)
    *
    * @param data data of the account
    * @param user data of the account owner
+   * @returns the account created or attached or null
    */
-  async add ({ data, user }): Promise<AccountEntity | null> {
-    // Create an account
-    const account = new AccountEntity()
-    account.data = new AccountData()
-    account.data.name = data.name
+  async addOrAttach ({ data, user }): Promise<AccountEntity | null> {
+    let account
+    if (user?.email != null && (account = await this.getAccountByEmailDomain(user.email)) != null) {
+      // attach user to account
+      if (user !== undefined) await this.accountsUsersService.addUser(user, account)
 
-    // If no user was passed, we add 0 as owner_id.
-    // This will be overwritten later when the first user
-    // will be associated with this account.
-    account.owner_id = user?.id ?? 0
+      return account
+    } else {
+      // Create an account
+      account = new AccountEntity()
+      account.data = new AccountData()
+      account.data.name = data.name
 
-    // Create a Billing user for this account
-    const billingCustomers = await this.paymentsService.createBillingCustomer({
-      name: data.name
-    })
-    // TODO: stripeCustomer might be null if Stripe is not configure.
-    // at the moment it fails gracefully, but we should write a more
-    // proper way.
+      // If no user was passed, we add 0 as owner_id.
+      // This will be overwritten later when the first user
+      // will be associated with this account.
+      account.owner_id = user?.id ?? 0
 
-    account.data.stripe = billingCustomers[0]
-    if (this.paymentIntegration === 'killbill') {
-      account.data.killbill = billingCustomers[1]
-    }
+      // Create a Billing user for this account
+      const billingCustomers = await this.paymentsService.createBillingCustomer({
+        name: data.name
+      })
+      // TODO: stripeCustomer might be null if Stripe is not configure.
+      // at the moment it fails gracefully, but we should write a more
+      // proper way.
 
-    // Add free tier plan
-    try {
-      const plans = await this.plansService.getPlans()
-      await this.paymentsService.createFreeSubscription(
-        plans[0],
-        (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id)
-      )
-    } catch (err) {
-      console.error('accountsService - cannot create free subscription')
-    }
-
-    try {
-      const res = await this.createOne(account)
-      // If a user is specified add the user as owner
-      if (user !== undefined) await this.accountsUsersService.addUser(user, res)
-      // TODO: refactor this
-
-      // send email here (new account template)
-      const emailData = {
-        user,
-        action_url: `${await this.settingsService.getBaseUrl()}/verify-email/${user.emailConfirmationToken as string}`
+      account.data.stripe = billingCustomers[0]
+      if (this.paymentIntegration === 'killbill') {
+        account.data.killbill = billingCustomers[1]
       }
 
-      if ((await this.notificationService.sendEmail(user.email, 'email_confirm', emailData)) === false) {
-        console.error('Error while sending email')
+      // Add free tier plan
+      try {
+        const plans = await this.plansService.getPlans()
+        await this.paymentsService.createFreeSubscription(
+          plans[0],
+          (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id)
+        )
+      } catch (err) {
+        console.error('accountsService - cannot create free subscription')
       }
 
-      return res
-    } catch (err) {
-      console.error('Error while inserting new account', data, user, err)
-      return null
+      try {
+        const res = await this.createOne(account)
+        // If a user is specified add the user as owner
+        if (user !== undefined) await this.accountsUsersService.addUser(user, res)
+        // TODO: refactor this
+
+        // send email here (new account template)
+        const emailData = {
+          user,
+          action_url: `${await this.settingsService.getBaseUrl()}/verify-email/${user.emailConfirmationToken as string}`
+        }
+
+        if ((await this.notificationService.sendEmail(user.email, 'email_confirm', emailData)) === false) {
+          console.error('Error while sending email')
+        }
+
+        return res
+      } catch (err) {
+        console.error('Error while inserting new account', data, user, err)
+        return null
+      }
     }
   }
 
