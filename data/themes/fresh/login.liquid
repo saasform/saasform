@@ -95,7 +95,7 @@
   
           <!-- Text -->
           <p class="is-size-7 has-text-centered has-text-grey">
-            Don't have an account yet? <a href="/signup">Sign up</a>.
+            Don't have an account yet? <a href="/signup{% if next_url %}?next={{ next_url | url_encode }}{% endif %}">Sign up</a>.
           </p>
   
         </div>
