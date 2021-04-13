@@ -29,29 +29,9 @@ export class AuthenticationController {
     private readonly settingsService: SettingsService
   ) {}
 
-  async issueJwtAndRediret (req, res, user): Promise<Response> {
-    const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
-    if (requestUser == null) {
-      console.error('authenticationController - issueJwtAndRediret - requestUser not valid')
-      return res.redirect('/error')
-    }
-
-    // const requestUserWithSubscription = await this.authService.updateActiveSubscription(requestUser)
-    // if (requestUserWithSubscription == null) {
-    //   console.error('authenticationController - issueJwtAndRediret - error while add subscription to token')
-    //   return res.redirect('/error')
-    // }
-
-    await this.authService.setJwtCookie(req, res, requestUser)
-
+  async getNextUrl (req): Promise<string | null> {
     const baseUrl = await this.settingsService.getBaseUrl()
     const appUrl = await this.settingsService.getRedirectAfterLogin()
-
-    // if subscription is not valid redirect to the billing page
-    const payment = await this.paymentsService.getActivePayments(requestUser.account_id)
-    if (await this.paymentsService.isPaymentValid(payment) === false) {
-      return res.redirect('/user/billing')
-    }
 
     // prevent open redirects
     const next = req.query.next
@@ -64,10 +44,34 @@ export class AuthenticationController {
         // absolute url to SaaS
         next.startsWith(appUrl) === true
       ) {
-        return res.redirect(next)
+        return next
       }
     }
+    return null
+  }
 
+  async issueJwtAndRediret (req, res, user): Promise<Response> {
+    const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
+    if (requestUser == null) {
+      console.error('authenticationController - issueJwtAndRediret - requestUser not valid')
+      return res.redirect('/error')
+    }
+
+    await this.authService.setJwtCookie(req, res, requestUser)
+
+
+    // if subscription is not valid redirect to the billing page
+    const payment = await this.paymentsService.getActivePayments(requestUser.account_id)
+    if (await this.paymentsService.isPaymentValid(payment) === false) {
+      return res.redirect('/user/billing')
+    }
+
+    const next = await this.getNextUrl(req)
+    if (next != null) {
+      return res.redirect(next)
+    }
+
+    const appUrl = await this.settingsService.getRedirectAfterLogin()
     return res.redirect(appUrl)
   }
 
@@ -77,7 +81,9 @@ export class AuthenticationController {
       const redirect = await this.settingsService.getRedirectAfterLogin()
       return res.redirect(redirect)
     }
-    return renderPage(req, res, 'login')
+    return renderPage(req, res, 'login', {
+      next_url: await this.getNextUrl(req)
+    })
   }
 
   // @UseGuards(LoginAuthGuard)
@@ -119,7 +125,9 @@ export class AuthenticationController {
       const redirect = await this.settingsService.getRedirectAfterLogin()
       return res.redirect(redirect)
     }
-    return renderPage(req, res, 'signup')
+    return renderPage(req, res, 'signup', {
+      next_url: await this.getNextUrl(req)
+    })
   }
 
   @Post('/signup')

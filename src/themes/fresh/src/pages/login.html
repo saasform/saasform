@@ -72,7 +72,7 @@ layout: default
 
         <!-- Text -->
         <p class="is-size-7 has-text-centered has-text-grey">
-          Don't have an account yet? <a href="/signup">Sign up</a>.
+          Don't have an account yet? <a href="/signup{% if next_url %}?next={{ website.next_url }}{% endif %}">Sign up</a>.
         </p>
 
       </div>

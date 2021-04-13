@@ -80,7 +80,7 @@ layout: default
 
         <!-- Text -->
         <p class="is-size-7 has-text-centered has-text-grey">
-          Already have an account? <a href="/login">Log in</a>.
+          Already have an account? <a href="/login{% if next_url %}?next={{ website.next_url }}{% endif %}">Log in</a>.
         </p>
 
       </div>
