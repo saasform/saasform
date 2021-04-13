@@ -42,6 +42,7 @@ Open your browser at [http://localhost:7000](http://localhost:7000).
   - [ ] Team management
 - User authentication
   - [x] Email + password
+  - [x] Security emails (verification, password reset...)
   - [x] Google oauth / SSO
   - [ ] Session management
   - [ ] Enterprise SSO / SAML / Okta integration
