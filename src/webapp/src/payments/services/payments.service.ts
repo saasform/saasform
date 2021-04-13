@@ -374,9 +374,10 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     const isNull = this.validationService.isNilOrEmpty(payment)
 
     // if subscription is required, check for null
-    if (!settings.subscription_optional && isNull === true) {
-      return false
-    }
+    // TODO - review this
+    // if (!settings.subscription_optional && isNull === true) {
+    //   return false
+    // }
 
     // If subscription is not required, we allow for null value.
     // this should be an exception for enterprise cases. This settings

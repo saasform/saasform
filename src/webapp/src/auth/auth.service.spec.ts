@@ -290,7 +290,7 @@ describe('AuthService', () => {
 
       const expUserModel = await service.onGoogleSignin('ra@gmail.com', '21swq-2123-ps343-121kkl-21212')
       expect(spy).not.toBeCalled()
-      expect(expUserModel).not.toBeNull()
+      expect(expUserModel).toBeNull()
     })
     it('with null arguments, should return a null value', async () => {
       const expUserModel = await service.onGoogleSignin(null, null)
