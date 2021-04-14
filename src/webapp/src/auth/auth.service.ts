@@ -253,6 +253,8 @@ export class AuthService {
         return null
       }
 
+      await this.usersService.confirmEmail(newUser.user.emailConfirmationToken)
+
       user = newUser.user
       credential = newUser.credential
 
