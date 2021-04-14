@@ -241,7 +241,7 @@ describe('Authentication (e2e)', () => {
       })
   })
 
-  it('login existing user with an invalid subscription', () => {
+  it.skip('login existing user with an invalid subscription', () => {
     return agent
       .post('/api/v1/login')
       .send(noSubUser)

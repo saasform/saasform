@@ -25,10 +25,10 @@ Make sure:
 I have added the check if the domain is linked into the `userService`; therefore the check is done for every user, not only the ones that logs in with google.
 Thre result is that also users that signs up with username and passwords are added to an account if they signs up with an email with a linked domain. However, there is no guarantee that the user has *actual* access to that email. Therefore, we must enforce the email verification because to prevent that a user might get access to an account without having the rights to.
 
-This brings a huge number of problems:
+This brings in some extra work:
 
 - all the existing users of a given account will not be allowed to login after a domain is linked if they haven't verified their email: we must give them a way of request another verification
-- the google account should be marked verified automatically
+- the google account should be marked verified automatically. This is done in the `authService` when the Google signup (not signin) happens
 
 ### accounts_domains table
 
