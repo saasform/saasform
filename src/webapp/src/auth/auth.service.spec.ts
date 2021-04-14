@@ -110,7 +110,10 @@ describe('AuthService', () => {
 
         it('should NOT allow unverified email when verification is required and emailConfirmed is false', async () => {
           service.getUserInfo = jest.fn().mockReturnValue({
-            user: { id: 'mockedUser', emailConfirmed: false },
+            user: {
+              id: 'mockedUser',
+              emailConfirmed: false
+            },
             credential: { id: 'mockedCredential' },
             account: { id: 'mockedAccount', email_verification_required: true }
           })
@@ -121,7 +124,10 @@ describe('AuthService', () => {
 
         it('should NOT allow unverified email when verification is required and emailConfirmed is true', async () => {
           service.getUserInfo = jest.fn().mockReturnValue({
-            user: { id: 'mockedUser', emailConfirmed: true },
+            user: {
+              id: 'mockedUser',
+              emailConfirmed: true
+            },
             credential: { id: 'mockedCredential' },
             account: { id: 'mockedAccount', email_verification_required: true }
           })
@@ -335,10 +341,14 @@ describe('AuthService', () => {
     it('without a registered email, should return a non null value', async () => {
       service.usersService = {
         findUser: jest.fn().mockReturnValue(null),
-        addUser: jest.fn().mockReturnValue({ id: 101 })
+        addUser: jest.fn().mockReturnValue({ id: 101 }),
+        confirmEmail: jest.fn()
       }
       service.registerUser = jest.fn().mockReturnValue({
-        user: { id: 'mockUser' },
+        user: {
+          id: 'mockUser',
+          emailConfirmationToken: 'mockEmailConfirmationToken'
+        },
         credential: { id: 'mockUserCredentials' },
         account: { id: 'mockAccount' }
       })
@@ -350,12 +360,14 @@ describe('AuthService', () => {
 
       const spy = jest.spyOn(service.usersService, 'findUser')
       const spyAttach = jest.spyOn(service.userCredentialsService, 'attachUserCredentials')
+      const spyEmailConfirmation = jest.spyOn(service.usersService, 'confirmEmail')
 
       const expUserModel = await service.onGoogleSignin('ra@gmail.com', '21swq-2123-ps343-121kkl-21212')
       expect(spy).not.toBeCalled()
       expect(spyAttach).toBeCalledWith('ra@gmail.com',
         '21swq-2123-ps343-121kkl-21212',
         CredentialType.GOOGLE)
+      expect(spyEmailConfirmation).toBeCalledWith('mockEmailConfirmationToken')
       expect(expUserModel).not.toBeNull()
     })
     it('with null arguments, should return a null value', async () => {

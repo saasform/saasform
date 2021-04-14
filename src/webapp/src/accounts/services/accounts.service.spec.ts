@@ -206,7 +206,7 @@ describe('Accounts Service', () => {
       expect(res).toEqual({ id: 101 })
     })
   })
-  
+
   describe('getAccountByEmailDomain', () => {
     it('should return the account if it is linked', async () => {
       service.accountsDomainsService = { getAccountIsByEmailDomain: jest.fn().mockReturnValue({ id: 'lilnkedAccount' }) }
