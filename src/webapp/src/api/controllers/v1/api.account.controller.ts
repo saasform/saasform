@@ -35,14 +35,14 @@ export class ApiV1AccountController {
 
     const linked = await this.accountsService.linkDomain(account.id, domain)
     if (linked == null) {
-      console.log('ApiV1AccountController - handleLinkDomain, error while linking')
+      console.error('ApiV1AccountController - handleLinkDomain, error while linking')
       return res.status(500).json({
         statusCode: 500,
         error: 'Error while linking'
       })
     }
 
-    return res.status(400).json({
+    return res.status(200).json({
       statusCode: 200,
       message: 'Linked'
     })

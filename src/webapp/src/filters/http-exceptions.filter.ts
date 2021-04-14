@@ -17,7 +17,7 @@ export class HttpExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>()
     const request: any = ctx.getRequest<Request>()
 
-    console.log('ex', exception)
+    console.error('HttpExceptionsFilter - received exception', exception)
 
     // This needs to be first because it is a special
     // kind of unauthrized that does not trigger any
@@ -93,7 +93,7 @@ export class HttpExceptionsFilter implements ExceptionFilter {
       response.statusCode = 404
       response.render(`${themeRoot}/404`, data)
     } else {
-      console.log(exception)
+      console.error('HttpExceptionsFilter - generic exception', exception)
       response.statusCode = 500
       response.render(`${themeRoot}/500`, data)
     }

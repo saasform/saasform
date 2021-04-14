@@ -86,8 +86,6 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
         break
     }
 
-    console.log('updating', userCredential?.id, json)
-
     try {
       return await this.updateOne(userCredential?.id ?? -1,
         { json }

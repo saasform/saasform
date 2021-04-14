@@ -28,7 +28,7 @@ export class CronService {
       this.schedulerRegistry.addCronJob(name, job)
       job.start()
     } catch (error) {
-      console.log('Error', error)
+      console.error('Error in setting up cron', error)
     }
   }
 

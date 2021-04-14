@@ -46,3 +46,11 @@ The domain link code is in the `accountService` becase we need to setup the acco
 ### Multi step login
 
 I started to implement the multi step login (so that it asks the username before, checks the credential type and then acts accordingly). I have completed most of the BE, but not fully in FE. For the moment I leave it there as it's mainly a API stuff and if we don't use it, it's not harmful.
+
+## Test
+
+1. start with empty DB
+2. signup using username/password => new user and new account created
+3. link domain
+4. add a user with that domain with google => new user created inside the account
+5. add another user with another domain with google => new user and new account created

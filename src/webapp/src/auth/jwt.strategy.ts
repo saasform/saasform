@@ -40,7 +40,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const validUser = await authService.getUserInfo(payload.email)
 
     if (validUser == null) {
-      console.log('jwtStrategy - cannot get a valid user')
+      console.error('jwtStrategy - cannot get a valid user')
       return null
     }
 
