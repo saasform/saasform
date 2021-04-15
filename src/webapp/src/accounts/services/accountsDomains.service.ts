@@ -29,15 +29,16 @@ export class AccountsDomainsService extends BaseService<AccountDomainEntity> {
    * @param domain domain to search
    */
   async getAccountIsByEmailDomain (domain: string): Promise<number|null> {
-    const accounts = await this.query({
+    const domains = await this.query({
       filter: { domain: { eq: domain } }
     })
 
-    if (this.validationService.isNilOrEmpty(accounts) === true) {
+    if (this.validationService.isNilOrEmpty(domains) === true) {
+      console.error('AccountsDomainsService - getAccountIsByEmailDomain - domain not found', domain, domains)
       return null
     }
 
-    return accounts[0].data.account_id
+    return domains[0].data.account_id
   }
 
   /**
