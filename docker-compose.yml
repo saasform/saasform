@@ -33,6 +33,8 @@ services:
       - "7000:7000"
     volumes:
       - ./data/config:/app/config
+      - ./data/emails:/app/emails
+      - ./data/pages:/app/pages
       - ./data/themes:/app/themes
     command: ["bash", "/app/bin/startup.sh"]
 
