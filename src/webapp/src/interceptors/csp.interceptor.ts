@@ -20,6 +20,8 @@ export class CspInterceptor implements NestInterceptor {
       defaultSrc: ["'self'"],
       scriptSrc: [
         "'self'",
+        // TODO move to nonce
+        "'unsafe-inline'",
         // alpinejs requires unsafe-eval :(
         "'unsafe-eval'",
         // google tag manager and analytics

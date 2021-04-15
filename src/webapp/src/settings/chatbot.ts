@@ -14,7 +14,6 @@ export const renderChatbotJs = (provider: string, id: string, domain: string, re
     case 'chaskiq':
       req.customCsp.push({
         scriptSrc: [
-          "'unsafe-inline'",
           `https://${domain}`
         ],
         connectSrc: [
@@ -72,7 +71,6 @@ export const renderChatbotJs = (provider: string, id: string, domain: string, re
       req.customCsp.push({
         scriptSrc: [
           // "'strict-dynamic'",
-          "'unsafe-inline'",
           'https://app.intercom.io',
           'https://widget.intercom.io',
           'https://js.intercomcdn.com'
