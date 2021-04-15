@@ -25,21 +25,21 @@ export class CspInterceptor implements NestInterceptor {
         // alpinejs requires unsafe-eval :(
         "'unsafe-eval'",
         // google tag manager and analytics
-        'www.googletagmanager.com',
+        'https://www.googletagmanager.com',
         // google signin
-        'apis.google.com',
+        'https://apis.google.com',
         // facebook pixel
-        'connect.facebook.net'
+        'https://connect.facebook.net'
       ],
       frameSrc: [
         "'self'",
-        'accounts.google.com'
+        'https://accounts.google.com'
       ],
-      styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: [
         "'self'",
         // google fonts
-        'fonts.gstatic.com'
+        'https://fonts.gstatic.com'
       ],
       mediaSrc: [
         "'self'"
@@ -48,12 +48,13 @@ export class CspInterceptor implements NestInterceptor {
         "'self'",
         'data:',
         // gravatar
-        'secure.gravatar.com',
+        'https://secure.gravatar.com',
         // facebook pixel
-        'www.facebook.com'
+        'https://www.facebook.com'
       ],
       connectSrc: [
-        "'self'"
+        "'self'",
+        'https://www.google-analytics.com'
       ]
     }
 

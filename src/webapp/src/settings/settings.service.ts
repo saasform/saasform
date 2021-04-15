@@ -558,7 +558,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       </script>
     `
       : ''
-    res.html_facebook_pixel = res.app_facebook_pixel_id !== '' && !res.app_facebook_pixel_id.endsWith('xxx')
+    res.html_facebook_pixel = res.app_facebook_pixel_id !== '' && !String(res.app_facebook_pixel_id).endsWith('xxx')
       ? `
       <!-- Facebook Pixel Code -->
       <script>
