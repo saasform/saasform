@@ -5,7 +5,7 @@
 
 Saasform is a state-of-the-art website for your SaaS, with authentication, payments and common growth & marketing tools.
 
-![Saasform preview](https://raw.githubusercontent.com/saasform/saasform/main/docs/images/saasform-hero.png)
+[![Saasform demo](https://raw.githubusercontent.com/saasform/saasform/main/docs/images/saasform-demo-video.png)](https://youtu.be/u6xF32bGmpQ)
 
 Building a SaaS requires building a website, authentication, payments… and maintaining and updating them… all distractions from your core features. Saasform pre-packages all the things you and your team need to launch faster and grow more effectively.
 
