@@ -1,0 +1,31 @@
+{
+  "name": "test-cuke",
+  "version": "1.0.0",
+  "description": "An example project using the cucumber-puppeteer dependency",
+  "scripts": {
+    "reset-db": "node --require ts-node/register ./node_modules/typeorm/cli.js migration:revert; node --require ts-node/register ./node_modules/typeorm/cli.js migration:run",
+    "test": "yarn reset-db && npx cucumber-js --require ./**/cucumber-puppeteer/**/features/**/*.js --require ./features/**/*.js",
+    "test:show": "yarn reset-db &&  npx cucumber-js --require ./**/cucumber-puppeteer/**/features/**/*.js --require ./features/**/*.js --world-parameters '{\"headless\": false}'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patheard/test-cuke.git"
+  },
+  "keywords": [
+    "cucumber",
+    "puppeteer"
+  ],
+  "author": "Pat Heard <patrick.heard@canada.ca>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/patheard/test-cuke/issues"
+  },
+  "homepage": "https://github.com/patheard/test-cuke#readme",
+  "dependencies": {
+    "cucumber-puppeteer": "^1.0.16",
+    "mysql": "^2.18.1",
+    "ts-node": "^9.1.1",
+    "typeorm": "^0.2.32",
+    "typescript": "^4.2.4"
+  }
+}

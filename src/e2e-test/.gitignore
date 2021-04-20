@@ -1,0 +1,6 @@
+node_modules
+/screenshots/compare
+/screenshots/diff
+/screenshots/error
+
+data/db/*

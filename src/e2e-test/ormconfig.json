@@ -1,0 +1,16 @@
+{
+   "type": "mysql",
+   "host": "localhost",
+   "port": 3306,
+   "username": "saasform",
+   "password": "saasformp",
+   "database": "saasform",
+   "synchronize": true,
+   "logging": true,
+   "migrations": [
+      "reset-db/**/*.ts"
+   ],
+   "cli": {
+      "migrationsDir": "reset-db"
+   }
+}
