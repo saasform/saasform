@@ -32,18 +32,23 @@ export class AuthenticationController {
   async getNextUrl (req): Promise<string | null> {
     const baseUrl = await this.settingsService.getBaseUrl()
     const appUrl = await this.settingsService.getRedirectAfterLogin()
+    const homeUrl = await this.settingsService.getHomepageRedirectUrl()
 
     // prevent open redirects
-    const next = req.query.next
+    const next: string = req.query.next
     if (next != null) {
       if (
         // relative path
         next[0] === '/' ||
         // absolute url to Saasform
-        next.startsWith(baseUrl) === true ||
+        next.startsWith(baseUrl) ||
         // absolute url to SaaS
-        next.startsWith(appUrl) === true
+        next.startsWith(appUrl)
       ) {
+        // when home is not managed by saasform, make relative url absolute
+        if (homeUrl !== null && next[0] === '/') {
+          return `${homeUrl}${next}`
+        }
         return next
       }
     }
