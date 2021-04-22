@@ -35,7 +35,7 @@ Open your browser at [http://localhost:7000](http://localhost:7000).
 ## Features
 
 - Webpages
-  - [x] Homepage
+  - [x] Homepage (modular: use Saasform or redirect to yours)
   - [x] Login / Signup / Password reset
   - [x] 404 / 500
   - [x] User profile / billing & payments
@@ -55,7 +55,7 @@ Open your browser at [http://localhost:7000](http://localhost:7000).
   - [x] Facebook Pixel
   - [x] Google Tag Manager
   - [x] Chatbot (Hubspot, Intercom, [Chaskiq](https://chaskiq.io))
-  - [ ] More analytics (Matomo, Plausible, ...)
+  - [ ] More analytics (Matomo, Plausible, GoatCounter, ...)
   - [ ] CRM (Hubspot, ...)
 
 ## Screenshots
@@ -74,7 +74,7 @@ We love any type of contribution, bug fixes, new integrations and better docs. S
 
 Dave: Wed, 9:30-11:30 AM CET, https://www.twitch.tv/davidevernizzi
 
-Ema: Wed, 8-10 AM PT, TBD
+Ema: Wed, 8-10 AM PT on [YouTube](https://www.youtube.com/channel/UCDTowl5eFg8Fru1m0Wlwfew/live)
 
 ## Saasform Cloud
 
