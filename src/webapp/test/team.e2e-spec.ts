@@ -16,7 +16,6 @@ import { configureApp } from '../src/main.app'
 import { AppService } from '../src/app.service'
 import { AuthModule } from '../src/auth/auth.module'
 import { AccountsModule } from '../src/accounts/accounts.module'
-import { ApiV1UserController } from '../src/api/controllers/v1/api.user.controller'
 import { ApiV1TeamController } from '../src/api/controllers/v1/api.team.controller'
 import { ApiV1AutheticationController } from '../src/api/controllers/v1/api.authentication.controller'
 import { StripeService } from '../src/payments/services/stripe.service'
@@ -57,7 +56,6 @@ INSERT INTO payments (id,account_id,status,data) VALUES (501,201,'trialing','{"i
 `
 
 const existingUser = 'email=admin@uplom.com&password=password'
-const user = 'email=user@gmail.com&password=password'
 
 let agent: any
 
@@ -128,7 +126,7 @@ describe('User (e2e)', () => {
         SettingsModule,
         AccountsModule
       ],
-      controllers: [ApiV1AutheticationController, ApiV1UserController, ApiV1TeamController],
+      controllers: [ApiV1AutheticationController, ApiV1TeamController],
       providers: [
         AppService,
         { provide: CronService, useValue: mockedCronService }
@@ -157,39 +155,10 @@ describe('User (e2e)', () => {
     await app.close()
   })
 
-  // it('user password change', async () => {
-  //   return agent
-  //     .post('/api/v1/user/password-change')
-  //     .send(passwordChange)
-  //     .then(res => {
-  //       expect(res.body).toEqual({ message: {}, statusCode: 201 })
-  //     })
-  // })
-
-  it('should delete a user', done => {
+  it('should return the list of users', done => {
     return agent
       .post('/api/v1/login')
       .send(existingUser)
-      .expect(302)
-      .then(res => {
-        agent
-          .delete('/api/v1/user/101')
-          .set('Cookie', res.header['set-cookie'])
-          .send()
-          .then(res => {
-            agent
-              .post('/api/v1/login')
-              .send(existingUser)
-              .expect(401)
-              .then(res => done())
-          })
-      })
-  })
-
-  it('should return an updated team list', done => {
-    return agent
-      .post('/api/v1/login')
-      .send(user)
       .expect(302)
       .then(res => {
         agent
@@ -200,6 +169,14 @@ describe('User (e2e)', () => {
             try {
               expect(res.body).toEqual({
                 message: [
+                  {
+                    created: '2021-04-24T11:24:10.000Z',
+                    email: 'admin@uplom.com',
+                    id: 101,
+                    isActive: true,
+                    profile: {},
+                    username: null
+                  },
                   {
                     created: '2021-04-24T11:24:10.000Z',
                     email: 'user@gmail.com',
