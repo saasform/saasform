@@ -3,10 +3,12 @@ layout: default
 has_children: true
 has_toc: true
 nav_order: 6
-title: Extend Saasform
+title: Contribute to Saasform
 permalink: /contrib
 ---
 
-# Extend Saasform
+# Contribute to Saasform
 
-Coming soon!
+We welcome contributions!
+
+The following guides explain how to launch Saasform locally so you can test your changes.

@@ -1,7 +1,7 @@
 ---
 layout: default
-parent: Extend Saasform
-nav_order: 2
+parent: Contribute to Saasform
+nav_order: 4
 title: Create an App
 permalink: /contrib/apps
 ---

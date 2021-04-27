@@ -1,7 +1,7 @@
 ---
 layout: default
-parent: Extend Saasform
-nav_order: 1
+parent: Contribute to Saasform
+nav_order: 3
 title: Create a Theme
 permalink: /contrib/themes
 ---
