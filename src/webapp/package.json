@@ -24,6 +24,7 @@
     "migrate": "node --require ts-node/register ./node_modules/typeorm/cli.js migration:run"
   },
   "dependencies": {
+    "@bugout/humbug": "^0.0.3",
     "@nestjs-query/query-graphql": "^0.21.2",
     "@nestjs-query/query-typeorm": "^0.21.2",
     "@nestjs/common": "^7.6.6",
