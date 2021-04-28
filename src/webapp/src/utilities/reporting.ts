@@ -9,7 +9,7 @@ const packageConfigFile = require(`${packagePath}/package.json`)
 export let tags: string[] = [packageConfigFile.version]
 
 const sessionId = uuid.v4()
-let clientId = process.env['BUGOUT_HUMBUG_CLIENT_ID']
+let clientId = process.env['SAASFORM_REPORTER_CLIENT_ID']
 if (clientId === undefined) {
 	clientId = uuid.v4()
 }
