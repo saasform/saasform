@@ -1,0 +1,61 @@
+---
+layout: page_landing
+---
+
+<h1 class="title has-text-centered">
+  {{ website.page_title }}
+</h1>
+<section class="section mb-6">
+  <div class="container is-max-desktop content">
+
+    <div class="columns">
+      <div class="column is-three-fifths px-6">
+
+        <section class="section is-size-5 has-text-weight-normal">
+        {{ website.page_body }}
+        </section>
+
+      </div>
+      <div class="column card p-5">
+        <div class="card-content">
+          {% assign email_form = root_theme | append: '/email_form' %}
+          {% render email_form %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% assign len = benefits.length %}
+{% if len > 0 %}
+<section class="hero is-midheight is-default is-bold pt-6 has-background-white-bis">
+  <div class="has-text-centered">
+    <h2 class="title is-2 is-bold is-spaced">
+      {{ website.title }}
+    </h2>
+    <h3 class="subtitle is-size-5 has-text-grey">{{ website.hero_subtitle }}</h3>
+  </div>
+  <div class="hero-foot mt-6">
+    <div class="container is-max-desktop content">
+      <div class="columns is-6">
+        {% for item in benefits %}
+          <div class="column has-text-centered">
+
+            <img src="{{ item.image_url }}" alt="{{ item.title }}" width="50" />
+
+            <h4>
+              {{ item.title }}
+            </h4>
+
+            <p class="is-muted has-text-grey">
+              {{ item.text }}
+            </p>
+
+          </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endif %}

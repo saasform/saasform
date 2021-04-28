@@ -28,17 +28,6 @@ sass.compiler = require('sass');
 //const replace = require('gulp-replace'); //For Replacing img formats to webp in html
 const logSymbols = require('log-symbols'); //For Symbolic Console logs :) :P 
 
-//Load Previews on Browser on dev
-function livePreview(done) {
-  browserSync.init({
-    server: {
-      baseDir: options.paths.dist.base
-    },
-    port: options.config.port || 5000
-  });
-  done();
-}
-
 //Copy latest installed Bulma
 function setupBulma() {
   console.log("\n\t" + logSymbols.info, "Installing Bulma Files..\n");
@@ -221,6 +210,11 @@ exports.default = series(
   devClean, // Clean Dist Folder
   resetPages,
   parallel(compileCSS, javascriptBuild, devImages, compileLiquid),
-  livePreview, // Live Preview Build
   watchFiles // Watch for Live Changes
+);
+
+exports.prod = series(
+  devClean, // Clean Dist Folder
+  resetPages,
+  parallel(compileCSS, javascriptBuild, devImages, compileLiquid),
 );
