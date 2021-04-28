@@ -2,7 +2,7 @@ import * as uuid from 'uuid'
 
 import Reporter, { HumbugConsent } from '@bugout/humbug'
 
-const HUMBUG_TOKEN = 'a4bb7056-94b9-4857-893e-dc8e4fa41345'
+const HUMBUG_TOKEN = '3bafba59-f078-4004-ab12-fa27cf4885f1'
 
 const packagePath = process.cwd()
 const packageConfigFile = require(`${packagePath}/package.json`)
