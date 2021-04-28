@@ -1,48 +1,24 @@
-import * as uuid from 'uuid'
+import * as uuid from "uuid"
 
-import Reporter, { HumbugConsent } from '@bugout/humbug'
+import Reporter, { HumbugConsent } from "@bugout/humbug"
 
-const HUMBUG_TOKEN = '3bafba59-f078-4004-ab12-fa27cf4885f1'
+const HUMBUG_TOKEN = "3bafba59-f078-4004-ab12-fa27cf4885f1"
 
 const packagePath = process.cwd()
 const packageConfigFile = require(`${packagePath}/package.json`)
 export let tags: string[] = [packageConfigFile.version]
 
-
-type reportingConfigType = {
-    clientId: string
-    consent: boolean
-}
-
-
-const getReportingConfig = (): reportingConfigType => {
-    let reportingConfig: reportingConfigType
-    const fs = require('fs')
-    try {
-        const reportingConfigRaw = fs.readFileSync(`${packagePath}/reporting_config.json`, 'utf8')
-        const reportingConfigJson = JSON.parse(reportingConfigRaw)
-        reportingConfig = { clientId: reportingConfigJson.clientId, consent: reportingConfigJson.consent }
-    } catch {
-        reportingConfig = { clientId: uuid.v4(), consent: true }
-        fs.writeFile(`${packagePath}/reporting_config.json`, JSON.stringify(reportingConfig), (err: Error) => {
-            if (err) {
-                console.log("Unable to create reporting_config.json file")
-            }
-        })
-    }
-
-    return reportingConfig
-}
-
 const sessionId = uuid.v4()
-const loadedReportingConfig = getReportingConfig()
-const clientId = loadedReportingConfig.clientId
+let clientId = process.env["BUGOUT_HUMBUG_CLIENT_ID"]
+if (clientId === undefined) {
+	clientId = uuid.v4()
+}
 
-const saasform_consent = new HumbugConsent(loadedReportingConfig.consent)
+const saasform_consent = new HumbugConsent(true)
 export const saasform_reporter = new Reporter(
-    'saasform',
-    saasform_consent,
-    clientId,
-    sessionId,
-    HUMBUG_TOKEN
+	"saasform",
+	saasform_consent,
+	clientId,
+	sessionId,
+	HUMBUG_TOKEN
 )
