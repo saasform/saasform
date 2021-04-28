@@ -16,16 +16,19 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import * as yaml from 'js-yaml'
 
+import { BaseController } from '../../utilities/base.controller'
 import { SettingsService } from '../../settings/settings.service'
 import { UserOptionalAuthGuard } from '../../auth/auth.guard'
 
 import { renderPage } from '../utilities/render'
 
 @Controller()
-export class PublicController {
+export class PublicController extends BaseController {
   constructor (
     private readonly settingsService: SettingsService
-  ) {}
+  ) {
+    super()
+  }
 
   @UseGuards(UserOptionalAuthGuard)
   @Get('__health')
@@ -58,14 +61,14 @@ export class PublicController {
     // try to find a md file
     let mdFile
     try {
-      mdFile = readFileSync(join(__dirname, '..', '..', '..', 'pages', `${name}.md`), 'utf8')
+      mdFile = readFileSync(join(this.getPagesDir(req), `${name}.md`), 'utf8')
     } catch (e) {
       throw new NotFoundException()
     }
 
     // extract variables from md header, e.g. title
     const mdParts = mdFile.split(/---\n/)
-    let mdVars = { title: '' }
+    let mdVars = { title: '', layout: '' }
     let mdBody = mdFile
     if (mdParts.length === 3) {
       try {
@@ -86,6 +89,6 @@ export class PublicController {
       page_body: md.render(await liquid.parseAndRender(mdBody, req.websiteData))
     }
 
-    return renderPage(req, res, 'page', pageData)
+    return renderPage(req, res, mdVars.layout ?? 'page', pageData)
   }
 }

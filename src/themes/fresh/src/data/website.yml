@@ -73,3 +73,5 @@ prelaunch_background_url: "{{ prelaunch_background_url }}"
 # internals
 size:
 next_url: "{{ next_url | url_encode }}"
+
+email_form: "{{ email_form }} "
