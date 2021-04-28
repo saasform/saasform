@@ -58,6 +58,7 @@ INSERT INTO payments (id,account_id,status,data) VALUES (501,201,'trialing','{"i
 
 const existingUser = 'email=admin@uplom.com&password=password'
 const user = 'email=user@gmail.com&password=password'
+const newUser = 'email=newUser@gmail.com&name=newUser'
 
 let agent: any
 
@@ -70,7 +71,7 @@ const configuration = (): any => ({
 // const envFile = '../env/env.local'
 // const secretsFile = '../env/secrets.local'
 
-describe('Delete user (e2e)', () => {
+describe('Invite user (e2e)', () => {
   let app: NestExpressApplication
   // let settingsService: SettingsService
 
@@ -166,22 +167,19 @@ describe('Delete user (e2e)', () => {
   //     })
   // })
 
-  it('should delete a user', done => {
+  it('should invite a user', done => {
     return agent
       .post('/api/v1/login')
       .send(existingUser)
       .expect(302)
       .then(res => {
         agent
-          .delete('/api/v1/user/101')
+          .post('/api/v1/team/user')
           .set('Cookie', res.header['set-cookie'])
-          .send()
+          .send(newUser)
           .then(res => {
-            agent
-              .post('/api/v1/login')
-              .send(existingUser)
-              .expect(401)
-              .then(res => done())
+            console.log(res.body)
+            done()
           })
       })
   })
@@ -198,24 +196,50 @@ describe('Delete user (e2e)', () => {
           .send()
           .then(res => {
             try {
-              expect(res.body).toEqual({
-                message: [
-                  {
-                    created: '2021-04-24T11:24:10.000Z',
-                    email: 'user@gmail.com',
-                    id: 102,
-                    isActive: true,
-                    profile: {},
-                    username: null
-                  }
-                ],
-                statusCode: 200
+              const actual = res.body.message.map(u => {
+                const { email, profile, username } = u
+                return { email, profile, username }
               })
+              expect(actual).toEqual([{ email: 'admin@uplom.com', profile: {}, username: null }, { email: 'user@gmail.com', profile: {}, username: null }, { email: 'newUser@gmail.com', profile: { email: 'newUser@gmail.com' }, username: null }])
               return done()
             } catch (err) {
               console.log('err', err)
               return done(err)
             }
+          })
+      })
+  })
+
+  it('should not invite a user twice', done => {
+    return agent
+      .post('/api/v1/login')
+      .send(existingUser)
+      .expect(302)
+      .then(res => {
+        const cookie = res.header['set-cookie']
+        agent
+          .post('/api/v1/team/user')
+          .set('Cookie', cookie)
+          .send(newUser)
+          .then(res => {
+            agent
+              .get('/api/v1/team/users')
+              .set('Cookie', cookie)
+              .send()
+              .then(res => {
+                try {
+                  console.log('body', res.body)
+                  const actual = res.body.message.map(u => {
+                    const { email, profile, username } = u
+                    return { email, profile, username }
+                  })
+                  expect(actual).toEqual([{ email: 'admin@uplom.com', profile: {}, username: null }, { email: 'user@gmail.com', profile: {}, username: null }, { email: 'newUser@gmail.com', profile: { email: 'newUser@gmail.com' }, username: null }])
+                  return done()
+                } catch (err) {
+                  console.log('err', err)
+                  return done(err)
+                }
+              })
           })
       })
   })

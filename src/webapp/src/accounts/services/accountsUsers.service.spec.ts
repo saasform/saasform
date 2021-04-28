@@ -124,4 +124,33 @@ describe('AccountsUsers Service', () => {
       expect(res).toBe(0) // the value 0 is hardcoded in the mock definition
     })
   })
+
+  describe('addUser', () => {
+    it('Should create an accountUser', async () => {
+      const user = { id: 101 }
+      const account = { id: 201 }
+
+      service.query = jest.fn().mockReturnValue([])
+      service.createOne = jest.fn().mockReturnValue({ id: 1, account_id: account.id, user_id: user.id })
+      const spy = jest.spyOn(service, 'createOne')
+
+      const res = await service.addUser(user, account)
+
+      expect(res).toEqual({ id: 1, account_id: account.id, user_id: user.id })
+      expect(spy).toBeCalledTimes(1)
+    })
+
+    it('Should not create an accountUser twice', async () => {
+      const user = { id: 101 }
+      const account = { id: 201 }
+
+      const spy = jest.spyOn(service, 'createOne')
+
+      service.query = jest.fn().mockReturnValue([{ id: 1, account_id: account.id, user_id: user.id }])
+      const res = await service.addUser(user, account)
+
+      expect(res).toEqual({ id: 1, account_id: account.id, user_id: user.id })
+      expect(spy).toBeCalledTimes(0)
+    })
+  })
 })
