@@ -45,19 +45,25 @@ export class AccountsUsersService extends BaseService<AccountUserEntity> {
    * @param accountId id of the account
    */
   async addUser (user: UserEntity, account: AccountEntity): Promise<AccountUserEntity | null> {
+    const accountUsers = await this.query({
+      filter: { account_id: { eq: account.id }, user_id: { eq: user.id } }
+    })
+
+    if (accountUsers.length !== 0) {
+      return accountUsers[0]
+    }
+
     const accountUser = new AccountUserEntity()
 
     accountUser.account_id = account.id
     accountUser.user_id = user.id
 
     try {
-      await this.createOne(accountUser)
+      return await this.createOne(accountUser)
     } catch (error) {
       console.error('accountsUser.service - addUser', error)
       return null
     }
-
-    return accountUser
   }
 
   async deleteUser (userId: number): Promise<number | null> {
