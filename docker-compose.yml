@@ -29,6 +29,7 @@ services:
       - TYPEORM_SYNCHRONIZE=true
       - TYPEORM_LOGGING=true
       - TYPEORM_MIGRATIONS=/app/dist/migration/**/*.js
+      - HUMBUG_TOKEN=3bafba59-f078-4004-ab12-fa27cf4885f1
     ports:
       - "7000:7000"
     volumes:
