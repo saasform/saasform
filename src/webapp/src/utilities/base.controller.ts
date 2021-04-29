@@ -4,9 +4,7 @@ import { join } from 'path'
 
 @Controller()
 export class BaseController {
-  constructor () {}
-
-  getPagesDir(req) {
+  getPagesDir (req): string {
     const defaultDir = join(__dirname, '../../pages')
     return defaultDir
   }

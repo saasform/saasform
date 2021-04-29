@@ -8,7 +8,6 @@ import * as cookieParser from 'cookie-parser'
 import * as csurf from 'csurf'
 
 import { HttpExceptionsFilter } from './filters/http-exceptions.filter'
-import { saasform_reporter, tags } from './utilities/reporting'
 
 // import { HttpExceptionsFilter } from './filters/http-exceptions.filter';
 
@@ -50,7 +49,6 @@ export function configureApp (app, isTest: boolean = false): void {
 
   app.useGlobalPipes(new ValidationPipe())
   app.useGlobalFilters(new HttpExceptionsFilter())
-  saasform_reporter.systemReport(tags, true)
 
   const csrf = csurf({ cookie: true, signed: true, secure: true, httpOnly: true, sameSite: true })
   if (isTest) {

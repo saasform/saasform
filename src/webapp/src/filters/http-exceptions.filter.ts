@@ -9,7 +9,7 @@ import {
   InternalServerErrorException
 } from '@nestjs/common'
 import { Request, Response } from 'express'
-import { saasform_reporter, tags } from '../utilities/reporting'
+import { saasformReporter, tags } from '../utilities/reporting'
 
 @Catch()
 export class HttpExceptionsFilter implements ExceptionFilter {
@@ -19,7 +19,7 @@ export class HttpExceptionsFilter implements ExceptionFilter {
     const request: any = ctx.getRequest<Request>()
 
     console.error('HttpExceptionsFilter - received exception', exception)
-    saasform_reporter.errorReport(exception, tags, true)
+    saasformReporter.errorReport(exception, tags, true).then(() => {}, () => {})
 
     // This needs to be first because it is a special
     // kind of unauthrized that does not trigger any
