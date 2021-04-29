@@ -23,6 +23,10 @@ docker-compose up
 
 Open your browser at [http://localhost:7000](http://localhost:7000).
 
+## Anonymous Telemetry
+
+Saasform uses [Humbug](https://github.com/bugout-dev/humbug) to collect anonymous usage stats and error reporting. If you want to **opt out** edit [docker-compose.yml](https://github.com/saasform/saasform/blob/main/docker-compose.yml#L32) and remove the `HUMBUG_TOKEN` line.
+
 ## Next Steps
 
 1. [Customize the website](https://docs.saasform.dev/start/customize-website) (Set name, pricing, content, analytics)
@@ -38,6 +42,7 @@ Open your browser at [http://localhost:7000](http://localhost:7000).
   - [x] Homepage (modular: use Saasform or redirect to yours)
   - [x] Login / Signup / Password reset
   - [x] 404 / 500
+  - [x] Landing pages (privacy policy, download whitepaper...)
   - [x] User profile / billing & payments
   - [ ] Team management
 - User authentication
