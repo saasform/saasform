@@ -81,3 +81,7 @@ account_users: "{{ account_users }}"
 foobar: user.email
 u_email_verified: "{{ u.email_verified }}"
 u_name: '{{ u.name | default: "(No name specified)" }}'
+
+# billing
+payment_methods: "{{ account.payments_methods }}"
+stripePublishableKey: "{{ stripePublishableKey }}"
