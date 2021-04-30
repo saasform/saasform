@@ -1,0 +1,34 @@
+    <form action="" method="POST" class="mb-20">
+
+      <div class="field">
+        <label for="full-name" class="label has-text-weight-normal">
+          Name
+        </label>
+        <div class="control">
+          <input type="text" class="input" id="name" name="name" placeholder="John Doe" value="">
+        </div>
+      </div>
+
+
+      <div class="field">
+        <label for="full-name" class="label has-text-weight-normal">
+          Email
+        </label>
+        <div class="control">
+          <input type="text" class="input" id="email" name="email" placeholder="john@example.com" value="">
+        </div>
+      </div>
+
+      <p id="error-invite" class="help is-danger mb-0">{{ error.invite }}</p>
+
+      <br/>
+      <input type="hidden" name="_csrf" value="{{ website.csrf_token }}">
+      <div class="field">
+        <div class="control">
+          <button class="button is-primary" type="submit">Invite user</button>
+        </div>
+      </div>
+    </form>
+
+
+  </form>
