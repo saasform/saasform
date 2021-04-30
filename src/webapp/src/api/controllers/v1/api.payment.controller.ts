@@ -29,4 +29,33 @@ export class ApiV1PaymentController {
       message: methods
     })
   }
+
+  @UseGuards(UserRequiredAuthGuard)
+  @Post('purchase-plan')
+  async handlePurchasePlan (@Request() req, @Res() res: Response): Promise<any> {
+    const account = await this.accountsService.findByOwnerEmail(req.user.email)
+
+    if (account == null) {
+      return res.json({
+        statusCode: 400,
+        error: 'Account not found'
+      })
+    }
+
+    const { plan, method, monthly } = req.body
+
+    if (plan == null) {
+      return res.json({
+        statusCode: 400,
+        error: 'Plan not found'
+      })
+    }
+
+    const result = await this.accountsService.subscribeToPlan(account, { plan, method, monthly })
+
+    return res.json({
+      statusCode: 200,
+      message: result
+    })
+  }
 }

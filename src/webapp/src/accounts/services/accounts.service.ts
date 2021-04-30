@@ -19,6 +19,7 @@ import { SettingsService } from '../..//settings/settings.service'
 import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
 import { UserJson } from '../dto/new-user.input'
+import { Subscription } from 'src/payments/interfaces/subscription.interface'
 
 @QueryService(AccountEntity)
 @Injectable()
@@ -401,14 +402,41 @@ export class AccountsService extends BaseService<AccountEntity> {
 
   /**
    * Subscribe an account to a plan
+   *
+   * This function has a number of fields that are contained inside the `subscription` parameter:
+   * - plan: mandatory, the plan to purchase
+   * - method: optional, the payment method to use; if absent the default payment method will be used
+   * - monthly: optional, the indication whether to use a monthly payment; if absent the yearly payment will be used
+   *
+   * The function will do several things:
+   * 1. fetch the payment method handle
+   * 2. fetch the correct price, basing on price and monthly indication
+   * 3. check if the account already has a plan
+   * 4a. if the account has a plan, update it
+   * 4b. if the account doesn't have a plan, create one
+   *
    * @param account account to subscribe
    * @param subscription subscription to buy
    */
-  // TODO: better specify the type of subscription
-  async subscribeToPlan (account: AccountEntity, subscription: any): Promise<any> { // TODO: return a proper type
+  async subscribeToPlan (account: AccountEntity, subscription: Subscription): Promise<any> { // TODO: return a proper type
+    // 1. fetch payment method details
     const paymentMethod = account.data.payments_methods.filter(p => p?.id === subscription.method)[0]
+
+    // 2. fetch price
     const price = await this.plansService.getPriceByProductAndAnnual(subscription.plan, subscription.monthly)
-    return await this.paymentsService.subscribeToPlan(account.data.stripe.id, paymentMethod, price)
-    // TODO: check errors
+
+    // 3. check if the account already has a plan
+    const payment = await this.paymentsService.getActivePayments(account.id)
+    if (payment != null) {
+      // 4a. the account has a plan, update it
+
+    } else {
+      // 4b. the account doesn't have a plan, create one
+      const newPayment = await this.paymentsService.subscribeToPlan(account.data.stripe.id, paymentMethod, price)
+      if (newPayment == null) {
+        console.error('accountService -- subscribeToPlan -- error while subscribing to new plan', account, subscription)
+        return null
+      }
+    }
   }
 }

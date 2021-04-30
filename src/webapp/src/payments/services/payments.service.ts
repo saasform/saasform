@@ -213,6 +213,36 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     }
   }
 
+  async updatePlan (subscriptionId: any, price: any): Promise<any> { // TODO: return a proper type
+    try {
+      const subscription = await this.stripeService.client.subscriptions.retrieve(subscriptionId)
+
+      if (subscription == null) {
+        console.error('paymentService - updatePlan - error while finding the subscription to update')
+        return null
+      }
+
+      const updatedSubscription = await this.stripeService.client.subscriptions.update(subscriptionId, {
+        cancel_at_period_end: false,
+        proration_behavior: 'none',
+        items: [{
+          id: subscription.items.data[0].id,
+          price: price.id
+        }]
+      })
+
+      if (subscription == null) {
+        console.error('paymentService - updatePlan - error while updating subscription', subscription)
+        return null
+      }
+
+      return updatedSubscription
+    } catch (error) {
+      console.error('paymentService - updatePlan - exception while updating subscription', error)
+      return null
+    }
+  }
+
   async createBillingCustomer (customer): Promise<any> { // TODO: return a proper type
     const stripeCustomer = await this.createStripeCustomer(customer)
 

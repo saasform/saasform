@@ -29,11 +29,15 @@ export class CspInterceptor implements NestInterceptor {
         // google signin
         'https://apis.google.com',
         // facebook pixel
-        'https://connect.facebook.net'
+        'https://connect.facebook.net',
+        // stripe
+        'https://js.stripe.com/v3/'
       ],
       frameSrc: [
         "'self'",
-        'https://accounts.google.com'
+        'https://accounts.google.com',
+        // stripe
+        'https://js.stripe.com/v3/'
       ],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: [
