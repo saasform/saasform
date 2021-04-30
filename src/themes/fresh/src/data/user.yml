@@ -4,3 +4,7 @@ first_name: "{{ user.first_name }}"
 last_name: "{{ user.last_name }}"
 company: "{{ user.company }}"
 username: "{{ user.username }}"
+
+u_email: "{{ u.email }}"
+u_email_verified: "{{ u.emailConfirmed }}"
+u_name: '{{ u.profile.name | default: "(No name specified)" }}'

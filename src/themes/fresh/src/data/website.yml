@@ -75,3 +75,9 @@ size:
 next_url: "{{ next_url | url_encode }}"
 
 email_form: "{{ email_form }} "
+
+# team
+account_users: "{{ account_users }}"
+foobar: user.email
+u_email_verified: "{{ u.email_verified }}"
+u_name: '{{ u.name | default: "(No name specified)" }}'

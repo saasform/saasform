@@ -6,72 +6,27 @@
         <h3 class="has-text-weight-normal mb-0">Your Team</h3>
       </div>
       <div class="level-right">
-        <a class="button is-primary">
+        <a class="button is-primary modal-trigger" data-modal="invite-modal">
           Add new
         </a>
+
       </div>
     </div>
 
     <ul style="list-style-type: none; margin: 0">
+    {% for u in account_users %}
       <li class="mb-5">
         <div class="level">
           <div class="level-left">
             <div class="level-item">
-              <figure class="image is-64x64 ml-0 mr-4">
-                <img class="is-rounded" src="https://secure.gravatar.com/avatar/3e9f1c9c15f480a0154faa891c4eab10?size=128">
-              </figure>
-            </div>
-            <div class="level-item">
               <div>
-                <p class="mb-0">Davide Vernizzi</p>
-                <p class="has-text-grey">dave@saasform.dev</p>
-              </div>
-            </div>
-          </div>
-          <div class="level-right">
-            <div class="level-item">
-              <span></span>
-            </div>
-          </div>
-        </div>
-      </li>
-      <li class="mb-5">
-        <div class="level">
-          <div class="level-left">
-            <div class="level-item">
-              <figure class="image is-64x64 ml-0 mr-4">
-                <img class="is-rounded" src="https://secure.gravatar.com/avatar/cc2478972b310a5d7aceb97b5725edc3?size=128">
-              </figure>
-            </div>
-            <div class="level-item">
-              <div>
-                <p class="mb-0">Emanuele Cesena</p>
-                <p class="has-text-grey">ec@saasform.dev</p>
-              </div>
-            </div>
-          </div>
-          <div class="level-right">
-            <div class="level-item">
-              <span></span>
-            </div>
-          </div>
-        </div>
-      </li>
-
-
-    {% for item in xusers %}
-      <li class="mb-5">
-        <div class="level">
-          <div class="level-left">
-            <div class="level-item">
-              <figure class="image is-64x64 ml-0 mr-4">
-                <img class="is-rounded" src="https://secure.gravatar.com/avatar/cc2478972b310a5d7aceb97b5725edc3?size=128">
-              </figure>
-            </div>
-            <div class="level-item">
-              <div>
-                <p class="mb-0">Emanuele Cesena</p>
-                <p class="has-text-grey">ec@saasform.dev</p>
+                <p class="mb-0">{{{ user.u_name }}}</p>
+                <p class="has-text-grey">
+                  {{ user.u_email }}
+                  {% if u.emailConfirmed != true %}
+                    (not verified)
+                  {% endif %}
+                </p>
               </div>
             </div>
           </div>
@@ -85,5 +40,22 @@
     {% endfor %}
     </ul>
 
+  </div>
+
+  <div id="invite-modal" class="modal">
+    <div class="modal-background modal-dismiss"></div>
+    <div class="container is-max-desktop">
+      <div class="modal-card" style="width: 100%;">
+        <section class="modal-card-body" style="border-radius: 8px; margin-top: 100px;">
+          <div class="content has-text-centered">
+            <h2 class="">Invite a user to your team</h2><br/>
+          </div>
+          {{> invite}}
+        </section>
+      </div>
+    </div>
+    <div class="container is-max-desktop">
+      <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+    </div>
   </div>
 </div>
