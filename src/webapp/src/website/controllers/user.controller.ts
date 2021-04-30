@@ -83,9 +83,10 @@ export class UserController {
   @UseGuards(UserRequiredAuthGuard)
   @Get('/billing')
   async getUserBilling (@Request() req, @Res() res: Response): Promise<any> {
-    const account = await this.accountsService.findByOwnerEmail(req.user.email)
+    const account = await this.accountsService.findById(req.user.account_id)
     return renderUserPage(req, res, 'billing', {
-      account
+      account,
+      stripePublishableKey: this.configService.get('STRIPE_PUBLISHABLE_KEY')
     })
   }
 
