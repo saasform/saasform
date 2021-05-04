@@ -41,13 +41,18 @@ Saasform uses [Humbug](https://github.com/bugout-dev/humbug) to collect anonymou
 - Webpages
   - [x] Homepage (modular: use Saasform or redirect to yours)
   - [x] Login / Signup / Password reset
-  - [x] 404 / 500
+  - [x] Account settings
+    - [x] General
+    - [x] Security
+    - [x] Billing
+    - [x] Team
   - [x] Landing pages (privacy policy, download whitepaper...)
-  - [x] User profile / billing & payments
-  - [ ] Team management
+  - [x] Multi-theme support
+  - [ ] Modals
 - User authentication
   - [x] Email + password
   - [x] Security emails (verification, password reset...)
+  - [x] Team support (invite new user)
   - [x] Google oauth / SSO
   - [ ] Session management
   - [ ] Enterprise SSO / SAML / Okta integration
