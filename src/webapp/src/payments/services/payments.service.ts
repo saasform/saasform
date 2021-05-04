@@ -231,7 +231,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
         }]
       })
 
-      if (subscription == null) {
+      if (updatedSubscription == null) {
         console.error('paymentService - updatePlan - error while updating subscription', subscription)
         return null
       }
