@@ -78,7 +78,7 @@ Coming soon!
 
 ## Contribute
 
-We love any type of contribution, bug fixes, new integrations and better docs. See CONTRIBUTING.md to get started.
+We love any type of contribution, bug fixes, new integrations and better docs. Get started by running [Saasform in dev mode](https://docs.saasform.dev/contrib/dev).
 
 ## Office Hours
 
