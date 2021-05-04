@@ -28,7 +28,7 @@ layout: default
               Email address
             </label>
             <div class="control">
-              <input type="email" class="input" id="email" name="email" placeholder="name@address.com" autocomplete="username" required>
+              <input type="email" class="input" id="email" name="email" placeholder="name@address.com" autocomplete="username email" required>
             </div>
             <p id="error-email" class="help is-danger">{{ error.email }}</p>
           </div>
@@ -40,7 +40,7 @@ layout: default
               Username
             </label>
             <div class="control">
-              <input type="username" class="input" id="username" name="username" placeholder="mary123" required>
+              <input type="username" class="input" id="username" name="username" placeholder="mary123" autocomplete="off" required>
             </div>
             <p id="error-username" class="help is-danger">{{ error.username }}</p>
           </div>
@@ -51,8 +51,11 @@ layout: default
             <label for="password" class="label has-text-weight-normal">
               Password
             </label>
-            <div class="control">
-              <input type="password" class="input" id="password" name="password" placeholder="Enter your password" minlength="8" required>
+            <div class="control has-icons-right">
+              <input type="password" class="input" id="password" name="password" placeholder="Enter your password" minlength="8" autocomplete="new-password" required>
+              <span class="icon is-small is-right" style="pointer-events: auto" onclick="const p = document.getElementById('password'); const isPass = p.type === 'password'; p.type = isPass ? 'text' : 'password'; document.getElementById('fa-eye').classList.toggle(isPass ? 'fa-eye-slash' : 'fa-eye');">
+                <i id="fa-eye" class="fa fa-eye"></i>
+              </span>
             </div>
             <p id="error-password" class="help is-danger">{{ error.password }}</p>
           </div>
