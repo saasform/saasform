@@ -226,6 +226,7 @@ describe('Authentication (e2e)', () => {
             status: 'active',
             subscription_expiration: 1646346419,
             subscription_id: 'sub_J39ScO2qo7sBUN',
+            subscription_name: 'Pro',
             subscription_plan: 402,
             subscription_status: 'trialing',
             user_email: '',
