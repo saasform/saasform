@@ -57,7 +57,7 @@ pricing_title: "{{ pricing_title | formatDot }}"
 pricing_text: "{{ pricing_text | formatNoOrphanDot }}"
 pricing_free_trial: "{{ pricing_free_trial }}"
 pricing_credit_card_required: "{{ pricing_credit_card_required }}"
-pricing_plans: "{{ pricing_plans }}"
+pricing_plans: "{{ plans }}"
 faq: "{{ faq }}"
 cta_badge: "{{ cta_badge }}"
 cta_title: "{{ cta_title | formatDot }}"
@@ -85,3 +85,9 @@ u_name: '{{ u.name | default: "(No name specified)" }}'
 # billing
 payment_methods: "{{ account.payments_methods }}"
 stripePublishableKey: "{{ stripePublishableKey }}"
+plan_name: "{{ active_subscription.name }}"
+plan_price: "{{ active_subscription.price | divided_by: 100}}"
+plan_price_currency: "{{ active_subscription.currency}}"
+plan_price_interval: "{{ active_subscription.interval}}"
+plan_feature: "{{ feature.name }}"
+plan_next_payment: '{{ active_subscription.next_payment }}'

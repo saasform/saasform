@@ -17,6 +17,7 @@ export interface RequestUser {
   subscription_status?: string // trialing, active, incomplete, incomplete_expired, past_due, canceled, or unpaid
   payment_status?: boolean // inidicates if a payment method is present
   subscription_expiration?: number // timestamp
+  subscription_name?: string // subscription name. TODO: add the subscription label
 }
 
 export class ValidUser {
