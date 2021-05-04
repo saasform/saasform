@@ -12,7 +12,7 @@ import { Response } from 'express'
 import { Liquid } from 'liquidjs'
 import * as MarkdownIt from 'markdown-it'
 
-import { readFileSync } from 'fs'
+import { readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
 import * as yaml from 'js-yaml'
 
@@ -31,14 +31,14 @@ export class PublicController extends BaseController {
   }
 
   @UseGuards(UserOptionalAuthGuard)
-  @Get('__health')
+  @Get('/__/health')
   getHealth (): string {
     console.log('health check')
     return 'ok'
   }
 
   @UseGuards(UserOptionalAuthGuard)
-  @Get('__error')
+  @Get('/__/error')
   async getError (@Request() req): Promise<any> {
     throw new InternalServerErrorException()
   }
@@ -51,6 +51,27 @@ export class PublicController extends BaseController {
       return res.redirect(homeRedirect)
     }
     return renderPage(req, res, 'index')
+  }
+
+  @Get('/robots.txt')
+  async getRobots (@Request() req, @Res() res: Response): Promise<any> {
+    return renderPage(req, res, 'robots')
+  }
+
+  @Get('/sitemap.txt')
+  async getSitemap (@Request() req): Promise<string> {
+    const settings = await this.settingsService.getWebsiteSettings()
+    const result: string[] = [
+      '/',
+      '/signup'
+    ]
+    readdirSync(this.getPagesDir(req)).forEach(file => {
+      if (file.endsWith('.md')) {
+        const name = file.replace('.md', '')
+        result.push(`/${name}`)
+      }
+    })
+    return result.map(url => `https://${settings.domain_primary}${url}`).join('\n')
   }
 
   @UseGuards(UserOptionalAuthGuard)
