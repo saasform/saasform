@@ -405,9 +405,10 @@ describe('Accounts Service', () => {
       })
 
       describe('Subscribe to plan', () => {
-        it('Should be possible to subscribe to plan choosing a payment method', async () => {
+        it('Should be possible to subscribe to a new plan choosing a payment method', async () => {
           const repoSpy = jest.spyOn(mockedPaymentsService, 'subscribeToPlan')
           const account = mockedRepo.findById(AccountIds.EXISTING_ACCOUNT_WITH_PAYMENT_METHODS)
+          service.paymentsService.getActivePayments = jest.fn().mockReturnValue(null)
 
           await service.subscribeToPlan(account, { method: 'payment_method 2' })
 
