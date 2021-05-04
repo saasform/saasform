@@ -35,6 +35,8 @@ const renderUserPage = (req, res, page: string, data = {} as any): Response => {
     payment_methods: data?.account?.payments_methods ?? [],
     account_users: data?.account_users ?? [],
     stripePublishableKey: data?.stripePublishableKey ?? '',
+    plans: data?.plans.plans ?? [],
+    active_subscription: data?.activeSubscription ?? {},
     error: data.error
   }
   return renderPage(req, res, 'user', userPageData)

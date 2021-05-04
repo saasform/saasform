@@ -16,6 +16,7 @@ import { PlansService } from '../../payments/services/plans.service'
 import { SettingsService } from '../../settings/settings.service'
 
 import { renderUserPage } from '../utilities/render'
+import { PaymentsService } from 'src/payments/services/payments.service'
 
 @Controller('/user')
 export class UserController {
@@ -23,6 +24,7 @@ export class UserController {
     private readonly accountsService: AccountsService,
     private readonly usersService: UsersService,
     private readonly plansService: PlansService,
+    private readonly paymentsService: PaymentsService,
     private readonly configService: ConfigService,
     private readonly settingsService: SettingsService
   ) {}
@@ -84,8 +86,41 @@ export class UserController {
   @Get('/billing')
   async getUserBilling (@Request() req, @Res() res: Response): Promise<any> {
     const account = await this.accountsService.findById(req.user.account_id)
+    const plans = await this.plansService.getPricingAndPlans()
+    let activeSubscription = {}
+
+    // TOOD: move this into a function?
+    const payment = await this.paymentsService.getActivePayments(req.user.account_id)
+
+    if (payment != null) {
+      const activePlan = await this.plansService.getPlanForPayment(payment)
+
+      const nextPaymentDate = new Date(payment.data.current_period_end * 1000)
+      const nextPayment = `${nextPaymentDate.getDate()}/${(nextPaymentDate.getMonth() + 1)}/${nextPaymentDate.getFullYear()}`
+
+      let subscriptionCurrency: string = payment.data.plan.currency
+
+      switch (payment.data.plan.currency) {
+        case 'usd':
+          subscriptionCurrency = '$'
+          break
+      }
+
+      activeSubscription = {
+        expiration: payment.data.current_period_end,
+        next_payment: nextPayment,
+        currency: subscriptionCurrency,
+        interval: payment.data.plan.interval,
+        price: payment.data.plan.amount,
+        name: activePlan.name,
+        data: activePlan
+      }
+    }
+
     return renderUserPage(req, res, 'billing', {
       account,
+      plans,
+      activeSubscription,
       stripePublishableKey: this.configService.get('STRIPE_PUBLISHABLE_KEY')
     })
   }

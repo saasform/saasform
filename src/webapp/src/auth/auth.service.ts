@@ -136,7 +136,8 @@ export class AuthService {
       subscription_id: payment.data.id,
       subscription_plan: plan.uid,
       subscription_status: payment.status,
-      subscription_expiration: payment.data.current_period_end
+      subscription_expiration: payment.data.current_period_end,
+      subscription_name: plan.name
     }
   }
 
