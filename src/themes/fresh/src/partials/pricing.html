@@ -33,9 +33,9 @@
         </ul>
 
         {% if item.primary %}
-        <a class="button is-fullwidth is-medium is-primary" href="{{{ item.button_href }}}">
+        <a id={{ item.id }} class="button is-fullwidth is-medium is-primary plan-purchase-button" href="{{{ item.button_href }}}">
         {% else %}
-        <a class="button is-fullwidth is-medium is-primary is-light" href="{{{ item.button_href }}}">
+        <a id={{ item.id }} class="button is-fullwidth is-medium is-primary is-light plan-purchase-button" href="{{{ item.button_href }}}">
         {% endif %}
           {{ item.button }}
         </a>

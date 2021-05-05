@@ -429,7 +429,13 @@ export class AccountsService extends BaseService<AccountEntity> {
     const payment = await this.paymentsService.getActivePayments(account.id)
     if (payment != null) {
       // 4a. the account has a plan, update it
+      const updatedPlan = await this.paymentsService.updatePlan(payment.stripe_id, price)
+      if (updatedPlan == null) {
+        console.error('accountService -- subscribeToPlan -- error while updating to new plan', account, payment, subscription)
+        return null
+      }
 
+      return updatedPlan
     } else {
       // 4b. the account doesn't have a plan, create one
       const newPayment = await this.paymentsService.subscribeToPlan(account.data.stripe.id, paymentMethod, price)
@@ -437,6 +443,8 @@ export class AccountsService extends BaseService<AccountEntity> {
         console.error('accountService -- subscribeToPlan -- error while subscribing to new plan', account, subscription)
         return null
       }
+
+      return newPayment
     }
   }
 }

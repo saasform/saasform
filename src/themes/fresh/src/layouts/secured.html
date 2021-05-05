@@ -42,8 +42,6 @@
     // Add an instance of the card Element into the `card-element` <div>.
     card.mount('#card-element');
 
-    console.log('done')
-
     // This is where your scripr might change. It must fetch from your page
     // the plan id and the payment method id. In addition it can accept a monthly flag
     // to indicate that the monthly payment is required.
@@ -76,6 +74,35 @@
         else
           alert('Choose a plan and a payment method')
       });
+    }
+
+    let buyPlanButttons = document.getElementsByClassName("plan-purchase-button");
+
+    for(let i = 0; i < buyPlanButttons.length; i++) {
+      console.log(buyPlanButttons[i])
+      buyPlanButttons[i].onclick = function (e) {
+          e.preventDefault()
+
+          const payYearlySwitch = document.querySelector('#priceSwitch:checked');
+          const monthly = payYearlySwitch && payYearlySwitch.value === 'on' ? null : 1
+
+          const plan = e.target.id
+
+          fetch('/api/v1/purchase-plan', {
+              method: 'post',
+              headers: {
+                'Content-type': 'application/json',
+                'CSRF-Token': "{{ website.csrf_token }}" // <-- is the csrf token as a header
+              },
+              body: JSON.stringify({
+                plan, monthly
+              }),
+            })
+            .then((response) => {
+              location.reload();
+            })
+          
+        }
     }
 
 
@@ -113,7 +140,6 @@
               }),
             })
             .then((response) => {
-              console.log(response.json());
               location.reload();
             })
           }

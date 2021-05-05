@@ -224,7 +224,6 @@ export class PaymentsService extends BaseService<PaymentEntity> {
 
       const updatedSubscription = await this.stripeService.client.subscriptions.update(subscriptionId, {
         cancel_at_period_end: false,
-        proration_behavior: 'none',
         items: [{
           id: subscription.items.data[0].id,
           price: price.id
