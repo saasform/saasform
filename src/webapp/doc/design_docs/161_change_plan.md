@@ -2,18 +2,17 @@
 
 Issues:
 
-- [150](https://github.com/saasform/saasform/issues/150)
-- [149](https://github.com/saasform/saasform/issues/148)
+- [161](https://github.com/saasform/saasform/issues/161)
 
-As a saas user
-I want to set my billing data
-So that I can purchase a saas subscription
+As a user
+I want to change plan
+In order to better support my needs
 
 Make sure:
 
 - The user can buy a new plan
 - The user can change plan.
-- There should be no proration
+- the extra money is charged accordingly
 - If the user has a free trial, changing plan move to the new plan, but is still free trial for the time left (??)
 
 ## Design process
