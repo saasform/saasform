@@ -17,6 +17,112 @@
 
   <link rel="stylesheet" href="{{ root_assets }}/assets/css/bundle.css">
   <link rel="icon" type="image/png" href="{{ root_assets }}/assets/img/favicon.png" />
+
+  <!-- <script src="{{ root_assets }}/assets/stripe.js"></script> -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    // This will create stipe client needed to perform 3dS checks.
+    // Please, copy exacly this way
+
+    const  stripe = Stripe("{{ stripePublishableKey }}");
+    const elements = stripe.elements();
+  </script>
+  <script type="module">
+    // Custom styling can be passed to options when creating an Element.
+    var style = {
+      base: {
+        // Add your base input styles here. For example:
+        fontSize: '16px',
+      },
+    };
+
+    // Create an instance of the card Element.
+    var card = elements.create('card', {style});
+
+    // Add an instance of the card Element into the `card-element` <div>.
+    card.mount('#card-element');
+
+    console.log('done')
+
+    // This is where your scripr might change. It must fetch from your page
+    // the plan id and the payment method id. In addition it can accept a monthly flag
+    // to indicate that the monthly payment is required.
+    // Finally, it needs the CSRF token.
+
+    // 1. Attaching a listener to the form submit event
+    const paymentForm = document.getElementById('payment-form');
+    if (paymentForm) {
+      paymentForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Getting value out of form.
+        const data = new FormData(document.getElementById('payment-form'));
+        const params = {}
+        for (const [name,value] of data) {
+          params[name] = value
+        }
+
+        if(params.plan && params.method) {
+          // here we call the Stripe library passing: 
+          // 1. the parameters we got from our page
+          // 2. a success callback
+          // 3. an error callback
+          createSubscription(
+            params,
+            _ => alert('Purchase completed'),
+            event => alert(event.error.message)
+          )
+        }
+        else
+          alert('Choose a plan and a payment method')
+      });
+    }
+
+
+    const paymentMethodForm = document.getElementById('payment-method');
+    if (paymentMethodForm) {
+      // Create a token or display an error when the form is submitted.
+      paymentMethodForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // stripe.createToken(card)
+        stripe
+        .createPaymentMethod({
+          type: 'card',
+          card: card,
+          // billing_details: {
+            // name: billingName,
+          // },
+        })
+        .then(function(result) {
+          if (result.error) {
+            // Inform the customer that there was an error.
+            var errorElement = document.getElementById('card-errors');
+            errorElement.textContent = result.error.message;
+          } else {
+            // Send the token to your server.
+            // stripeTokenHandler(result.token);
+            fetch('/api/v1/add-payment-token', {
+              method: 'post',
+              headers: {
+                'Content-type': 'application/json',
+                'CSRF-Token': "{{ csrf_token }}" // <-- is the csrf token as a header
+              },
+              body: JSON.stringify({
+                ...result.paymentMethod
+              }),
+            })
+            .then((response) => {
+              console.log(response.json());
+              location.reload();
+            })
+          }
+        });
+      });
+
+    }
+  </script>
+
 </head>
 <body>
   {% render layout_nav, logo: logo, user: user %}
@@ -270,15 +376,15 @@
                   <h3 class="has-text-weight-normal">Current Plan</h3>
                 </div>
                 <div class="level-right">
-                  <h3 class="has-text-weight-normal">$2.99/mo</h3>
+                  <h3 class="has-text-weight-normal">{{ active_subscription.currency}}{{ active_subscription.price | divided_by: 100}}/{{ active_subscription.interval}}</h3>
                 </div>
               </div>
           
               <div class="level">
                 <div class="level-left">
                   <div>
-                    <h3 class="has-text-weight-normal mb-0">Starter</h3>
-                    <p class="has-text-grey">Next payment on 03/03/2021</p>
+                    <h3 class="has-text-weight-normal mb-0">{{ active_subscription.name }}</h3>
+                    <p class="has-text-grey">Next payment on {{ active_subscription.next_payment }}</p>
                   </div>
                 </div>
                 <div class="level-right">
@@ -288,44 +394,19 @@
                 </div>
               </div>
           
+          
               <ul class="pricing-features has-text-left" style="list-style-type: none; margin: 0">
-                <li>
-                  <span class="tag is-success is-light is-rounded">
-                    <span class="icon is-small">
-                      <i class="fa fa-check"></i>
+                {% for feature in active_subscription.data.features %}
+                  <li>
+                    <span class="tag is-success is-light is-rounded">  
+                      <span class="icon is-small">
+                        <i class="fa fa-check"></i>
+                      </span>
                     </span>
-                  </span>
-                  3 articles
-                </li>
-                <li>
-                  <span class="tag is-success is-light is-rounded">
-                    <span class="icon is-small">
-                      <i class="fa fa-check"></i>
-                    </span>
-                  </span>
-                  3 images/article
-                </li>
-                <li>
-                  <span class="tag is-success is-light is-rounded">
-                    <span class="icon is-small">
-                      <i class="fa fa-check"></i>
-                    </span>
-                  </span>
-                  Unlimited shares
-                </li>
-          
-              {% for feature in xfeatures %}
-                <li>
-                  <span class="tag is-success is-light is-rounded">
-                    <span class="icon is-small">
-                      <i class="fa fa-check"></i>
-                    </span>
-                  </span>
-                  {{ feature }}
-                </li>
-              {% endfor %}
+                    {{ feature.name }}
+                  </li>
+                {% endfor %}
               </ul>
-          
             </div>
           </div>
           
@@ -407,7 +488,7 @@
                       </div>
                   
                       <div class="pricing-wrap">
-                      {% for item in pricing_plans %}
+                      {% for item in plans %}
                         <div class="feature-card is-pricing has-text-centered">
                           <h3 class="tag is-primary is-light is-uppercase">{{ item.name }}</h3>
                           <div class="price has-text-weight-normal">
@@ -427,7 +508,7 @@
                                   <i class="fa fa-check"></i>
                                 </span>
                               </span>
-                              {{ feature }}
+                              {{ feature.name }}
                             </li>
                           {% endfor %}
                           </ul>
@@ -457,70 +538,14 @@
                 <div class="content has-text-centered">
                   <h2 class="">Add a payment method</h2><br/>
                 </div>
-                    <form action="" method="POST" class="mb-20">
+                    <form action="" id="payment-method" method="POST" class="mb-20">
                 
                       <div class="field">
-                        <div class="field-body">
-                
-                          <div class="field">
-                            <div class="control">
-                              <a id="apple" class="button is-fullwidth is-black"><i class="fab fa-apple"></i>&nbsp;Pay</a>
-                            </div>
-                            <p id="error-apple" class="help is-danger"></p>
-                          </div>
-                          <div class="field">
-                            <div class="control">
-                              <a id="paypal" class="button is-fullwidth is-info">PayPal</a>
-                            </div>
-                            <p id="error-paypal" class="help is-danger"></p>
-                          </div>
-                
+                        <div id="card-element">
+                          <!-- A Stripe Element will be inserted here. -->
                         </div>
                       </div>
                 
-                      <p class="has-text-centered mt-20 mb-20">or</p>
-                
-                      <div class="field">
-                        <label for="full-name" class="label has-text-weight-normal">
-                          Name on card
-                        </label>
-                        <div class="control">
-                          <input type="text" class="input" id="full-name" name="full-name" placeholder="First Last" value="">
-                        </div>
-                      </div>
-                
-                      <div class="field">
-                        <div class="field-body columns is-variable is-1">
-                
-                          <div class="field column is-half">
-                            <label for="card-number" class="label has-text-weight-normal">
-                              Card
-                            </label>
-                            <div class="control">
-                              <input type="text" class="input" id="card-number" name="card-number" placeholder="Card number">
-                            </div>
-                          </div>
-                
-                          <div class="field column">
-                            <label for="expiry" class="label has-text-weight-normal">
-                              &nbsp;
-                            </label>
-                            <div class="control">
-                              <input type="text" class="input" id="expiry" name="expiry" placeholder="MM / YY">
-                            </div>
-                          </div>
-                
-                          <div class="field column">
-                            <label for="cvc" class="label has-text-weight-normal">
-                              &nbsp;
-                            </label>
-                            <div class="control">
-                              <input type="text" class="input" id="cvc" name="cvc" placeholder="CVC">
-                            </div>
-                          </div>
-                
-                        </div>
-                      </div>
                       <p id="error-card-number" class="help is-danger mb-0"></p>
                 
                       <br/>
@@ -551,72 +576,27 @@
                   <h3 class="has-text-weight-normal mb-0">Your Team</h3>
                 </div>
                 <div class="level-right">
-                  <a class="button is-primary">
+                  <a class="button is-primary modal-trigger" data-modal="invite-modal">
                     Add new
                   </a>
+          
                 </div>
               </div>
           
               <ul style="list-style-type: none; margin: 0">
+              {% for u in account_users %}
                 <li class="mb-5">
                   <div class="level">
                     <div class="level-left">
                       <div class="level-item">
-                        <figure class="image is-64x64 ml-0 mr-4">
-                          <img class="is-rounded" src="https://secure.gravatar.com/avatar/3e9f1c9c15f480a0154faa891c4eab10?size=128">
-                        </figure>
-                      </div>
-                      <div class="level-item">
                         <div>
-                          <p class="mb-0">Davide Vernizzi</p>
-                          <p class="has-text-grey">dave@saasform.dev</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="level-right">
-                      <div class="level-item">
-                        <span></span>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li class="mb-5">
-                  <div class="level">
-                    <div class="level-left">
-                      <div class="level-item">
-                        <figure class="image is-64x64 ml-0 mr-4">
-                          <img class="is-rounded" src="https://secure.gravatar.com/avatar/cc2478972b310a5d7aceb97b5725edc3?size=128">
-                        </figure>
-                      </div>
-                      <div class="level-item">
-                        <div>
-                          <p class="mb-0">Emanuele Cesena</p>
-                          <p class="has-text-grey">ec@saasform.dev</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="level-right">
-                      <div class="level-item">
-                        <span></span>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-          
-          
-              {% for item in xusers %}
-                <li class="mb-5">
-                  <div class="level">
-                    <div class="level-left">
-                      <div class="level-item">
-                        <figure class="image is-64x64 ml-0 mr-4">
-                          <img class="is-rounded" src="https://secure.gravatar.com/avatar/cc2478972b310a5d7aceb97b5725edc3?size=128">
-                        </figure>
-                      </div>
-                      <div class="level-item">
-                        <div>
-                          <p class="mb-0">Emanuele Cesena</p>
-                          <p class="has-text-grey">ec@saasform.dev</p>
+                          <p class="mb-0">{{ u.profile.name | default: "(No name specified)" }}</p>
+                          <p class="has-text-grey">
+                            {{ u.email }}
+                            {% if u.emailConfirmed != true %}
+                              (not verified)
+                            {% endif %}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -630,6 +610,56 @@
               {% endfor %}
               </ul>
           
+            </div>
+          
+            <div id="invite-modal" class="modal">
+              <div class="modal-background modal-dismiss"></div>
+              <div class="container is-max-desktop">
+                <div class="modal-card" style="width: 100%;">
+                  <section class="modal-card-body" style="border-radius: 8px; margin-top: 100px;">
+                    <div class="content has-text-centered">
+                      <h2 class="">Invite a user to your team</h2><br/>
+                    </div>
+                        <form action="" method="POST" class="mb-20">
+                    
+                          <div class="field">
+                            <label for="full-name" class="label has-text-weight-normal">
+                              Name
+                            </label>
+                            <div class="control">
+                              <input type="text" class="input" id="name" name="name" placeholder="John Doe" value="">
+                            </div>
+                          </div>
+                    
+                    
+                          <div class="field">
+                            <label for="full-name" class="label has-text-weight-normal">
+                              Email
+                            </label>
+                            <div class="control">
+                              <input type="text" class="input" id="email" name="email" placeholder="john@example.com" value="">
+                            </div>
+                          </div>
+                    
+                          <p id="error-invite" class="help is-danger mb-0"></p>
+                    
+                          <br/>
+                          <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                          <div class="field">
+                            <div class="control">
+                              <button class="button is-primary" type="submit">Invite user</button>
+                            </div>
+                          </div>
+                        </form>
+                    
+                    
+                      </form>
+                  </section>
+                </div>
+              </div>
+              <div class="container is-max-desktop">
+                <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+              </div>
             </div>
           </div>
           {% endif %}
