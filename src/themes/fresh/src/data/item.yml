@@ -12,6 +12,8 @@ price_year: "{{ item.price_year }}"
 price_month: "{{ item.price_month }}"
 price_decimals: "{{ item.price_decimals }}"
 
+id: "{{ item.id }}"
+
 brand: "{{ item.brand }}"
 brand_capitalized: "{{ item.brand | capitalize }}"
 last4: "{{ item.last4 }}"
