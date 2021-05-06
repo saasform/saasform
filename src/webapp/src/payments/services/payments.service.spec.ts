@@ -339,4 +339,82 @@ describe('Payments Service', () => {
       expect(subscription).toBeNull()
     })
   })
+
+  describe('updatePlan', () => {
+    it('should update a subscription', async () => {
+      // Mocks
+      const subscriptionToUpdate = { items: { data: [{ id: 'sub_12345' }] } }
+      const updatedSubscription = { id: 'updatedSubscription' }
+
+      service.stripeService.client.subscriptions = {
+        update: jest.fn().mockReturnValue(updatedSubscription),
+        retrieve: jest.fn().mockReturnValue(subscriptionToUpdate)
+      }
+
+      // Spies
+      const spy = jest.spyOn(service.stripeService.client.subscriptions, 'update')
+
+      // Params
+      const price = { id: 301 }
+      const subscriptionId = 'sub_12345'
+
+      const subscription = await service.updatePlan(subscriptionId, price)
+
+      // Assertions
+      expect(subscription).toEqual(updatedSubscription)
+      expect(spy).toBeCalledWith(subscriptionId, {
+        cancel_at_period_end: false,
+        items: [{
+          id: subscriptionToUpdate.items.data[0].id,
+          price: price.id
+        }]
+      })
+    })
+
+    it('should return null if it fails to update a subscription', async () => {
+      // Mocks
+      const subscriptionToUpdate = { items: { data: [{ id: 'sub_12345' }] } }
+      const updatedSubscription = null
+
+      service.stripeService.client.subscriptions = {
+        update: jest.fn().mockReturnValue(updatedSubscription),
+        retrieve: jest.fn().mockReturnValue(subscriptionToUpdate)
+      }
+
+      // Spies
+      const spy = jest.spyOn(service.stripeService.client.subscriptions, 'update')
+
+      // Params
+      const price = { id: 301 }
+      const subscriptionId = 'sub_12345'
+
+      const subscription = await service.updatePlan(subscriptionId, price)
+
+      expect(subscription).toBeNull()
+      expect(spy).toBeCalledTimes(1)
+    })
+
+    it('should return null if there is no subscription to update', async () => {
+      // Mocks
+      const subscriptionToUpdate = null
+      const updatedSubscription = { id: 'updatedSubscription' }
+
+      service.stripeService.client.subscriptions = {
+        update: jest.fn().mockReturnValue(updatedSubscription),
+        retrieve: jest.fn().mockReturnValue(subscriptionToUpdate)
+      }
+
+      // Spies
+      const spy = jest.spyOn(service.stripeService.client.subscriptions, 'update')
+
+      // Params
+      const price = { id: 301 }
+      const subscriptionId = 'sub_12345'
+
+      const subscription = await service.updatePlan(subscriptionId, price)
+
+      expect(subscription).toBeNull()
+      expect(spy).toBeCalledTimes(0)
+    })
+  })
 })
