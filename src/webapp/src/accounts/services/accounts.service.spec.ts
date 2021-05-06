@@ -92,7 +92,8 @@ describe('Accounts Service', () => {
     createBillingCustomer: jest.fn(_ => [{}, null]),
     createFreeSubscription: jest.fn(_ => {}),
     attachPaymentMethod: jest.fn((account, _) => account.data.stripe.id),
-    subscribeToPlan: jest.fn(_ => {})
+    subscribeToPlan: jest.fn(_ => {}),
+    updatePlan: jest.fn(_ => {})
   }
 
   const mockedPlansService = {
@@ -406,15 +407,33 @@ describe('Accounts Service', () => {
 
       describe('Subscribe to plan', () => {
         it('Should be possible to subscribe to a new plan choosing a payment method', async () => {
-          const repoSpy = jest.spyOn(mockedPaymentsService, 'subscribeToPlan')
+          const subscribeToPlanSpy = jest.spyOn(mockedPaymentsService, 'subscribeToPlan')
+          const updatePlanSpy = jest.spyOn(mockedPaymentsService, 'updatePlan')
+
           const account = mockedRepo.findById(AccountIds.EXISTING_ACCOUNT_WITH_PAYMENT_METHODS)
           service.paymentsService.getActivePayments = jest.fn().mockReturnValue(null)
 
           await service.subscribeToPlan(account, { method: 'payment_method 2' })
 
-          expect(repoSpy).toBeCalledWith(
+          expect(subscribeToPlanSpy).toBeCalledWith(
             account?.data?.stripe?.id,
             { id: 'payment_method 2' },
+            { plan: '1' }
+          )
+          expect(updatePlanSpy).toBeCalledTimes(0)
+        })
+
+        it('Should be possible to change the plan', async () => {
+          const subscribeToPlanSpy = jest.spyOn(mockedPaymentsService, 'subscribeToPlan')
+          const updatePlanSpy = jest.spyOn(mockedPaymentsService, 'updatePlan')
+          const account = mockedRepo.findById(AccountIds.EXISTING_ACCOUNT_WITH_PAYMENT_METHODS)
+          service.paymentsService.getActivePayments = jest.fn().mockReturnValue({ id: 'mockedPayment', stripe_id: 'sub_12345' })
+
+          await service.subscribeToPlan(account, { price: 'price_1', method: 'payment_method 2' })
+
+          expect(subscribeToPlanSpy).toBeCalledTimes(0)
+          expect(updatePlanSpy).toBeCalledWith(
+            'sub_12345',
             { plan: '1' }
           )
         })
