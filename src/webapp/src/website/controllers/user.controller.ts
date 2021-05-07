@@ -128,7 +128,9 @@ export class UserController {
   @UseGuards(UserRequiredAuthGuard)
   @Post('/password-change')
   async postChangePassword (@Request() req, @Res() res: Response): Promise<any> {
-    const { password, newpassword, confirmation } = req.body
+    const { password } = req.body
+    const passwordConfirmation = req.body['password-confirm']
+    const passwordNew = req.body['password-new']
 
     if (password == null) {
       const error = {
@@ -137,7 +139,7 @@ export class UserController {
       return renderUserPage(req, res, 'team', { error })
     }
 
-    if (newpassword !== confirmation) {
+    if (passwordNew !== passwordConfirmation) {
       const error = {
         confirmation: 'Confirmation password doesn\'t match'
       }
@@ -145,7 +147,7 @@ export class UserController {
     }
 
     // await this.usersService.resetPassword(password)
-    const result = await this.usersService.changePassword(req.user.email, password, newpassword)
+    const result = await this.usersService.changePassword(req.user.email, password, passwordNew)
 
     if (result == null) {
       return res.redirect('/error')

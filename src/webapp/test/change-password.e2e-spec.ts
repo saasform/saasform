@@ -55,9 +55,9 @@ INSERT INTO payments (id,account_id,status,data) VALUES (501,201,'trialing','{"i
 `
 
 const existingUser = 'email=admin@uplom.com&password=password'
-const passwordChange = 'email=admin@uplom.com&password=password&newpassword=password1&confirmation=password1'
-const passwordChangeNotMatch = 'email=admin@uplom.com&password=password&newpassword=password1&confirmation=password2'
-const passwordChangeWrongPassword = 'email=admin@uplom.com&password=wrongpassword&newpassword=password1&confirmation=password1'
+const passwordChange = 'email=admin@uplom.com&password=password&password-new=password1&password-confirm=password1'
+const passwordChangeNotMatch = 'email=admin@uplom.com&password=password&password-new=password1&password-confirm=password2'
+const passwordChangeWrongPassword = 'email=admin@uplom.com&password=wrongpassword&password-new=password1&password-confirm=password1'
 
 let agent: any
 
@@ -210,8 +210,14 @@ describe('User (e2e)', () => {
           .set('Cookie', res.header['set-cookie'])
           .send(passwordChange)
           .then(res => {
-            expect(res.body).toEqual({ message: 'Password changed', statusCode: 200 })
-            done()
+            try {
+              console.log('res.boy', res.body)
+              expect(res.body).toEqual({ message: 'Password changed', statusCode: 200 })
+              return done()
+            } catch (err) {
+              console.error('Error while updating password', err)
+              return done(err)
+            }
           })
       })
   })
