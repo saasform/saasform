@@ -424,13 +424,17 @@ describe('Accounts Service', () => {
         })
 
         it('Should be possible to change the plan', async () => {
+          // Spies
           const subscribeToPlanSpy = jest.spyOn(mockedPaymentsService, 'subscribeToPlan')
           const updatePlanSpy = jest.spyOn(mockedPaymentsService, 'updatePlan')
+
+          // Mocks
           const account = mockedRepo.findById(AccountIds.EXISTING_ACCOUNT_WITH_PAYMENT_METHODS)
           service.paymentsService.getActivePayments = jest.fn().mockReturnValue({ id: 'mockedPayment', stripe_id: 'sub_12345' })
 
           await service.subscribeToPlan(account, { price: 'price_1', method: 'payment_method 2' })
 
+          // Assertions
           expect(subscribeToPlanSpy).toBeCalledTimes(0)
           expect(updatePlanSpy).toBeCalledWith(
             'sub_12345',
