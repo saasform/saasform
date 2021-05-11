@@ -36,13 +36,34 @@
       },
     };
 
+    const deleteUserLink = document.getElementById('delete-user');
+    if (deleteUserLink) {
+      // Create a token or display an error when the form is submitted.
+      deleteUserLink.addEventListener('click', function(event) { 
+        const confirmDelete = confirm('Are you sure you want to delete your user?');
+        console.log(confirmDelete)
+        if(confirmDelete) {
+          fetch('/api/v1/user/{{ user.id }}', {
+              method: 'delete',
+              headers: {
+                'Content-type': 'application/json',
+                'CSRF-Token': "{{ csrf_token }}" // <-- is the csrf token as a header
+              },
+            })
+            .then((response) => {
+              window.location = '/logout'
+            })
+        }
+        
+      });
+    }
+
+
     // Create an instance of the card Element.
     var card = elements.create('card', {style});
 
     // Add an instance of the card Element into the `card-element` <div>.
     card.mount('#card-element');
-
-    console.log('done')
 
     // This is where your scripr might change. It must fetch from your page
     // the plan id and the payment method id. In addition it can accept a monthly flag
@@ -76,6 +97,35 @@
         else
           alert('Choose a plan and a payment method')
       });
+    }
+
+    let buyPlanButttons = document.getElementsByClassName("plan-purchase-button");
+
+    for(let i = 0; i < buyPlanButttons.length; i++) {
+      console.log(buyPlanButttons[i])
+      buyPlanButttons[i].onclick = function (e) {
+          e.preventDefault()
+
+          const payYearlySwitch = document.querySelector('#priceSwitch:checked');
+          const monthly = payYearlySwitch && payYearlySwitch.value === 'on' ? null : 1
+
+          const plan = e.target.id
+
+          fetch('/api/v1/purchase-plan', {
+              method: 'post',
+              headers: {
+                'Content-type': 'application/json',
+                'CSRF-Token': "{{ csrf_token }}" // <-- is the csrf token as a header
+              },
+              body: JSON.stringify({
+                plan, monthly
+              }),
+            })
+            .then((response) => {
+              location.reload();
+            })
+          
+        }
     }
 
 
@@ -113,7 +163,6 @@
               }),
             })
             .then((response) => {
-              console.log(response.json());
               location.reload();
             })
           }
@@ -232,30 +281,19 @@
           
               <h3 class="has-text-weight-normal">Basic Information</h3><br/>
           
-              <form action="" method="POST" class="mb-40">
+              <form action="/user/profile" method="POST" class="mb-40">
                 <div class="field">
                   <div class="field-body">
           
                     <div class="field">
-                      <label for="first" class="label  has-text-weight-normal">
-                        First name
+                      <label for="name" class="label  has-text-weight-normal">
+                        Name
                       </label>
                       <div class="control">
-                        <input type="text" class="input " id="first" name="first" placeholder="First name" value="{{ user.first_name }}">
+                        <input type="text" class="input " id="name" name="name" placeholder="Name" value="{{ user.user_name }}">
                       </div>
                       <p id="error-first" class="help is-danger"></p>
                     </div>
-          
-                    <div class="field">
-                      <label for="first" class="label  has-text-weight-normal">
-                        Last name
-                      </label>
-                      <div class="control">
-                        <input type="text" class="input " id="last" name="last" placeholder="Last name" value="{{ user.last_name }}">
-                      </div>
-                      <p id="error-last" class="help is-danger"></p>
-                    </div>
-          
                   </div>
                 </div>
           
@@ -264,7 +302,7 @@
                     Company
                   </label>
                   <div class="control">
-                    <input type="text" class="input " id="company" name="company" placeholder="Company" value="{{ user.company }}">
+                    <input type="text" class="input " id="company" name="company" placeholder="Company" value="{{ account.company }}">
                   </div>
                   <p id="error-company" class="help is-danger"></p>
                 </div>
@@ -311,7 +349,7 @@
           </div>
           
           <p class="has-text-centered">
-            If you no longer want to use {{ name }}, you can <a class="has-text-danger">delete your account</a>.
+            If you no longer want to use {{ name }}, you can <a id="delete-user" class="has-text-danger">delete your account</a>.
           </p>
           {% endif %}
   
@@ -322,7 +360,7 @@
           
               <h3 class="has-text-weight-normal">Change Password</h3><br/>
           
-              <form action="" method="POST" class="mb-40">
+              <form action="/user/password-change" method="POST" class="mb-40">
           
                 <div class="field">
                   <label for="password" class="label  has-text-weight-normal">
@@ -514,9 +552,9 @@
                           </ul>
                   
                           {% if item.primary %}
-                          <a class="button is-fullwidth is-medium is-primary" href="{{ item.button_href | default: '/signup' }}">
+                          <a id={{ item.id }} class="button is-fullwidth is-medium is-primary plan-purchase-button" href="{{ item.button_href | default: '/signup' }}">
                           {% else %}
-                          <a class="button is-fullwidth is-medium is-primary is-light" href="{{ item.button_href | default: '/signup' }}">
+                          <a id={{ item.id }} class="button is-fullwidth is-medium is-primary is-light plan-purchase-button" href="{{ item.button_href | default: '/signup' }}">
                           {% endif %}
                             {{ item.button }}
                           </a>

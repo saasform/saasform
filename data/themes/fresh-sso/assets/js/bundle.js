@@ -1,6 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function (global){(function (){
-function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}function t(e,t){var r=Object.keys(e);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(e);t&&(n=n.filter(function(t){return Object.getOwnPropertyDescriptor(e,t).enumerable})),r.push.apply(r,n)}return r}"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self&&self;var r=function(e,t){return function(e,t){e.exports=function(){var e=/^v?(?:\d+)(\.(?:[x*]|\d+)(\.(?:[x*]|\d+)(\.(?:[x*]|\d+))?(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?)?)?$/i;function t(e){var t,r=e.replace(/^v/,"").replace(/\+.*$/,""),n=-1===(t=r).indexOf("-")?t.length:t.indexOf("-"),i=r.substring(0,n).split(".");return i.push(r.substring(n+1)),i}function r(e){return isNaN(Number(e))?e:Number(e)}function n(t){if("string"!=typeof t)throw new TypeError("Invalid argument expected string");if(!e.test(t))throw new Error("Invalid argument not valid semver ('"+t+"' received)")}function i(e,i){[e,i].forEach(n);for(var s=t(e),o=t(i),c=0;c<Math.max(s.length-1,o.length-1);c++){var a=parseInt(s[c]||0,10),u=parseInt(o[c]||0,10);if(a>u)return 1;if(u>a)return-1}var f=s[s.length-1],h=o[o.length-1];if(f&&h){var l=f.split(".").map(r),p=h.split(".").map(r);for(c=0;c<Math.max(l.length,p.length);c++){if(void 0===l[c]||"string"==typeof p[c]&&"number"==typeof l[c])return-1;if(void 0===p[c]||"string"==typeof l[c]&&"number"==typeof p[c])return 1;if(l[c]>p[c])return 1;if(p[c]>l[c])return-1}}else if(f||h)return f?-1:1;return 0}var s=[">",">=","=","<","<="],o={">":[1],">=":[0,1],"=":[0],"<=":[-1,0],"<":[-1]};return i.validate=function(t){return"string"==typeof t&&e.test(t)},i.compare=function(e,t,r){!function(e){if("string"!=typeof e)throw new TypeError("Invalid operator type, expected string but got "+typeof e);if(-1===s.indexOf(e))throw new TypeError("Invalid operator, expected one of "+s.join("|"))}(r);var n=i(e,t);return o[r].indexOf(n)>-1},i}()}(t={exports:{}}),t.exports}(),n=function(e){return null==e},i=function(e){return Object.getPrototypeOf(e)===Object.prototype},s=function(e){return Array.isArray(e)},o=function(e,t){return Object.entries(e).forEach(function(r){var c=r[0],a=r[1];n(a)||!i(a)&&!s(a)||(e[c]=o(a,t))}),new Proxy(e,{get:function(e,r,n){return t.get(e,r,n)},set:function(e,r,c,a){n(c)||!i(c)&&!s(c)||(c=o(c,t));var u=e[r];return e[r]=c,n(u)||n(u.__watchers)||(e[r].__watchers=u.__watchers),t.set(e,r,e[r],a),!0}})},c={stores:{},persistenceDriver:window.localStorage,persisted:[],subscribers:[],pendingWatchers:{},disableReactivity:!1,startingCallbacks:[],startedCallbacks:[],hasStarted:!1,start:function(){var e=this;this.startingCallbacks.forEach(function(e){return e()}),this.attach(),this.stores=o(this.stores,{get:function(t,r,n){return Object.is(n,e.stores)&&["get","set","toggle","call","clear"].includes(r)?e[r].bind(e):Reflect.get(t,r,n)},set:function(t,r,n,i){if(!e.disableReactivity){e.updateSubscribers(),e.runWatchers(t,r,n,i),e.disableReactivity=!0;try{e.persisted.forEach(e.updateLocalStorage.bind(e))}catch(e){}e.disableReactivity=!1}}}),this.hasStarted=!0,this.disableReactivity=!0,Object.entries(this.pendingWatchers).forEach(function(t){var r=t[0];t[1].forEach(function(t){return e.watch(r,t)})}),this.disableReactivity=!1,this.startedCallbacks.forEach(function(e){return e()})},starting:function(e){this.startingCallbacks.push(e)},started:function(e){this.startedCallbacks.push(e)},attach:function(){if(!(navigator.userAgent.includes("Node.js")||navigator.userAgent.includes("jsdom")||window.Alpine&&r.compare(window.Alpine.version,"2.7.0",">=")))throw new Error("[Spruce] You must be using Alpine >= 2.5.0 to use Spruce.");var e=this;window.Alpine.addMagicProperty("store",function(t){return e.subscribe(t),e.stores})},store:function(e,t,r){if(void 0===r&&(r=!1),"function"==typeof t&&(t=t()),r)try{this.stores[e]=this.retrieveFromLocalStorage(e,(n={},Object.entries(t).filter(function(e){return"function"==typeof e[1]}).forEach(function(e){return n[e[0]]=e[1]}),n)),this.persisted.includes(e)||this.persisted.push(e)}catch(e){}var n;return this.stores[e]||(this.stores[e]=t),this.stores[e]},reset:function(e,t){void 0!==this.stores[e]&&(this.stores[e]=t)},subscribe:function(e){return this.subscribers.includes(e)||this.subscribers.push(e),this.stores},updateSubscribers:function(){this.subscribers.filter(function(e){return!!e.__x}).forEach(function(e){e.__x.updateElements(e)})},retrieveFromLocalStorage:function(e,t){void 0===t&&(t={});var r=this.persistenceDriver.getItem("__spruce:"+e);if(!r)return null;var n=JSON.parse(r);return"object"==typeof n&&(delete(n=Object.assign(t,n)).__watchers,delete n.__key_name),n},updateLocalStorage:function(r){var n=function(r){for(var n=1;n<arguments.length;n++){var i=null!=arguments[n]?arguments[n]:{};n%2?t(Object(i),!0).forEach(function(t){e(r,t,i[t])}):Object.getOwnPropertyDescriptors?Object.defineProperties(r,Object.getOwnPropertyDescriptors(i)):t(Object(i)).forEach(function(e){Object.defineProperty(r,e,Object.getOwnPropertyDescriptor(i,e))})}return r}({},this.store(r));delete n.__watchers,delete n.__key_name,this.persistenceDriver.setItem("__spruce:"+r,JSON.stringify(this.store(r)))},get:function(e,t){return void 0===t&&(t=this.stores),e.split(".").reduce(function(e,t){return e[t]},t)},set:function(e,t,r){return void 0===r&&(r=this.stores),s(e)||(e=e.split(".")),1===e.length?r[e[0]]=t:r[e[0]]?this.set(e.slice(1),t,r[e[0]]):(r[e[0]]={},this.set(e.slice(1),t,r[e[0]]))},toggle:function(e){return this.set(e,!this.get(e))},call:function(e){for(var t=[],r=arguments.length-1;r-- >0;)t[r]=arguments[r+1];return this.get(e).apply(void 0,t)},clear:function(e){return this.persistenceDriver.removeItem("__spruce:"+e)},watch:function(e,t){var r=this;if(!this.hasStarted)return this.pendingWatchers[e]||(this.pendingWatchers[e]=[]),this.pendingWatchers[e].push(t),[function(){return r.unwatch(e,t)}];var o=e.split("."),c=o.reduce(function(e,t){var r=e[t];return n(r)||!i(r)&&!s(r)?e:r},this.stores),a=Object.is(c,this.get(e))?"__self":o[o.length-1];return c.__watchers||(c.__watchers=new Map),c.__watchers.has(a)||c.__watchers.set(a,new Set),c.__watchers.get(a).add(t),[function(){return r.unwatch(e,t)}]},unwatch:function(e,t){var r=e.split("."),o=r.reduce(function(e,t){var r=e[t];return n(r)||!i(r)&&!s(r)?e:r},this.stores),c=Object.is(o,this.get(e))?"__self":r[r.length-1],a=o.__watchers;a.has(c)&&a.get(c).delete(t)},watchers:function(e){var t=e.split("."),r=t.reduce(function(e,t){var r=e[t];return n(r)||!i(r)&&!s(r)?e:r},this.stores),o=Object.is(r,this.get(e))?"__self":t[t.length-1];return r.__watchers?r.__watchers.get(o):{}},runWatchers:function(e,t,r){e.__watchers&&(e.__watchers.has(t)&&e.__watchers.get(t).forEach(function(e){return e(r)}),e.__watchers.has("__self")&&e.__watchers.get("__self").forEach(function(e){return e(r,t)}))},persistUsing:function(e){if(this.persisted.length>0&&console.warn("[Spruce] You have already initialised a persisted store. Changing the driver may cause issues."),"function"!=typeof e.getItem)throw new Error("[Spruce] The persistence driver must have a `getItem(key)` method.");if("function"!=typeof e.setItem)throw new Error("[Spruce] The persistence driver must have a `setItem(key, value)` method.");if("function"!=typeof e.removeItem)throw new Error("[Spruce] The persistence driver must have a `removeItem(name)` method.");this.persistenceDriver=e}};window.Spruce=c;var a=window.deferLoadingAlpine||function(e){e()};window.deferLoadingAlpine=function(e){window.Spruce.start(),a(e)},module.exports=c;
+"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self&&self;var e=function(e,t){return function(e,t){e.exports=function(){var e=/^v?(?:\d+)(\.(?:[x*]|\d+)(\.(?:[x*]|\d+)(\.(?:[x*]|\d+))?(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?)?)?$/i;function t(e){var t,r=e.replace(/^v/,"").replace(/\+.*$/,""),n=-1===(t=r).indexOf("-")?t.length:t.indexOf("-"),i=r.substring(0,n).split(".");return i.push(r.substring(n+1)),i}function r(e){return isNaN(Number(e))?e:Number(e)}function n(t){if("string"!=typeof t)throw new TypeError("Invalid argument expected string");if(!e.test(t))throw new Error("Invalid argument not valid semver ('"+t+"' received)")}function i(e,i){[e,i].forEach(n);for(var s=t(e),o=t(i),a=0;a<Math.max(s.length-1,o.length-1);a++){var c=parseInt(s[a]||0,10),u=parseInt(o[a]||0,10);if(c>u)return 1;if(u>c)return-1}var f=s[s.length-1],h=o[o.length-1];if(f&&h){var d=f.split(".").map(r),p=h.split(".").map(r);for(a=0;a<Math.max(d.length,p.length);a++){if(void 0===d[a]||"string"==typeof p[a]&&"number"==typeof d[a])return-1;if(void 0===p[a]||"string"==typeof d[a]&&"number"==typeof p[a])return 1;if(d[a]>p[a])return 1;if(p[a]>d[a])return-1}}else if(f||h)return f?-1:1;return 0}var s=[">",">=","=","<","<="],o={">":[1],">=":[0,1],"=":[0],"<=":[-1,0],"<":[-1]};return i.validate=function(t){return"string"==typeof t&&e.test(t)},i.compare=function(e,t,r){!function(e){if("string"!=typeof e)throw new TypeError("Invalid operator type, expected string but got "+typeof e);if(-1===s.indexOf(e))throw new TypeError("Invalid operator, expected one of "+s.join("|"))}(r);var n=i(e,t);return o[r].indexOf(n)>-1},i}()}(t={exports:{}}),t.exports}(),t=function(e){return null==e},r=function(e){return Object.getPrototypeOf(e)===Object.prototype},n=function(e){return Array.isArray(e)},i=function(e,s){return Object.entries(e).forEach(function(o){var a=o[0],c=o[1];t(c)||!r(c)&&!n(c)||(e[a]=i(c,s))}),new Proxy(e,{set:function(e,n,o,a){return!t(o)&&r(o)&&(o=i(o,s)),s.set(e,n,e[n]=o,a),!0}})},s={stores:{},persistenceDriver:window.localStorage,persisted:[],subscribers:[],watchers:{},disableReactivity:!1,startingCallbacks:[],startedCallbacks:[],hasStarted:!1,start:function(){var e=this;this.startingCallbacks.forEach(function(e){return e()}),this.attach(),this.stores=i(this.stores,{set:function(t,r,n,i){if(!e.disableReactivity){e.updateSubscribers(),e.runWatchers(t,r,n,i),e.disableReactivity=!0;try{e.persisted.forEach(e.updateLocalStorage.bind(e))}catch(e){}e.disableReactivity=!1}}}),this.hasStarted=!0,this.disableReactivity=!0,Object.entries(this.watchers).forEach(function(t){var r=t[0];t[1].forEach(function(t){return e.watch(r,t)})}),this.disableReactivity=!1,this.startedCallbacks.forEach(function(e){return e()})},starting:function(e){this.startingCallbacks.push(e)},started:function(e){this.startedCallbacks.push(e)},attach:function(){if(!(navigator.userAgent.includes("Node.js")||navigator.userAgent.includes("jsdom")||window.Alpine&&e.compare(window.Alpine.version,"2.7.0",">=")))throw new Error("[Spruce] You must be using Alpine >= 2.5.0 to use Spruce.");var t=this;window.Alpine.addMagicProperty("store",function(e){return t.subscribe(e),t.stores})},store:function(e,t,r){if(void 0===r&&(r=!1),"function"==typeof t&&(t=t()),r)try{this.stores[e]=this.retrieveFromLocalStorage(e,(n={},Object.entries(t).filter(function(e){return"function"==typeof e[1]}).forEach(function(e){return n[e[0]]=e[1]}),n)),this.persisted.includes(e)||this.persisted.push(e)}catch(e){}var n;return this.stores[e]||(this.stores[e]=t),this.stores[e]},reset:function(e,t){this.stores[e]=t},subscribe:function(e){return this.subscribers.includes(e)||this.subscribers.push(e),this.stores},updateSubscribers:function(){this.subscribers.filter(function(e){return!!e.__x}).forEach(function(e){e.__x.updateElements(e)})},retrieveFromLocalStorage:function(e,t){void 0===t&&(t={});var r=this.persistenceDriver.getItem("__spruce:"+e);if(!r)return null;var n=JSON.parse(r);return"object"==typeof n&&(delete(n=Object.assign(t,n)).__watchers,delete n.__key_name),n},updateLocalStorage:function(e){var t=this.store(e);delete t.__watchers,delete t.__key_name,this.persistenceDriver.setItem("__spruce:"+e,JSON.stringify(this.store(e)))},get:function(e){return e.split(".").reduce(function(e,t){return e[t]},this.stores)},watch:function(e,i){if(!this.hasStarted)return this.watchers[e]||(this.watchers[e]=[]),void this.watchers[e].push(i);var s=e.split("."),o=s.reduce(function(e,i){var s=e[i];return t(s)||!r(s)&&!n(s)?e:s},this.stores),a=Object.is(o,this.get(e))?"__self":s[s.length-1];o.__watchers||(o.__watchers=new Map),o.__watchers.has(a)||o.__watchers.set(a,new Set),o.__watchers.get(a).add(i)},runWatchers:function(e,t,r){e.__watchers&&(e.__watchers.has(t)&&e.__watchers.get(t).forEach(function(e){return e(r)}),e.__watchers.has("__self")&&e.__watchers.get("__self").forEach(function(e){return e(r,t)}))},persistUsing:function(e){if(this.persisted.length>0&&console.warn("[Spruce] You have already initialised a persisted store. Changing the driver may cause issues."),"function"!=typeof e.getItem)throw new Error("[Spruce] The persistence driver must have a `getItem(key)` method.");if("function"!=typeof e.setItem)throw new Error("[Spruce] The persistence driver must have a `setItem(key, value)` method.");this.persistenceDriver=e}};window.Spruce=s;var o=window.deferLoadingAlpine||function(e){e()};window.deferLoadingAlpine=function(e){window.Spruce.start(),o(e)},module.exports=s;
 
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
@@ -84,7 +84,7 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
     if (el.tagName.toLowerCase() !== 'template') {
       console.warn(`Alpine: [${directive}] directive should only be added to <template> tags. See https://github.com/alpinejs/alpine#${directive}`);
     } else if (el.content.childElementCount !== 1) {
-      console.warn(`Alpine: <template> tag with [${directive}] encountered with an unexpected number of root elements. Make sure <template> has a single root element. `);
+      console.warn(`Alpine: <template> tag with [${directive}] encountered with multiple element roots. Make sure <template> only has a single child element.`);
     }
   }
   function kebabCase(subject) {
@@ -122,10 +122,6 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
     console.warn(`Alpine Error: "${error}"\n\nExpression: "${expression}"\nElement:`, el);
 
     if (!isTesting()) {
-      Object.assign(error, {
-        el,
-        expression
-      });
       throw error;
     }
   };
@@ -585,7 +581,7 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
     let forIteratorRE = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/;
     let stripParensRE = /^\(|\)$/g;
     let forAliasRE = /([\s\S]*?)\s+(?:in|of)\s+([\s\S]*)/;
-    let inMatch = String(expression).match(forAliasRE);
+    let inMatch = expression.match(forAliasRE);
     if (!inMatch) return;
     let res = {};
     res.items = inMatch[2].trim();
@@ -631,7 +627,7 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
 
     let items = component.evaluateReturnExpression(el, iteratorNames.items, extraVars); // This adds support for the `i in n` syntax.
 
-    if (isNumeric(items) && items >= 0) {
+    if (isNumeric(items) && items > 0) {
       items = Array.from(Array(items).keys(), i => i + 1);
     }
 
@@ -682,7 +678,7 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
     if (attrName === 'value') {
       if (Alpine.ignoreFocusedForValueBinding && document.activeElement.isSameNode(el)) return; // If nested model key is undefined, set the default value to empty string.
 
-      if (value === undefined && String(expression).match(/\./)) {
+      if (value === undefined && expression.match(/\./)) {
         value = '';
       }
 
@@ -765,7 +761,7 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
 
   function handleTextDirective(el, output, expression) {
     // If nested model key is undefined, set the default value to empty string.
-    if (output === undefined && String(expression).match(/\./)) {
+    if (output === undefined && expression.match(/\./)) {
       output = '';
     }
 
@@ -870,12 +866,8 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
       event = camelCase(event);
     }
 
-    let handler, listenerTarget;
-
     if (modifiers.includes('away')) {
-      listenerTarget = document;
-
-      handler = e => {
+      let handler = e => {
         // Don't do anything if the click came from the element or within it.
         if (el.contains(e.target)) return; // Don't do anything if this element isn't currently visible.
 
@@ -887,11 +879,14 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
         if (modifiers.includes('once')) {
           document.removeEventListener(event, handler, options);
         }
-      };
-    } else {
-      listenerTarget = modifiers.includes('window') ? window : modifiers.includes('document') ? document : el;
+      }; // Listen for this event at the root level.
 
-      handler = e => {
+
+      document.addEventListener(event, handler, options);
+    } else {
+      let listenerTarget = modifiers.includes('window') ? window : modifiers.includes('document') ? document : el;
+
+      let handler = e => {
         // Remove this global event handler if the element that declared it
         // has been removed. It's now stale.
         if (listenerTarget === window || listenerTarget === document) {
@@ -925,15 +920,15 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
           });
         }
       };
-    }
 
-    if (modifiers.includes('debounce')) {
-      let nextModifier = modifiers[modifiers.indexOf('debounce') + 1] || 'invalid-wait';
-      let wait = isNumeric(nextModifier.split('ms')[0]) ? Number(nextModifier.split('ms')[0]) : 250;
-      handler = debounce(handler, wait);
-    }
+      if (modifiers.includes('debounce')) {
+        let nextModifier = modifiers[modifiers.indexOf('debounce') + 1] || 'invalid-wait';
+        let wait = isNumeric(nextModifier.split('ms')[0]) ? Number(nextModifier.split('ms')[0]) : 250;
+        handler = debounce(handler, wait);
+      }
 
-    listenerTarget.addEventListener(event, handler, options);
+      listenerTarget.addEventListener(event, handler, options);
+    }
   }
 
   function runListenerHandler(component, expression, e, extraVars) {
@@ -1517,11 +1512,9 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
         initReturnedCallback = this.evaluateReturnExpression(this.$el, initExpression);
         this.pauseReactivity = false;
       } // Register all our listeners and set all our attribute bindings.
-      // If we're cloning a component, the third parameter ensures no duplicate
-      // event listeners are registered (the mutation observer will take care of them)
 
 
-      this.initializeElements(this.$el, () => {}, componentForClone); // Use mutation observer to detect new elements being added within this component at run-time.
+      this.initializeElements(this.$el); // Use mutation observer to detect new elements being added within this component at run-time.
       // Alpine's just so darn flexible amirite?
 
       this.listenForNewElementsToInitialize();
@@ -1610,28 +1603,28 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
       });
     }
 
-    initializeElements(rootEl, extraVars = () => {}, componentForClone = false) {
+    initializeElements(rootEl, extraVars = () => {}) {
       this.walkAndSkipNestedComponents(rootEl, el => {
         // Don't touch spawns from for loop
         if (el.__x_for_key !== undefined) return false; // Don't touch spawns from if directives
 
         if (el.__x_inserted_me !== undefined) return false;
-        this.initializeElement(el, extraVars, componentForClone ? false : true);
+        this.initializeElement(el, extraVars);
       }, el => {
-        if (!componentForClone) el.__x = new Component(el);
+        el.__x = new Component(el);
       });
       this.executeAndClearRemainingShowDirectiveStack();
       this.executeAndClearNextTickStack(rootEl);
     }
 
-    initializeElement(el, extraVars, shouldRegisterListeners = true) {
+    initializeElement(el, extraVars) {
       // To support class attribute merging, we have to know what the element's
       // original class attribute looked like for reference.
       if (el.hasAttribute('class') && getXAttrs(el, this).length > 0) {
         el.__x_original_classes = convertClassStringToArray(el.getAttribute('class'));
       }
 
-      shouldRegisterListeners && this.registerListeners(el, extraVars);
+      this.registerListeners(el, extraVars);
       this.resolveBoundAttributes(el, true, extraVars);
     }
 
@@ -1848,7 +1841,7 @@ function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0
   }
 
   const Alpine = {
-    version: "2.8.2",
+    version: "2.8.0",
     pauseMutationObserver: false,
     magicProperties: {},
     onComponentInitializeds: [],
