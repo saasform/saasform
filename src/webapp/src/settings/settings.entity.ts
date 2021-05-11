@@ -26,7 +26,7 @@ enum ReqFullNameFormField {
 
 export class SettingsUserJson {
   // user
-  allowedKeys: any = ['email']
+  allowedKeys: any = ['email', 'name']
 }
 export class SettingsWebsiteJson {
   // website
