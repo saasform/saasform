@@ -6,7 +6,7 @@
  * @param page A string representing the name of the template to display
  * @param data An optional object containing the page-specific data to pass to the template
  */
-const renderPage = (req, res, page: string, data = {}): Response => {
+const renderPage = (req, res, page: string, data: any = {}): Response => {
   const siteData = req.websiteData
 
   const pageData = {
@@ -15,6 +15,7 @@ const renderPage = (req, res, page: string, data = {}): Response => {
     user: {
       ...req.user
     },
+    plans: data?.plans?.plans ?? [],
     csrf_token: req.csrfToken()
   }
   // console.log(pageData)
@@ -36,7 +37,6 @@ const renderUserPage = (req, res, page: string, data = {} as any): Response => {
     account: data?.account ?? {},
     account_users: data?.account_users ?? [],
     stripePublishableKey: data?.stripePublishableKey ?? '',
-    plans: data?.plans?.plans ?? [],
     active_subscription: data?.activeSubscription ?? {},
     error: data.error
   }

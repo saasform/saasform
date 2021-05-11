@@ -17,7 +17,10 @@ import { join } from 'path'
 import * as yaml from 'js-yaml'
 
 import { BaseController } from '../../utilities/base.controller'
+
+import { PlansService } from '../../payments/services/plans.service'
 import { SettingsService } from '../../settings/settings.service'
+
 import { UserOptionalAuthGuard } from '../../auth/auth.guard'
 
 import { renderPage } from '../utilities/render'
@@ -25,6 +28,7 @@ import { renderPage } from '../utilities/render'
 @Controller()
 export class PublicController extends BaseController {
   constructor (
+    private readonly plansService: PlansService,
     private readonly settingsService: SettingsService
   ) {
     super()
@@ -50,7 +54,10 @@ export class PublicController extends BaseController {
     if (homeRedirect != null) {
       return res.redirect(homeRedirect)
     }
-    return renderPage(req, res, 'index')
+
+    const plans = await this.plansService.getPricingAndPlans()
+
+    return renderPage(req, res, 'index', { plans })
   }
 
   @Get('/robots.txt')
