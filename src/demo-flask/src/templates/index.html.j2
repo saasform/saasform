@@ -1,0 +1,24 @@
+{% extends "base.html.j2" %}
+{% block title %}SaaS Placeholder{% endblock %}
+{% block content %}
+  
+  <h1>{{ self.title() }}</h1>
+  <p>Welcome! This is a placeholder for your SaaS.</p>
+  
+  {% if context.email %}
+  
+  <p>You're logged in as {{context.email}}</p>
+  <p>Email verified: {{context.email_verified}}</p>
+  <p>Subscription status: {{context.status}}</p>
+  <a href="#">User profile & settings</a>
+  <br>
+  <a href="#">Logout</a>
+  
+  {% else %}
+  
+  <a href="/login">Login</a>
+  <br>
+  <a href="/signup">Signup</a>
+  
+  {% endif %}
+{% endblock %}
