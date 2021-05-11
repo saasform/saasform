@@ -33,6 +33,7 @@ const renderUserPage = (req, res, page: string, data = {} as any): Response => {
     user_page: page,
     // important - we must guarantee that payment_methods is an array
     payment_methods: data?.account?.payments_methods ?? [],
+    account: data?.account ?? {},
     account_users: data?.account_users ?? [],
     stripePublishableKey: data?.stripePublishableKey ?? '',
     plans: data?.plans?.plans ?? [],

@@ -1,9 +1,11 @@
+id: "{{ user.id }}"
 email: "{{ user.email }}"
 email_verified: "{{ user.email_verified }}"
 first_name: "{{ user.first_name }}"
 last_name: "{{ user.last_name }}"
-company: "{{ user.company }}"
+company: "{{ account.company }}"
 username: "{{ user.username }}"
+name: "{{ user.user_name }}"
 
 u_email: "{{ u.email }}"
 u_email_verified: "{{ u.emailConfirmed }}"

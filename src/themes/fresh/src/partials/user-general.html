@@ -4,30 +4,19 @@
 
     <h3 class="has-text-weight-normal">Basic Information</h3><br/>
 
-    <form action="" method="POST" class="mb-40">
+    <form action="/user/profile" method="POST" class="mb-40">
       <div class="field">
         <div class="field-body">
 
           <div class="field">
-            <label for="first" class="label {{ website.size }} has-text-weight-normal">
-              First name
+            <label for="name" class="label {{ website.size }} has-text-weight-normal">
+              Name
             </label>
             <div class="control">
-              <input type="text" class="input {{ website.size }}" id="first" name="first" placeholder="First name" value="{{ user.first_name }}">
+              <input type="text" class="input {{ website.size }}" id="name" name="name" placeholder="Name" value="{{ user.name }}">
             </div>
-            <p id="error-first" class="help is-danger">{{ error.first }}</p>
+            <p id="error-first" class="help is-danger">{{ error.name }}</p>
           </div>
-
-          <div class="field">
-            <label for="first" class="label {{ website.size }} has-text-weight-normal">
-              Last name
-            </label>
-            <div class="control">
-              <input type="text" class="input {{ website.size }}" id="last" name="last" placeholder="Last name" value="{{ user.last_name }}">
-            </div>
-            <p id="error-last" class="help is-danger">{{ error.last }}</p>
-          </div>
-
         </div>
       </div>
 
@@ -83,5 +72,5 @@
 </div>
 
 <p class="has-text-centered">
-  If you no longer want to use {{ website.name }}, you can <a class="has-text-danger">delete your account</a>.
+  If you no longer want to use {{ website.name }}, you can <a id="delete-user" class="has-text-danger">delete your account</a>.
 </p>

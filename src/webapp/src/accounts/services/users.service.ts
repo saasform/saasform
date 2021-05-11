@@ -142,7 +142,7 @@ export class UsersService extends BaseService<UserEntity> {
   async updateUserProfile (data: any, userId: number): Promise<any> {
     const user = await this.findById(userId)
     if (user == null) {
-      console.error('usersService - updateUserProfile - User not found')
+      console.error('usersService - updateUserProfile - User not found', userId)
       return null
     }
 
@@ -151,7 +151,7 @@ export class UsersService extends BaseService<UserEntity> {
     const updatedProfile = allowedKeys.reduce((acc, property) => {
       if (property in data) {
         acc[property] = data[property]
-      } else if (property in user.data.profile) {
+      } else if (user?.data?.profile != null && property in user.data.profile) {
         acc[property] = user.data.profile[property]
       } else {
         acc[property] = ''
