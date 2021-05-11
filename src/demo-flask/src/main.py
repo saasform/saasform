@@ -1,6 +1,6 @@
-from flask import Flask
+from flask import Flask, render_template
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 
 # Begin Saasform code
 import requests
@@ -19,6 +19,8 @@ app.secret_key = secret
 class SaasformUser(UserMixin):
     account_id = 0
     email = ''
+    email_verified = ''
+    status = ''
 
 
 # Fetch public key from Saasform. You can also pass this from config file
@@ -51,6 +53,8 @@ def load_user_from_request(request):
         user = SaasformUser()
         user.email = data.get('email', '')
         user.account_id = data.get('account_id', 0)
+        user.email_verified = data.get('email_verified')
+        user.status = data.get('status')
 
         return user
     
@@ -62,9 +66,9 @@ login_manager.init_app(app)
 
 @app.route("/")
 def hello():
-    return "Hello, World!"
+    return render_template("base.html.j2")
 
 @app.route("/protected")
 @login_required
 def protected():
-    return "Hello, " + current_user.email
+    return render_template("index.html.j2", context=current_user)
