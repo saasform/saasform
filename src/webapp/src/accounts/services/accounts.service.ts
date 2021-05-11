@@ -262,6 +262,27 @@ export class AccountsService extends BaseService<AccountEntity> {
   }
 
   /**
+   * Update the name of the company in an account
+   *
+   * @param account account to update
+   * @param companyName company name
+   * @returns updated account
+   */
+  async setCompanyName (account: AccountEntity, companyName: string): Promise<any> {
+    account.data.company = companyName
+
+    try {
+      return await this.updateOne(account.id, { data: account.data })
+    } catch (err) {
+      console.error(
+        'accounts.service - inviteUser - Error while inviting new user (setting owner)',
+        err
+      )
+      return null
+    }
+  }
+
+  /**
    * Invite a user.
    *
    * Create a new user and reset its password.

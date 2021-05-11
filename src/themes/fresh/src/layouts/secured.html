@@ -36,6 +36,29 @@
       },
     };
 
+    const deleteUserLink = document.getElementById('delete-user');
+    if (deleteUserLink) {
+      // Create a token or display an error when the form is submitted.
+      deleteUserLink.addEventListener('click', function(event) { 
+        const confirmDelete = confirm('Are you sure you want to delete your user?');
+        console.log(confirmDelete)
+        if(confirmDelete) {
+          fetch('/api/v1/user/{{ user.id }}', {
+              method: 'delete',
+              headers: {
+                'Content-type': 'application/json',
+                'CSRF-Token': "{{ website.csrf_token }}" // <-- is the csrf token as a header
+              },
+            })
+            .then((response) => {
+              window.location = '/logout'
+            })
+        }
+        
+      });
+    }
+
+
     // Create an instance of the card Element.
     var card = elements.create('card', {style});
 

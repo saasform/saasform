@@ -32,7 +32,15 @@ export class UserController {
   @UseGuards(UserRequiredAuthGuard)
   @Get('/')
   async getUser (@Request() req, @Res() res: Response): Promise<any> {
+    const account = await this.accountsService.findById(req.user.account_id)
+
+    if (account == null) {
+      console.error('UserController - getUser - Account not found', req.user.account_id)
+      return res.redirect('/error')
+    }
+
     return renderUserPage(req, res, 'general', {
+      account
       // alert: {
       //   text: 'Your free trial is expired.',
       //   link_url: '/user/billing',
@@ -64,10 +72,28 @@ export class UserController {
     const updatedUser = await this.usersService.updateUserProfile(req.body, req.user.id)
 
     if (updatedUser == null) {
+      console.error('UserController - updateUserProfile - User not updated', req.user.account_id)
       return res.redirect('/error')
     }
 
-    return res.redirect('/user/team')
+    const { company } = req.body
+    if (company != null && company !== '') {
+      const account = await this.accountsService.findById(req.user.account_id)
+
+      if (account == null) {
+        console.error('UserController - updateUserProfile - Account not found', req.user.account_id)
+        return res.redirect('/error')
+      }
+
+      const updatedAccount = await this.accountsService.setCompanyName(account, company)
+
+      if (updatedAccount == null) {
+        console.error('UserController - updateUserProfile - Account not updated', req.user.account_id)
+        return res.redirect('/error')
+      }
+    }
+
+    return res.redirect('/user/')
   }
 
   @UseGuards(UserRequiredAuthGuard)
