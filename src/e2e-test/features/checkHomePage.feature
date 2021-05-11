@@ -9,5 +9,5 @@ Feature: checkHomePaage
   
   Scenario: Check prices
     When  I open the url "http://localhost:7000"
-    Then I expect the element "#pricingStarter" contains text "2.99"
-    And I expect the element "#pricingUnlimited" contains text "9.99"
+    Then I expect the element "#pricingStarter" exists # contains text "2.99"
+    And I expect the element "#pricingUnlimited" exists # contains text "9.99"
