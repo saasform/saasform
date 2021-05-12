@@ -384,7 +384,10 @@ export class SettingsService extends BaseService<SettingsEntity> {
       logo: {
         name: '',
         url: ''
-      }
+      },
+
+      // unsafe config
+      unsafe_disable_csp: false
     }
 
     const encodedPaths = [
@@ -422,7 +425,8 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'prelaunch_cleartext_password',
       'prelaunch_message',
       'prelaunch_background_url',
-      'signup_show_username'
+      'signup_show_username',
+      'unsafe_disable_csp'
     ]
     for (const key of encodedPaths) {
       const finalFunc = key.endsWith('url') ? htmlAsset : htmlEncode
@@ -512,6 +516,11 @@ export class SettingsService extends BaseService<SettingsEntity> {
     res.logo = {
       url: await this.getHomepageRedirectUrl() ?? '/',
       name: res.name
+    }
+
+    // unsafe config
+    if (res.unsafe_disable_csp) {
+      this.req.unsafeDisableCsp = res.unsafe_disable_csp
     }
 
     // html
