@@ -62,9 +62,18 @@ export class CspInterceptor implements NestInterceptor {
       ]
     }
 
-    const directives = mergeWith(fixedDirectives, ...req.customCsp, (objValue, srcValue) => { return objValue.concat(srcValue) })
-    const csp = contentSecurityPolicy({ directives })
-    csp(req, res, () => {})
+    if (req.unsafeDisableCsp === true) {
+      const csp = contentSecurityPolicy({
+        directives: {
+          defaultSrc: ['*', "'unsafe-inline'", "'unsafe-eval'", 'data:']
+        }
+      })
+      csp(req, res, () => {})
+    } else {
+      const directives = mergeWith(fixedDirectives, ...req.customCsp, (objValue, srcValue) => { return objValue.concat(srcValue) })
+      const csp = contentSecurityPolicy({ directives })
+      csp(req, res, () => {})
+    }
 
     return next.handle()
   }
