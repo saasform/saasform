@@ -23,7 +23,8 @@
 <body>
   {{ website.html_google_tag_manager_body }}
 
-  {% render layout_nav, logo: logo, user: user %}
+  {% assign nav = layout_nav | default: 'default/nav' %}
+  {% render nav, logo: logo, user: user %}
 
   {{> body}}
   {{> footer}}
