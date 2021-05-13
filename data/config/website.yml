@@ -1,9 +1,9 @@
 # main
-name: MultiPreview
-title: Supercharged content sharing.
-description: Share your articles over and over, but keep them click-worthy with fresh images.
-domain_primary: multipreview.com
-email: hello@multipreview.com
+name: BeautifulSaaS
+title: Beauty as a Service.
+description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+domain_primary: beautifulsaas.com
+email: hello@beautifulsaas.com
 
 # integrations
 app_google_analytics: G-xxx
@@ -30,18 +30,18 @@ socials:
 
 # home
 hero_image_url: assets/img/illustrations/illustration-6.png
-hero_subtitle: Share your articles over and over, but keep them click-worthy with fresh images
+hero_subtitle: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
 hero_cta: Get started now
 benefits:
   - image_url: assets/img/icons/duotone-icons/General/Star.svg
-    title: Drive more pageviews
-    text: MultiPreview supports your marketing goals. Share articles continuously to amplify reach, but swap out images to appeal and entice
+    title: Lorem ipsum dolor sit amet
+    text: Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
   - image_url: assets/img/icons/duotone-icons/Weather/Rainbow.svg
-    title: Keep your feed original
-    text: MultiPreview helps you plan a diversified feed. Repurpose an article by highlighting different quotes or callouts, or choose a new preview
+    title: Lorem ipsum dolor sit amet
+    text: Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
   - image_url: assets/img/icons/duotone-icons/General/Heart.svg
-    title: Make it matter
-    text: MultiPreview adds a new dimension to content sharing. What would you do if you could replace images every time you share an article?
+    title: Lorem ipsum dolor sit amet
+    text: Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
 logos:
   - name: Twitter
     image_url: assets/img/brands/logotype/twitter.svg
@@ -52,69 +52,72 @@ logos:
   - name: LinkedIn
     image_url: assets/img/brands/logotype/linkedin.svg
 features:
-  - title: Load the article you want to share
-    text:  Add the link of an article you want to share. MultiPreview is platform agnostic and works with any article, blog post or web page. Medium, Wordpress, Ghost, Substack... you name it. All you need to start is the link of your article
+  - title: Lorem ipsum dolor sit amet
+    text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
     image_url: assets/img/illustrations/illustration-4.png
-  - title: Add multiple images and create magic links
-    text: Now add a collection of images that will make your article pop. MultiPreview creates a magic link for every image you add. Drag and drop or copy and paste the link to any visuals you'd like - quotes, photos, and more. It's ultra fast!
+  - title: Lorem ipsum dolor sit amet
+    text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
     image_url: assets/img/illustrations/illustration-9.png
     position: left
-  - title: Et voilà! Just share your magic links
-    text: Post your magic links on Twitter, Facebook, Linkedin... Magic links expand in your feed with the image you chose. Even if you share the same article over and over to get more pageviews, the image will always be different. Your feed will look original and won't bore your readers
+  - title: Lorem ipsum dolor sit amet
+    text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
     image_url: assets/img/illustrations/illustration-3.png
 testimonials_title: Our customers are our biggest fans
 testimonials_text: We don't like to brag, but we don't mind letting our customers do it for us. Here are a few nice things people are saying
 testimonials:
-  - name: Megan Groves
-    image_url: https://pbs.twimg.com/profile_images/1041757865617252352/dAljhozX_400x400.jpg
-    quote: We recommend our clients write evergreen content and then repost it multiple times to drive better traffic. Finally we have a tool that lets us do this while keeping social feeds looking FRESH and ORIGINAL!'
-  - name: Nicolò Ungari
-    image_url: https://pbs.twimg.com/profile_images/506581638348697600/uroKAbOb_400x400.jpeg
-    quote: When I see a Twitter feed with the same image over and over again, I laugh :) Then I think back to my own feed before MultiPreview. It was pretty rough. I can't recommend this enough!'
+  - name: Melinda Gates
+    image_url: https://pbs.twimg.com/profile_images/1054713372845862912/1SR434Pr_400x400.jpg
+    quote: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+  - name: Warren Buffet
+    image_url: https://pbs.twimg.com/profile_images/1311637823804649474/-8Oyj6ep_400x400.jpg
+    quote: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 pricing_title: Fair, simple pricing
 pricing_text:
 pricing_free_trial: 7
 pricing_credit_card_required: false
 pricing_plans:
   - name: Starter
-    price_year: 2.99
-    price_month: 3.50
-    price_decimals: 2
+    price_year: 29
+    price_month: 35
+    price_decimals: 0
     button: Choose
     features:
-      - 3 articles
-      - 3 images/article
-      - Unlimited shares
-  - name: Unlimited
-    price_year: 9.99
-    price_month: 12.00
-    price_decimals: 2
+      - Lorem ipsum
+      - Dolor sit amet
+      - Consectetur
+      - Adipiscing elit
+  - name: Pro
+    price_year: 99
+    price_month: 120
+    price_decimals: 0
     button: Choose
     primary: true
     features:
-      - Unlimited articles
-      - Unlimited images/article
-      - Unlimited shares
+      - Lorem ipsum
+      - Dolor sit amet
+      - Consectetur
+      - Adipiscing elit
   - name: Enterprise
     price_text: Let's talk
     button: Contact us
-    button_href: mailto:hello@multipreview.com
+    button_href: mailto:hello@beautifulsaas.com
     features:
-      - All unlimited
-      - Single Sign-On
-      - Premius support
+      - Lorem ipsum
+      - Dolor sit amet
+      - Consectetur
+      - Adipiscing elit
 faq:
-  - question: Can I use MultiPreview for my clients?
-    answer: Absolutely, share as many articles across as many accounts as you'd like.
-  - question: Can I add team members?
-    answer: Not yet, but we're adding support soon.
-  - question: Is there a money back guarantee?
-    answer: Yes, if you're not totally satisfied with MultiPreview, let us know and we'll send over a refund.
-  - question: Is there a free trial?
-    answer: Yes, all plans include a free trial.
+  - question: Lorem ipsum dolor sit amet?
+    answer: Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+  - question: Lorem ipsum dolor sit amet?
+    answer: Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+  - question: Lorem ipsum dolor sit amet?
+    answer: Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+  - question: Lorem ipsum dolor sit amet?
+    answer: Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
 cta_badge: Get started
-cta_title: Get MultiPreview now!
-cta_text: Share your articles over and over, but keep them click-worthy with fresh images
+cta_title: Get BeautifulSaaS now!
+cta_text: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 cta_button: Get started for free
 
 # signup
