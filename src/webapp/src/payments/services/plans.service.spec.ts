@@ -7,6 +7,7 @@ import { PlanEntity } from '../entities/plan.entity'
 import { PlansService } from './plans.service'
 import { StripeService } from './stripe.service'
 import { KillBillService } from './killbill.service'
+import { SettingsService } from '../../settings/settings.service'
 import { ConfigService } from '@nestjs/config'
 
 const mockedRepo = {
@@ -25,6 +26,10 @@ describe('PlansService', () => {
         {
           provide: getRepositoryToken(PlanEntity),
           useValue: mockedRepo
+        },
+        {
+          provide: SettingsService,
+          useValue: {}
         },
         {
           provide: StripeService,

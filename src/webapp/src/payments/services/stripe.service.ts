@@ -1,24 +1,23 @@
 import { Injectable } from '@nestjs/common'
-// import { settings } from 'cluster';
 import { ConfigService } from '@nestjs/config'
+import Stripe from 'stripe'
 
 import { SettingsService } from '../../settings/settings.service'
 
 @Injectable()
 export class StripeService {
-  private readonly api_key: string
   public client
 
   constructor (
     private readonly settingsService: SettingsService,
     public configService: ConfigService
   ) {
-    this.api_key = this.configService.get<string>('STRIPE_API_KEY') ?? ''
-    try {
-      this.client = require('stripe')(this.api_key) // eslint-disable-line
-    } catch (err) {
-      console.error('stripeService - exception', err)
-      this.client = {}
+    const apiKey = this.configService.get<string>('STRIPE_API_KEY') ?? 'xxx'
+    if (!apiKey.endsWith('xxx')) {
+      this.client = new Stripe(apiKey, { apiVersion: '2020-08-27' })
+    } else {
+      // TODO: mock in a way that doesn't create issues
+      this.client = null
     }
   }
 }
