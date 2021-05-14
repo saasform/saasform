@@ -65,7 +65,6 @@ export function mergeAll (entity: SettingsEntity, update): SettingsEntity {
 export class SettingsService extends BaseService<SettingsEntity> {
   constructor (
     @Inject(REQUEST) public req: any,
-    // @InjectRepository(SettingsEntity)
     public configService: ConfigService,
     private readonly validationService: ValidationService
   ) {

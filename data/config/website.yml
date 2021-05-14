@@ -82,10 +82,10 @@ pricing_plans:
     price_decimals: 0
     button: Choose
     features:
-      - Lorem ipsum
-      - Dolor sit amet
-      - Consectetur
-      - Adipiscing elit
+      - name: Lorem ipsum
+      - name: Dolor sit amet
+      - name: Consectetur
+      - name: Adipiscing elit
   - name: Pro
     price_year: 99
     price_month: 120
@@ -93,19 +93,19 @@ pricing_plans:
     button: Choose
     primary: true
     features:
-      - Lorem ipsum
-      - Dolor sit amet
-      - Consectetur
-      - Adipiscing elit
+      - name: Lorem ipsum
+      - name: Dolor sit amet
+      - name: Consectetur
+      - name: Adipiscing elit
   - name: Enterprise
     price_text: Let's talk
     button: Contact us
     button_href: mailto:hello@beautifulsaas.com
     features:
-      - Lorem ipsum
-      - Dolor sit amet
-      - Consectetur
-      - Adipiscing elit
+      - name: Lorem ipsum
+      - name: Dolor sit amet
+      - name: Consectetur
+      - name: Adipiscing elit
 faq:
   - question: Lorem ipsum dolor sit amet?
     answer: Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua

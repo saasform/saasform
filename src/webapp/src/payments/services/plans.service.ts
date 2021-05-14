@@ -14,18 +14,17 @@ import { StripeService } from './stripe.service'
 import { KillBillService } from './killbill.service'
 import { SimplePlan, SimplePlanCurrencyEnum, SimplePlanBillingPeriodEnum, SimplePlanProductCategoryEnum } from 'killbill'
 import { ConfigService } from '@nestjs/config'
+import { SettingsService } from '../../settings/settings.service'
 
 @QueryService(PlanEntity)
 @Injectable({ scope: Scope.REQUEST })
 export class PlansService extends BaseService<PlanEntity> {
   private readonly planRepository = getConnection().getRepository(PlanEntity)
-  private readonly tenantId = 'default'
   private readonly paymentIntegration: string
 
   constructor (
     @Inject(REQUEST) private readonly req,
-    // @InjectRepository(PlanEntity)
-    // private readonly productsRepository: Repository<PlanEntity>,
+    private readonly settingsService: SettingsService,
     private readonly stripeService: StripeService,
     private readonly killBillService: KillBillService,
     private readonly configService: ConfigService
@@ -34,7 +33,6 @@ export class PlansService extends BaseService<PlanEntity> {
       req,
       'PlanEntity'
     )
-    // this.tenantId = req.req ? req.req.tenantId : req.tenantId
     this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
   }
 
@@ -212,7 +210,7 @@ export class PlansService extends BaseService<PlanEntity> {
 
   validatePlan (p): any {
     const plan = JSON.parse(p.plan)
-    plan.prices.year.unit_amount_hr = Math.round(plan.prices.year.unit_amount_hr / 12)
+    plan.prices.year.unit_amount_hr = (plan.price_decimals > 0) ? plan.prices.year.unit_amount_hr / 12 : Math.round(plan.prices.year.unit_amount_hr / 12)
     plan.uid = p.id // MySql ID used to update the plan
     return {
       ...plan,
@@ -242,6 +240,12 @@ export class PlansService extends BaseService<PlanEntity> {
     if (createPlan) {
       await this.createFirstBilling()
       plans = await this.query({})
+      // TODO - keep plans in sync with config
+      if (plans.length === 0) {
+        const settings = await this.settingsService.getWebsiteRenderingVariables()
+        plans = settings.pricing_plans
+        return plans.map((p, j) => ({ ...p, id: j }))
+      }
       return plans.map(this.validatePlan)
     } else {
       return (this.paymentIntegration === 'killbill' ? killbillPlans : stripePlans).map(this.validatePlan)

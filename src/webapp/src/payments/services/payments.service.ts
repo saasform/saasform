@@ -20,8 +20,6 @@ export class PaymentsService extends BaseService<PaymentEntity> {
 
   constructor (
     @Inject(REQUEST) private readonly req,
-    // @InjectRepository(PaymentEntity)
-    // private readonly usersRepository: Repository<UserEntity>,
     private readonly stripeService: StripeService,
     private readonly killBillService: KillBillService,
     private readonly configService: ConfigService,
