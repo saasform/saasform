@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ValidationService } from './validation.service'
-import { ConfigService } from '@nestjs/config'
 
 describe('ValditaionService', () => {
   let service
@@ -8,11 +7,7 @@ describe('ValditaionService', () => {
     jest.clearAllMocks()
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ValidationService,
-        {
-          provide: ConfigService,
-          useValue: {}
-        }
+        ValidationService
       ]
     }).compile()
 

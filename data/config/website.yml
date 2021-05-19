@@ -28,6 +28,12 @@ socials:
   - name: linkedin
     url: https://linkedin.com/company/saasform
 
+# nav
+login_text: Log in
+login_url: /login
+signup_text: Sign up
+signup_url: /signup
+
 # home
 hero_image_url: assets/img/illustrations/illustration-6.png
 hero_subtitle: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.

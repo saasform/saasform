@@ -8,8 +8,11 @@ export class WebsiteDataMiddleware implements NestMiddleware {
   constructor (private readonly settingsService: SettingsService) { }
 
   async use (req, res: Response, next: NextFunction): Promise<any> {
-    const data = await this.settingsService.getWebsiteRenderingVariables()
-    req.websiteData = data
+    try {
+      req.websiteData = await this.settingsService.getWebsiteRenderingVariables()
+    } catch (_) {
+      // pass
+    }
     next()
   }
 }
