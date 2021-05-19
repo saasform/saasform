@@ -14,10 +14,10 @@ social_linkedin: "{{ social_linkedin }}"
 made_with_love: "{{ made_with_love }}"
 
 # nav
-login_text: "{{ login_text }}"
-login_url: "{{ login_url }}"
-signup_text: "{{ signup_text }}"
-signup_url: "{{ signup_url }}"
+login_text: '{{ nav_links.login_text }}'
+login_url: '{{ nav_links.login_url }}'
+signup_text: '{{ nav_links.signup_text }}'
+signup_url: '{{ nav_links.signup_url }}'
 
 # seo
 seo_fb_app_id: "{{ seo_fb_app_id }}"

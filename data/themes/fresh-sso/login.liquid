@@ -67,8 +67,11 @@
               <label for="password" class="label has-text-weight-normal">
                 Password
               </label>
-              <div class="control">
-                <input type="password" class="input" id="password" name="password" placeholder="Enter your password" minlength="8" required>
+              <div class="control has-icons-right">
+                <input type="password" class="input" id="password" name="password" placeholder="Enter your password" minlength="8" autocomplete="new-password" required>
+                <span class="icon is-small is-right" style="pointer-events: auto" onclick="const p = document.getElementById('password'); const isPass = p.type === 'password'; p.type = isPass ? 'text' : 'password'; document.getElementById('fa-eye').classList.toggle(isPass ? 'fa-eye-slash' : 'fa-eye');">
+                  <i id="fa-eye" class="fa fa-eye"></i>
+                </span>
               </div>
               <p id="error-password" class="help is-danger">{{ error.password | formatDot }}</p>
             </div>
@@ -81,25 +84,27 @@
               </div>
             </div>
   
-            <p class="mt-20 mb-20 has-text-centered">or</p>
+            {% if signup_show_google %}
+            <p class="has-text-centered mt-20 mb-20">or</p>
   
             <!-- Social Auth -->
             <div class="field">
               <div class="control">
-                <a id="google-signin" class="button is-primary is-light is-fullwidth">Sign in with Google</a>
+                <div id="google-signin" data-width="auto" data-height="40" data-theme="dark" data-longtitle="true"></div>
               </div>
               <p id="error-google" class="help is-danger">{{ error.google | formatDot }}</p>
             </div>
+            {% endif %}
           </form>
   
           <!-- Text -->
           <p class="is-size-7 has-text-grey has-text-centered">
-            Forgot your password? <a href="/reset-password">Reset now</a>.
+            Forgot your password? <a href="/password-reset">Reset now</a>.
           </p>
   
           <!-- Text -->
           <p class="is-size-7 has-text-grey has-text-centered">
-            Don't have an account yet? <a href="/signup">Sign up</a>.
+            Don't have an account yet? <a href="/signup{% if next_url %}?next={{ next_url | url_encode }}{% endif %}">Sign up</a>.
           </p>
   
         </div>

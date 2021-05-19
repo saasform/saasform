@@ -286,10 +286,12 @@ export class SettingsService extends BaseService<SettingsEntity> {
       ],
 
       // nav
-      login_text: '',
-      login_url: '',
-      signup_text: '',
-      signup_url: '',
+      nav_links: {
+        login_text: '',
+        login_link: '',
+        signup_text: '',
+        signup_link: '',
+      },
 
       // home
       hero_title: '',
@@ -429,10 +431,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'app_chatbot_id',
       'app_chatbot_domain',
       'legal_company_name',
-      'login_text',
-      'login_url',
-      'signup_text',
-      'signup_url',
+      'nav_links',
       'hero_title',
       'hero_subtitle',
       'hero_cta',

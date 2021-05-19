@@ -24,7 +24,7 @@
   {{ html_google_tag_manager_body }}
 
   {% assign nav = layout_nav | default: 'default/nav' %}
-  {% render nav, logo: logo, user: user %}
+  {% render nav, logo: logo, user: user, nav_links: nav_links %}
 
   
   <section class="section">
