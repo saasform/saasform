@@ -10,7 +10,7 @@ export class StripeService {
 
   constructor (
     private readonly settingsService: SettingsService,
-    public configService: ConfigService
+    private readonly configService: ConfigService
   ) {
     const apiKey = this.configService.get<string>('STRIPE_API_KEY') ?? 'xxx'
     if (!apiKey.endsWith('xxx')) {

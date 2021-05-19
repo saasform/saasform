@@ -4,19 +4,25 @@ import { APP_INTERCEPTOR } from '@nestjs/core'
 import { AccountsModule } from '../accounts/accounts.module'
 import { AuthModule } from '../auth/auth.module'
 import { NotificationsModule } from '../notifications/notifications.module'
+import { PaymentsModule } from '../payments/payments.module'
 import { AuthenticationController } from './controllers/authentication.controller'
 import { CommonController } from './controllers/common.controller'
 import { PaymentsController } from './controllers/payments.controller'
 import { UserController } from './controllers/user.controller'
 import { PublicController } from './controllers/public.controller'
 import { AdminController } from './controllers/admin.controller'
-import { WebsiteDataMiddleware } from 'src/middlewares/websiteData.middleware'
+import { WebsiteDataMiddleware } from '../middlewares/websiteData.middleware'
 
 import { CspInterceptor } from '../interceptors/csp.interceptor'
 import { JwtInterceptor } from '../interceptors/jwt.interceptor'
 
 @Module({
-  imports: [AuthModule, NotificationsModule, AccountsModule],
+  imports: [
+    AuthModule,
+    AccountsModule,
+    NotificationsModule,
+    PaymentsModule
+  ],
   controllers: [
     CommonController,
     AuthenticationController,

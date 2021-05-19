@@ -5,8 +5,6 @@ import { LocalStrategy } from './local.strategy'
 import { JwtStrategy } from './jwt.strategy'
 import { JwtModule } from '@nestjs/jwt'
 import { AccountsModule } from '../accounts/accounts.module'
-import { AccountsService } from '../accounts/services/accounts.service'
-import { SettingsModule } from '../settings/settings.module'
 import { SettingsService } from '../settings/settings.service'
 import { PaymentsModule } from '../payments/payments.module'
 import { GoogleOAuth2Service } from './google.service'
@@ -17,14 +15,13 @@ import { GoogleOAuth2Service } from './google.service'
     PaymentsModule,
     PassportModule,
     JwtModule.registerAsync({
-      imports: [SettingsModule, AccountsModule],
       useFactory: async (settingsService: SettingsService) => ({
         privateKey: await settingsService.getJWTPrivateKey(),
         signOptions: {
           algorithm: 'ES256'
         }
       }),
-      inject: [SettingsService, AccountsService]
+      inject: [SettingsService]
     })
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, SettingsService, GoogleOAuth2Service],

@@ -21,7 +21,7 @@ export class NotificationsService {
 
   constructor (
     private readonly settingsService: SettingsService,
-    public configService: ConfigService
+    private readonly configService: ConfigService
   ) {
     this.apiKey = this.configService.get<string>('SENDGRID_API_KEY', '')
     this.sendFrom = this.configService.get<string>('SENDGRID_SEND_FROM', '')

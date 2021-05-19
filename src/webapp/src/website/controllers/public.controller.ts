@@ -55,7 +55,12 @@ export class PublicController extends BaseController {
       return res.redirect(homeRedirect)
     }
 
-    const plans = await this.plansService.getPricingAndPlans()
+    let plans = null
+    try {
+      plans = await this.plansService.getPricingAndPlans()
+    } catch (_) {
+      // pass
+    }
 
     return renderPage(req, res, 'index', { plans })
   }

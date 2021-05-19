@@ -3,8 +3,6 @@ import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm'
 import { NestjsQueryGraphQLModule } from '@nestjs-query/query-graphql'
 
 import { NotificationsModule } from '../notifications/notifications.module'
-import { NotificationsService } from '../notifications/notifications.service'
-import { ValidatorModule } from '../validator/validator.module'
 import { PlanEntity } from './entities/plan.entity'
 import { PaymentEntity } from './entities/payment.entity'
 import { PlansService } from './services/plans.service'
@@ -15,16 +13,21 @@ import { KillBillService } from './services/killbill.service'
 
 @Global()
 @Module({
+  providers: [StripeService, KillBillService],
+  exports: [StripeService, KillBillService]
+})
+class PaymentGatewaysModule {}
+
+@Module({
   imports: [
+    PaymentGatewaysModule,
     NestjsQueryGraphQLModule.forFeature({
-      imports: [NestjsQueryTypeOrmModule.forFeature([PaymentEntity, PlanEntity]), NotificationsModule, ValidatorModule],
-      services: [PlansService, PaymentsService, StripeService, KillBillService, NotificationsService],
+      imports: [NestjsQueryTypeOrmModule.forFeature([PaymentEntity, PlanEntity]), NotificationsModule],
+      services: [PlansService, PaymentsService],
       resolvers: [{ DTOClass: PaymentDTO, ServiceClass: PaymentsService }]
     })
   ],
-  providers: [PlansService, PaymentsService, StripeService, KillBillService],
-  exports: [PlansService, PaymentsService, StripeService, KillBillService]
+  providers: [PlansService, PaymentsService],
+  exports: [PlansService, PaymentsService]
 })
-export class PaymentsModule {
-
-}
+export class PaymentsModule {}

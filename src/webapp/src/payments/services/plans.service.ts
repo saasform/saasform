@@ -24,10 +24,10 @@ export class PlansService extends BaseService<PlanEntity> {
 
   constructor (
     @Inject(REQUEST) private readonly req,
+    private readonly configService: ConfigService,
     private readonly settingsService: SettingsService,
     private readonly stripeService: StripeService,
-    private readonly killBillService: KillBillService,
-    private readonly configService: ConfigService
+    private readonly killBillService: KillBillService
   ) {
     super(
       req,

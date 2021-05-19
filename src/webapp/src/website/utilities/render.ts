@@ -15,7 +15,7 @@ const renderPage = (req, res, page: string, data: any = {}): Response => {
     user: {
       ...req.user
     },
-    plans: data?.plans?.plans ?? [],
+    plans: data?.plans?.plans ?? siteData.pricing_plans,
     csrf_token: req.csrfToken()
   }
   // console.log(pageData)
