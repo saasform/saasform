@@ -12,7 +12,7 @@ layout: index
           </h1>
           <h2 class="subtitle is-size-5 has-text-grey">{{ website.hero_subtitle }}</h2>
           <div class="button-wrap">
-            <a href="/signup" class="button is-primary is-medium raised">
+            <a href="{{ website.signup_url }}" class="button is-primary is-medium raised">
               {{ website.hero_cta }}
             </a>
           </div>
@@ -141,7 +141,7 @@ layout: index
       </p>
       <br/>
 
-      <a href="/signup" class="button is-primary is-medium">
+      <a href="{{ website.signup_url }}" class="button is-primary is-medium">
         {{ website.cta_button }}
       </a>
 

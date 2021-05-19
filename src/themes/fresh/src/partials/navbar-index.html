@@ -45,12 +45,12 @@
         </span>
       </a>
       {% else %}
-      <a href="/login" class="navbar-item is-primary">
-        Log in
+      <a href="{{ website.login_url }}" class="navbar-item is-primary">
+        {{ website.login_text }}
       </a>
-      <a href="/signup" class="navbar-item">
-        <span class="button signup-button primary-btn raised">
-          Sign up
+      <a href="{{ website.signup_url }}" class="navbar-item">
+        <span class="button primary-btn raised">
+          {{ website.signup_text }}
         </span>
       </a>
       {% endif %}
