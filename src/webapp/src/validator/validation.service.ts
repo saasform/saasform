@@ -1,13 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import validator from 'validator'
 
 @Injectable()
 export class ValidationService {
-  constructor (
-    public configService: ConfigService
-  ) { }
-
   isNilOrEmpty (element): Boolean {
     if (element === null) {
       return true

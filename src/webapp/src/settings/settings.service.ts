@@ -63,6 +63,8 @@ export function mergeAll (entity: SettingsEntity, update): SettingsEntity {
 @Injectable({ scope: Scope.REQUEST })
 // TODO req should be "private readonly" but tests won't work
 export class SettingsService extends BaseService<SettingsEntity> {
+  data: any = null
+
   constructor (
     @Inject(REQUEST) public req: any,
     public configService: ConfigService,
@@ -120,14 +122,29 @@ export class SettingsService extends BaseService<SettingsEntity> {
 
   async getSettings (category: string): Promise<SettingsEntity> {
     // TODO cache
-    const records = await this.query({})
+    if (this.data == null) {
+      let records: SettingsEntity[] = []
+      try {
+        records = await this.query({})
+      } catch (e) {
+        // pass
+        if (e.code != null && e.code === 'ER_NO_SUCH_TABLE') {
+          // TODO: handle missing table, i.e. message "run migrations"
+        }
+        console.log(e)
+      }
 
-    const data = {}
-    for (const r of records) {
-      data[r.category] = r
+      this.data = {}
+      for (const r of records) {
+        this.data[r.category] = r
+      }
+      try {
+        await this.validateSettings(this.data)
+      } catch (e) {
+        // pass
+      }
     }
-    await this.validateSettings(data)
-    return data[category]
+    return this.data[category] ?? {}
   }
 
   async getUserSettings (): Promise<SettingsUserJson> {

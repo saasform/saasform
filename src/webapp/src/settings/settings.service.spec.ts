@@ -34,6 +34,15 @@ const mockQueryService = {
   updateOne: jest.fn((id, x) => (x))
 }
 
+const mockConfigService = {
+  get: jest.fn((key: string) => {
+    switch (key) {
+      default:
+        return null
+    }
+  })
+}
+
 describe('SettingsService', () => {
   let service
 
@@ -47,14 +56,7 @@ describe('SettingsService', () => {
         },
         {
           provide: ConfigService,
-          useValue: {
-            get: jest.fn((key: string) => {
-              switch (key) {
-                default:
-                  return null
-              }
-            })
-          }
+          useValue: mockConfigService
         },
         { provide: ValidationService, useValue: { isNilOrEmpty: jest.fn().mockReturnValue(false) } }
       ]
@@ -62,7 +64,7 @@ describe('SettingsService', () => {
 
     service = module.get<SettingsService>(SettingsService)
     service.req = {}
-    service.configService = module.get<ConfigService>(ConfigService)
+    service.configService = mockConfigService
     Object.keys(mockQueryService).forEach(f => (service[f] = mockQueryService[f]))
   })
 
@@ -126,6 +128,7 @@ describe('SettingsService', () => {
     let result
 
     // saasform
+    service.data = null // disable cache
     service.configService.get = jest.fn(key => 'saasform')
     service.query = jest.fn(q => ([{
       category: 'website',
@@ -135,6 +138,7 @@ describe('SettingsService', () => {
     expect(result).toEqual(null)
 
     // redirect
+    service.data = null // disable cache
     service.configService.get = jest.fn(key => 'redirect')
     service.query = jest.fn(q => ([{
       category: 'website',
@@ -144,6 +148,7 @@ describe('SettingsService', () => {
     expect(result).toEqual('https://myapp.mysite.com')
 
     // db: redirect
+    service.data = null // disable cache
     service.configService.get = jest.fn(key => 'saasform')
     service.query = jest.fn(q => ([{
       category: 'website',
@@ -156,6 +161,7 @@ describe('SettingsService', () => {
     expect(result).toEqual('https://myapp.mysite.com')
 
     // db: invalid
+    service.data = null // disable cache
     service.configService.get = jest.fn(key => 'redirect')
     service.query = jest.fn(q => ([{
       category: 'website',
@@ -181,6 +187,7 @@ describe('SettingsService', () => {
     expect(result).toEqual('https://myapp.mysite.com')
 
     // domain_primary
+    service.data = null // disable cache
     service.query = jest.fn(q => ([{
       category: 'website',
       domain_primary: 'mysite.com'
@@ -189,12 +196,14 @@ describe('SettingsService', () => {
     expect(result).toEqual('https://app.mysite.com')
 
     // configured host
+    service.data = null // disable cache
     service.query = mock
     service.configService.get = jest.fn(_ => 'mockedHost')
     result = await service.getRedirectAfterLogin()
     expect(result).toEqual('mockedHost')
 
     // no settings (original)
+    service.data = null // disable cache
     service.query = mock
     service.configService.get = jest.fn(_ => '')
     result = await service.getRedirectAfterLogin()
@@ -207,16 +216,19 @@ describe('SettingsService', () => {
     expect(result).toEqual('/')
 
     // Config wins on default
+    service.data = null // disable cache
     service.configService.get = jest.fn(_ => 'mockedHost')
     result = await service.getBaseUrl()
     expect(result).toEqual('mockedHost')
 
     // DB wins on config
+    service.data = null // disable cache
     service.query = jest.fn(q => ([{
       category: 'website',
       domain_primary: 'mysite.com'
     }])) as any
 
+    service.data = null // disable cache
     result = await service.getBaseUrl()
     expect(result).toEqual('https://mysite.com')
   })
@@ -227,16 +239,19 @@ describe('SettingsService', () => {
     expect(result).toEqual('/')
 
     // Config wins on default
+    service.data = null // disable cache
     service.configService.get = jest.fn(_ => 'mockedHost')
     result = await service.getTopLevelUrl()
     expect(result).toEqual('/')
 
     // Config wins on default
+    service.data = null // disable cache
     service.configService.get = jest.fn(_ => 'localhost:7000')
     result = await service.getTopLevelUrl()
     expect(result).toEqual('/')
 
     // DB wins on config
+    service.data = null // disable cache
     service.query = jest.fn(q => ([{
       category: 'website',
       domain_primary: 'mysite.com'
@@ -246,6 +261,7 @@ describe('SettingsService', () => {
     expect(result).toEqual('https://mysite.com')
 
     // DB wins on config
+    service.data = null // disable cache
     service.query = jest.fn(q => ([{
       category: 'website',
       domain_primary: 'account.mysite.com'
