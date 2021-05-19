@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title 
+  p Welcome! This is an embedded Airtable form served from an Express application.
+  p Authentication and payments are provided by Saasform!
+  p You're logged in as #{user.email}
+  p Email verified: #{user.email_verified}
+  p Subscription status: #{user.status}
+  p #[a(href=user_url) User profile & settings]
+  p #[a(href=logout_url) Logout]
+  div.
+    <iframe class="airtable-embed" src=#{airtableSrcUrl}
+     frameborder="0" onmousewheel="" width="100%" height="533"
+     style="background: transparent; border: 1px solid #ccc;">
+    </iframe>
