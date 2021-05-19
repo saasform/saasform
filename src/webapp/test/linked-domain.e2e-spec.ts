@@ -211,6 +211,7 @@ describe('Authentication (e2e)', () => {
                     staff: false,
                     status: 'active',
                     user_email: 'new@uplom.com',
+                    user_name: '',
                     username: ''
                   })
                   return done()
@@ -255,6 +256,7 @@ describe('Authentication (e2e)', () => {
                     staff: false,
                     status: 'active',
                     user_email: 'new@anotherdomain.com',
+                    user_name: '',
                     username: ''
                   })
                   return done()

@@ -16,7 +16,7 @@ const renderPage = (req, res, page: string, data: any = {}): Response => {
       ...req.user
     },
     plans: data?.plans?.plans ?? [],
-    csrf_token: req.csrfToken()
+    csrf_token: req.csrfToken() ?? ''
   }
   // console.log(pageData)
   return res.render(`${siteData.root_theme as string}/${page}`, pageData)
@@ -38,6 +38,7 @@ const renderUserPage = (req, res, page: string, data = {} as any): Response => {
     account_users: data?.account_users ?? [],
     stripePublishableKey: data?.stripePublishableKey ?? '',
     active_subscription: data?.activeSubscription ?? {},
+    plans: data?.plans ?? [],
     error: data.error
   }
   return renderPage(req, res, 'user', userPageData)

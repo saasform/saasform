@@ -198,7 +198,7 @@ describe('Authentication (e2e)', () => {
     await app.close()
   })
 
-  it('login existing user with a subscription', () => {
+  it('login existing user with a subscription (API)', () => {
     return agent
       .post('/api/v1/login')
       .send(existingUser)
@@ -230,6 +230,7 @@ describe('Authentication (e2e)', () => {
             subscription_plan: 402,
             subscription_status: 'trialing',
             user_email: '',
+            user_name: '',
             username: ''
           })
 

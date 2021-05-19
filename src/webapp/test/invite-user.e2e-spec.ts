@@ -200,7 +200,7 @@ describe('Invite user (e2e)', () => {
                 const { email, profile, username } = u
                 return { email, profile, username }
               })
-              expect(actual).toEqual([{ email: 'admin@uplom.com', profile: {}, username: null }, { email: 'user@gmail.com', profile: {}, username: null }, { email: 'newUser@gmail.com', profile: { email: 'newUser@gmail.com' }, username: null }])
+              expect(actual).toEqual([{ email: 'admin@uplom.com', profile: {}, username: null }, { email: 'user@gmail.com', profile: {}, username: null }, { email: 'newUser@gmail.com', profile: { email: 'newUser@gmail.com', name: 'newUser' }, username: null }])
               return done()
             } catch (err) {
               console.log('err', err)
@@ -233,7 +233,7 @@ describe('Invite user (e2e)', () => {
                     const { email, profile, username } = u
                     return { email, profile, username }
                   })
-                  expect(actual).toEqual([{ email: 'admin@uplom.com', profile: {}, username: null }, { email: 'user@gmail.com', profile: {}, username: null }, { email: 'newUser@gmail.com', profile: { email: 'newUser@gmail.com' }, username: null }])
+                  expect(actual).toEqual([{ email: 'admin@uplom.com', profile: {}, username: null }, { email: 'user@gmail.com', profile: {}, username: null }, { email: 'newUser@gmail.com', profile: { email: 'newUser@gmail.com', name: 'newUser' }, username: null }])
                   return done()
                 } catch (err) {
                   console.log('err', err)

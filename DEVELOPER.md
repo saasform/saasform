@@ -2,6 +2,17 @@
 
 To develop Saasform:
 - run docker db `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up saasform-db`
+
+Create test DB:
+
+``
+CREATE DATABASE saasform_test;
+
+GRANT ALL PRIVILEGES ON *.* TO 'saasform'@'%';
+
+FLUSH PRIVILEGES;;
+```
+
 - on another shell in `src/webapp` run `yarn start:dev`
 - before commit: `yarn lint && yarn test && yarn test:e2e`
 

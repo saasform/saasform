@@ -62,7 +62,12 @@ export class AuthenticationController {
       return res.redirect('/error')
     }
 
-    await this.authService.setJwtCookie(req, res, requestUser)
+    const requestUserWithSubscription = await this.authService.updateActiveSubscription(requestUser)
+    if (requestUserWithSubscription == null) {
+      console.error('API V1 - issueJwtAndRediret - error while add subscription to token')
+    }
+
+    await this.authService.setJwtCookie(req, res, requestUserWithSubscription ?? requestUser)
 
     // if subscription is not valid redirect to the billing page
     const payment = await this.paymentsService.getActivePayments(requestUser.account_id)
