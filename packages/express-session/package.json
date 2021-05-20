@@ -1,0 +1,53 @@
+{
+  "name": "@saasform/express-session",
+  "version": "0.1.0",
+  "description": "Secure session middleware for Express, drop in replacement for express-session",
+  "author": "Saasform Team <hello@saasform.dev> (https://saasform.dev)",
+  "license": "MIT",
+  "repository": "saasform/saasform",
+  "homepage": "https://saasform.dev",
+  "keywords": [
+    "express",
+    "expressjs",
+    "auth",
+    "authn",
+    "authentication",
+    "session",
+    "saasform"
+  ],
+  "bugs": {
+    "url": "http://github.com/saasform/saasform/issues"
+  },
+  "dependencies": {
+    "cookie": "0.4.1",
+    "cookie-signature": "1.0.6",
+    "debug": "2.6.9",
+    "depd": "~2.0.0",
+    "on-headers": "~1.0.2",
+    "parseurl": "~1.3.3",
+    "safe-buffer": "5.2.1",
+    "uid-safe": "~2.1.5"
+  },
+  "devDependencies": {
+    "after": "0.8.2",
+    "cookie-parser": "1.4.5",
+    "eslint": "7.26.0",
+    "eslint-plugin-markdown": "2.1.0",
+    "express": "4.17.1",
+    "mocha": "8.4.0",
+    "nyc": "15.1.0",
+    "supertest": "6.1.3"
+  },
+  "files": [
+    "session/",
+    "LICENSE",
+    "index.js"
+  ],
+  "scripts": {
+    "lint": "eslint . && node ./scripts/lint-readme.js",
+    "test": "mocha --require test/support/env --check-leaks --bail --no-exit --reporter spec test/",
+    "test-ci": "nyc --reporter=lcov --reporter=text npm test",
+    "test-cov": "nyc npm test",
+    "version": "node scripts/version-history.js && git add HISTORY.md"
+  }
+}
