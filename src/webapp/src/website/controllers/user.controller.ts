@@ -16,7 +16,7 @@ import { PlansService } from '../../payments/services/plans.service'
 import { SettingsService } from '../../settings/settings.service'
 
 import { renderUserPage } from '../utilities/render'
-import { PaymentsService } from 'src/payments/services/payments.service'
+import { PaymentsService } from '../../payments/services/payments.service'
 
 @Controller('/user')
 export class UserController {

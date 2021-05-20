@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
 // import { settings } from 'cluster';
 import { ConfigService } from '@nestjs/config'
-
 import { SettingsService } from '../../settings/settings.service'
 
 @Injectable()

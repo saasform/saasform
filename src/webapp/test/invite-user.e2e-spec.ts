@@ -1,25 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { SettingsModule } from '../src/settings/settings.module'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { GraphQLModule } from '@nestjs/graphql'
-// import { INestApplication } from '@nestjs/common'
 import { Connection } from 'typeorm'
 import { NestExpressApplication } from '@nestjs/platform-express'
+
 import * as request from 'supertest'
-import { ConfigModule } from '@nestjs/config'
+// import jwt_decode from 'jwt-decode'
 
-// import { ExtractJwt } from 'passport-jwt'
-
-// import { AppModule } from './../src/app.module'
-import { DB_CONFIG } from './config'
+import { AppModule } from './app.module'
 import { configureApp } from '../src/main.app'
-import { AppService } from '../src/app.service'
-import { AuthModule } from '../src/auth/auth.module'
-import { AccountsModule } from '../src/accounts/accounts.module'
-import { ApiV1UserController } from '../src/api/controllers/v1/api.user.controller'
-import { ApiV1TeamController } from '../src/api/controllers/v1/api.team.controller'
-import { ApiV1AutheticationController } from '../src/api/controllers/v1/api.authentication.controller'
 import { StripeService } from '../src/payments/services/stripe.service'
+// import { GoogleOAuth2Service } from '../src/auth/google.service'
 import { CronService } from '../src/cron/cron.service'
 
 // const keys = {
@@ -63,10 +52,6 @@ const newUser = 'email=newUser@gmail.com&name=newUser'
 let agent: any
 
 jest.setTimeout(1000 * 60 * 10)
-
-const configuration = (): any => ({
-  port: 1234
-})
 
 // const envFile = '../env/env.local'
 // const secretsFile = '../env/secrets.local'
@@ -113,30 +98,11 @@ describe('Invite user (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(DB_CONFIG),
-        GraphQLModule.forRoot({
-          playground: true,
-          installSubscriptionHandlers: true,
-          autoSchemaFile: true
-        }),
-        ConfigModule.forRoot({
-          // envFilePath: [secretsFile, envFile],
-          load: [configuration],
-          isGlobal: true
-        }),
-        AuthModule,
-        SettingsModule,
-        AccountsModule
-      ],
-      controllers: [ApiV1AutheticationController, ApiV1UserController, ApiV1TeamController],
-      providers: [
-        AppService,
-        { provide: CronService, useValue: mockedCronService }
-      ]
+      imports: [AppModule]
     })
       .overrideProvider(StripeService).useValue(mockedStripe)
-      .overrideProvider(CronService).useValue({})
+      // .overrideProvider(GoogleOAuth2Service).useValue(mockedGoogle)
+      .overrideProvider(CronService).useValue(mockedCronService)
       .compile()
 
     app = moduleFixture.createNestApplication()
@@ -200,7 +166,7 @@ describe('Invite user (e2e)', () => {
                 const { email, profile, username } = u
                 return { email, profile, username }
               })
-              expect(actual).toEqual([{ email: 'admin@uplom.com', profile: {}, username: null }, { email: 'user@gmail.com', profile: {}, username: null }, { email: 'newUser@gmail.com', profile: { email: 'newUser@gmail.com' }, username: null }])
+              expect(actual).toEqual([{ email: 'admin@uplom.com', profile: {}, username: null }, { email: 'user@gmail.com', profile: {}, username: null }, { email: 'newUser@gmail.com', profile: { email: 'newUser@gmail.com', name: 'newUser' }, username: null }])
               return done()
             } catch (err) {
               console.log('err', err)
@@ -233,7 +199,7 @@ describe('Invite user (e2e)', () => {
                     const { email, profile, username } = u
                     return { email, profile, username }
                   })
-                  expect(actual).toEqual([{ email: 'admin@uplom.com', profile: {}, username: null }, { email: 'user@gmail.com', profile: {}, username: null }, { email: 'newUser@gmail.com', profile: { email: 'newUser@gmail.com' }, username: null }])
+                  expect(actual).toEqual([{ email: 'admin@uplom.com', profile: {}, username: null }, { email: 'user@gmail.com', profile: {}, username: null }, { email: 'newUser@gmail.com', profile: { email: 'newUser@gmail.com', name: 'newUser' }, username: null }])
                   return done()
                 } catch (err) {
                   console.log('err', err)

@@ -1,23 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { SettingsModule } from '../src/settings/settings.module'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { GraphQLModule } from '@nestjs/graphql'
-// import { INestApplication } from '@nestjs/common'
 import { Connection } from 'typeorm'
 import { NestExpressApplication } from '@nestjs/platform-express'
-import * as request from 'supertest'
-import { ConfigModule } from '@nestjs/config'
-// import { ExtractJwt } from 'passport-jwt'
 
-// import { AppModule } from './../src/app.module'
-import { DB_CONFIG } from './config'
+import * as request from 'supertest'
+// import jwt_decode from 'jwt-decode'
+
+import { AppModule } from './app.module'
 import { configureApp } from '../src/main.app'
-import { AppService } from '../src/app.service'
-import { AuthModule } from '../src/auth/auth.module'
-import { AccountsModule } from '../src/accounts/accounts.module'
-import { ApiV1UserController } from '../src/api/controllers/v1/api.user.controller'
-import { ApiV1AutheticationController } from '../src/api/controllers/v1/api.authentication.controller'
 import { StripeService } from '../src/payments/services/stripe.service'
+// import { GoogleOAuth2Service } from '../src/auth/google.service'
 import { CronService } from '../src/cron/cron.service'
 
 // const keys = {
@@ -62,10 +53,6 @@ const passwordChangeWrongPassword = 'email=admin@uplom.com&password=wrongpasswor
 let agent: any
 
 jest.setTimeout(1000 * 60 * 10)
-
-const configuration = (): any => ({
-  port: 1234
-})
 
 // const envFile = '../env/env.local'
 // const secretsFile = '../env/secrets.local'
@@ -112,29 +99,11 @@ describe('User (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(DB_CONFIG),
-        GraphQLModule.forRoot({
-          playground: true,
-          installSubscriptionHandlers: true,
-          autoSchemaFile: true
-        }),
-        ConfigModule.forRoot({
-          // envFilePath: [secretsFile, envFile],
-          load: [configuration],
-          isGlobal: true
-        }),
-        AuthModule,
-        SettingsModule,
-        AccountsModule
-      ],
-      controllers: [ApiV1AutheticationController, ApiV1UserController],
-      providers: [
-        AppService,
-        { provide: CronService, useValue: mockedCronService }
-      ]
+      imports: [AppModule]
     })
       .overrideProvider(StripeService).useValue(mockedStripe)
+      // .overrideProvider(GoogleOAuth2Service).useValue(mockedGoogle)
+      .overrideProvider(CronService).useValue(mockedCronService)
       .compile()
 
     app = moduleFixture.createNestApplication()

@@ -1,14 +1,12 @@
-import { ContextIdFactory, ModuleRef } from '@nestjs/core'
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Scope } from '@nestjs/common'
 import { Observable } from 'rxjs'
-import { AuthService } from 'src/auth/auth.service'
+import { AuthService } from '../auth/auth.service'
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class JwtInterceptor implements NestInterceptor {
   constructor (
     // do not inject AuthService directly to reduce dependencies
-    // private readonly authService: AuthService
-    private readonly moduleRef: ModuleRef
+    private readonly authService: AuthService
   ) { }
 
   async intercept (context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
@@ -18,11 +16,8 @@ export class JwtInterceptor implements NestInterceptor {
 
     // TODO: improve condition
     if (request.user != null && request.user !== false) {
-      const contextId = ContextIdFactory.getByRequest(request)
-      const authService = await this.moduleRef.resolve(AuthService, contextId)
-      await authService.setJwtCookie(request, response, request.user)
+      await this.authService.setJwtCookie(request, response, request.user)
     }
-
     return next.handle()
   }
 }

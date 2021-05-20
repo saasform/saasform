@@ -9,15 +9,11 @@ import { join } from 'path'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ApiModule } from './api/api.module'
-import { AccountsModule } from './accounts/accounts.module'
-import { AuthModule } from './auth/auth.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { GraphQLModule } from '@nestjs/graphql'
 import { WebsiteModule } from './website/website.module'
-import { NotificationsModule } from './notifications/notifications.module'
-import { PaymentsModule } from './payments/payments.module'
+import { SettingsModule } from './settings/settings.module'
 import { ValidatorModule } from './validator/validator.module'
-import { CronModule } from './cron/cron.module'
 
 const configSaasform = (): any => yaml.load(
   readFileSync(join(__dirname, '..', 'config', 'saasform.yml'), 'utf8')
@@ -58,14 +54,17 @@ const configWebsite = (): any => yaml.load(
       autoSchemaFile: true
     }),
     ValidatorModule,
+    SettingsModule,
+
+    ScheduleModule.forRoot(),
+    GraphQLModule.forRoot({
+      playground: true, // TODO: remove this in prod
+      installSubscriptionHandlers: true,
+      autoSchemaFile: true
+    }),
+
     ApiModule,
-    PaymentsModule,
-    AccountsModule,
-    AuthModule,
-    WebsiteModule,
-    NotificationsModule,
-    CronModule,
-    ScheduleModule.forRoot()
+    WebsiteModule
   ],
   controllers: [AppController],
   providers: [AppService]

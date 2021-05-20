@@ -20,11 +20,11 @@ export class PaymentsService extends BaseService<PaymentEntity> {
 
   constructor (
     @Inject(REQUEST) private readonly req,
-    private readonly stripeService: StripeService,
-    private readonly killBillService: KillBillService,
     private readonly configService: ConfigService,
+    private readonly validationService: ValidationService,
     private readonly settingsService: SettingsService,
-    private readonly validationService: ValidationService
+    private readonly stripeService: StripeService,
+    private readonly killBillService: KillBillService
   ) {
     super(
       req,

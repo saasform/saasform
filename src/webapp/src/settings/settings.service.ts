@@ -61,13 +61,13 @@ export function mergeAll (entity: SettingsEntity, update): SettingsEntity {
 
 @QueryService(SettingsEntity)
 @Injectable({ scope: Scope.REQUEST })
-// TODO req should be "private readonly" but tests won't work
 export class SettingsService extends BaseService<SettingsEntity> {
   data: any = null
 
   constructor (
-    @Inject(REQUEST) public req: any,
-    public configService: ConfigService,
+    // TODO req should be "private readonly" but tests won't work
+    @Inject(REQUEST) public req,
+    private readonly configService: ConfigService,
     private readonly validationService: ValidationService
   ) {
     super(req, 'SettingsEntity')
@@ -131,7 +131,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
         if (e.code != null && e.code === 'ER_NO_SUCH_TABLE') {
           // TODO: handle missing table, i.e. message "run migrations"
         }
-        console.log(e)
+        // console.log(e)
       }
 
       this.data = {}
@@ -286,10 +286,12 @@ export class SettingsService extends BaseService<SettingsEntity> {
       ],
 
       // nav
-      login_text: '',
-      login_url: '',
-      signup_text: '',
-      signup_url: '',
+      nav_links: {
+        login_text: '',
+        login_link: '',
+        signup_text: '',
+        signup_link: ''
+      },
 
       // home
       hero_title: '',
@@ -429,10 +431,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'app_chatbot_id',
       'app_chatbot_domain',
       'legal_company_name',
-      'login_text',
-      'login_url',
-      'signup_text',
-      'signup_url',
+      'nav_links',
       'hero_title',
       'hero_subtitle',
       'hero_cta',
