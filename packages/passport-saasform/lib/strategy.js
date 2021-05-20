@@ -34,7 +34,7 @@ class Strategy extends BaseStrategy {
         this.initJWTStrategy(data.message)
       })
       .catch(err => {
-        console.error('Error while retrieving public key from Saasform');
+        console.error('Error retrieving the public key from Saasform');
         process.exit(1)
       });
   }
@@ -51,8 +51,59 @@ class Strategy extends BaseStrategy {
       this[key] = this._jwtStrategy[key]
     }
   }
+
+  authenticate(req, options) {
+    var self = this;
+    var token = self._jwtFromRequest(req);
+
+    function fail(err) {
+      return self.redirect(`${self._saasformUrl}/login`)
+    }
+
+    if (!token) {
+      // return fail(new Error("No auth token"));
+      return fail(new Error("No auth token"));
+    }
+
+    this._secretOrKeyProvider(req, token, function(secretOrKeyError, secretOrKey) {
+      if (secretOrKeyError) {
+        fail(secretOrKeyError)
+      } else {
+        // Verify the JWT
+        JwtStrategy.JwtVerifier(token, secretOrKey, self._verifOpts, function(jwt_err, payload) {
+          if (jwt_err) {
+            return fail(jwt_err);
+          } else {
+            // Pass the parsed token to the user
+            var verified = function(err, user, info) {
+              if(err) {
+                return self.error(err);
+              } else if (!user) {
+                return fail(info);
+              } else {
+                return self.success(user, info);
+              }
+            };
+
+            if (payload && payload.status !== 'active') {
+              self.redirect(`${self._saasformUrl}/user`)
+            }
+
+            try {
+              if (self._passReqToCallback) {
+                self._verify(req, payload, verified);
+              } else {
+                self._verify(payload, verified);
+              }
+            } catch(ex) {
+              self.error(ex);
+            }
+          }
+        });
+      }
+    });
+  }
 }
-Strategy.prototype.authenticate = JwtStrategy.prototype.authenticate
 
 /**
  * Expose `Strategy`.
