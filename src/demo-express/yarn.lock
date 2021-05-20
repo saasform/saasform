@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@saasform/passport-saasform@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@saasform/passport-saasform/-/passport-saasform-0.1.0.tgz#a12ad6ff4f15a26e85986e25a4f565771c8059fa"
+  integrity sha512-Gor4orzHIp3sYIdmfAj+GKOC9SrKRIvh/FuMODMssVLGefqReeomONmN18CYeU+1XZEfph+XYqwNCNHqO5q1bA==
+  dependencies:
+    passport-strategy "1.x.x"
+
 accepts@~1.3.5:
   version "1.3.7"
   resolved "https://registry.yarnpkg.com/accepts/-/accepts-1.3.7.tgz#531bc726517a3b2b41f850021c6cc15eaab507cd"

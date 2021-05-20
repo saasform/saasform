@@ -1,10 +1,10 @@
 {
-  "name": "webapp",
-  "version": "0.3.0",
-  "description": "",
-  "author": "",
+  "name": "@saasform/webapp",
   "private": true,
-  "license": "UNLICENSED",
+  "version": "0.3.0",
+  "description": "Saasform webapp",
+  "author": "Saasform Team <hello@saasform.dev> (https://saasform.dev)",
+  "license": "Apache-2.0",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",

@@ -1,0 +1,36 @@
+{
+  "name": "@saasform/passport-saasform",
+  "version": "0.3.0",
+  "description": "Saasform authentication strategy for Passport",
+  "author": "Saasform Team <hello@saasform.dev> (https://saasform.dev)",
+  "license": "Apache-2.0",
+  "repository": "saasform/saasform",
+  "homepage": "https://saasform.dev",
+  "keywords": [
+    "passport",
+    "local",
+    "auth",
+    "authn",
+    "authentication",
+    "saasform"
+  ],
+  "bugs": {
+    "url": "http://github.com/saasform/saasform/issues"
+  },
+  "main": "./lib",
+  "dependencies": {
+    "cookie": "^0.4.1",
+    "node-fetch": "^2.6.1",
+    "passport-jwt": "^4.0.0",
+    "passport-strategy": "1.x.x"
+  },
+  "devDependencies": {
+    "chai": "2.x.x",
+    "chai-passport-strategy": "0.1.x",
+    "make-node": "0.4.6",
+    "mocha": "2.x.x"
+  },
+  "scripts": {
+    "test": "make test"
+  }
+}
