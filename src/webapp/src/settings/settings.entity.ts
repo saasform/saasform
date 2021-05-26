@@ -42,6 +42,7 @@ export class SettingsWebsiteJson {
   prelaunch_hide_poweredby: boolean
   domain_primary: string
   domain_app: string
+  insecure_domain_app: string
   auth_password: boolean
   auth_google: boolean
   auth_facebook: boolean
@@ -57,6 +58,7 @@ export class SettingsWebsiteJson {
   billing_form_address_line2: HidOptDisFormField
   billing_form_phone_number: HidOptDisFormField
   subscription_optional: boolean
+  trial_length: number
 }
 
 export class SettingsAdminJson {

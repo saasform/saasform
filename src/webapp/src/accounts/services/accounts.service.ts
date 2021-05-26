@@ -187,14 +187,16 @@ export class AccountsService extends BaseService<AccountEntity> {
       }
 
       // Add free tier plan
-      try {
-        const plans = await this.plansService.getPlans()
-        await this.paymentsService.createFreeSubscription(
-          plans[0],
-          (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id)
-        )
-      } catch (err) {
-        console.error('accountsService - cannot create free subscription')
+      if (await this.settingsService.getTrialLength() !== 0) {
+        try {
+          const plans = await this.plansService.getPlans()
+          await this.paymentsService.createFreeSubscription(
+            plans[0],
+            (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id)
+          )
+        } catch (err) {
+          console.error('accountsService - cannot create free subscription')
+        }
       }
 
       try {
@@ -441,7 +443,7 @@ export class AccountsService extends BaseService<AccountEntity> {
    */
   async subscribeToPlan (account: AccountEntity, subscription: Subscription): Promise<any> { // TODO: return a proper type
     // 1. fetch payment method details
-    const paymentMethod = account.data.payments_methods.filter(p => p?.id === subscription.method)[0]
+    const paymentMethod = account.data.payments_methods.filter(p => p?.id === subscription.method)[0] ?? account.data.payments_methods[0]
 
     // 2. fetch price
     const price = await this.plansService.getPriceByProductAndAnnual(subscription.plan, subscription.monthly)
@@ -461,7 +463,7 @@ export class AccountsService extends BaseService<AccountEntity> {
       // 4b. the account doesn't have a plan, create one
       const newPayment = await this.paymentsService.subscribeToPlan(account.data.stripe.id, paymentMethod, price)
       if (newPayment == null) {
-        console.error('accountService -- subscribeToPlan -- error while subscribing to new plan', account, subscription)
+        console.error('accountService -- subscribeToPlan -- error while subscribing to new plan', account, subscription, paymentMethod, price)
         return null
       }
 

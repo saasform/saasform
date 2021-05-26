@@ -308,8 +308,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
   }
 
   async createStripeFreeSubscription (plan, stripeId): Promise<any> {
-    // TODO: fix the trial duration
-    const trialDays = 10
+    const trialDays = await this.settingsService.getTrialLength()
     const trial_end = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60 // eslint-disable-line @typescript-eslint/naming-convention
 
     try {

@@ -1,4 +1,4 @@
-import { Controller, Post, Delete, UseGuards, Request, Res, Param } from '@nestjs/common'
+import { Controller, Post, Put, Delete, UseGuards, Request, Res, Param } from '@nestjs/common'
 import { Response } from 'express'
 import { SettingsService } from '../../../settings/settings.service'
 import { AccountsService } from '../../../accounts/services/accounts.service'
@@ -58,6 +58,48 @@ export class ApiV1UserController {
     return res.json({
       statusCode: 200,
       message: 'Password changed'
+    })
+  }
+
+  @UseGuards(UserRequiredAuthGuard)
+  @Put(':userId')
+  async updateUserProfile (@Request() req, @Res() res: Response, @Param('userId') userId): Promise<any> {
+    const updatedUser = await this.usersService.updateUserProfile(req.body, userId)
+
+    if (updatedUser == null) {
+      console.error('UserController - updateUserProfile - User not updated', req.user.account_id)
+      return res.json({
+        statusCode: 500,
+        error: 'User not updated'
+      })
+    }
+
+    const { company } = req.body
+    if (company != null && company !== '') {
+      const account = await this.accountsService.findById(req.user.account_id)
+
+      if (account == null) {
+        console.error('UserController - updateUserProfile - Account not found', req.user.account_id)
+        return res.json({
+          statusCode: 400,
+          error: 'Account not found'
+        })
+      }
+
+      const updatedAccount = await this.accountsService.setCompanyName(account, company)
+
+      if (updatedAccount == null) {
+        console.error('UserController - updateUserProfile - Account not updated', req.user.account_id)
+        return res.json({
+          statusCode: 500,
+          error: 'Account not updated'
+        })
+      }
+    }
+
+    return res.json({
+      statusCode: 200,
+      message: 'Profile updated'
     })
   }
 
