@@ -58,7 +58,7 @@
     "mysql": "^2.18.1",
     "parse-domain": "^3.0.3",
     "passport": "^0.4.1",
-    "passport-azure-ad": "^4.3.0",
+    "passport-azure-ad": "0x0ece/passport-azure-ad",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "passport-saml": "^2.2.0",
