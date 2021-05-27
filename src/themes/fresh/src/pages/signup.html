@@ -68,15 +68,43 @@ layout: default
             </div>
           </div>
 
-          {% if signup_show_google %}
+          {% if signup_show_google or signup_show_azure %}
           <p class="has-text-centered mt-20 mb-20">or</p>
+          {% endif %}
 
-          <!-- Social Auth -->
+          {% if signup_show_google %}
           <div class="field">
             <div class="control">
-              <div id="google-signin" data-width="auto" data-height="40" data-theme="dark" data-longtitle="true"></div>
+              <div id="google-signin2" data-width="auto" data-height="40" data-theme="dark" data-longtitle="true"></div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="control">
+              <a id="google-signin" class="button is-fullwidth is-justify-content-start" href="#">
+                <span class="icon is-large">
+                  <img src="/default/assets/img/logo/google.svg"/>
+                </span>
+                <span style="width: 100%">
+                  Sign up with Google
+                </span>
+              </a>
             </div>
             <p id="error-google" class="help is-danger">{{ error.google }}</p>
+          </div>
+          {% endif %}
+          {% if signup_show_azure %}
+          <div class="field">
+            <div class="control">
+              <a id="azure-signin" class="button is-fullwidth is-justify-content-start" href="/auth/azure">
+                <span class="icon is-large">
+                  <img src="/default/assets/img/logo/microsoft.svg"/>
+                </span>
+                <span style="width: 100%">
+                  Sign up with Microsoft
+                </span>
+              </a>
+            </div>
+            <p id="error-azure" class="help is-danger">{{ error.azure }}</p>
           </div>
           {% endif %}
         </form>

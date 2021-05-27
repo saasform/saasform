@@ -7,7 +7,7 @@ function onGoogleStart() {
       {},
       (googleUser) => onGoogleSignIn(googleUser),
     );
-    gapi.signin2.render(button, button.dataset);
+    //gapi.signin2.render(button, button.dataset);
   });
 }
 

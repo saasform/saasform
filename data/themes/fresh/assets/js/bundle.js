@@ -2291,8 +2291,7 @@ function onGoogleStart() {
     var button = document.getElementById("google-signin");
     auth2.attachClickHandler(button, {}, function (googleUser) {
       return onGoogleSignIn(googleUser);
-    });
-    gapi.signin2.render(button, button.dataset);
+    }); //gapi.signin2.render(button, button.dataset);
   });
 }
 
