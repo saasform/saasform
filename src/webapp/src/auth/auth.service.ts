@@ -328,8 +328,19 @@ export class AuthService {
         }
       }
     */
-    console.log(profile)
-    return null
+    const email = profile?._json?.email
+    const requestUser = {
+      nonce: '', // TODO
+      id: 101,
+      account_id: 101,
+      account_name: '',
+      status: 'active', // TODO: use actual value
+      email: email,
+      email_verified: true,
+      staff: false,
+      username: ''
+    }
+    return requestUser
   }
 
   /*
