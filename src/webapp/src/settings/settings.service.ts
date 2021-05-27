@@ -167,6 +167,37 @@ export class SettingsService extends BaseService<SettingsEntity> {
     return result as unknown as SettingsKeysJson
   }
 
+  async getAzureAdStrategyConfig (): Promise<any | null> {
+    const keys = await this.getKeysSettings()
+
+    const tenantIdOrName = keys.oauth_azure_ad_tenant_id ?? this.configService.get('OAUTH_AZURE_AD_TENANT_ID') ?? ''
+    const clientID = keys.oauth_azure_ad_client_id ?? this.configService.get('OAUTH_AZURE_AD_CLIENT_ID') ?? ''
+    const clientSecret = keys.oauth_azure_ad_client_secret_value ?? this.configService.get('OAUTH_AZURE_AD_CLIENT_SECRET_VALUE') ?? ''
+    const scope = keys.oauth_azure_ad_scope ?? this.configService.get('OAUTH_AZURE_AD_SCOPE') ?? ''
+
+    const baseUrl: string = await this.getBaseUrl()
+
+    return (clientID !== '' && !clientID.endsWith('xxx')) ? {
+      // configurable
+      tenantIdOrName,
+      clientID,
+      clientSecret,
+      scope,
+      redirectUrl: `${baseUrl}/auth/azure/callback`,
+      allowHttpForRedirectUrl: (process.env.NODE_ENV === 'development'),
+      // fixed
+      identityMetadata: 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration',
+      responseType: 'code',
+      responseMode: 'form_post',
+      // TODO replace cookies with sessions
+      useCookieInsteadOfSession: true,
+      cookieEncryptionKeys: [
+        { key: '12345678901234567890123456789013', iv: '123456789013' },
+        { key: 'abcdefghijklmnopqrstuvwxyzabcdeg', iv: 'abcdefghijkm' }
+      ]
+    } : null
+  }
+
   async getAdminSettings (): Promise<SettingsAdminJson> {
     const result = await this.getSettings('admin') as unknown as SettingsAdminJson
 
@@ -309,6 +340,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       hero_subtitle: '',
       hero_cta: '',
       hero_image_url: '',
+      hero_video_url: '',
       benefits: [
         {
           image_url: '',
@@ -409,6 +441,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
 
       // signup fields
       signup_show_google: false,
+      signup_show_azure: false,
       signup_show_username: false,
 
       // page /user
@@ -447,6 +480,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'hero_subtitle',
       'hero_cta',
       'hero_image_url',
+      'hero_video_url',
       'testimonials_title',
       'testimonials_text',
       'pricing_title',
@@ -559,11 +593,18 @@ export class SettingsService extends BaseService<SettingsEntity> {
       this.req.unsafeDisableCsp = res.unsafe_disable_csp
     }
 
+    // keys
+    const keys = await this.getKeysSettings()
+    res.app_google_signin_client_id = keys.oauth_google_signin_client_id ?? this.configService.get('OAUTH_GOOGLE_SIGNIN_CLIENT_ID') ?? ''
+    res.app_google_signin_scope = keys.oauth_google_signin_scope ?? this.configService.get('OAUTH_GOOGLE_SIGNIN_SCOPE') ?? ''
+    const azureAdConfig = await this.getAzureAdStrategyConfig()
+
     // html
 
     // Google Sign-In
     // https://developers.google.com/identity/sign-in/web/sign-in
     res.signup_show_google = !!((res.app_google_signin_client_id !== '' && !res.app_google_signin_client_id.endsWith('xxx')))
+    res.signup_show_azure = !!(azureAdConfig != null)
     res.html_google_signin_header = res.app_google_signin_client_id !== '' && !res.app_google_signin_client_id.endsWith('xxx')
       ? `
       <meta name="google-signin-client_id" content="${res.app_google_signin_client_id}">

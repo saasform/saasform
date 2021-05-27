@@ -6,9 +6,9 @@ import {
   Post,
   UseGuards,
   Param
-//   Param
-} from '@nestjs/common'; import { Response } from 'express'
-import { UserOptionalAuthGuard } from '../..//auth/auth.guard'
+} from '@nestjs/common'
+import { Response } from 'express'
+import { UserOptionalAuthGuard, AzureAdGuard } from '../..//auth/auth.guard'
 import { SettingsService } from '../../settings/settings.service'
 import { AuthService } from '../..//auth/auth.service'
 import { UsersService } from '../../accounts/services/users.service'
@@ -272,5 +272,22 @@ export class AuthenticationController {
     await this.usersService.resetPassword(token, password)
 
     return res.redirect('/login') // TODO: make this less hard coded
+  }
+
+  /* SOCIALS */
+
+  @UseGuards(AzureAdGuard)
+  @Get('/auth/azure')
+  async azureAdRedirectTo (@Request() req, @Res() res: Response): Promise<any> {
+  }
+
+  @UseGuards(AzureAdGuard)
+  @Post('/auth/azure/callback')
+  async azureAdReturnFrom (@Request() req, @Res() res: Response): Promise<any> {
+    if (req.user !== false) {
+      const redirect = await this.settingsService.getRedirectAfterLogin()
+      return res.redirect(redirect)
+    }
+    return res.redirect('/login')
   }
 }

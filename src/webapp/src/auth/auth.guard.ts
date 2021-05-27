@@ -71,3 +71,6 @@ export class GoogleOAuth2Guard implements CanActivate {
     return true
   }
 }
+
+@Injectable()
+export class AzureAdGuard extends AuthGuard('azuread-openidconnect') {}
