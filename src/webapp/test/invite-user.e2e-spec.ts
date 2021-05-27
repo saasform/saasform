@@ -11,11 +11,6 @@ import { StripeService } from '../src/payments/services/stripe.service'
 // import { GoogleOAuth2Service } from '../src/auth/google.service'
 import { CronService } from '../src/cron/cron.service'
 
-// const keys = {
-//   jwt_private_key: '-----BEGIN PRIVATE KEY-----nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgxjRaB1myLLnts/gMj3sPnwwlnF9BxLF86108qAH4g5zqhRANCAAQfUj/9Q1zJBqw+HX0e37+fHo9BoU4sE6MbnE4yKeEua8pncGu53WWZ6ExJ2Ohnf5gPYRoj3f1z3utCDjADPuFSOn-----END PRIVATE KEY-----n',
-//   jwt_public_key: '-----BEGIN PUBLIC KEY-----nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEH1I//UNcyQasPh19Ht+/nx6PQaFOLBOjnGxOMinhLmvKZ3Brud1lmehMSdjoZ3+YD2EaI939c97rQg4wAz7hUjg==n-----END PUBLIC KEY-----n'
-// }
-
 /**
  * User: 101, 102, 103
  * Account: 201 => users 101, 102

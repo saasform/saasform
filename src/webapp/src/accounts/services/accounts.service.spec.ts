@@ -101,6 +101,10 @@ describe('Accounts Service', () => {
     getPriceByProductAndAnnual: jest.fn(_ => ({ plan: '1' }))
   }
 
+  const mockedSettingsService = {
+    getTrialLength: jest.fn().mockReturnValue(10)
+  }
+
   beforeEach(async () => {
     jest.clearAllMocks()
 
@@ -136,7 +140,7 @@ describe('Accounts Service', () => {
         },
         {
           provide: SettingsService,
-          useValue: {}
+          useValue: mockedSettingsService
         },
         {
           provide: ConfigService,
@@ -178,6 +182,7 @@ describe('Accounts Service', () => {
     service.accountsUsersService = accountsUsersRepo
     service.paymentsService = mockedPaymentsService
     service.plansService = mockedPlansService
+    service.settingsService = mockedSettingsService
   })
 
   afterEach(() => {

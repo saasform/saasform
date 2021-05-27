@@ -216,6 +216,14 @@ export class SettingsService extends BaseService<SettingsEntity> {
     return '/'
   }
 
+  async getTrialLength (cachedSettings?): Promise<number> {
+    const settings = cachedSettings ?? await this.getWebsiteSettings()
+    if (settings.trial_length == null) {
+      return 10 // TODO: fix the trial duration
+    }
+    return settings.trial_length
+  }
+
   async getTopLevelUrl (cachedSettings?): Promise<string> {
     const baseUrl = await this.getBaseUrl(cachedSettings)
     let domain
@@ -236,6 +244,9 @@ export class SettingsService extends BaseService<SettingsEntity> {
       return `https://${settings.domain_app as string}`
     } else if (settings.domain_primary != null) {
       return `https://app.${settings.domain_primary as string}`
+    } else if (settings.insecure_domain_app != null) {
+      console.warn('USING INSECURE REDIRECT:', settings.insecure_domain_app)
+      return `${settings.insecure_domain_app as string}`
     } else if (configuredRedirectUrl !== '') {
       return `${configuredRedirectUrl}`
     }

@@ -50,6 +50,13 @@ export function configureApp (app, isTest: boolean = false): void {
   app.useGlobalPipes(new ValidationPipe())
   app.useGlobalFilters(new HttpExceptionsFilter())
 
+  app.enableCors({
+    origin: (origin, callback) => {
+      return callback(null, true)
+    },
+    credentials: true
+  })
+
   const csrf = csurf({ cookie: true, signed: true, secure: true, httpOnly: true, sameSite: true })
   if (isTest) {
     // mock csurf
