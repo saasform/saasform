@@ -62,15 +62,22 @@ export function configureApp (app, isTest: boolean = false): void {
     // mock csurf
     app.use((req, res, next) => {
       req.csrfToken = () => ('')
-      next()
+      return next()
     })
   } else {
     app.use((req, res, next) => {
-      if (req.path.indexOf('/graphql') >= 0 || req.path.indexOf('/api') >= 0) { // TODO: refactor this
-        next()
-      } else {
-        csrf(req, res, next)
+      // skip CSRF for api, graphql, auth callbacks
+      for (const ex of [
+        /^\/api\//,
+        /^\/graphql\//,
+        /^\/auth\/[a-z]+\/callback/
+      ]) {
+        if (req.path.match(ex) != null) {
+          console.log(req.path)
+          return next()
+        }
       }
+      return csrf(req, res, next)
     })
   }
 }

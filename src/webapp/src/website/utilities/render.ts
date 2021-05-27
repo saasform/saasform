@@ -16,7 +16,7 @@ const renderPage = (req, res, page: string, data: any = {}): Response => {
       ...req.user
     },
     plans: data?.plans?.plans ?? siteData.pricing_plans,
-    csrf_token: req.csrfToken()
+    csrf_token: req.csrfToken !== undefined ? req.csrfToken() : null
   }
   // console.log(pageData)
   return res.render(`${siteData.root_theme as string}/${page}`, pageData)

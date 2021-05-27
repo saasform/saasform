@@ -292,6 +292,46 @@ export class AuthService {
     return { user, credential, account }
   }
 
+  async authAzureAd (profile, accessToken, refreshToken): Promise<RequestUser | null> {
+    /*
+      profile = {
+        sub: 'N8_aXBiWPKx74LKf2z28LbG14UEuRyOX1t8IkVMVVKA',
+        oid: 'bffd1826-68f1-4f5c-9966-8b4283512054',
+        upn: undefined,
+        displayName: 'ec@saasform.dev Cesena',
+        name: {
+          familyName: undefined,
+          givenName: undefined,
+          middleName: undefined
+        },
+        emails: undefined,
+        _raw: '{"aud":"becd9aa0-431b-4140-a0b5-d05952426ebc","iss":"https://login.microsoftonline.com/13f01d05-aaf9-49d8-94ce-32ee372992e7/v2.0","iat":1622108856,"nbf":1622108856,"exp":1622112756,"aio":"AWQAm/8TAAAAFMbu7nMRi5DHdBhMxDsvuyRl0owAsOcTbh8HPEoaRN1SM4F88/qKz1R1/4ZGtot3b5XAEeSUmPY++SGNly1wzO9ubIADJ9frDc2YdX7KQfFAonCMMmqOwIHXksJJ/zNw","email":"ec@saasform.dev","idp":"https://sts.windows.net/9188040d-6c67-4c5b-b112-36a304b66dad/","name":"ec@saasform.dev Cesena","nonce":"_aAugJ0JmMiHMKNN6C3s-SV2E8-wA7mI","oid":"bffd1826-68f1-4f5c-9966-8b4283512054","preferred_username":"ec@saasform.dev","prov_data":[{"at":true,"prov":"github.com","altsecid":"1491992"}],"rh":"0.AXwABR3wE_mq2EmUzjLuNymS56Cazb4bQ0BBoLXQWVJCbrx8AEw.","sub":"N8_aXBiWPKx74LKf2z28LbG14UEuRyOX1t8IkVMVVKA","tid":"13f01d05-aaf9-49d8-94ce-32ee372992e7","uti":"LaEsxTASU0O0Qs40_CBAAw","ver":"2.0"}',
+        _json: {
+          aud: 'becd9aa0-431b-4140-a0b5-d05952426ebc',
+          iss: 'https://login.microsoftonline.com/13f01d05-aaf9-49d8-94ce-32ee372992e7/v2.0',
+          iat: 1622108856,
+          nbf: 1622108856,
+          exp: 1622112756,
+          aio: 'AWQAm/8TAAAAFMbu7nMRi5DHdBhMxDsvuyRl0owAsOcTbh8HPEoaRN1SM4F88/qKz1R1/4ZGtot3b5XAEeSUmPY++SGNly1wzO9ubIADJ9frDc2YdX7KQfFAonCMMmqOwIHXksJJ/zNw',
+          email: 'ec@saasform.dev',
+          idp: 'https://sts.windows.net/9188040d-6c67-4c5b-b112-36a304b66dad/',
+          name: 'ec@saasform.dev Cesena',
+          nonce: '_aAugJ0JmMiHMKNN6C3s-SV2E8-wA7mI',
+          oid: 'bffd1826-68f1-4f5c-9966-8b4283512054',
+          preferred_username: 'ec@saasform.dev',
+          prov_data: [ [Object] ],
+          rh: '0.AXwABR3wE_mq2EmUzjLuNymS56Cazb4bQ0BBoLXQWVJCbrx8AEw.',
+          sub: 'N8_aXBiWPKx74LKf2z28LbG14UEuRyOX1t8IkVMVVKA',
+          tid: '13f01d05-aaf9-49d8-94ce-32ee372992e7',
+          uti: 'LaEsxTASU0O0Qs40_CBAAw',
+          ver: '2.0'
+        }
+      }
+    */
+    console.log(profile)
+    return null
+  }
+
   /*
   private async connectWithGoogle (googleEmail: string, googleSubject: string): Promise<UserEntity | null> {
     const saasformUserCredential = await this.userCredentialsService.findUserCredentialByEmail(googleEmail, CredentialType.DEFAULT)

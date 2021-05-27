@@ -43,9 +43,6 @@ export class SettingsWebsiteJson {
   domain_primary: string
   domain_app: string
   insecure_domain_app: string
-  auth_password: boolean
-  auth_google: boolean
-  auth_facebook: boolean
   name: string
   email: string
   email_name: string
@@ -92,8 +89,12 @@ export class SettingsKeysJson {
   jwt_public_key: string
   jwt_private_key: string
   webhooks_key: string
-  auth_google_client_id: string
-  auth_google_secret: string
+  oauth_google_signin_client_id: string
+  oauth_google_signin_scope: string
+  oauth_azure_ad_tenant_id: string
+  oauth_azure_ad_client_id: string
+  oauth_azure_ad_client_secret_value: string
+  oauth_azure_ad_scope: string
 }
 
 enum SettingsModulesHomepage {
