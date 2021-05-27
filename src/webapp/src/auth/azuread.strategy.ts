@@ -29,7 +29,7 @@ export class AzureAdStrategy extends PassportStrategy(OIDCStrategy) {
       tenantIdOrName: OAUTH_AZURE_AD_TENANT_ID,
       clientID: OAUTH_AZURE_AD_CLIENT_ID,
       clientSecret: OAUTH_AZURE_AD_CLIENT_SECRET_VALUE,
-      redirectUrl: 'http://localhost:7000/auth/azure/callback',
+      redirectUrl: 'https://.../auth/azure/callback',
       allowHttpForRedirectUrl: (process.env.NODE_ENV === 'development'),
       scope: 'email profile openid',
       // fixed
