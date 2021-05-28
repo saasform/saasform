@@ -18,16 +18,22 @@ layout: index
           </div>
         </div>
         <div class="column is-offset-1">
+          {% if hero_video_url %}
+          <figure class="image is-3by2">
+            <iframe class="has-ratio" width="640" height="360" src="{{ website.hero_video_url }}" frameborder="0" allowfullscreen></iframe>
+          </figure>
+          {% else %}
           <figure class="image">
             <img src="{{ website.hero_image_url }}" alt="{{ website.name }}">
           </figure>
+          {% endif %}
         </div>
 
       </div>
     </div>
   </div>
 
-  <div class="hero-foot mb-20">
+  <div class="hero-foot mb-20 pl-5 pr-5">
     <div class="container is-max-desktop content">
       <div class="columns">
         {% for item in benefits %}
@@ -55,9 +61,9 @@ layout: index
 {% if len > 0 %}
 <section class="section is-bordered mb-0">
   <div class="container is-max-desktop">
-    <div class="columns is-vcentered">
+    <div class="columns is-vcentered is-centered is-multiline is-mobile">
       {% for item in logos %}
-        <div class="column has-text-centered">
+        <div class="column has-text-centered xis-narrow" style="min-width: 100px; max-width: 150px;">
 
           <img class="partner-logo" src="{{ item.image_url }}" alt="{{ item.name }}">
 
@@ -120,6 +126,7 @@ layout: index
   </div>
 </section>
 
+{% if cta_title %}
 <section id="faq" class="section has-background-dark is-medium is-back">
   <div class="container is-max-desktop">
     <div class="columns">
@@ -150,3 +157,4 @@ layout: index
     </div>
   </div>
 </section>
+{% endif %}

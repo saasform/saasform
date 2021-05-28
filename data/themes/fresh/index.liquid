@@ -165,16 +165,22 @@
             </div>
           </div>
           <div class="column is-offset-1">
+            {% if hero_video_url %}
+            <figure class="image is-3by2">
+              <iframe class="has-ratio" width="640" height="360" src="{{ hero_video_url }}" frameborder="0" allowfullscreen></iframe>
+            </figure>
+            {% else %}
             <figure class="image">
               <img src="{{ hero_image_url }}" alt="{{ name }}">
             </figure>
+            {% endif %}
           </div>
   
         </div>
       </div>
     </div>
   
-    <div class="hero-foot mb-20">
+    <div class="hero-foot mb-20 pl-5 pr-5">
       <div class="container is-max-desktop content">
         <div class="columns">
           {% for item in benefits %}
@@ -202,9 +208,9 @@
   {% if len > 0 %}
   <section class="section is-bordered mb-0">
     <div class="container is-max-desktop">
-      <div class="columns is-vcentered">
+      <div class="columns is-vcentered is-centered is-multiline is-mobile">
         {% for item in logos %}
-          <div class="column has-text-centered">
+          <div class="column has-text-centered xis-narrow" style="min-width: 100px; max-width: 150px;">
   
             <img class="partner-logo" src="{{ item.image_url }}" alt="{{ item.name }}">
   
@@ -262,6 +268,7 @@
         </h3>
       </div>
   
+          {% if plans[0].price_year > 0 or plans[1].price_year > 0 %}
           <div class="content has-text-centered">
             <div class="field">
               <span>Monthly&nbsp;</span>
@@ -269,10 +276,11 @@
               <label for="priceSwitch">Annually</label>
             </div>
           </div>
+          {% endif %}
       
-          <div class="pricing-wrap">
+          <div class="pricing-wrap columns pl-6 pr-6">
           {% for item in plans %}
-            <div class="feature-card is-pricing has-text-centered">
+            <div class="feature-card is-pricing has-text-centered column">
               <h3 class="tag is-primary is-light is-uppercase">{{ item.name }}</h3>
               <div class="price has-text-weight-normal">
                 {% if item.price_text %}
@@ -286,7 +294,7 @@
               <ul class="pricing-features has-text-left">
               {% for feature in item.features %}
                 <li>
-                  <span class="tag is-success is-light is-rounded">  
+                  <span class="tag is-success is-light is-rounded">
                     <span class="icon is-small">
                       <i class="fa fa-check"></i>
                     </span>
@@ -310,6 +318,7 @@
     </div>
   </section>
   
+  {% if cta_title %}
   <section id="faq" class="section has-background-dark is-medium is-back">
     <div class="container is-max-desktop">
       <div class="columns">
@@ -340,6 +349,7 @@
       </div>
     </div>
   </section>
+  {% endif %}
   
   <footer class="footer">
     <div class="container is-max-desktop">
@@ -353,6 +363,7 @@
             <!--img src="{{ root_assets }}/img/logo/logo.svg"-->
           </div>
           <p>&copy; 2021 {{ legal_company_name }}</p>
+          <div class="level is-mobile">
           <div class="level-left">
             {% if social_github %}
             <a class="level-item has-text-grey" href="{{ social_github }}">
@@ -382,6 +393,7 @@
               </span>
             </a>
             {% endfor %}
+          </div>
           </div>
   
         </div>

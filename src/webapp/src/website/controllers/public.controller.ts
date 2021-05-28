@@ -62,6 +62,9 @@ export class PublicController extends BaseController {
       // pass
     }
 
+    // disable CSP for home page
+    req.unsafeDisableCsp = true
+
     return renderPage(req, res, 'index', { plans })
   }
 

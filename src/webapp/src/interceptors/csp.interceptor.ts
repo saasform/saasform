@@ -1,5 +1,6 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
 import { Observable } from 'rxjs'
+import { tap } from 'rxjs/operators';
 
 import { contentSecurityPolicy } from 'helmet'
 import { mergeWith } from 'lodash'
@@ -57,19 +58,21 @@ export class CspInterceptor implements NestInterceptor {
       ]
     }
 
-    if (req.unsafeDisableCsp === true) {
-      const csp = contentSecurityPolicy({
-        directives: {
-          defaultSrc: ['*', "'unsafe-inline'", "'unsafe-eval'", 'data:']
-        }
-      })
-      csp(req, res, () => {})
-    } else {
-      const directives = mergeWith(fixedDirectives, ...req.customCsp, (objValue, srcValue) => { return objValue.concat(srcValue) })
-      const csp = contentSecurityPolicy({ directives })
-      csp(req, res, () => {})
-    }
+    return next.handle().pipe(tap(() => {
 
-    return next.handle()
+      if (req.unsafeDisableCsp === true) {
+        const csp = contentSecurityPolicy({
+          directives: {
+            defaultSrc: ['*', "'unsafe-inline'", "'unsafe-eval'", 'data:']
+          }
+        })
+        csp(req, res, () => {})
+      } else {
+        const directives = mergeWith(fixedDirectives, ...req.customCsp, (objValue, srcValue) => { return objValue.concat(srcValue) })
+        const csp = contentSecurityPolicy({ directives })
+        csp(req, res, () => {})
+      }
+
+    }))
   }
 }
