@@ -1,3 +1,4 @@
+    {% if plans[0].price_year > 0 or plans[1].price_year > 0 %}
     <div class="content has-text-centered">
       <div class="field">
         <span>Monthly&nbsp;</span>
@@ -5,10 +6,11 @@
         <label for="priceSwitch">Annually</label>
       </div>
     </div>
+    {% endif %}
 
-    <div class="pricing-wrap">
+    <div class="pricing-wrap columns pl-6 pr-6">
     {% for item in plans %}
-      <div class="feature-card is-pricing has-text-centered">
+      <div class="feature-card is-pricing has-text-centered column">
         <h3 class="tag is-primary is-light is-uppercase">{{ item.name }}</h3>
         <div class="price has-text-weight-normal">
           {% if item.price_text %}
@@ -22,7 +24,7 @@
         <ul class="pricing-features has-text-left">
         {% for feature in item.features %}
           <li>
-            <span class="tag is-success is-light is-rounded">  
+            <span class="tag is-success is-light is-rounded">
               <span class="icon is-small">
                 <i class="fa fa-check"></i>
               </span>

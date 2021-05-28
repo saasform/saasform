@@ -8,6 +8,7 @@ Responsive Styles
     }
 
     .navbar {
+        padding: 0 0.75rem;
         .navbar-brand {
             .navbar-burger {
                 display: flex;
@@ -81,25 +82,16 @@ Responsive Styles
     }
 }
 
-@media only screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
 
     .navbar {
+        padding: 0 1.5rem;
         .navbar-brand {
             .navbar-burger {
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                //display: hidden;
+                //align-items: center;
+                //justify-content: center;
             }
-        }
-    }
-
-    .landing-caption {
-        text-align: center;
-
-        .subtitle {
-            max-width: 440px;
-            margin: 0 auto;
-            margin-bottom: 20px;
         }
     }
 
@@ -108,7 +100,7 @@ Responsive Styles
     }
 
     .hero-body {
-        padding-bottom: 0;
+        //padding-bottom: 0;
 
         img {
             display: block;
@@ -203,33 +195,3 @@ Responsive Styles
     }
 }
 
-@media only screen and (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-
-    .navbar-menu {
-        .navbar-end {
-            a {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            .navbar-link {
-                padding-right: 0 !important;
-            }
-
-            .button {
-                min-width: 120px;
-            }
-        }
-    }
-
-    .navbar-item {
-        &.is-hidden-mobile {
-            display: none !important;
-        }
-
-        &.is-hidden-desktop.is-hidden-tablet {
-            display: flex !important;
-        }
-    }
-}

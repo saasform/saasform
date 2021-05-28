@@ -10,6 +10,7 @@
           <!--img src="{{ root }}/img/logo/logo.svg"-->
         </div>
         <p>&copy; 2021 {{ website.legal_company_name }}</p>
+        <div class="level is-mobile">
         <div class="level-left">
           {% if social_github %}
           <a class="level-item has-text-grey" href="{{ website.social_github }}">
@@ -39,6 +40,7 @@
             </span>
           </a>
           {% endfor %}
+        </div>
         </div>
 
       </div>
