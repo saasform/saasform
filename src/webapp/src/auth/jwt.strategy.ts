@@ -50,15 +50,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const requestUser = await authService.getTokenPayloadFromUserModel(validUser)
     if (requestUser == null) {
       console.error('localStrategy - validate - error while creating token')
-      return null
     }
 
-    const requestUserWithSubscription = await authService.updateActiveSubscription(requestUser)
-    if (requestUserWithSubscription == null) {
-      console.error('jwtStrategy - validate - error while add subscription to token')
-      return null
-    }
-
-    return requestUserWithSubscription
+    return requestUser
   }
 }

@@ -8,6 +8,7 @@ import { parseDomain, ParseResultType } from 'parse-domain'
 
 import { UserCredentialsService } from '../accounts/services/userCredentials.service'
 import { UserEntity } from '../accounts/entities/user.entity'
+import { AccountEntity } from '../accounts/entities/account.entity'
 import { SettingsService } from '../settings/settings.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
@@ -78,7 +79,11 @@ export class AuthService {
     return validUser
   }
 
-  async getTokenPayloadFromUserModel (validUser: ValidUser): Promise<RequestUser | null> {
+  async getTokenPayloadFromUserModel (validUser: ValidUser, updateActiveSubscription: boolean = true): Promise<RequestUser | null> {
+    if (validUser == null) {
+      return null
+    }
+
     const { allowedKeys } = await this.settingsService.getUserSettings()
     const userData = validUser.user.data.profile != null
       ? allowedKeys.reduce((acc, key: string) => {
@@ -86,6 +91,12 @@ export class AuthService {
         return acc
       }, {})
       : {}
+
+    let subscriptionData = {}
+    if (updateActiveSubscription) {
+      subscriptionData = await this.updateActiveSubscription(validUser.account)
+    }
+
     return {
       nonce: '', // TODO
       id: validUser.user.id,
@@ -96,43 +107,32 @@ export class AuthService {
       email_verified: validUser.user?.data.emailConfirmed ?? false,
       staff: validUser.user?.isAdmin ?? false,
       username: validUser.user.username ?? null,
-      ...userData
+      ...userData,
+      ...subscriptionData
     }
   }
 
-  async updateActiveSubscription (token: RequestUser): Promise<RequestUser | null> {
-    // Remove the subscription details. This is necessary because otherwise
-    // we would keep old data if subscription changed.
-    const { subscription_id, subscription_plan, subscription_status, ...tokenWithOutSubscription } = token // eslint-disable-line
-
-    if (token.account_id == null) {
-      // This should never happend
-      console.error('AuthService - updateActiveSubscription - No account available')
-      return tokenWithOutSubscription
+  async updateActiveSubscription (account: AccountEntity): Promise<any> {
+    if (account == null) {
+      return {}
     }
 
-    // TODO: next lines should be removed when we have web hooks from stripe
-    const account = await this.accountsService.getById(token.account_id)
     await this.paymentsService.refreshPaymentsFromStripe(account)
-
-    const payment = await this.paymentsService.getActivePayments(token.account_id)
-
+    const payment = await this.paymentsService.getActivePayments(account.id)
     if (payment == null) {
       // No subscription. Returning the token without subscription details
       console.error('AuthService - updateActiveSubscription - No subscription available')
-      return tokenWithOutSubscription
+      return {}
     }
 
     const plan = await this.plansService.getPlanForPayment(payment)
-
     if (plan == null) {
       // this should never happend. TODO: check if this is valid when plans change
       console.error('AuthService - updateActiveSubscription - No plan for subscription')
-      return null
+      return {}
     }
 
     return {
-      ...tokenWithOutSubscription,
       subscription_id: payment.data.id,
       subscription_plan: plan.uid,
       subscription_status: payment.status,
@@ -376,20 +376,12 @@ export class AuthService {
     }
 
     // gather additional info: account, subscription, ...
-    // TODO: refactor to have a single call
     const requestUser = await this.getTokenPayloadFromUserModel(validUser)
     if (requestUser == null) {
       console.error('AuthService - userFindOrCreate - error while creating token')
-      return null
     }
 
-    const requestUserWithSubscription = await this.updateActiveSubscription(requestUser)
-    if (requestUserWithSubscription == null) {
-      console.error('AuthService - userFindOrCreate - error while add subscription to token')
-      return null
-    }
-
-    return requestUserWithSubscription
+    return requestUser
   }
 
   async authGoogle (req, profile): Promise<RequestUser | null> {
