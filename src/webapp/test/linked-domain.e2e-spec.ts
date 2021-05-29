@@ -164,7 +164,7 @@ describe('Authentication (e2e)', () => {
                     status: 'active',
                     user_email: 'new@uplom.com',
                     user_name: '',
-                    username: ''
+                    username: null
                   })
                   return done()
                 } catch (err) {
@@ -209,7 +209,7 @@ describe('Authentication (e2e)', () => {
                     status: 'active',
                     user_email: 'new@anotherdomain.com',
                     user_name: '',
-                    username: ''
+                    username: null
                   })
                   return done()
                 } catch (err) {

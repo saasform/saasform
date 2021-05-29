@@ -183,7 +183,7 @@ describe('Authentication (e2e)', () => {
             subscription_status: 'trialing',
             user_email: '',
             user_name: '',
-            username: ''
+            username: null
           })
 
           return true
@@ -221,7 +221,7 @@ describe('Authentication (e2e)', () => {
             nonce: '',
             staff: false,
             status: 'active',
-            username: ''
+            username: null
           })
 
           return true
