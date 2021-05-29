@@ -10,7 +10,6 @@ import { SettingsService } from '../settings/settings.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
 import { UserError, ErrorTypes } from '../utilities/common.model'
-import { CredentialType } from '../accounts/entities/userCredentials.entity'
 
 const mockJwtService = {}
 const mockAccountsService = {}
@@ -307,77 +306,6 @@ describe('AuthService', () => {
       const requestHostname = 'uplom.com'
       const primaryDomain = 'beta.uplom.com'
       expect(service.getJwtCookieDomain(requestHostname, primaryDomain)).toBe('uplom.com')
-    })
-  })
-
-  describe('onGoogleSignin', () => {
-    it('with a registered email and a connected google account, should return the expected user model', async () => {
-      service.usersService = {
-        findUser: jest.fn().mockReturnValue({ user: 'mockUser' })
-      }
-      service.userCredentialsService = {
-        attachUserCredentials: jest.fn().mockReturnValue({}),
-        findUserCredentialByEmail: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
-      }
-      service.accountsService = {
-        findByUserId: jest.fn().mockReturnValue({ account: 'mockAccount' })
-      }
-      const expUserModel = await service.onGoogleSignin('user@gmail.com', '20weqa-2123-ps343-121kkl-21212')
-      expect(expUserModel).toBeDefined()
-    })
-    it.skip('with a registered email and without a connected google account, should create the entity and return the expected user model', async () => {
-      service.usersService = {
-        findUser: jest.fn().mockReturnValue({ user: 'mockUser' })
-      }
-      service.userCredentialsService = {
-        attachUserCredentials: jest.fn().mockReturnValue({}),
-        findUserCredentialByEmail: jest.fn().mockReturnValue({ userCredentials: 'mockUserCredentials' })
-      }
-
-      const spyAttach = jest.spyOn(service.userCredentialsService, 'attachUserCredentials')
-
-      const expUserModel = await service.onGoogleSignin('user@gmail.com', '20weqa-2123-ps343-121kkl-21212')
-      expect(expUserModel).toBeDefined()
-
-      expect(spyAttach).toBeCalledWith('ra@gmail.com',
-        '21swq-2123-ps343-121kkl-21212',
-        CredentialType.GOOGLE)
-    })
-    it('without a registered email, should return a non null value', async () => {
-      service.usersService = {
-        findUser: jest.fn().mockReturnValue(null),
-        addUser: jest.fn().mockReturnValue({ id: 101 }),
-        confirmEmail: jest.fn()
-      }
-      service.registerUser = jest.fn().mockReturnValue({
-        user: {
-          id: 'mockUser',
-          emailConfirmationToken: 'mockEmailConfirmationToken'
-        },
-        credential: { id: 'mockUserCredentials' },
-        account: { id: 'mockAccount' }
-      })
-      service.accountsService.findByUserId = jest.fn().mockReturnValue({ id: 'mockAccount' })
-      service.userCredentialsService = {
-        attachUserCredentials: jest.fn().mockReturnValue({}),
-        findUserCredentialByEmail: jest.fn().mockReturnValue(null)
-      }
-
-      const spy = jest.spyOn(service.usersService, 'findUser')
-      const spyAttach = jest.spyOn(service.userCredentialsService, 'attachUserCredentials')
-      const spyEmailConfirmation = jest.spyOn(service.usersService, 'confirmEmail')
-
-      const expUserModel = await service.onGoogleSignin('ra@gmail.com', '21swq-2123-ps343-121kkl-21212')
-      expect(spy).not.toBeCalled()
-      expect(spyAttach).toBeCalledWith('ra@gmail.com',
-        '21swq-2123-ps343-121kkl-21212',
-        CredentialType.GOOGLE)
-      expect(spyEmailConfirmation).toBeCalledWith('mockEmailConfirmationToken')
-      expect(expUserModel).not.toBeNull()
-    })
-    it('with null arguments, should return a null value', async () => {
-      const expUserModel = await service.onGoogleSignin(null, null)
-      expect(expUserModel).toBeNull()
     })
   })
 })

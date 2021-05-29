@@ -13,7 +13,6 @@ import { SettingsService } from '../settings/settings.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
 import { UserError } from '../utilities/common.model'
-import { CredentialType, UserCredentialsEntity } from '../accounts/entities/userCredentials.entity'
 
 @Injectable()
 export class AuthService {
@@ -223,69 +222,6 @@ export class AuthService {
     const account = await this.accountsService.addOrAttach({ data: { name: accountEmail ?? email }, user })
     if (account == null) {
       console.error('auth.service - registerUser - error while creating account', email, accountEmail)
-      return null
-    }
-
-    return { user, credential, account }
-  }
-
-  async onGoogleSignin (email: string, subject: string): Promise<ValidUser | null> {
-    let user: UserEntity | null
-    let credential: UserCredentialsEntity | null
-
-    if (email == null || subject == null) {
-      console.error('auth.service - onGoogleSignin - error arguments', email, subject)
-      return null
-    }
-
-    // 1. search for a valid credential for the current user
-    credential = await this.userCredentialsService.findUserCredentialByEmail(email, `${CredentialType.GOOGLE}:${subject}` as CredentialType)
-
-    if (credential == null) {
-      // 2a. We do not already have a user, so we create one
-      const userData = {
-        email,
-        password: ''
-      }
-      const newUser = await this.registerUser(userData)
-
-      if (newUser instanceof UserError || newUser == null) {
-        console.error('auth.service - onGoogleSignin - error while creating user')
-        return null
-      }
-
-      await this.usersService.confirmEmail(newUser.user.emailConfirmationToken)
-
-      user = newUser.user
-      credential = newUser.credential
-
-      if (user == null || credential == null) {
-        // This should never happen
-        console.error('auth.service - onGoogleSignin - user or credential null')
-        return null
-      }
-    } else {
-      user = await this.usersService.findUser(credential.userId)
-      // 2b. We already have a user, so we fetch it
-      if (user == null) {
-        console.error('auth.service - onGoogleSignin - userInfo not found', email)
-        return null
-      }
-
-      // 2b. TODO: check if email is verified
-    }
-
-    // 3. Add google id
-    await this.userCredentialsService.attachUserCredentials(
-      email,
-      subject,
-      CredentialType.GOOGLE
-    )
-
-    // 4. fetch account
-    const account = await this.accountsService.findByUserId(user.id)
-    if (account == null) {
-      console.error('auth.service - onGoogleSignin - account not found', user)
       return null
     }
 
