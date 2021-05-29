@@ -4,7 +4,7 @@ import { SettingsService } from '../../../settings/settings.service'
 import { AuthService } from '../../../auth/auth.service'
 import { PaymentsService } from '../../../payments/services/payments.service'
 import { UserError } from '../../../utilities/common.model'
-import { GoogleOAuth2Guard } from '../../../auth/auth.guard'
+import { GoogleGuard } from '../../../auth/auth.guard'
 import { UserCredentialsService } from '../../../accounts/services/userCredentials.service'
 
 @Controller('/api/v1')
@@ -25,7 +25,7 @@ export class ApiV1AutheticationController {
   }
 
   async issueJwtAndRedirect (req, res, user): Promise<Response> {
-    const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
+    const requestUser = req.user != null ? req.user : await this.authService.getTokenPayloadFromUserModel(user)
     if (requestUser == null) {
       console.error('API V1 - issueJwtAndRediret - requestUser not valid')
       return res.status(500).json({
@@ -34,12 +34,7 @@ export class ApiV1AutheticationController {
       })
     }
 
-    const requestUserWithSubscription = await this.authService.updateActiveSubscription(requestUser)
-    if (requestUserWithSubscription == null) {
-      console.error('API V1 - issueJwtAndRediret - error while add subscription to token')
-    }
-
-    await this.authService.setJwtCookie(req, res, requestUserWithSubscription ?? requestUser)
+    await this.authService.setJwtCookie(req, res, requestUser)
 
     let redirect = ''
     // if subscription is not valid redirect to the billing page
@@ -140,18 +135,18 @@ export class ApiV1AutheticationController {
     })
   }
 
-  @UseGuards(GoogleOAuth2Guard)
+  @UseGuards(GoogleGuard)
   @Post('google-signin')
   async handleGoogleSignin (@Request() req, @Res() res: Response): Promise<any> {
-    const googleUser = req.googleUser
-    const user = await this.authService.onGoogleSignin(googleUser.email, googleUser.sub)
-    if (user == null) {
+    // const googleUser = req.googleUser
+    // const user = await this.authService.onGoogleSignin(googleUser.email, googleUser.sub)
+    if (req.user == null) {
       return res.status(409).json({
         statusCode: 409,
         message: "Ops! You don't have any account."
       })
     }
 
-    return await this.issueJwtAndRedirect(req, res, user)
+    return await this.issueJwtAndRedirect(req, res, null)
   }
 }

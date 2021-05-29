@@ -4,16 +4,13 @@ import {
   Injectable,
   UnauthorizedException
 } from '@nestjs/common'
-
-import { ModuleRef } from '@nestjs/core'
 import { AuthGuard } from '@nestjs/passport'
 import { AuthService } from './auth.service'
 import { GoogleOAuth2Service } from './google.service'
 
 @Injectable()
 export class LoginAuthGuard extends AuthGuard('local') {
-  constructor (private readonly moduleRef: ModuleRef,
-    private readonly authService: AuthService) {
+  constructor (private readonly authService: AuthService) {
     super()
   }
 
@@ -56,18 +53,22 @@ export class AdminRequiredAuthGuard extends AuthGuard('jwt') {
 }
 
 @Injectable()
-export class GoogleOAuth2Guard implements CanActivate {
-  constructor (private readonly googleService: GoogleOAuth2Service) {
-  }
+export class GoogleGuard implements CanActivate {
+  constructor (
+    private readonly authService: AuthService,
+    private readonly googleService: GoogleOAuth2Service
+  ) {}
 
   async canActivate (context: ExecutionContext): Promise<any> {
     const req = context.switchToHttp().getRequest()
-    const googleUser = await this.googleService.getUserPayload(req.body.token)
-    if (googleUser == null || googleUser.email == null) {
+    const profile = await this.googleService.getUserPayload(req.body.token)
+    if (profile == null || profile.email == null) {
       return false
     }
 
-    req.googleUser = googleUser
+    const requestUser = await this.authService.authGoogle(req, profile)
+    req.user = requestUser
+
     return true
   }
 }

@@ -73,7 +73,6 @@ export function configureApp (app, isTest: boolean = false): void {
         /^\/auth\/[a-z]+\/callback/
       ]) {
         if (req.path.match(ex) != null) {
-          console.log(req.path)
           return next()
         }
       }

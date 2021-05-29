@@ -29,8 +29,10 @@ TRUNCATE payments;
 TRUNCATE settings;
 
 INSERT INTO settings VALUES (1,'website','{"name": "Uplom", "domain_primary": "uplom.com"}', NOW(), NOW());
-INSERT INTO users (id, email, password, isAdmin, isActive, emailConfirmationToken, resetPasswordToken,data) VALUES (101,'admin@uplom.com','password',1,1,1,1,'{"profile":{}}');
-INSERT INTO users (id, email, password, isAdmin, isActive, emailConfirmationToken, resetPasswordToken,data) VALUES (102,'user@gmail.com','password',0,1,1,'1k-X4PTtCQ7lGQ','{"resetPasswordToken": "1k-X4PTtCQ7lGQ", "resetPasswordTokenExp": "1708940883080", "profile": {}}');
+INSERT INTO users (id, email, password, isAdmin, isActive, emailConfirmationToken, resetPasswordToken,data) VALUES (101,'admin@uplom.com','password',1,1,1,1,'{"profile":{}, "emailConfirmed": true}');
+INSERT INTO users (id, email, password, isAdmin, isActive, emailConfirmationToken, resetPasswordToken,data) VALUES (102,'user@gmail.com','password',0,1,1,'1k-X4PTtCQ7lGQ','{"resetPasswordToken": "1k-X4PTtCQ7lGQ", "resetPasswordTokenExp": "1708940883080", "emailConfirmed": true, "profile": {}}');
+INSERT INTO users (id, email, password, isAdmin, isActive, emailConfirmationToken, resetPasswordToken,data) VALUES (103,'user+unverified@gmail.com','password',0,1,1,'1k-X4PTtCQ7lGQ','{"resetPasswordToken": "1k-X4PTtCQ7lGQ", "resetPasswordTokenExp": "1708940883080", "emailConfirmed": false, "profile": {}}');
+INSERT INTO users (id, email, password, isAdmin, isActive, emailConfirmationToken, resetPasswordToken,data) VALUES (104,'user+verified@gmail.com','password',0,1,1,'1k-X4PTtCQ7lGQ','{"resetPasswordToken": "1k-X4PTtCQ7lGQ", "resetPasswordTokenExp": "1708940883080", "emailConfirmed": true, "profile": {}}');
 INSERT INTO users (id, email, password, isAdmin, isActive, emailConfirmationToken, resetPasswordToken,data) VALUES (111,'nosub@gmail.com','password',0,1,1,1,'{}');
 INSERT INTO accounts (id, owner_id, data) VALUES (201, 101, '{}');
 INSERT INTO accounts (id, owner_id, data) VALUES (211, 111, '{}');
@@ -39,6 +41,8 @@ INSERT INTO accounts_users (account_id, user_id) VALUES (201, 102);
 INSERT INTO accounts_users (account_id, user_id) VALUES (211, 111);
 INSERT INTO users_credentials (credential, userId, json) VALUES ('admin@uplom.com',101,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
 INSERT INTO users_credentials (credential, userId, json) VALUES ('user@gmail.com',102,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
+INSERT INTO users_credentials (credential, userId, json) VALUES ('user+unverified@gmail.com',103,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
+INSERT INTO users_credentials (credential, userId, json) VALUES ('user+verified@gmail.com',104,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
 INSERT INTO users_credentials (credential, userId, json) VALUES ('nosub@gmail.com',111,'{"encryptedPassword": "$2b$12$lQHyC/s1tdH1kTwrayYyUOISPteINC5zbHL2eWL6On7fMtIgwYdNm"}');
 INSERT INTO plans (id,created,updated,product,prices,plan) VALUES (401,NOW(),NOW(),'{"id":"prod_J0MI7GCNSSh3eQ","object":"product","active":true,"attributes":[],"created":1614166256,"description":"Starter plan","images":[],"livemode":false,"metadata":{},"name":"Starter","statement_descriptor":null,"type":"service","unit_label":null,"updated":1614166256}','[{"id":"price_1IOLa0H8nkbB9IbKGSbOahRx","object":"price","active":true,"billing_scheme":"per_unit","created":1614166256,"currency":"usd","livemode":false,"lookup_key":null,"metadata":{},"nickname":null,"product":"prod_J0MI7GCNSSh3eQ","recurring":{"aggregate_usage":null,"interval":"month","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"tiers_mode":null,"transform_quantity":null,"type":"recurring","unit_amount":3500,"unit_amount_decimal":"3500"},{"id":"price_1IOLa1H8nkbB9IbKR5c7gSfx","object":"price","active":true,"billing_scheme":"per_unit","created":1614166257,"currency":"usd","livemode":false,"lookup_key":null,"metadata":{},"nickname":null,"product":"prod_J0MI7GCNSSh3eQ","recurring":{"aggregate_usage":null,"interval":"year","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"tiers_mode":null,"transform_quantity":null,"type":"recurring","unit_amount":34800,"unit_amount_decimal":"34800"}]','{"id":"prod_J0MI7GCNSSh3eQ","description":"Starter plan","name":"Starter","features":[{"name":"3 sites"},{"name":"1,000 shares"},{"name":"Email support"}],"button":"Choose","prices":{"month":{"id":"price_1IOLa0H8nkbB9IbKGSbOahRx","unit_amount_decimal":"3500","recurring":{"aggregate_usage":null,"interval":"month","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"product":"prod_J0MI7GCNSSh3eQ","currency":"usd","unit_amount_hr":35},"year":{"id":"price_1IOLa1H8nkbB9IbKR5c7gSfx","unit_amount_decimal":"34800","recurring":{"aggregate_usage":null,"interval":"year","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"product":"prod_J0MI7GCNSSh3eQ","currency":"usd","unit_amount_hr":348}}}');
 INSERT INTO plans (id,created,updated,product,prices,plan) VALUES (402,NOW(),NOW(),'{"id":"prod_J0MIPuMEZ7pG2O","object":"product","active":true,"attributes":[],"created":1614166257,"description":"Pro plan","images":[],"livemode":false,"metadata":{},"name":"Pro","statement_descriptor":null,"type":"service","unit_label":null,"updated":1614166257}','[{"id":"price_1IOLa1H8nkbB9IbKVCb5iqAE","object":"price","active":true,"billing_scheme":"per_unit","created":1614166257,"currency":"usd","livemode":false,"lookup_key":null,"metadata":{},"nickname":null,"product":"prod_J0MIPuMEZ7pG2O","recurring":{"aggregate_usage":null,"interval":"month","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"tiers_mode":null,"transform_quantity":null,"type":"recurring","unit_amount":11900,"unit_amount_decimal":"11900"},{"id":"price_1IOLa2H8nkbB9IbKgGNmAyyq","object":"price","active":true,"billing_scheme":"per_unit","created":1614166258,"currency":"usd","livemode":false,"lookup_key":null,"metadata":{},"nickname":null,"product":"prod_J0MIPuMEZ7pG2O","recurring":{"aggregate_usage":null,"interval":"year","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"tiers_mode":null,"transform_quantity":null,"type":"recurring","unit_amount":118800,"unit_amount_decimal":"118800"}]','{"id":"prod_J0MIPuMEZ7pG2O","description":"Pro plan","name":"Pro","features":[{"name":"100 sites"},{"name":"Unlimited shares"},{"name":"Premium support"}],"button":"Choose","primary":true,"prices":{"month":{"id":"price_1IOLa1H8nkbB9IbKVCb5iqAE","unit_amount_decimal":"11900","recurring":{"aggregate_usage":null,"interval":"month","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"product":"prod_J0MIPuMEZ7pG2O","currency":"usd","unit_amount_hr":119},"year":{"id":"price_1IOLa2H8nkbB9IbKgGNmAyyq","unit_amount_decimal":"118800","recurring":{"aggregate_usage":null,"interval":"year","interval_count":1,"trial_period_days":null,"usage_type":"licensed"},"product":"prod_J0MIPuMEZ7pG2O","currency":"usd","unit_amount_hr":1188}}}');
@@ -101,18 +105,26 @@ describe('Authentication (e2e)', () => {
   const GOOGLE_ID_TOKEN_TO_SIGNIN = 'BAMBIIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX'
   const GOOGLE_ID_TOKEN_TO_SIGNUP = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX'
   const GOOGLE_ID_TOKEN_TO_ERROR = 'QQER2jANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX'
+  const GOOGLE_ID_TOKEN_TO_UNVERIFIED = 'UNVER2jANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX'
+  const GOOGLE_ID_TOKEN_UNVERIFIED_ON_GOOGLE = 'UNVERG2jANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX'
 
   const mockedGoogle = {
     getUserPayload: jest.fn((token) => {
       let res = {}
       if (token === GOOGLE_ID_TOKEN_TO_SIGNIN) {
-        res = { email: 'user@gmail.com', sub: '21042432312123123' }
+        res = { email: 'user@gmail.com', email_verified: true, sub: '21042432312123123' }
+      }
+      if (token === GOOGLE_ID_TOKEN_TO_UNVERIFIED) {
+        res = { email: 'user+unverified@gmail.com', email_verified: true, sub: '21042432312123124' }
+      }
+      if (token === GOOGLE_ID_TOKEN_UNVERIFIED_ON_GOOGLE) {
+        res = { email: 'user+verified@gmail.com', email_verified: false, sub: '21042432312123125' }
       }
       if (token === GOOGLE_ID_TOKEN_TO_SIGNUP) {
-        res = { email: 'admin@uplom.com', sub: '21011211912123123' }
+        res = { email: 'admin@uplom.com', email_verified: true, sub: '21011211912123126' }
       }
       if (token === GOOGLE_ID_TOKEN_TO_ERROR) {
-        res = { email: 'mi@gmail.com', sub: '21011218888823123' }
+        res = { email: 'mi@gmail.com', sub: '21011218888823127' }
       }
       return res
     })
@@ -171,7 +183,7 @@ describe('Authentication (e2e)', () => {
             account_id: 201,
             account_name: '',
             email: 'admin@uplom.com',
-            email_verified: false,
+            email_verified: true,
             id: 101,
             nonce: '',
             staff: true,
@@ -292,11 +304,25 @@ describe('Authentication (e2e)', () => {
       .expect(409)
   })
 
-  it('with a registered google credential for a registered user, should signin into saasform', () => {
+  it('with a registered google credential for a registered user, should signin into saasform IF email is verified', () => {
     return agent
       .post('/api/v1/google-signin')
       .send(`token=${GOOGLE_ID_TOKEN_TO_SIGNIN}`)
       .expect(302)
+  })
+
+  it('with a registered google credential for a registered user, should NOT signin into saasform IF saasform email unverified', () => {
+    return agent
+      .post('/api/v1/google-signin')
+      .send(`token=${GOOGLE_ID_TOKEN_TO_UNVERIFIED}`)
+      .expect(409)
+  })
+
+  it('with a registered google credential for a registered user, should NOT signin into saasform IF google email unverified', () => {
+    return agent
+      .post('/api/v1/google-signin')
+      .send(`token=${GOOGLE_ID_TOKEN_UNVERIFIED_ON_GOOGLE}`)
+      .expect(409)
   })
 
   it('with a not registered google credential for a registered user, should signup into saasform and redirect into saasform', () => {

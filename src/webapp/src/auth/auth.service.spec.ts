@@ -14,6 +14,10 @@ import { CredentialType } from '../accounts/entities/userCredentials.entity'
 
 const mockJwtService = {}
 const mockAccountsService = {}
+const mockPaymentsService = {
+  refreshPaymentsFromStripe: async () => {},
+  getActivePayments: async (accountId) => (null)
+}
 
 describe('AuthService', () => {
   let service: any
@@ -29,7 +33,7 @@ describe('AuthService', () => {
         { provide: AccountsService, useValue: mockAccountsService },
         { provide: UserCredentialsService, useValue: mockUserCredentialsService },
         { provide: SettingsService, useValue: mockedSettingRepo },
-        { provide: PaymentsService, useValue: {} },
+        { provide: PaymentsService, useValue: mockPaymentsService },
         { provide: PlansService, useValue: {} }
       ]
     }).compile()
@@ -38,6 +42,7 @@ describe('AuthService', () => {
     service = _service
 
     service.settingsService = mockedSettingRepo
+    service.paymentsService = mockPaymentsService
   })
 
   it('should be defined', () => {
