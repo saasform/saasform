@@ -141,7 +141,7 @@ export class AuthService {
     }
   }
 
-  getJwtCookieDomain (requestHostname: string, primaryDomain: string): any { // TODO: specify type
+  getJwtCookieDomain (requestHostname: string, primaryDomain: string): string {
     let cookieDomain
 
     // if the request is from localhost or mysaasform.com, use the request's hostname
@@ -175,7 +175,7 @@ export class AuthService {
     return options
   }
 
-  async setJwtCookie (request, response, requestUser: RequestUser): Promise<any> { // TODO: specify type
+  async setJwtCookie (request, response, requestUser: RequestUser): Promise<void> {
     const jwt = await this.jwtService.sign(requestUser)
     const options = await this.getJwtCookieOptions(request)
 
@@ -292,7 +292,138 @@ export class AuthService {
     return { user, credential, account }
   }
 
-  async authAzureAd (profile, accessToken, refreshToken): Promise<RequestUser | null> {
+  async userFind (email): Promise<ValidUser | null> {
+    return await this.getUserInfo(email)
+  }
+
+  async userCreate (req, data): Promise<ValidUser | null> {
+    const { provider, email } = data
+    if (email == null) {
+      console.error('auth.service - userCreate - missing parameters', email)
+      return null
+    }
+
+    const userData = {
+      emailConfirmed: data.email_verified
+    }
+
+    const user = await this.usersService.addUser({ email, password: null, data: userData })
+    if (user instanceof UserError || user == null) {
+      console.error('auth.service - userCreate - error while creating user', email, user)
+      return null
+    }
+
+    const credential = await this.userCredentialsService.findUserCredentialByEmail(email)
+    if (credential == null) {
+      console.error('auth.service - userCreate - error while creating user credential', email, user)
+      return null
+    }
+    credential.setProviderData(provider, data.subject, data.extra)
+    const { id, ...cred } = credential
+    await this.userCredentialsService.updateOne(id, cred)
+
+    // We create a new acount for this user and add this as owner
+    const accountEmail = email
+    const account = await this.accountsService.addOrAttach({ data: { name: accountEmail ?? email }, user })
+    if (account == null) {
+      console.error('auth.service - userCreate - error while creating account', email, accountEmail)
+      return null
+    }
+
+    return { user, credential, account }
+  }
+
+  /*
+    req - request
+    data:
+      - provider: string w/ provider name, stored in the credentials
+      - subject: the user id within the social, used for validation
+      - email: to fetch the user
+      - email_verified: to allow/deny autoconnect
+      - extra: data from the provider, stored at creation or connect
+  */
+  async userFindOrCreate (req, data): Promise<RequestUser | null> {
+    // userFind
+    let validUser = await this.userFind(data.email)
+
+    // ...orCreate
+    if (validUser == null) {
+      const newUser = await this.userCreate(req, data)
+      if (newUser == null) {
+        console.error('AuthService - userFindOrCreate - error creating new user')
+        return null
+      }
+      validUser = newUser
+    }
+
+    // validate credentials
+    // for social logins we validate that the subject (user id in the social) is the expected one
+    const provider = data.provider
+    let expectedSubject = validUser.credential.getProviderData(provider).sub
+
+    // autoconnect social if it wasn't connected AND email is verified
+    if (expectedSubject == null && validUser.user?.emailConfirmed === true && data.email_verified === true) {
+      validUser.credential.setProviderData(provider, data.subject, data.extra)
+      const { id, ...cred } = validUser.credential
+      await this.userCredentialsService.updateOne(id, cred)
+      console.log('AuthService - userFindOrCreate - autoconnect social')
+      expectedSubject = data.subject
+    }
+
+    if (data.subject !== expectedSubject) {
+      console.error('AuthService - userFindOrCreate - invalid subject')
+      return null
+    }
+
+    // gather additional info: account, subscription, ...
+    // TODO: refactor to have a single call
+    const requestUser = await this.getTokenPayloadFromUserModel(validUser)
+    if (requestUser == null) {
+      console.error('AuthService - userFindOrCreate - error while creating token')
+      return null
+    }
+
+    const requestUserWithSubscription = await this.updateActiveSubscription(requestUser)
+    if (requestUserWithSubscription == null) {
+      console.error('AuthService - userFindOrCreate - error while add subscription to token')
+      return null
+    }
+
+    return requestUserWithSubscription
+  }
+
+  async authGoogle (req, profile): Promise<RequestUser | null> {
+    /*
+      profile = {
+        iss: 'accounts.google.com',
+        azp: '627822000951-53a8ms2qfooaah8gnree5p1a8smsou36.apps.googleusercontent.com',
+        aud: '627822000951-53a8ms2qfooaah8gnree5p1a8smsou36.apps.googleusercontent.com',
+        sub: '113712275836931755074',
+        email: 'emanuele.cesena@gmail.com',
+        email_verified: true,
+        at_hash: 'nPTrt2UohVAGAPxzNsIZ-A',
+        name: 'Emanuele Cesena',
+        picture: 'https://lh3.googleusercontent.com/a-/AOh14GjUMOcLy8nS3ztxcrB0RfD430Frlgu00QNPbyV8Kw=s96-c',
+        given_name: 'Emanuele',
+        family_name: 'Cesena',
+        locale: 'en',
+        iat: 1622282004,
+        exp: 1622285604,
+        jti: '8fd2715a4320b7f8680c4c1390d905ef5b61a099'
+      }
+    */
+    const data = profile ?? {}
+
+    return await this.userFindOrCreate(req, {
+      provider: 'google',
+      email: data.email,
+      email_verified: data.email_verified,
+      subject: data.sub,
+      extra: data
+    })
+  }
+
+  async authAzureAd (req, profile, accessToken, refreshToken): Promise<RequestUser | null> {
     /*
       profile = {
         sub: 'N8_aXBiWPKx74LKf2z28LbG14UEuRyOX1t8IkVMVVKA',
@@ -328,37 +459,14 @@ export class AuthService {
         }
       }
     */
-    const email = profile?._json?.email
-    const requestUser = {
-      nonce: '', // TODO
-      id: 101,
-      account_id: 101,
-      account_name: '',
-      status: 'active', // TODO: use actual value
-      email: email,
-      email_verified: true,
-      staff: false,
-      username: ''
-    }
-    return requestUser
+    const data = profile?._json ?? {}
+
+    return await this.userFindOrCreate(req, {
+      provider: 'azure',
+      email: data.email,
+      email_verified: true, // Azure AD doesn't return it - TODO: validate that it's always true
+      subject: data.sub,
+      extra: data
+    })
   }
-
-  /*
-  private async connectWithGoogle (googleEmail: string, googleSubject: string): Promise<UserEntity | null> {
-    const saasformUserCredential = await this.userCredentialsService.findUserCredentialByEmail(googleEmail, CredentialType.DEFAULT)
-
-    if (saasformUserCredential == null) {
-      console.error('auth.service - connectWithGoogle - error while connect a user to his google account', saasformUserCredential, googleSubject)
-      return null
-    }
-
-    const googleCredential = await this.userCredentialsService.attachUserCredentials(
-      googleEmail,
-      googleSubject,
-      CredentialType.GOOGLE
-    )
-
-    return await this.usersService.findUser(googleCredential?.userId ?? -1)
-  }
-  */
 }

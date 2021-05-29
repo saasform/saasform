@@ -42,6 +42,19 @@ export class UserCredentialsEntity {
     }
   }
 
+  public getProviderData (provider): any {
+    return this[provider] ?? {}
+  }
+
+  public setProviderData (provider, sub, profile): void {
+    const data = {
+      sub,
+      profile
+    }
+    this.json = this.json ?? {}
+    this[provider] = this.json[provider] = data
+  }
+
   constructor (credential: string, userId: number = 0, json: CredentialsJSON = {}) {
     this.credential = credential
     this.userId = userId

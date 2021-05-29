@@ -105,7 +105,7 @@ export class UsersService extends BaseService<UserEntity> {
     const user = new UserEntity()
     user.email = newUser.email
     user.username = newUser.data.username != null && newUser.data.username !== '' ? newUser.data.username : undefined
-    user.password = await bcrypt.hash(newUser.password, 12)
+    user.password = (newUser.password != null) ? await bcrypt.hash(newUser.password, 12) : ''
     const { allowedKeys } = await this.settingsService.getUserSettings()
     allowedKeys.forEach(
       key => {
