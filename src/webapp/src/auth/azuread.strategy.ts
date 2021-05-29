@@ -47,12 +47,12 @@ export class AzureAdStrategy extends PassportStrategy(OIDCStrategy) {
   }
 
   async validate (
-    request, iss, sub, profile, jwtClaims, accessToken, refreshToken, params
+    req, iss, sub, profile, jwtClaims, accessToken, refreshToken, params
   ): Promise<RequestUser | null> {
-    const contextId = ContextIdFactory.getByRequest(request)
+    const contextId = ContextIdFactory.getByRequest(req)
     const authService = await this.moduleRef.resolve(AuthService, contextId)
 
-    const requestUser = await authService.authAzureAd(profile, accessToken, refreshToken)
+    const requestUser = await authService.authAzureAd(req, profile, accessToken, refreshToken)
     return requestUser
   }
 }
