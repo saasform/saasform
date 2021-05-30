@@ -295,7 +295,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     const { themeRoot, assetsRoot } = await this.getAssetsRoot()
     const settings = await this.getWebsiteSettings()
 
-    const htmlAsset: (asset: string) => string = (asset: string) => (asset.startsWith('https://') ? asset : `${assetsRoot}/${asset}`)
+    const htmlAsset: (asset: string) => string = (asset: string) => (asset === '' || asset.startsWith('https://') ? asset : `${assetsRoot}/${asset}`)
 
     // TODO type
     const res = {
