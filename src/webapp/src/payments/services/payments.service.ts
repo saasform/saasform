@@ -17,6 +17,7 @@ import { SettingsService } from '../../settings/settings.service'
 @Injectable({ scope: Scope.REQUEST })
 export class PaymentsService extends BaseService<PaymentEntity> {
   private readonly paymentIntegration: string
+  private readonly stripeAccount = 'acct_1IionZBZGgCe7OWG'
 
   constructor (
     @Inject(REQUEST) private readonly req,
@@ -102,7 +103,8 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     try {
       const customer = await this.stripeService.client.customers.retrieve(
         account.data.stripe.id,
-        { expand: ['subscriptions'] }
+        { expand: ['subscriptions'] },
+        { stripeAccount: this.stripeAccount }
       )
 
       const payments = await this.query({
@@ -163,11 +165,11 @@ export class PaymentsService extends BaseService<PaymentEntity> {
         card: {
           number, exp_month, exp_year, cvc
         }
-      })
+      }, { stripeAccount: this.stripeAccount })
 
       await this.stripeService.client.paymentMethods.attach(
         paymentMethod.id,
-        { customer }
+        { customer }, { stripeAccount: this.stripeAccount }
       )
 
       return paymentMethod
@@ -197,7 +199,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
           { price: price.id }
         ],
         expand: ['latest_invoice.payment_intent']
-      })
+      }, { stripeAccount: this.stripeAccount })
 
       if (subscription == null) {
         console.error('paymentService - subscribeToPlan - error while creating subscription')
@@ -213,7 +215,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
 
   async updatePlan (subscriptionId: any, price: any): Promise<any> { // TODO: return a proper type
     try {
-      const subscription = await this.stripeService.client.subscriptions.retrieve(subscriptionId)
+      const subscription = await this.stripeService.client.subscriptions.retrieve(subscriptionId, { stripeAccount: this.stripeAccount })
 
       if (subscription == null) {
         console.error('paymentService - updatePlan - error while finding the subscription to update')
@@ -226,7 +228,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
           id: subscription.items.data[0].id,
           price: price.id
         }]
-      })
+      }, { stripeAccount: this.stripeAccount })
 
       if (updatedSubscription == null) {
         console.error('paymentService - updatePlan - error while updating subscription', subscription)
@@ -271,7 +273,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
   async createStripeCustomer (customer): Promise<any> {
     try {
       const stripeCustomer = await this.stripeService.client.customers.create(
-        customer
+        customer, { stripeAccount: this.stripeAccount }
       )
 
       if (stripeCustomer == null) {
@@ -317,7 +319,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
         customer: stripeId,
         items: [{ price: plan.prices.year.id }],
         trial_end
-      })
+      }, { stripeAccount: this.stripeAccount })
 
       return subscription
     } catch (error) {
@@ -356,7 +358,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     try {
       await this.stripeService.client.paymentMethods.attach(method, {
         customer
-      })
+      }, { stripeAccount: this.stripeAccount })
     } catch (error) {
       console.error('paymentsService - attachPaymentMethod - error while attaching')
       return null
@@ -370,7 +372,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
           invoice_settings: {
             default_payment_method: method
           }
-        }
+        }, { stripeAccount: this.stripeAccount }
       )
 
       return updatedCustomer
