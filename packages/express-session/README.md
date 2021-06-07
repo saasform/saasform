@@ -14,7 +14,7 @@ Compared to the original `express-session`, our re-implementation:
 
 In addition, it's a **drop-in replacement** in the sense that you can replace the npm package and all existig/active sessions will be transparently upgraded from the original to the new format, without logging users out.
 
-Our implementation uses JWT tokens for session tokens. This lets you store some data that changes infrequently (e.g., user id, roles...) with the JWT token, while you can still maintain the full flexibility of your store (e.g., for counters). We expect tokens to be passed as secure, http-only cookies. We use public key cryptography such that you can have a single service issueing tokens but multiple services verifying them (with only public key access, no private key).
+Our implementation uses JWT as session tokens. With JWT you can store data that changes infrequently (wrt the lifetime of a session, e.g., user id, roles) inside the JWT, while you can still maintain the full flexibility of your store (e.g., for counters, flash messages). We expect tokens to be passed as secure, http-only cookies. We use public key cryptography, specifically ES256, so that you can have a single service issuing tokens but multiple services verifying them (with access to the public key only, not the private key).
 
 Features:
 - [x] Pass all original express-session tests (only changes are the default config values)
@@ -23,7 +23,7 @@ Features:
 - [x] Issue a new JWT token when the result of `jwtFromReq` changes (e.g., set a user id)
 - [x] Transparently upgrade existing original Express sessions (retrieve data from db with old id, generate JWT token, store data with new id)
 - [x] Use `hash(sessId)` instead of `sessId` as primary key in the store
-- [x] Prevent race condition that would re-save a destroyed session in MemoryStore
+- [x] Prevent [race condition](https://github.com/saasform/saasform/blob/main/packages/express-session/test/session.js#L2467) that would re-save a destroyed session (fix in MemoryStore)
 - [x] Support key rotation (sign with the latest private key, try to verify with older public keys as well)
 - [ ] Add async keys provider (retrieve keys from req and/or token)
 - [ ] Support verifier only mode (public keys only, no private key)
