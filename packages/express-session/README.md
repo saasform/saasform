@@ -1,8 +1,6 @@
 # @saasform/express-session
 
 [![NPM Version][npm-version-image]][npm-url]
-[![Build Status][ci-image]][ci-url]
-[![Test Coverage][coveralls-image]][coveralls-url]
 
 **!! IMPORTANT !! This library is in alpha, not yet recommended for production - please help us battle test it !!**
 
@@ -662,11 +660,6 @@ On Windows, use the corresponding command;
 [MIT](LICENSE)
 
 [rfc-6265bis-03-4.1.2.7]: https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.2.7
-[ci-image]: https://badgen.net/github/checks/expressjs/session/master?label=ci
-[ci-url]: https://github.com/expressjs/session/actions?query=workflow%3Aci
-[coveralls-image]: https://badgen.net/coveralls/c/github/expressjs/session/master
-[coveralls-url]: https://coveralls.io/r/expressjs/session?branch=master
-[node-url]: https://nodejs.org/en/download
-[npm-downloads-image]: https://badgen.net/npm/dm/express-session
-[npm-url]: https://npmjs.org/package/express-session
-[npm-version-image]: https://badgen.net/npm/v/express-session
+[npm-downloads-image]: https://badgen.net/npm/dm/@saasform/express-session
+[npm-url]: https://www.npmjs.com/package/@saasform/express-session
+[npm-version-image]: https://badgen.net/npm/v/@saasform/express-session
