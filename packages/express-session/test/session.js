@@ -2246,28 +2246,133 @@ describe('session()', function(){
     })
   })
 
+  describe('jwtFromReq option', function(){
+    it('should reject non-function values', function(){
+      assert.throws(session.bind(null, { jwtFromReq: 'bogus!' }), /jwtFromReq.*must/)
+    });
+
+    it('should provide default generator', function(done){
+      request(createServer())
+      .get('/')
+      .expect(shouldSetCookie('connect.sid'))
+      .expect(200, done)
+    });
+
+    it('should allow return null', function(done){
+      function jwtFromReq() { return null }
+
+      request(createServer({ jwtFromReq: jwtFromReq }))
+      .get('/')
+      .expect(shouldSetCookie('connect.sid'))
+      .expect(200, done)
+    });
+
+    it('should allow return {}', function(done){
+      function jwtFromReq() { return {} }
+
+      request(createServer({ jwtFromReq: jwtFromReq }))
+      .get('/')
+      .expect(shouldSetCookie('connect.sid'))
+      .expect(200, done)
+    });
+
+    it('should provide req argument', function(done){
+      function jwtFromReq(req) { return { url: req.url } }
+
+      request(createServer({ jwtFromReq: jwtFromReq }))
+      .get('/foo')
+      .expect(shouldSetCookie('connect.sid'))
+      .expect(200, function(err, res) {
+        if (err) return done(err)
+
+        var header = cookie(res)
+        var data = header && utils.parseSetCookie(header)
+        assert.ok(header, 'should have a cookie header')
+
+        var values = jwt.decode(data.value)
+        assert.strictEqual(values.url, '/foo');
+
+        done()
+      })
+    });
+  });
+
   describe('security', function(){
-    it('should prevent token theft via XSS', function(done){
+    it.skip('should prevent token theft via XSS', function(done){
       done()
     })
 
-    it('should prevent brute force', function(done){
+    it.skip('should prevent brute force', function(done){
       done()
     })
 
     it('should prevent session fixation', function(done){
+      function jwtFromReq(req) {
+        return req.user ? {
+          user_id: req.user.id,
+          roles: ['user', 'editor']
+        } : null
+      }
+      var store = new session.MemoryStore();
+      var server = createServer({ jwtFromReq: jwtFromReq, store: store }, function (req, res) {
+        if (req.url === '/logged-id') {
+          req.user = { id: 101 }
+        }
+
+        req.session.count = req.session.count || 0
+        req.session.count++
+        res.end(req.session.count.toString())
+      });
+
+      request(server)
+      .get('/')
+      .expect(200, '1', function (err, res) {
+        if (err) return done(err)
+
+        request(server)
+          .get('/logged-id')
+          .set('Cookie', cookie(res))
+          .expect(200)
+          // store.set is called and cookie returned
+          // i.e. this req1 doesn't know that the session has been logged out
+          .expect(shouldSetSessionInStore(store, 200))
+          // prevent session fixation
+          .expect(shouldSetCookieToDifferentSessionId(sid(res)))
+          .expect('2', function (err, res) {
+            if (err) return done(err)
+
+            var header = cookie(res)
+            var data = header && utils.parseSetCookie(header)
+            assert.ok(header, 'should have a cookie header')
+
+            var values = jwt.decode(data.value)
+            // assert new JWT token
+            assert.strictEqual(values.user_id, 101);
+
+            store.length(function (err, len) {
+              if (err) return done(err)
+              // assert old session destroyed from store
+              assert.strictEqual(len, 1);
+            })
+
+            request(server)
+              .get('/logged-id')
+              .set('Cookie', cookie(res))
+              // assert session data preserved during change of JWT
+              .expect(200, '3', done)
+          })
+      })
+    })
+
+    it.skip('should prevent data theft from database', function(done){
       done()
     })
 
-    it('should prevent data theft from database', function(done){
+    it.skip('should prevent CSRF', function(done){
       done()
     })
 
-    it('should prevent CSRF', function(done){
-      done()
-    })
-
-    it('should prevent session hijacking', function(done){
+    it.skip('should prevent session hijacking', function(done){
       done()
     })
 
@@ -2298,8 +2403,8 @@ describe('session()', function(){
           req.session.count++
 
           // race condition - unblock logout and block this req1 until logout completes
-          unblockLogout()
-          blockReq1.then(() => {
+          unblockLogout();
+          blockReq1.then(function() {
             res.end(req.session.count.toString())
           })
 
@@ -2311,7 +2416,7 @@ describe('session()', function(){
       });
 
       // wait for both req1 and logout to complete
-      var cb = after(2, (err) => {
+      var cb = after(2, function(err) {
         if (err) return done(err)
         store.length(function (err, len) {
           if (err) return done(err)
@@ -2338,14 +2443,14 @@ describe('session()', function(){
           .expect('2')
           .end(cb)
 
-        blockLogout.then(() => {
+        blockLogout.then(function() {
           request(server)
           .get('/logout')
           .set('Cookie', cookie(res))
           .expect(200, 'logged out', cb)
         });
 
-        blockReq3.then(() => {
+        blockReq3.then(function() {
           request(server)
           .get('/')
           .set('Cookie', cookie(res))
@@ -2387,7 +2492,7 @@ describe('session()', function(){
 
           // race condition - unblock logout and block this req1 until logout completes
           unblockLogout()
-          blockReq1.then(() => {
+          blockReq1.then(function() {
             res.end(req.session.count.toString())
           })
 
@@ -2399,7 +2504,7 @@ describe('session()', function(){
       });
 
       // wait for both req1 and logout to complete
-      var cb = after(2, (err) => {
+      var cb = after(2, function(err) {
         if (err) return done(err)
         store.length(function (err, len) {
           if (err) return done(err)
@@ -2426,14 +2531,14 @@ describe('session()', function(){
           .expect('2')
           .end(cb)
 
-        blockLogout.then(() => {
+        blockLogout.then(function() {
           request(server)
           .get('/logout')
           .set('Cookie', cookie(res))
           .expect(200, 'logged out', cb)
         });
 
-        blockReq3.then(() => {
+        blockReq3.then(function() {
           request(server)
           .get('/')
           .set('Cookie', cookie(res))
@@ -2449,68 +2554,11 @@ describe('session()', function(){
   })
 
   describe('functionality', function(){
-    it('should issue a new JWT token when user logs in', function(done){
-      function jwtFromReq(req) {
-        return req.user ? {
-          user_id: req.user.id,
-          roles: ['user', 'editor']
-        } : null
-      }
-      var store = new session.MemoryStore()
-      var server = createServer({ jwtFromReq, store }, function (req, res) {
-        if (req.url === '/logged-id') {
-          req.user = { id: 101 }
-        }
-
-        req.session.count = req.session.count || 0
-        req.session.count++
-        res.end(req.session.count.toString())
-      });
-
-      request(server)
-      .get('/')
-      .expect(200, '1', function (err, res) {
-        if (err) return done(err)
-
-        request(server)
-          .get('/logged-id')
-          .set('Cookie', cookie(res))
-          .expect(200)
-          // store.set is called and cookie returned
-          // i.e. this req1 doesn't know that the session has been logged out
-          .expect(shouldSetSessionInStore(store, 200))
-          .expect(shouldSetCookie('connect.sid'))
-          .expect('2', function (err, res) {
-            if (err) return done(err)
-
-            var header = cookie(res)
-            var data = header && utils.parseSetCookie(header)
-            assert.ok(header, 'should have a cookie header')
-
-            var values = jwt.decode(data.value)
-            // assert new JWT token
-            assert.strictEqual(values.user_id, 101);
-
-            store.length(function (err, len) {
-              if (err) return done(err)
-              // assert old session destroyed from store
-              assert.strictEqual(len, 1);
-            })
-
-            request(server)
-              .get('/logged-id')
-              .set('Cookie', cookie(res))
-              // assert session data preserved during change of JWT
-              .expect(200, '3', done)
-          })
-      })
-    })
-
-    it('should retrieve all sessions for a given user', function(done){
+    it.skip('should retrieve all sessions for a given user', function(done){
       done()
     })
 
-    it('should issue new token when expiration time approaches', function(done){
+    it.skip('should issue new token when expiration time approaches', function(done){
       done()
     })
   })
@@ -2597,6 +2645,55 @@ describe('session()', function(){
           .set('Cookie', cookie(res))
           .expect(shouldSetCookieToDifferentSessionId(sid(res)))
           .expect(200, '2', function (err, resJwt) {
+            if (err) return done(err)
+            request(server)
+            .get('/')
+            .set('Cookie', cookie(resJwt))
+            .expect(shouldNotHaveHeader('Set-Cookie'))
+            .expect(200, '2', function (err, resJwt) {
+              store.length(function (err, len) {
+                if (err) return done(err)
+                assert.strictEqual(len, 2)
+                done()
+              })
+            })
+          })
+        })
+      })
+    })
+
+    it('should reject (not upgrade) unsigned an unsigned session', function(done){
+      var store = new expressSession.MemoryStore()
+      var origSessionServer = express()
+        .use(expressSession({ name: 'sid', store: store, secret: 'my-secret' }))
+        .use(function(req, res, next){
+          req.session.count = req.session.count || 0
+          req.session.count++
+          res.end(req.session.count.toString())
+        });
+
+      var server = createServer({ name: 'sid', store: store, secret: 'my-secret' }, function (req, res) {
+        req.session.count = req.session.count || 0
+        req.session.count++
+        res.end(req.session.count.toString())
+      });
+
+      request(origSessionServer)
+      .get('/')
+      .expect(200, '1', function (err, res) {
+        if (err) return done(err)
+        request(origSessionServer)
+        .get('/')
+        .set('Cookie', cookie(res))
+        .expect(shouldNotHaveHeader('Set-Cookie'))
+        .expect(200, '2', function (err, _) {
+          if (err) return done(err)
+          var c = cookie(res).replace(/\.[^;]+/, '')
+          request(server)
+          .get('/')
+          .set('Cookie', c)
+          .expect(shouldSetCookieToDifferentSessionId(sid(res)))
+          .expect(200, '1', function (err, resJwt) {
             if (err) return done(err)
             request(server)
             .get('/')

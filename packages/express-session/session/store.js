@@ -73,30 +73,3 @@ Store.prototype.load = function(sid, fn){
     fn(null, self.createSession(req, sess))
   });
 };
-
-/**
- * Create session from JSON `sess` data.
- *
- * @param {IncomingRequest} req
- * @param {Object} sess
- * @return {Session}
- * @api private
- */
-
-Store.prototype.createSession = function(req, sess){
-  var expires = sess.cookie.expires
-  var originalMaxAge = sess.cookie.originalMaxAge
-
-  sess.cookie = new Cookie(sess.cookie);
-
-  if (typeof expires === 'string') {
-    // convert expires to a Date object
-    sess.cookie.expires = new Date(expires)
-  }
-
-  // keep originalMaxAge intact
-  sess.cookie.originalMaxAge = originalMaxAge
-
-  req.session = new Session(req, sess);
-  return req.session;
-};

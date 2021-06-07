@@ -13,3 +13,5 @@ rules:
   no-mixed-spaces-and-tabs: error
   no-trailing-spaces: error
   one-var: ["error", { "initialized": "never" }]
+parserOptions:
+  ecmaVersion: 2020
