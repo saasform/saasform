@@ -3,6 +3,7 @@ var after = require('after')
 var assert = require('assert')
 var cookieParser = require('cookie-parser')
 var express = require('express')
+var expressSession = require('express-session')
 var fs = require('fs')
 var http = require('http')
 var https = require('https')
@@ -11,10 +12,27 @@ var session = require('../')
 var SmartStore = require('./support/smart-store')
 var SyncStore = require('./support/sync-store')
 var utils = require('./support/utils')
+var jwt = require('jsonwebtoken');
 
 var Cookie = require('../session/cookie')
 
 var min = 60 * 1000;
+
+/*
+  Tests to add:
+  - jwt: extract
+  - read old sid (s:...) and store jwt without loosing data
+  - valid/invalid, store/not store (these should all be there/passing)
+  - security
+  - functionality
+
+  Tests changes:
+  - change sid() to return the whole val, not just a piece
+  - add sidInvalid() to fake an incorrect cookie
+
+  Tests skipped:
+  - cookieParser
+*/
 
 describe('session()', function(){
   it('should export constructors', function(){
@@ -34,10 +52,16 @@ describe('session()', function(){
     .expect(200, done)
   })
 
-  it('should error without secret', function(done){
+  it('should not error without secret', function(done){
     request(createServer({ secret: undefined }))
     .get('/')
-    .expect(500, /secret.*required/, done)
+    .expect(200, done)
+  })
+
+  it('should error without keys', function(done){
+    request(createServer({ keys: undefined }))
+    .get('/')
+    .expect(500, /keys.*required/, done)
   })
 
   it('should get secret from req.secret', function(done){
@@ -228,7 +252,7 @@ describe('session()', function(){
     })
   })
 
-  it('should only have session data enumerable (and cookie)', function (done) {
+  it('should only have session data enumerable (and cookie, and jwt)', function (done) {
     var server = createServer(null, function (req, res) {
       req.session.test1 = 1
       req.session.test2 = 'b'
@@ -237,7 +261,7 @@ describe('session()', function(){
 
     request(server)
     .get('/')
-    .expect(200, 'cookie,test1,test2', done)
+    .expect(200, 'cookie,jwt,test1,test2', done)
   })
 
   it('should not save with bogus req.sessionID', function (done) {
@@ -454,7 +478,7 @@ describe('session()', function(){
       .expect(shouldSetCookie('sessid'))
       .expect(200, 'session created', function (err, res) {
         if (err) return done(err)
-        var val = sid(res)
+        var val = sidInvalid(res)
         assert.ok(val)
         request(server)
         .get('/')
@@ -478,7 +502,8 @@ describe('session()', function(){
       .expect(shouldSetCookie('sessid'))
       .expect(200, 'session created', function (err, res) {
         if (err) return done(err)
-        var val = cookie(res).replace(/...\./, '.')
+        // var val = cookie(res).replace(/...\./, '.')
+        var val = sidInvalid(res)
 
         assert.ok(val)
         request(server)
@@ -819,7 +844,8 @@ describe('session()', function(){
 
       request(createServer({ genid: genid }))
       .get('/')
-      .expect(shouldSetCookieToValue('connect.sid', 's%3Aapple.D8Y%2BpkTAmeR0PobOhY4G97PRW%2Bj7bUnP%2F5m6%2FOn1MCU'))
+      // .expect(shouldSetCookieToValue('connect.sid', 's%3Aapple.D8Y%2BpkTAmeR0PobOhY4G97PRW%2Bj7bUnP%2F5m6%2FOn1MCU'))
+      .expect(shouldSetCookieToValue('connect.sid', 'apple'))
       .expect(200, done)
     });
 
@@ -828,7 +854,8 @@ describe('session()', function(){
 
       request(createServer({ genid: genid }))
       .get('/')
-      .expect(shouldSetCookieToValue('connect.sid', 's%3A%25.kzQ6x52kKVdF35Qh62AWk4ZekS28K5XYCXKa%2FOTZ01g'))
+      // .expect(shouldSetCookieToValue('connect.sid', 's%3A%25.kzQ6x52kKVdF35Qh62AWk4ZekS28K5XYCXKa%2FOTZ01g'))
+      .expect(shouldSetCookieToValue('connect.sid', '%25'))
       .expect(200, done)
     });
 
@@ -837,7 +864,8 @@ describe('session()', function(){
 
       request(createServer({ genid: genid }))
       .get('/foo')
-      .expect(shouldSetCookieToValue('connect.sid', 's%3A%2Ffoo.paEKBtAHbV5s1IB8B2zPnzAgYmmnRPIqObW4VRYj%2FMQ'))
+      // .expect(shouldSetCookieToValue('connect.sid', 's%3A%2Ffoo.paEKBtAHbV5s1IB8B2zPnzAgYmmnRPIqObW4VRYj%2FMQ'))
+      .expect(shouldSetCookieToValue('connect.sid', '%2Ffoo'))
       .expect(200, done)
     });
   });
@@ -951,7 +979,7 @@ describe('session()', function(){
   });
 
   describe('resave option', function(){
-    it('should default to true', function(done){
+    it('should default to false', function(done){
       var store = new session.MemoryStore()
       var server = createServer({ store: store }, function (req, res) {
         req.session.user = 'bob'
@@ -966,7 +994,7 @@ describe('session()', function(){
         request(server)
         .get('/')
         .set('Cookie', cookie(res))
-        .expect(shouldSetSessionInStore(store))
+        .expect(shouldNotSetSessionInStore(store))
         .expect(200, done);
       });
     });
@@ -1105,7 +1133,28 @@ describe('session()', function(){
   });
 
   describe('saveUninitialized option', function(){
-    it('should default to true', function(done){
+    it('should default to false', function(done){
+      var store = new session.MemoryStore()
+      var app = express()
+        .use(session({
+          store: store,
+          keys: {
+            public: '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEDXMuNS4pyqkpZwij+UCcTPVStZHmG39D\nP1V7qaPCfc0ewXXbcEaJiarqjHOM5a6SVivCaUdJj+25tjMk4sPchQ==\n-----END PUBLIC KEY-----',
+            private: '-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgvK1dk5M81nax8lQxpbWo\nsB1oK9YAqRP7MwWc7wDne8ehRANCAAQNcy41LinKqSlnCKP5QJxM9VK1keYbf0M/\nVXupo8J9zR7BddtwRomJquqMc4zlrpJWK8JpR0mP7bm2MyTiw9yF\n-----END PRIVATE KEY-----'
+          }
+        }))
+        .use(function(req, res, next){
+          res.end('ok')
+        })
+
+      request(app)
+      .get('/')
+      .expect(shouldNotSetSessionInStore(store))
+      .expect(shouldNotHaveHeader('Set-Cookie'))
+      .expect(200, done);
+    });
+
+    it('should default to tru in tests (using createServer)', function(done){
       var store = new session.MemoryStore()
       var server = createServer({ store: store })
 
@@ -1213,12 +1262,21 @@ describe('session()', function(){
       it('should sign cookies with first element', function (done) {
         var store = new session.MemoryStore();
 
-        var server1 = createServer({ secret: ['keyboard cat', 'nyan cat'], store: store }, function (req, res) {
+        var key0 = {
+          public: '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEDXMuNS4pyqkpZwij+UCcTPVStZHmG39D\nP1V7qaPCfc0ewXXbcEaJiarqjHOM5a6SVivCaUdJj+25tjMk4sPchQ==\n-----END PUBLIC KEY-----',
+          private: '-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgvK1dk5M81nax8lQxpbWo\nsB1oK9YAqRP7MwWc7wDne8ehRANCAAQNcy41LinKqSlnCKP5QJxM9VK1keYbf0M/\nVXupo8J9zR7BddtwRomJquqMc4zlrpJWK8JpR0mP7bm2MyTiw9yF\n-----END PRIVATE KEY-----'
+        }
+        var key1 = {
+          public: '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEiR87tYBe/+4l+P4yNmeWjw3U/2fDtPZi\njS3jYnkazGfJZjbMTyysa4f6UajMUUSiKebc7cvpn4XH/BegHjfl3A==\n-----END PUBLIC KEY-----',
+          private: '-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgxavdb47k/VO91UT5PS7b\nbWs0ik90/Hx5gfGNuDGfnqGhRANCAASJHzu1gF7/7iX4/jI2Z5aPDdT/Z8O09mKN\nLeNieRrMZ8lmNsxPLKxrh/pRqMxRRKIp5tzty+mfhcf8F6AeN+Xc\n-----END PRIVATE KEY-----'
+        }
+
+        var server1 = createServer({ keys: [ key0, key1 ], store: store }, function (req, res) {
           req.session.user = 'bob';
           res.end(req.session.user);
         });
 
-        var server2 = createServer({ secret: 'nyan cat', store: store }, function (req, res) {
+        var server2 = createServer({ keys: key1, store: store }, function (req, res) {
           res.end(String(req.session.user));
         });
 
@@ -1237,12 +1295,21 @@ describe('session()', function(){
       it('should read cookies using all elements', function (done) {
         var store = new session.MemoryStore();
 
-        var server1 = createServer({ secret: 'nyan cat', store: store }, function (req, res) {
+        var key0 = {
+          public: '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEDXMuNS4pyqkpZwij+UCcTPVStZHmG39D\nP1V7qaPCfc0ewXXbcEaJiarqjHOM5a6SVivCaUdJj+25tjMk4sPchQ==\n-----END PUBLIC KEY-----',
+          private: '-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgvK1dk5M81nax8lQxpbWo\nsB1oK9YAqRP7MwWc7wDne8ehRANCAAQNcy41LinKqSlnCKP5QJxM9VK1keYbf0M/\nVXupo8J9zR7BddtwRomJquqMc4zlrpJWK8JpR0mP7bm2MyTiw9yF\n-----END PRIVATE KEY-----'
+        }
+        var key1 = {
+          public: '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEiR87tYBe/+4l+P4yNmeWjw3U/2fDtPZi\njS3jYnkazGfJZjbMTyysa4f6UajMUUSiKebc7cvpn4XH/BegHjfl3A==\n-----END PUBLIC KEY-----',
+          private: '-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgxavdb47k/VO91UT5PS7b\nbWs0ik90/Hx5gfGNuDGfnqGhRANCAASJHzu1gF7/7iX4/jI2Z5aPDdT/Z8O09mKN\nLeNieRrMZ8lmNsxPLKxrh/pRqMxRRKIp5tzty+mfhcf8F6AeN+Xc\n-----END PRIVATE KEY-----'
+        }
+
+        var server1 = createServer({ keys: [key1], store: store }, function (req, res) {
           req.session.user = 'bob';
           res.end(req.session.user);
         });
 
-        var server2 = createServer({ secret: ['keyboard cat', 'nyan cat'], store: store }, function (req, res) {
+        var server2 = createServer({ keys: [key0, key1], store: store }, function (req, res) {
           res.end(String(req.session.user));
         });
 
@@ -1515,7 +1582,7 @@ describe('session()', function(){
 
       request(server)
       .get('/')
-      .expect(200, 'bar,cookie,foo', done);
+      .expect(200, 'bar,cookie,foo,jwt', done);
     });
 
     it('should not be set if store is disconnected', function (done) {
@@ -1979,7 +2046,7 @@ describe('session()', function(){
         var app
 
         before(function () {
-          app = createRequestListener({ secret: 'keyboard cat', cookie: { secure: true } })
+          app = createRequestListener({ cookie: { secure: true } })
         })
 
         it('should set cookie when secure', function (done) {
@@ -2179,7 +2246,376 @@ describe('session()', function(){
     })
   })
 
-  describe('cookieParser()', function () {
+  describe('security', function(){
+    it('should prevent token theft via XSS', function(done){
+      done()
+    })
+
+    it('should prevent brute force', function(done){
+      done()
+    })
+
+    it('should prevent session fixation', function(done){
+      done()
+    })
+
+    it('should prevent data theft from database', function(done){
+      done()
+    })
+
+    it('should prevent CSRF', function(done){
+      done()
+    })
+
+    it('should prevent session hijacking', function(done){
+      done()
+    })
+
+    it('should never update logged out sessions (MemoryStore)', function(done){
+      var unblockReq1, unblockLogout, unblockReq3;
+      var blockReq1 = new Promise(function(resolve, reject){
+        unblockReq1 = resolve;
+      });
+      var blockLogout = new Promise(function(resolve, reject){
+        unblockLogout = resolve;
+      });
+      var blockReq3 = new Promise(function(resolve, reject){
+        unblockReq3 = resolve;
+      });
+
+      var store = new session.MemoryStore()
+      var server = createServer({ store: store }, function (req, res) {
+
+        if (req.url === '/logout') {
+          // logout
+          req.session.destroy()
+          unblockReq1()
+          res.end('logged out')
+
+        } else if (req.url === '/slow') {
+          // modify session
+          req.session.count = req.session.count || 0
+          req.session.count++
+
+          // race condition - unblock logout and block this req1 until logout completes
+          unblockLogout()
+          blockReq1.then(() => {
+            res.end(req.session.count.toString())
+          })
+
+        } else {
+          req.session.count = req.session.count || 0
+          req.session.count++
+          res.end(req.session.count.toString())
+        }
+      });
+
+      // wait for both req1 and logout to complete
+      var cb = after(2, (err) => {
+        if (err) return done(err)
+        store.length(function (err, len) {
+          if (err) return done(err)
+          // assert the store is empty
+          assert.strictEqual(len, 0)
+          // unblock req3
+          unblockReq3()
+        })
+      });
+
+      request(server)
+      .get('/')
+      .expect(200, '1', function (err, res) {
+        if (err) return done(err)
+
+        request(server)
+          .get('/slow')
+          .set('Cookie', cookie(res))
+          .expect(200)
+          // store.set is called and cookie returned
+          // i.e. this req1 doesn't know that the session has been logged out
+          .expect(shouldSetSessionInStore(store, 200))
+          .expect(shouldSetCookie('connect.sid'))
+          .expect('2')
+          .end(cb)
+
+        blockLogout.then(() => {
+          request(server)
+          .get('/logout')
+          .set('Cookie', cookie(res))
+          .expect(200, 'logged out', cb)
+        });
+
+        blockReq3.then(() => {
+          request(server)
+          .get('/')
+          .set('Cookie', cookie(res))
+          .expect(shouldSetCookie('connect.sid'))
+          // race condition not prevented
+          // .expect(200, '3', cb)
+          // race condition prevented
+          .expect(shouldSetCookieToDifferentSessionId(sid(res)))
+          .expect(200, '1', done)
+        })
+      })
+    })
+
+    it('should never update logged out sessions (express does NOT)', function(done){
+      var unblockReq1, unblockLogout, unblockReq3;
+      var blockReq1 = new Promise(function(resolve, reject){
+        unblockReq1 = resolve;
+      });
+      var blockLogout = new Promise(function(resolve, reject){
+        unblockLogout = resolve;
+      });
+      var blockReq3 = new Promise(function(resolve, reject){
+        unblockReq3 = resolve;
+      });
+
+      var store = new expressSession.MemoryStore()
+      var server = createServer({ store: store }, function (req, res) {
+
+        if (req.url === '/logout') {
+          // logout
+          req.session.destroy()
+          unblockReq1()
+          res.end('logged out')
+
+        } else if (req.url === '/slow') {
+          // modify session
+          req.session.count = req.session.count || 0
+          req.session.count++
+
+          // race condition - unblock logout and block this req1 until logout completes
+          unblockLogout()
+          blockReq1.then(() => {
+            res.end(req.session.count.toString())
+          })
+
+        } else {
+          req.session.count = req.session.count || 0
+          req.session.count++
+          res.end(req.session.count.toString())
+        }
+      });
+
+      // wait for both req1 and logout to complete
+      var cb = after(2, (err) => {
+        if (err) return done(err)
+        store.length(function (err, len) {
+          if (err) return done(err)
+          // assert the store is not empty
+          assert.strictEqual(len, 1)
+          // unblock req3
+          unblockReq3()
+        })
+      });
+
+      request(server)
+      .get('/')
+      .expect(200, '1', function (err, res) {
+        if (err) return done(err)
+
+        request(server)
+          .get('/slow')
+          .set('Cookie', cookie(res))
+          .expect(200)
+          // store.set is called and cookie returned
+          // i.e. this req1 doesn't know that the session has been logged out
+          .expect(shouldSetSessionInStore(store, 200))
+          .expect(shouldSetCookie('connect.sid'))
+          .expect('2')
+          .end(cb)
+
+        blockLogout.then(() => {
+          request(server)
+          .get('/logout')
+          .set('Cookie', cookie(res))
+          .expect(200, 'logged out', cb)
+        });
+
+        blockReq3.then(() => {
+          request(server)
+          .get('/')
+          .set('Cookie', cookie(res))
+          .expect(shouldSetCookie('connect.sid'))
+          // race condition not prevented
+          .expect(200, '3', done)
+          // race condition prevented
+          // .expect(shouldSetCookieToDifferentSessionId(sid(res)))
+          // .expect(200, '1', done)
+        })
+      })
+    })
+  })
+
+  describe('functionality', function(){
+    it('should issue a new JWT token when user logs in', function(done){
+      function jwtFromReq(req) {
+        return req.user ? {
+          user_id: req.user.id,
+          roles: ['user', 'editor']
+        } : null
+      }
+      var store = new session.MemoryStore()
+      var server = createServer({ jwtFromReq, store }, function (req, res) {
+        if (req.url === '/logged-id') {
+          req.user = { id: 101 }
+        }
+
+        req.session.count = req.session.count || 0
+        req.session.count++
+        res.end(req.session.count.toString())
+      });
+
+      request(server)
+      .get('/')
+      .expect(200, '1', function (err, res) {
+        if (err) return done(err)
+
+        request(server)
+          .get('/logged-id')
+          .set('Cookie', cookie(res))
+          .expect(200)
+          // store.set is called and cookie returned
+          // i.e. this req1 doesn't know that the session has been logged out
+          .expect(shouldSetSessionInStore(store, 200))
+          .expect(shouldSetCookie('connect.sid'))
+          .expect('2', function (err, res) {
+            if (err) return done(err)
+
+            var header = cookie(res)
+            var data = header && utils.parseSetCookie(header)
+            assert.ok(header, 'should have a cookie header')
+
+            var values = jwt.decode(data.value)
+            // assert new JWT token
+            assert.strictEqual(values.user_id, 101);
+
+            store.length(function (err, len) {
+              if (err) return done(err)
+              // assert old session destroyed from store
+              assert.strictEqual(len, 1);
+            })
+
+            request(server)
+              .get('/logged-id')
+              .set('Cookie', cookie(res))
+              // assert session data preserved during change of JWT
+              .expect(200, '3', done)
+          })
+      })
+    })
+
+    it('should retrieve all sessions for a given user', function(done){
+      done()
+    })
+
+    it('should issue new token when expiration time approaches', function(done){
+      done()
+    })
+  })
+
+  describe('express-session compatibility', function(){
+    it('should transparently upgrade original express session', function(done){
+      var store = new expressSession.MemoryStore()
+      var origSessionServer = express()
+        .use(expressSession({ store: store, secret: 'my-secret' }))
+        .use(function(req, res, next){
+          req.session.count = req.session.count || 0
+          req.session.count++
+          res.end(req.session.count.toString())
+        });
+
+      var server = createServer({ store: store, secret: 'my-secret' }, function (req, res) {
+        req.session.count = req.session.count || 0
+        req.session.count++
+        res.end(req.session.count.toString())
+      });
+
+      request(origSessionServer)
+      .get('/')
+      .expect(200, '1', function (err, res) {
+        if (err) return done(err)
+        request(origSessionServer)
+        .get('/')
+        .set('Cookie', cookie(res))
+        .expect(shouldNotHaveHeader('Set-Cookie'))
+        .expect(200, '2', function (err, _) {
+          if (err) return done(err)
+          request(server)
+          .get('/')
+          .set('Cookie', cookie(res))
+          .expect(shouldSetCookieToDifferentSessionId(sid(res)))
+          .expect(200, '3', function (err, resJwt) {
+            if (err) return done(err)
+            request(server)
+            .get('/')
+            .set('Cookie', cookie(resJwt))
+            .expect(shouldNotHaveHeader('Set-Cookie'))
+            .expect(200, '4', function (err, resJwt) {
+              store.length(function (err, len) {
+                if (err) return done(err)
+                assert.strictEqual(len, 2)
+                done()
+              })
+            })
+          })
+        })
+      })
+    })
+
+    it('should transparently upgrade when session is not modified', function(done){
+      var store = new expressSession.MemoryStore()
+      var origSessionServer = express()
+        .use(expressSession({ store: store, secret: 'my-secret' }))
+        .use(function(req, res, next){
+          if (req.url === '/sess') {
+            req.session.count = 2
+          }
+          res.end(req.session.count.toString())
+        });
+
+      var server = createServer({ store: store, secret: 'my-secret' }, function (req, res) {
+        if (req.url === '/sess') {
+          req.session.count = 2
+        }
+        res.end(req.session.count.toString())
+      });
+
+      request(origSessionServer)
+      .get('/sess')
+      .expect(200, '2', function (err, res) {
+        if (err) return done(err)
+        request(origSessionServer)
+        .get('/')
+        .set('Cookie', cookie(res))
+        .expect(shouldNotHaveHeader('Set-Cookie'))
+        .expect(200, '2', function (err, _) {
+          if (err) return done(err)
+          request(server)
+          .get('/')
+          .set('Cookie', cookie(res))
+          .expect(shouldSetCookieToDifferentSessionId(sid(res)))
+          .expect(200, '2', function (err, resJwt) {
+            if (err) return done(err)
+            request(server)
+            .get('/')
+            .set('Cookie', cookie(resJwt))
+            .expect(shouldNotHaveHeader('Set-Cookie'))
+            .expect(200, '2', function (err, resJwt) {
+              store.length(function (err, len) {
+                if (err) return done(err)
+                assert.strictEqual(len, 2)
+                done()
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+
+  describe.skip('cookieParser()', function () {
     it('should read from req.cookies', function(done){
       var app = express()
         .use(cookieParser())
@@ -2323,8 +2759,21 @@ function createSession(opts) {
     options.cookie = { maxAge: 60 * 1000 }
   }
 
-  if (!('secret' in options)) {
-    options.secret = 'keyboard cat'
+  // if (!('secret' in options)) {
+  //   options.secret = 'keyboard cat'
+  // }
+
+  if (!('saveUninitialized' in options)) {
+    options.saveUninitialized = true
+  }
+
+  if (!('keys' in options)) {
+    options.keys = {
+      // public: '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEiR87tYBe/+4l+P4yNmeWjw3U/2fDtPZi\njS3jYnkazGfJZjbMTyysa4f6UajMUUSiKebc7cvpn4XH/BegHjfl3A==\n-----END PUBLIC KEY-----',
+      // private: '-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgxavdb47k/VO91UT5PS7b\nbWs0ik90/Hx5gfGNuDGfnqGhRANCAASJHzu1gF7/7iX4/jI2Z5aPDdT/Z8O09mKN\nLeNieRrMZ8lmNsxPLKxrh/pRqMxRRKIp5tzty+mfhcf8F6AeN+Xc\n-----END PRIVATE KEY-----'
+      public: '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEDXMuNS4pyqkpZwij+UCcTPVStZHmG39D\nP1V7qaPCfc0ewXXbcEaJiarqjHOM5a6SVivCaUdJj+25tjMk4sPchQ==\n-----END PUBLIC KEY-----',
+      private: '-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgvK1dk5M81nax8lQxpbWo\nsB1oK9YAqRP7MwWc7wDne8ehRANCAAQNcy41LinKqSlnCKP5QJxM9VK1keYbf0M/\nVXupo8J9zR7BddtwRomJquqMc4zlrpJWK8JpR0mP7bm2MyTiw9yF\n-----END PRIVATE KEY-----'
+    }
   }
 
   return session(options)
@@ -2466,6 +2915,11 @@ function sid (res) {
   var header = cookie(res)
   var data = header && utils.parseSetCookie(header)
   var value = data && unescape(data.value)
-  var sid = value && value.substring(2, value.indexOf('.'))
+  // var sid = value && value.substring(2, value.indexOf('.'))
+  var sid = value
   return sid || undefined
+}
+
+function sidInvalid (res) {
+  return sid(res) + 'x';
 }
