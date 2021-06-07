@@ -17,11 +17,14 @@ var Buffer = require('safe-buffer').Buffer
 var cookie = require('cookie');
 var crypto = require('crypto')
 var debug = require('debug')('express-session');
+// var debug = console.log;
 var deprecate = require('depd')('express-session');
+var lodash = require('lodash');
 var onHeaders = require('on-headers')
 var parseUrl = require('parseurl');
 var signature = require('cookie-signature')
 var uid = require('uid-safe').sync
+var jwt = require('jsonwebtoken');
 
 var Cookie = require('./session/cookie')
 var MemoryStore = require('./session/memory')
@@ -38,14 +41,84 @@ var env = process.env.NODE_ENV;
 
 exports = module.exports = session;
 
+class StoreWrapper extends Store {
+  constructor(obj) {
+    super()
+    this.obj = obj ?? new MemoryStore()
+  }
+
+  hashedSid(sid) {
+    return crypto
+      .createHash('sha256')
+      .update(sid, 'utf8')
+      .digest('hex')
+  }
+
+  destroy(sid, callback) {
+    return this.obj.destroy(sid.length > 50 ? this.hashedSid(sid) : sid, callback)
+  }
+  get(sid, callback) {
+    return this.obj.get(sid.length > 50 ? this.hashedSid(sid) : sid, callback)
+  }
+  set(sid, session, callback) {
+    const { jwt, ...storedSession } = session
+    this.obj.set(this.hashedSid(sid), storedSession, callback)
+  }
+  touch(sid, session, callback) {
+    return this.obj.touch(this.hashedSid(sid), session, callback)
+  }
+
+  on(...args) { return this.obj.on(...args) }
+  emit(...args) { return this.obj.emit(...args) }
+  all(...args) { return this.obj.all(...args) }
+  clear(...args) { return this.obj.clear(...args) }
+  length(...args) { return this.obj.length(...args) }
+
+  // copy of Store.createSession, but instantiate a JwtSession
+  createSession(req, sess) {
+    var expires = sess.cookie.expires
+    var originalMaxAge = sess.cookie.originalMaxAge
+
+    sess.cookie = new Cookie(sess.cookie);
+
+    if (typeof expires === 'string') {
+      // convert expires to a Date object
+      sess.cookie.expires = new Date(expires)
+    }
+
+    // keep originalMaxAge intact
+    sess.cookie.originalMaxAge = originalMaxAge
+
+    req.session = new JwtSession(req, sess);
+    return req.session;
+  }
+}
+
+class JwtSession extends Session {
+  constructor(req, data) {
+    super(req, data)
+    this.jwt = req.jwt
+  }
+}
+
+function generateJwtSessionId(req, jwtData) {
+  const data = {
+    nonce: uid(16),  // enforce new
+    user_id: null,
+    ...jwtData
+  }
+  req.jwt = data;
+  return jwt.sign(data, req.keys[0].private, { algorithm: 'ES256' });
+}
+
 /**
  * Expose constructors.
  */
 
 exports.Store = Store;
 exports.Cookie = Cookie;
-exports.Session = Session;
-exports.MemoryStore = MemoryStore;
+exports.Session = JwtSession;
+exports.MemoryStore = StoreWrapper;
 
 /**
  * Warning message for `MemoryStore` usage in production.
@@ -65,6 +138,20 @@ var warning = 'Warning: connect.session() MemoryStore is not\n'
 var defer = typeof setImmediate === 'function'
   ? setImmediate
   : function(fn){ process.nextTick(fn.bind.apply(fn, arguments)) }
+
+function validateKeysOpt(keys) {
+  if (Array.isArray(keys) && keys.length === 0) {
+    throw new TypeError('keys option array must contain one or more keys');
+  }
+
+  // if (!keys) {
+  //   throw new TypeError('keys option is required');
+  // }
+
+  // if (!keys[0].public) {
+  //   throw new TypeError('keys option must contain at least a public key');
+  // }
+}
 
 /**
  * Setup session store with the given `options`.
@@ -91,13 +178,13 @@ function session(options) {
   var cookieOptions = opts.cookie || {}
 
   // get the session id generate function
-  var generateId = opts.genid || generateSessionId
+  var generateId = opts.genid || generateJwtSessionId
 
   // get the session cookie name
   var name = opts.name || opts.key || 'connect.sid'
 
   // get the session store
-  var store = opts.store || new MemoryStore()
+  var store = opts.store instanceof StoreWrapper ? opts.store : new StoreWrapper(opts.store)
 
   // get the trust proxy setting
   var trustProxy = opts.proxy
@@ -111,21 +198,27 @@ function session(options) {
   // get the save uninitialized session option
   var saveUninitializedSession = opts.saveUninitialized
 
-  // get the cookie signing secret
+  // get the cookie signing secret to upgrade original express sessions
   var secret = opts.secret
+
+  // get the JWT signing/verifying keys
+  var keys = opts.keys
+
+  // extract JWT data from req when generating a new JWT token
+  var jwtFromReq = opts.jwtFromReq ?? (() => ({}))
 
   if (typeof generateId !== 'function') {
     throw new TypeError('genid option must be a function');
   }
 
   if (resaveSession === undefined) {
-    deprecate('undefined resave option; provide resave option');
-    resaveSession = true;
+    //deprecate('undefined resave option; provide resave option');
+    resaveSession = false;
   }
 
   if (saveUninitializedSession === undefined) {
-    deprecate('undefined saveUninitialized option; provide saveUninitialized option');
-    saveUninitializedSession = true;
+    //deprecate('undefined saveUninitialized option; provide saveUninitialized option');
+    saveUninitializedSession = false;
   }
 
   if (opts.unset && opts.unset !== 'destroy' && opts.unset !== 'keep') {
@@ -147,17 +240,43 @@ function session(options) {
     deprecate('req.secret; provide secret option');
   }
 
+  if (Array.isArray(keys) && keys.length === 0) {
+    throw new TypeError('keys option array must contain one or more keys');
+  }
+
+  if (keys && !Array.isArray(keys)) {
+    keys = [keys];
+  }
+
+  if (typeof jwtFromReq !== 'function') {
+    throw new TypeError('jwtFromReq option must be a function');
+  }
+
+  var readOnlySessions = false;
+  validateKeysOpt(keys)
+  // if (!keys[0].private) {
+  //   readOnlySessions = true
+  // }
+
   // notify user that this store is not
   // meant for a production environment
   /* istanbul ignore next: not tested */
-  if (env === 'production' && store instanceof MemoryStore) {
+  if (env === 'production' && store.obj instanceof MemoryStore) {
     console.warn(warning);
   }
 
   // generates the new session
-  store.generate = function(req){
-    req.sessionID = generateId(req);
-    req.session = new Session(req);
+  store.generate = function(req, existingData){
+    // req.sessionID = generateId(req);
+    // req.session = new Session(req);
+    // req.session.cookie = new Cookie(cookieOptions);
+
+    // if (cookieOptions.secure === 'auto') {
+    //   req.session.cookie.secure = issecure(req, trustProxy);
+    // }
+    const jwtData = jwtFromReq(req)
+    req.sessionID = generateId(req, jwtData);
+    req.session = new JwtSession(req, existingData ?? {});
     req.session.cookie = new Cookie(cookieOptions);
 
     if (cookieOptions.secure === 'auto') {
@@ -165,7 +284,7 @@ function session(options) {
     }
   };
 
-  var storeImplementsTouch = typeof store.touch === 'function';
+  var storeImplementsTouch = typeof store.obj.touch === 'function';
 
   // register event listeners for the store to track readiness
   var storeReady = true
@@ -195,15 +314,16 @@ function session(options) {
     var originalPath = parseUrl.original(req).pathname || '/'
     if (originalPath.indexOf(cookieOptions.path || '/') !== 0) return next();
 
-    // ensure a secret is available or bail
-    if (!secret && !req.secret) {
-      next(new Error('secret option required for sessions'));
+    // ensure a keys is available or bail
+    if (!keys) {
+      next(new Error('keys option required for sessions'));
       return;
     }
 
     // backwards compatibility for signed cookies
     // req.secret is passed from the cookie parser middleware
     var secrets = secret || [req.secret];
+    req.keys = keys;
 
     var originalHash;
     var originalId;
@@ -215,6 +335,7 @@ function session(options) {
 
     // get the session ID from the cookie
     var cookieId = req.sessionID = getcookie(req, name, secrets);
+    req._jwtOrig = JSON.parse(JSON.stringify(jwtFromReq(req)));
 
     // set-cookie
     onHeaders(res, function(){
@@ -319,6 +440,14 @@ function session(options) {
         return writetop();
       }
 
+      const jwtNew = jwtFromReq(req);
+      if (!lodash.isEqual(req._jwtOrig, jwtNew)) {
+        // content of jwt should be updated - generate a new JWT token
+        const { cookie, jwt, ...existingSess } = req.session
+        req.session.destroy()
+        generate(existingSess)
+      }
+
       // no session to save
       if (!req.session) {
         debug('no session');
@@ -360,8 +489,8 @@ function session(options) {
     };
 
     // generate the session
-    function generate() {
-      store.generate(req);
+    function generate(existingData) {
+      store.generate(req, existingData);
       originalId = req.sessionID;
       originalHash = hash(req.session);
       wrapmethods(req.session);
@@ -369,12 +498,27 @@ function session(options) {
 
     // inflate the session
     function inflate (req, sess) {
-      store.createSession(req, sess)
+      const upgradeFromExpress = !req.jwt
+      if (upgradeFromExpress) {
+        store.generate(req);
+        for (const key in sess) {
+          if (key !== 'cookie') {
+            req.session[key] = sess[key]
+          }
+        }
+      } else {
+        store.createSession(req, sess)
+      }
+
       originalId = req.sessionID
-      originalHash = hash(sess)
+      originalHash = hash(req.session)
 
       if (!resaveSession) {
         savedHash = originalHash
+      }
+
+      if (upgradeFromExpress) {
+        savedHash = '-' + originalHash
       }
 
       wrapmethods(req.session)
@@ -546,13 +690,25 @@ function getcookie(req, name, secrets) {
           val = undefined;
         }
       } else {
-        debug('cookie unsigned')
+        debug('JWT cookie');
+
+        for (var i = 0; i < req.keys.length; i++) {
+          try {
+            req.jwt = jwt.verify(raw, req.keys[i].public, { algorithm: 'ES256' });
+            val = raw;
+          } catch(_) {
+            // pass - testing next secret
+          }
+        }
+        if (!val) {
+          debug('invalid JWT cookie');
+        }
       }
     }
   }
 
   // back-compat read from cookieParser() signedCookies data
-  if (!val && req.signedCookies) {
+  /*if (!val && req.signedCookies) {
     val = req.signedCookies[name];
 
     if (val) {
@@ -580,8 +736,7 @@ function getcookie(req, name, secrets) {
         debug('cookie unsigned')
       }
     }
-  }
-
+  }*/
   return val;
 }
 
@@ -596,8 +751,8 @@ function getcookie(req, name, secrets) {
 function hash(sess) {
   // serialize
   var str = JSON.stringify(sess, function (key, val) {
-    // ignore sess.cookie property
-    if (this === sess && key === 'cookie') {
+    // ignore sess.cookie and jwt properties
+    if (this === sess && (key === 'cookie' || key === 'jwt')) {
       return
     }
 
@@ -606,7 +761,7 @@ function hash(sess) {
 
   // hash
   return crypto
-    .createHash('sha1')
+    .createHash('sha256')
     .update(str, 'utf8')
     .digest('hex')
 }
@@ -652,9 +807,10 @@ function issecure(req, trustProxy) {
  * @private
  */
 
-function setcookie(res, name, val, secret, options) {
-  var signed = 's:' + signature.sign(val, secret);
-  var data = cookie.serialize(name, signed, options);
+function setcookie(res, name, jwtSession, secret, options) {
+  // var signed = 's:' + signature.sign(val, secret);
+  // var data = cookie.serialize(name, signed, options);
+  var data = cookie.serialize(name, jwtSession, options);
 
   debug('set-cookie %s', data);
 

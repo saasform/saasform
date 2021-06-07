@@ -40,6 +40,7 @@ module.exports = MemoryStore
 function MemoryStore() {
   Store.call(this)
   this.sessions = Object.create(null)
+  this.destroyed = Object.create(null)
 }
 
 /**
@@ -91,6 +92,8 @@ MemoryStore.prototype.clear = function clear(callback) {
  */
 
 MemoryStore.prototype.destroy = function destroy(sessionId, callback) {
+  // keep track of destroyed sessions
+  this.destroyed[sessionId] = 1
   delete this.sessions[sessionId]
   callback && defer(callback)
 }
@@ -117,7 +120,10 @@ MemoryStore.prototype.get = function get(sessionId, callback) {
  */
 
 MemoryStore.prototype.set = function set(sessionId, session, callback) {
-  this.sessions[sessionId] = JSON.stringify(session)
+  // do NOT update a destroyed session
+  if (this.destroyed[sessionId] !== 1) {
+    this.sessions[sessionId] = JSON.stringify(session)
+  }
   callback && defer(callback)
 }
 
