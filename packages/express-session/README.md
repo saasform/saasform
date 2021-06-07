@@ -80,16 +80,16 @@ Keys should either be an object with `public` and `private` properties, or an ar
 When an array, the first element is the most recent key. For older keys only the public key is required, the private key can be omitted.
 
 Examples:
-```
+```js
 keys: { public: '...', private: '...' }
 ```
 or
-```
+```js
 keys: [{ public: 'latest', private: '...' }, { public: 'old1' }, { public: 'old2' }]
 ```
 
 We currenlty use the ES256 algorithm. Keys can be generated with:
-```
+```bash
 openssl ecparam -name secp256k1 -genkey -noout -out private-key.pem
 openssl ec -in ec-secp256k1-priv-key.pem -pubout > public-key.pem
 ```
@@ -102,7 +102,7 @@ The function is given `req` as the first argument if you want to use
 some value attached to `req` when generating the JWT token.
 
 Example:
-```
+```js
 function jwtFromReq(req) {
   return req.user ? {
     user_id: req.user.id,
@@ -593,7 +593,9 @@ We recommend the following stores because they enforce that destroyed sessions c
 [connect-typeorm-url]: https://www.npmjs.com/package/connect-typeorm
 [connect-typeorm-image]: https://badgen.net/github/stars/makepost/connect-typeorm?label=%E2%98%85
 
-## Example
+## Examples
+
+### Simple, complete example
 
 A simple example using `@saasform/express-session` to store page views for a user.
 
@@ -635,6 +637,156 @@ app.get('/bar', function (req, res, next) {
 })
 
 app.listen(3000);
+```
+
+### Minimal examples (original vs re-implementation)
+
+Minimal example for the original `express-session`:
+```js
+app.use(session({
+  secret: 'keyboard cat',
+}))
+```
+
+Minimal example for `@saasform/express-session`:
+```js
+app.use(session({
+  keys: {
+    public: 'public',
+    private: 'secret',
+  }
+}))
+```
+
+Minimal example for `@saasform/express-session` that also validates and upgrade existing sessions:
+```js
+app.use(session({
+  secret: 'keyboard cat',  // validate then upgrade original sessions
+  keys: {
+    public: 'public',
+    private: 'secret',
+  }
+}))
+```
+
+(Coming soon) Really minimal example for `@saasform/express-session`, verifier only:
+```js
+app.use(session({
+  keys: {
+    public: 'public',
+  }
+}))
+```
+
+### Recommended examples
+
+Recommended example for the original `express-session`:
+```js
+const store = 
+  new TypeormStore({
+    cleanupLimit: 2,
+    limitSubquery: false,
+    ttl: 30*24*60*60
+  }).connect(repository)
+
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: true,
+    maxAge: 30*24*60*60*1000 
+  },
+  store: store
+}))
+```
+
+Recommended example for `@saasform/express-session` (updated some deprecated defaults):
+```js
+const store = 
+  new TypeormStore({
+    cleanupLimit: 2,
+    limitSubquery: false,
+    ttl: 30*24*60*60
+  }).connect(repository)
+
+app.use(session({
+  secret: 'keyboard cat',
+  keys: {
+    public: 'public',
+    private: 'secret',
+  },
+  store: store
+}))
+```
+
+Recommended example for `@saasform/express-session`, storing data in the JWT token:
+```js
+const store = …
+
+function jwtFromReq(req) {
+  return req.user ?
+    {
+      user_id, req.user.id,
+      account_id: ...,
+      roles: ['user', 'editor'],
+    } : null
+}
+
+app.use(session({
+  secret: 'keyboard cat',
+  keys: {
+    public: 'public',
+    private: 'secret',
+  },
+  store: store,
+  jwtFromReq: jwtFromReq
+}))
+```
+
+### Key rotation examples
+
+Key rotation example for the original `express-session`:
+```js
+app.use(session({
+  secret: [
+    'latest',
+    'old1',
+    'old2',
+  ]
+}))
+```
+
+Key rotation example for `@saasform/express-session` (only the latest private key is used, the others can be omitted):
+```js
+app.use(session({
+  keys: [
+    {
+      public: 'latest',
+      private: 'secret',
+    },
+    { public: 'old1' },
+    { public: 'old2' }
+  ]
+}))
+```
+
+(Coming soon) Keys provider example for `@saasform/express-session`:
+```js
+async function keysProvider(req, rawJwtToken, done) {
+  return done(null, [
+    {
+      public: 'latest',
+      private: 'secret',
+    },
+    { public: 'old1' },
+    { public: 'old2' }
+  ])
+}
+
+app.use(session({
+  keysProvider: keysProvider,
+}))
 ```
 
 ## Debugging
