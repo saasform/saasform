@@ -595,7 +595,6 @@ We recommend the following stores because they enforce that destroyed sessions c
 [connect-typeorm-url]: https://www.npmjs.com/package/connect-typeorm
 [connect-typeorm-image]: https://badgen.net/github/stars/makepost/connect-typeorm?label=%E2%98%85
 
-
 ## Example
 
 A simple example using `@saasform/express-session` to store page views for a user.

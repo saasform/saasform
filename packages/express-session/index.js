@@ -104,7 +104,6 @@ class JwtSession extends Session {
 function generateJwtSessionId(req, jwtData) {
   const data = {
     nonce: uid(16),  // enforce new
-    user_id: null,
     ...jwtData
   }
   req.jwt = data;
@@ -140,9 +139,9 @@ var defer = typeof setImmediate === 'function'
   : function(fn){ process.nextTick(fn.bind.apply(fn, arguments)) }
 
 function validateKeysOpt(keys) {
-  if (Array.isArray(keys) && keys.length === 0) {
-    throw new TypeError('keys option array must contain one or more keys');
-  }
+  // if (Array.isArray(keys) && keys.length === 0) {
+  //   throw new TypeError('keys option array must contain one or more keys');
+  // }
 
   // if (!keys) {
   //   throw new TypeError('keys option is required');
@@ -240,10 +239,6 @@ function session(options) {
     deprecate('req.secret; provide secret option');
   }
 
-  if (Array.isArray(keys) && keys.length === 0) {
-    throw new TypeError('keys option array must contain one or more keys');
-  }
-
   if (keys && !Array.isArray(keys)) {
     keys = [keys];
   }
@@ -252,8 +247,8 @@ function session(options) {
     throw new TypeError('jwtFromReq option must be a function');
   }
 
+  // validateKeysOpt(keys)
   var readOnlySessions = false;
-  validateKeysOpt(keys)
   // if (!keys[0].private) {
   //   readOnlySessions = true
   // }
@@ -653,17 +648,6 @@ function session(options) {
 };
 
 /**
- * Generate a session ID for a new session.
- *
- * @return {String}
- * @private
- */
-
-function generateSessionId(sess) {
-  return uid(24);
-}
-
-/**
  * Get the session ID cookie from request.
  *
  * @return {string}
@@ -706,37 +690,6 @@ function getcookie(req, name, secrets) {
       }
     }
   }
-
-  // back-compat read from cookieParser() signedCookies data
-  /*if (!val && req.signedCookies) {
-    val = req.signedCookies[name];
-
-    if (val) {
-      deprecate('cookie should be available in req.headers.cookie');
-    }
-  }
-
-  // back-compat read from cookieParser() cookies data
-  if (!val && req.cookies) {
-    raw = req.cookies[name];
-
-    if (raw) {
-      if (raw.substr(0, 2) === 's:') {
-        val = unsigncookie(raw.slice(2), secrets);
-
-        if (val) {
-          deprecate('cookie should be available in req.headers.cookie');
-        }
-
-        if (val === false) {
-          debug('cookie signature invalid');
-          val = undefined;
-        }
-      } else {
-        debug('cookie unsigned')
-      }
-    }
-  }*/
   return val;
 }
 
