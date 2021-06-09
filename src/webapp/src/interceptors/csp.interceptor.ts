@@ -10,6 +10,10 @@ export class CspInterceptor implements NestInterceptor {
     const res = ctx.getResponse()
     const req: any = ctx.getRequest<Request>()
 
+    if (req === undefined) {
+      return next.handle()
+    }
+
     const fixedDirectives = {
       defaultSrc: ["'self'"],
       scriptSrc: [

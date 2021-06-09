@@ -14,6 +14,10 @@ export class JwtInterceptor implements NestInterceptor {
     const response = ctx.getResponse()
     const request: any = ctx.getRequest<Request>()
 
+    if (request === undefined) {
+      return next.handle()
+    }
+
     // TODO: improve condition
     if (request.user != null && request.user !== false) {
       await this.authService.setJwtCookie(request, response, request.user)
