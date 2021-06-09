@@ -48,17 +48,12 @@ const configWebsite = (): any => yaml.load(
       }),
       inject: [ConfigService]
     }),
-    GraphQLModule.forRoot({
-      playground: true, // TODO: remove this in prod
-      installSubscriptionHandlers: true,
-      autoSchemaFile: true
-    }),
     ValidatorModule,
     SettingsModule,
 
     ScheduleModule.forRoot(),
     GraphQLModule.forRoot({
-      playground: true, // TODO: remove this in prod
+      playground: false, // to enable playground, comment out publicController::getStar
       installSubscriptionHandlers: true,
       autoSchemaFile: true
     }),

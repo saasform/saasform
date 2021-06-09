@@ -27,6 +27,12 @@ function formatNoOrphanDot (s: string): string {
   return formatDot(s).replace(/ ([^ ]+)$/, '&nbsp;$1').replace(/\n/g, '<br/>')
 }
 
+const DISABLE_HELMET_AND_CSRF = [
+  /^\/api\//,
+  /^\/graphql/,
+  /^\/auth\/[a-z]+\/callback/
+]
+
 export function configureApp (app, isTest: boolean = false): void {
   const engine = new Liquid({ jsTruthy: true, extname: '.liquid' })
   engine.registerFilter('formatDot', formatDot)
@@ -44,7 +50,12 @@ export function configureApp (app, isTest: boolean = false): void {
   app.use((req, res, next) => {
     // for website CSP see csp.interceptor.ts
     req.customCsp = []
-    helmet()(req, res, next)
+    for (const ex of DISABLE_HELMET_AND_CSRF) {
+      if (req.path.match(ex) != null) {
+        return next()
+      }
+    }
+    return helmet()(req, res, next)
   })
 
   app.useGlobalPipes(new ValidationPipe())
@@ -67,11 +78,7 @@ export function configureApp (app, isTest: boolean = false): void {
   } else {
     app.use((req, res, next) => {
       // skip CSRF for api, graphql, auth callbacks
-      for (const ex of [
-        /^\/api\//,
-        /^\/graphql\//,
-        /^\/auth\/[a-z]+\/callback/
-      ]) {
+      for (const ex of DISABLE_HELMET_AND_CSRF) {
         if (req.path.match(ex) != null) {
           return next()
         }
