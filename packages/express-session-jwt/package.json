@@ -1,11 +1,11 @@
 {
-  "name": "@saasform/express-session",
-  "version": "0.2.0",
-  "description": "Secure session middleware for Express, drop in replacement for express-session",
+  "name": "express-session-jwt",
+  "version": "0.2.1",
+  "description": "Secure session middleware for Express with JWT, drop in replacement for express-session",
   "author": "Saasform Team <hello@saasform.dev> (https://saasform.dev)",
   "license": "MIT",
   "repository": "saasform/saasform",
-  "homepage": "https://saasform.dev",
+  "homepage": "https://github.com/saasform/saasform/tree/main/packages/express-session-jwt",
   "keywords": [
     "express",
     "expressjs",
@@ -19,7 +19,6 @@
     "url": "http://github.com/saasform/saasform/issues"
   },
   "dependencies": {
-    "@saasform/express-session": "^0.1.0",
     "cookie": "0.4.1",
     "cookie-signature": "1.0.6",
     "debug": "2.6.9",
