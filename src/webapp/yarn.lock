@@ -2239,7 +2239,7 @@ astral-regex@^2.0.0:
 
 async-limiter@~1.0.0:
   version "1.0.1"
-  resolved "https://registry.npmjs.org/async-limiter/-/async-limiter-1.0.1.tgz"
+  resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.1.tgz#dd379e94f0db8310b08291f9d64c3209766617fd"
   integrity sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
 
 async-retry@^1.2.1:
@@ -7029,10 +7029,10 @@ pascalcase@^0.1.1:
   resolved "https://registry.npmjs.org/pascalcase/-/pascalcase-0.1.1.tgz"
   integrity sha1-s2PlXoAGym/iF4TS2yK9FdeRfxQ=
 
-passport-azure-ad@^4.3.0:
+passport-azure-ad@0x0ece/passport-azure-ad:
   version "4.3.0"
-  resolved "https://registry.yarnpkg.com/passport-azure-ad/-/passport-azure-ad-4.3.0.tgz#3bdc2167a232206e49b18efbed5e4928fa42b81f"
-  integrity sha512-bCY9wQns7JxbRVa9ez1ZeGXRGVpqpi0GvOiR5YC2tv5S9NbgZdkWS70xXBPGQx8rua6n6LFD5oVM5fZ2t9MM6w==
+  uid "966ad0626d84d9c290b2ae756189494eb08f5e5b"
+  resolved "https://codeload.github.com/0x0ece/passport-azure-ad/tar.gz/966ad0626d84d9c290b2ae756189494eb08f5e5b"
   dependencies:
     async "^1.5.2"
     base64url "^3.0.0"
@@ -9137,9 +9137,9 @@ write-json-file@^4.3.0:
     write-file-atomic "^3.0.0"
 
 ws@^5.2.0:
-  version "5.2.2"
-  resolved "https://registry.npmjs.org/ws/-/ws-5.2.2.tgz"
-  integrity sha512-jaHFD6PFv6UgoIVda6qZllptQsMlDEJkTQcybzzXDYM1XO9Y8em691FGMPmM46WGyLU4z9KMgQN+qrux/nhlHA==
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-5.2.3.tgz#05541053414921bc29c63bee14b8b0dd50b07b3d"
+  integrity sha512-jZArVERrMsKUatIdnLzqvcfydI85dvd/Fp1u/VOpfdDWQ4c9qWXe+VIeAbQ5FrDwciAkr+lzofXLz3Kuf26AOA==
   dependencies:
     async-limiter "~1.0.0"
 
