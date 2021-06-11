@@ -21,6 +21,7 @@ import { SettingsService } from '../../settings/settings.service'
 export class PlansService extends BaseService<PlanEntity> {
   private readonly planRepository = getConnection().getRepository(PlanEntity)
   private readonly paymentIntegration: string
+  private readonly stripeAccount = 'acct_1IionZBZGgCe7OWG'
 
   constructor (
     @Inject(REQUEST) private readonly req,
@@ -125,21 +126,21 @@ export class PlansService extends BaseService<PlanEntity> {
       const product = await this.stripeService.client.products.create({
         name,
         description
-      })
+      }, { stripeAccount: this.stripeAccount })
 
       const monthPrice = await this.stripeService.client.prices.create({
         unit_amount: monthAmount,
         currency: 'usd',
         recurring: { interval: 'month' },
         product: product.id
-      })
+      }, { stripeAccount: this.stripeAccount })
 
       const yearPrice = await this.stripeService.client.prices.create({
         unit_amount: yearAmount,
         currency: 'usd',
         recurring: { interval: 'year' },
         product: product.id
-      })
+      }, { stripeAccount: this.stripeAccount })
 
       const _plan = this.createPlan(
         product.id, name, description,
@@ -302,7 +303,7 @@ export class PlansService extends BaseService<PlanEntity> {
         currency: 'usd',
         recurring: { interval: 'month' },
         product: plan.id
-      })
+      }, { stripeAccount: this.stripeAccount })
     }
     // Create a new Stripe pricing for year price if necessary
     if (yearPrice.unit_amount_decimal !== plan.prices.year.unit_amount_decimal) {
@@ -312,7 +313,7 @@ export class PlansService extends BaseService<PlanEntity> {
         currency: 'usd',
         recurring: { interval: 'year' },
         product: plan.id
-      })
+      }, { stripeAccount: this.stripeAccount })
     }
 
     const FIELDS = ['name', 'limitUsers', 'freeTrial', 'priceText']

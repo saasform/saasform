@@ -359,26 +359,26 @@ export class AccountsService extends BaseService<AccountEntity> {
    * @param id the id of the account
    * @param card information about the credit card
    */
-  async createPaymentsMethods (id: number, card: any): Promise<[any]|any> {
-    // DEPRECATED
-    try {
-      const account = await this.findById(id)
-      if (account == null) {
-        console.error('addPaymentsMethods - account not found')
-        return null
-      }
-      if (account.data == null) {
-        console.error('addPaymentsMethods - account format error')
-        return null
-      }
+  // async createPaymentsMethods (id: number, card: any): Promise<[any]|any> {
+  //   // DEPRECATED
+  //   try {
+  //     const account = await this.findById(id)
+  //     if (account == null) {
+  //       console.error('addPaymentsMethods - account not found')
+  //       return null
+  //     }
+  //     if (account.data == null) {
+  //       console.error('addPaymentsMethods - account format error')
+  //       return null
+  //     }
 
-      const method = await this.paymentsService.createPaymentMethod(account.data.stripe.id, card)
+  //     const method = await this.paymentsService.createPaymentMethod(account.data.stripe.id, card)
 
-      return await this.addPaymentsMethods(id, method)
-    } catch (error) {
-      console.error('getPaymentsMethods - error', id, error)
-    }
-  }
+  //     return await this.addPaymentsMethods(id, method)
+  //   } catch (error) {
+  //     console.error('getPaymentsMethods - error', id, error)
+  //   }
+  // }
 
   /**
    * Add a Stripe payment method to an account. Note that the payment method should be created elsewhere, possibly on the client.

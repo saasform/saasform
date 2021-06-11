@@ -24,7 +24,9 @@
     // This will create stipe client needed to perform 3dS checks.
     // Please, copy exacly this way
 
-    const  stripe = Stripe("{{ website.stripePublishableKey }}");
+    const  stripe = Stripe("{{ website.stripePublishableKey }}", {
+      stripeAccount: 'acct_1IionZBZGgCe7OWG',
+    });
     const elements = stripe.elements();
   </script>
   <script type="module">
