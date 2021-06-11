@@ -1,12 +1,12 @@
-# @saasform/express-session
+# express-session-jwt
 
 [![NPM Version][npm-version-image]][npm-url]
 
 **!! IMPORTANT !! This library is in alpha, not yet recommended for production - please help us battle test it !!**
 
-This is `express-session` by [Saasform](https://saasform.dev), a drop-in replacement of `express-session` with enhanced security.
+This is `express-session-jwt` a drop-in replacement of `express-session` with enhanced security.
 
-Compared to the original `express-session`, our re-implementation:
+Compared to the original `express-session`, this fork:
 1. Prevents session fixation (e.g., when a user logs in a new token is emitted)
 2. Guarantees that destroyed sessions can't be re-saved (e.g., a logged out session can't become alive again)
 3. Reduces the impact of data theft from the store (stores `hash(sessId)` instead of `sessId`)
@@ -37,13 +37,13 @@ This is a [Node.js](https://nodejs.org/en/) module available through the
 [`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
 ```sh
-$ npm install @saasform/express-session
+$ npm install express-session-jwt
 ```
 
 ## API
 
 ```js
-var session = require('@saasform/express-session')
+var session = require('express-session-jwt')
 ```
 
 ### session(options)
@@ -67,7 +67,7 @@ For a list of stores, see [compatible session stores](#compatible-session-stores
 
 #### Options
 
-`@saasform/express-session` accepts these properties in the options object.
+`express-session-jwt` accepts these properties in the options object.
 
 
 ##### keys
@@ -113,7 +113,7 @@ function jwtFromReq(req) {
 
 #### Options (same as the original `express-session`)
 
-`@saasform/express-session` also accepts these properties as the original `express-session`.
+`express-session-jwt` also accepts these properties as the original `express-session`.
 
 ##### cookie
 
@@ -597,12 +597,12 @@ We recommend the following stores because they enforce that destroyed sessions c
 
 ### Simple, complete example
 
-A simple example using `@saasform/express-session` to store page views for a user.
+A simple example using `express-session-jwt` to store page views for a user.
 
 ```js
 var express = require('express')
 var parseurl = require('parseurl')
-var session = require('@saasform/express-session')
+var session = require('express-session-jwt')
 
 var app = express()
 
@@ -648,7 +648,7 @@ app.use(session({
 }))
 ```
 
-Minimal example for `@saasform/express-session`:
+Minimal example for `express-session-jwt`:
 ```js
 app.use(session({
   keys: {
@@ -658,7 +658,7 @@ app.use(session({
 }))
 ```
 
-Minimal example for `@saasform/express-session` that also validates and upgrade existing sessions:
+Minimal example for `express-session-jwt` that also validates and upgrade existing sessions:
 ```js
 app.use(session({
   secret: 'keyboard cat',  // validate then upgrade original sessions
@@ -669,7 +669,7 @@ app.use(session({
 }))
 ```
 
-(Coming soon) Really minimal example for `@saasform/express-session`, verifier only:
+(Coming soon) Really minimal example for `express-session-jwt`, verifier only:
 ```js
 app.use(session({
   keys: {
@@ -701,7 +701,7 @@ app.use(session({
 }))
 ```
 
-Recommended example for `@saasform/express-session` (updated some deprecated defaults):
+Recommended example for `express-session-jwt` (updated some deprecated defaults):
 ```js
 const store = 
   new TypeormStore({
@@ -720,7 +720,7 @@ app.use(session({
 }))
 ```
 
-Recommended example for `@saasform/express-session`, storing data in the JWT token:
+Recommended example for `express-session-jwt`, storing data in the JWT token:
 ```js
 const store = …
 
@@ -757,7 +757,7 @@ app.use(session({
 }))
 ```
 
-Key rotation example for `@saasform/express-session` (only the latest private key is used, the others can be omitted):
+Key rotation example for `express-session-jwt` (only the latest private key is used, the others can be omitted):
 ```js
 app.use(session({
   keys: [
@@ -771,7 +771,7 @@ app.use(session({
 }))
 ```
 
-(Coming soon) Keys provider example for `@saasform/express-session`:
+(Coming soon) Keys provider example for `express-session-jwt`:
 ```js
 async function keysProvider(req, rawJwtToken, done) {
   return done(null, [
@@ -812,6 +812,6 @@ On Windows, use the corresponding command;
 [MIT](LICENSE)
 
 [rfc-6265bis-03-4.1.2.7]: https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.2.7
-[npm-downloads-image]: https://badgen.net/npm/dm/@saasform/express-session
-[npm-url]: https://www.npmjs.com/package/@saasform/express-session
-[npm-version-image]: https://badgen.net/npm/v/@saasform/express-session
+[npm-downloads-image]: https://badgen.net/npm/dm/express-session-jwt
+[npm-url]: https://www.npmjs.com/package/express-session-jwt
+[npm-version-image]: https://badgen.net/npm/v/express-session-jwt

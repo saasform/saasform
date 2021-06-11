@@ -8,11 +8,11 @@ With Saasform you can separate user authentication and management from your core
 
 ## Install
 ```
-npm install @saasform/passport-saasform
+npm install passport-saasform
 ```
 or
 ```
-yarn add @saasform/passport-saasform
+yarn add passport-saasform
 ```
 
 ## Usage
@@ -24,7 +24,7 @@ const express = require('express')
 const app = express()
 
 const passport = require('passport');
-const SaasformStrategy = require('@saasform/passport-saasform');
+const SaasformStrategy = require('passport-saasform');
 
 passport.use(new SaasformStrategy({
   // saasformUrl: 'https://beautifulsaas.com',
