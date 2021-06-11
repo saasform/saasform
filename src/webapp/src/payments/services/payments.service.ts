@@ -17,7 +17,7 @@ import { SettingsService } from '../../settings/settings.service'
 @Injectable({ scope: Scope.REQUEST })
 export class PaymentsService extends BaseService<PaymentEntity> {
   private readonly paymentIntegration: string
-  private readonly stripeAccount = 'acct_1IionZBZGgCe7OWG'
+  private readonly paymentProcessors: any
 
   constructor (
     @Inject(REQUEST) private readonly req,
@@ -32,6 +32,8 @@ export class PaymentsService extends BaseService<PaymentEntity> {
       'PaymentEntity'
     )
     this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
+    this.paymentProcessors.stripe = this.stripeService
+    this.paymentProcessors.killbill = this.killBillService
   }
 
   /**
@@ -101,11 +103,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     if (account?.data?.stripe == null) return null
 
     try {
-      const customer = await this.stripeService.client.customers.retrieve(
-        account.data.stripe.id,
-        { expand: ['subscriptions'] },
-        { stripeAccount: this.stripeAccount }
-      )
+      const customer = await this.stripeService.getSubscriptions(account?.data?.stripe.id)
 
       const payments = await this.query({
         filter: { account_id: { eq: account.id } }
@@ -156,177 +154,34 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     }
   }
 
-  async createPaymentMethod (customer: string, card: any): Promise<any> { // TODO: return a proper type
-    // DEPRECATED
-    const { number, exp_month, exp_year, cvc } = card // eslint-disable-line
-    try {
-      const paymentMethod = await this.stripeService.client.paymentMethods.create({
-        type: 'card',
-        card: {
-          number, exp_month, exp_year, cvc
-        }
-      }, { stripeAccount: this.stripeAccount })
-
-      await this.stripeService.client.paymentMethods.attach(
-        paymentMethod.id,
-        { customer }, { stripeAccount: this.stripeAccount }
-      )
-
-      return paymentMethod
-    } catch (error) {
-      console.error('paymentsService - createPaymentMethod - error', error)
-      return null
-    }
-
-    // TODO: check errors
-
-    // TODO: make default.
-    /*
-  await stripe.customers.update(req.body.customerId, {
-    invoice_settings: {
-      default_payment_method: req.body.paymentMethodId,
-    },
-  });
-    */
-  }
-
   async subscribeToPlan (customer: string, paymentMethod: any, price: any): Promise<any> { // TODO: return a proper type
-    try {
-      const subscription = await this.stripeService.client.subscriptions.create({
-        customer,
-        default_payment_method: paymentMethod.id,
-        items: [
-          { price: price.id }
-        ],
-        expand: ['latest_invoice.payment_intent']
-      }, { stripeAccount: this.stripeAccount })
-
-      if (subscription == null) {
-        console.error('paymentService - subscribeToPlan - error while creating subscription')
-        return null
-      }
-
-      return subscription
-    } catch (error) {
-      console.error('paymentService - subscribeToPlan - exception while creating subscription', error)
-      return null
-    }
+    return await this.stripeService.subscribeToPlan(customer, paymentMethod, price)
   }
 
   async updatePlan (subscriptionId: any, price: any): Promise<any> { // TODO: return a proper type
-    try {
-      const subscription = await this.stripeService.client.subscriptions.retrieve(subscriptionId, { stripeAccount: this.stripeAccount })
-
-      if (subscription == null) {
-        console.error('paymentService - updatePlan - error while finding the subscription to update')
-        return null
-      }
-
-      const updatedSubscription = await this.stripeService.client.subscriptions.update(subscriptionId, {
-        cancel_at_period_end: false,
-        items: [{
-          id: subscription.items.data[0].id,
-          price: price.id
-        }]
-      }, { stripeAccount: this.stripeAccount })
-
-      if (updatedSubscription == null) {
-        console.error('paymentService - updatePlan - error while updating subscription', subscription)
-        return null
-      }
-
-      return updatedSubscription
-    } catch (error) {
-      console.error('paymentService - updatePlan - exception while updating subscription', error)
-      return null
-    }
+    return await this.stripeService.updatePlan(subscriptionId, price)
   }
 
   async createBillingCustomer (customer): Promise<any> { // TODO: return a proper type
-    const stripeCustomer = await this.createStripeCustomer(customer)
+    const stripeCustomer = await this.stripeService.createCustomer(customer)
 
     // Always create the customer in Stripe, even if the Kill Bill integration is enabled. While not strictly needed,
     // this makes the integration with Saasform easier (as the stripe.id is expected in a lot of places).
     if (this.paymentIntegration === 'killbill') {
-      const kbCustomer = await this.createKillBillCustomer(customer, stripeCustomer)
+      const kbCustomer = await this.killBillService.createCustomer(customer, stripeCustomer)
       return [stripeCustomer, kbCustomer]
     }
 
     return [stripeCustomer, null]
   }
 
-  async createKillBillCustomer (customer, stripeCustomer): Promise<any> {
-    try {
-      const account = { name: customer.name, externalKey: stripeCustomer.id, currency: 'USD' }
-      const kbCustomer = await this.killBillService.accountApi.createAccount(account, 'saasform')
-
-      if (kbCustomer == null) {
-        console.error('paymentService - createKillBillCustomer - error while creating Kill Bill customer', customer)
-      }
-
-      return kbCustomer.data
-    } catch (error) {
-      console.error('paymentService - createKillBillCustomer - error while creating Kill Bill customer', customer, error)
-    }
-  }
-
-  async createStripeCustomer (customer): Promise<any> {
-    try {
-      const stripeCustomer = await this.stripeService.client.customers.create(
-        customer, { stripeAccount: this.stripeAccount }
-      )
-
-      if (stripeCustomer == null) {
-        console.error('paymentService - createStripeCustomer - error while creating stripe customer', customer)
-        return null
-      }
-
-      return stripeCustomer
-    } catch (error) {
-      console.error('paymentService - createStripeCustomer - error while creating stripe customer', customer, error)
-      return null
-    }
-  }
-
   async createFreeSubscription (plan, user): Promise<any> { // TODO: return a proper type
     if (this.paymentIntegration === 'killbill') {
-      return await this.createKillBillFreeSubscription(plan, user)
+      return await this.killBillService.createFreeSubscription(plan, user)
     } else {
-      return await this.createStripeFreeSubscription(plan, user)
+      return await this.stripeService.createFreeSubscription(plan, user)
     }
   }
-
-  async createKillBillFreeSubscription (plan, kbAccountId): Promise<any> {
-    try {
-      // const trialDays = 10 // TODO
-      const subscriptionData = { accountId: kbAccountId, planName: `${String(plan.id)}-yearly` }
-      const subscription = await this.killBillService.subscriptionApi.createSubscription(subscriptionData, 'saasform')
-
-      return subscription.data
-    } catch (error) {
-      console.error('paymentService - createKillBillFreeSubscription - error while creating free plan', plan, kbAccountId, error)
-      return null
-    }
-  }
-
-  async createStripeFreeSubscription (plan, stripeId): Promise<any> {
-    const trialDays = await this.settingsService.getTrialLength()
-    const trial_end = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60 // eslint-disable-line @typescript-eslint/naming-convention
-
-    try {
-      // TODO: fix the price to use
-      const subscription = await this.stripeService.client.subscriptions.create({
-        customer: stripeId,
-        items: [{ price: plan.prices.year.id }],
-        trial_end
-      }, { stripeAccount: this.stripeAccount })
-
-      return subscription
-    } catch (error) {
-      console.error('paymentService - createStripeCustomer - error while creating free plan', plan, stripeId, error)
-      return null
-    }
-  };
 
   /**
    * Attach a payment method to a Stripe customer and sets as default.
@@ -335,51 +190,13 @@ export class PaymentsService extends BaseService<PaymentEntity> {
    * @param method id of the payment method
    */
   async attachPaymentMethod (account: AccountEntity, method: string): Promise<any|null> {
-    const response = await this.attachPaymentMethodInStripe(account.data.stripe.id, method)
+    const response = await this.stripeService.attachPaymentMethod(account.data.stripe.id, method)
 
     if (this.paymentIntegration === 'killbill') {
-      await this.attachPaymentMethodInKillBill(account.data.killbill.accountId, method)
+      await this.killBillService.attachPaymentMethod(account.data.killbill.accountId, method)
     }
 
     return response
-  }
-
-  async attachPaymentMethodInKillBill (kbAccountId: string, stripePmId: string): Promise<any|null> {
-    try {
-      const pm = { isDefault: true, pluginName: 'killbill-stripe', pluginInfo: { externalPaymentMethodId: stripePmId } }
-      await this.killBillService.accountApi.createPaymentMethod(pm, kbAccountId, 'saasform')
-    } catch (error) {
-      console.error('paymentService - attachPaymentMethodInKillBill - error while syncing Stripe payment methods', kbAccountId, error)
-      return null
-    }
-  }
-
-  async attachPaymentMethodInStripe (customer: string, method: string): Promise<any|null> {
-    try {
-      await this.stripeService.client.paymentMethods.attach(method, {
-        customer
-      }, { stripeAccount: this.stripeAccount })
-    } catch (error) {
-      console.error('paymentsService - attachPaymentMethod - error while attaching')
-      return null
-    }
-
-    try {
-      // Change the default invoice settings on the customer to the new payment method
-      const updatedCustomer = await this.stripeService.client.customers.update(
-        customer,
-        {
-          invoice_settings: {
-            default_payment_method: method
-          }
-        }, { stripeAccount: this.stripeAccount }
-      )
-
-      return updatedCustomer
-    } catch (error) {
-      console.error('paymentsService - attachPaymentMethod - error while setting default payment method')
-      return null
-    }
   }
 
   /**
