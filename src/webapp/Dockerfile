@@ -4,8 +4,12 @@ FROM ${ARCH}node:14.16.0-buster-slim AS builder
 WORKDIR /app
 COPY . .
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git ca-certificates
+
 RUN npm i -g @nestjs/cli@7.5.6 \
-    && npm install -D \
+    && yarn add --dev \
         babel-loader@8.2.2 \
         @babel/core@7.13.10 \
         @babel/preset-env@7.13.10 \
