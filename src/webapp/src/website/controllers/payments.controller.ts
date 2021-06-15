@@ -65,4 +65,12 @@ export class PaymentsController {
 
     return res.redirect('/')
   }
+
+  @UseGuards(UserRequiredAuthGuard)
+  @Get('/payment')
+  async getPayment (@Request() req, @Res() res: Response): Promise<any> {
+    return renderPage(req, res, 'payment', {
+      stripePublishableKey: this.configService.get('STRIPE_PUBLISHABLE_KEY')
+    })
+  }
 }

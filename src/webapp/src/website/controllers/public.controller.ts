@@ -6,7 +6,7 @@ import {
   UseGuards,
   NotFoundException,
   InternalServerErrorException
-  //   Param
+  // Param
 } from '@nestjs/common'
 import { Response } from 'express'
 import { Liquid } from 'liquidjs'
@@ -85,6 +85,18 @@ export class PublicController extends BaseController {
     })
     return result.map(url => `https://${settings.domain_primary}${url}`).join('\n')
   }
+
+  /*
+  @Get('.well-known/:page')
+  async getWellKnown (@Param('page') page: string): Promise<string> {
+    const file = join(__dirname, '../../../well-known/', `${page}`)
+    try {
+      return readFileSync(file, 'utf8')
+    } catch (e) {
+      throw new NotFoundException(file)
+    }
+  }
+*/
 
   @UseGuards(UserOptionalAuthGuard)
   @Get('*')

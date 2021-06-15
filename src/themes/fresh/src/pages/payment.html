@@ -1,0 +1,245 @@
+---
+layout: default
+---
+<style>
+.is-underlined-input {
+  border: 1px solid #dbdbdb;
+  border-radius: 0;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  padding: 7px 11px;
+  padding-left: 0;
+}
+.is-underlined-input:focus {
+  box-shadow: none!important;
+  -webkit-box-shadow: none!important;
+}
+.is-underlined-input::placeholder {
+  color: #878787;
+}
+</style>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    // This will create stipe client needed to perform 3dS checks.
+    // Please, copy exacly this way
+
+    const  stripe = Stripe("{{ website.stripePublishableKey }}");
+    const elements = stripe.elements();
+  </script>
+  <script type="module">
+    // Custom styling can be passed to options when creating an Element.
+    var style = {
+      base: {
+        // Add your base input styles here. For example:
+        color: '#878787',
+        fontSize: '16px',
+        fontFamily: 'BlinkMacSystemFont,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif',
+        fontSmoothing: "antialiased",
+        "::placeholder": {
+          color: "#878787"
+        },
+
+      },
+    };
+
+/*
+    var paymentRequest = stripe.paymentRequest({
+      country: 'US',
+      currency: 'usd',
+      total: {
+        label: 'Basic plan',
+        amount: 2900,
+      },
+      requestPayerName: true,
+      requestPayerEmail: true,
+    });
+
+    var prButton = elements.create('paymentRequestButton', {
+      paymentRequest: paymentRequest,
+    });
+
+    // Check the availability of the Payment Request API first.
+    paymentRequest.canMakePayment().then(function(result) {
+      if (result) {
+        prButton.mount('#payment-request-button');
+      } else {
+        document.getElementById('payment-request-button').style.display = 'none';
+      }
+    });
+*/
+
+    // Create an instance of the card Element.
+    var card = elements.create('card', {
+      style,
+    });
+
+    // Add an instance of the card Element into the `card-element` <div>.
+    card.mount('#card-element');
+
+    // This is where your scripr might change. It must fetch from your page
+    // the plan id and the payment method id. In addition it can accept a monthly flag
+    // to indicate that the monthly payment is required.
+    // Finally, it needs the CSRF token.
+
+    // 1. Attaching a listener to the form submit event
+    const paymentForm = document.getElementById('payment-form');
+    if (paymentForm) {
+      paymentForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Getting value out of form.
+        const data = new FormData(document.getElementById('payment-form'));
+        const params = {}
+        for (const [name,value] of data) {
+          params[name] = value
+        }
+
+        if(params.plan && params.method) {
+          // here we call the Stripe library passing:
+          // 1. the parameters we got from our page
+          // 2. a success callback
+          // 3. an error callback
+          createSubscription(
+            params,
+            _ => alert('Purchase completed'),
+            event => alert(event.error.message)
+          )
+        }
+        else
+          alert('Choose a plan and a payment method')
+      });
+    }
+
+    let buyPlanButttons = document.getElementsByClassName("plan-purchase-button");
+
+    for(let i = 0; i < buyPlanButttons.length; i++) {
+      console.log(buyPlanButttons[i])
+      buyPlanButttons[i].onclick = function (e) {
+          e.preventDefault()
+
+          const payYearlySwitch = document.querySelector('#priceSwitch:checked');
+          const monthly = payYearlySwitch && payYearlySwitch.value === 'on' ? null : 1
+
+          const plan = e.target.id
+
+          fetch('/api/v1/purchase-plan', {
+              method: 'post',
+              headers: {
+                'Content-type': 'application/json',
+                'CSRF-Token': "{{ website.csrf_token }}" // <-- is the csrf token as a header
+              },
+              body: JSON.stringify({
+                plan, monthly
+              }),
+            })
+            .then((response) => {
+              location.reload();
+            })
+        }
+    }
+
+
+    const paymentMethodForm = document.getElementById('payment-method');
+    if (paymentMethodForm) {
+      // Create a token or display an error when the form is submitted.
+      paymentMethodForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // stripe.createToken(card)
+        stripe
+        .createPaymentMethod({
+          type: 'card',
+          card: card,
+          // billing_details: {
+            // name: billingName,
+          // },
+        })
+        .then(function(result) {
+          if (result.error) {
+            // Inform the customer that there was an error.
+            var errorElement = document.getElementById('card-errors');
+            errorElement.textContent = result.error.message;
+          } else {
+            // Send the token to your server.
+            // stripeTokenHandler(result.token);
+            fetch('/api/v1/add-payment-token', {
+              method: 'post',
+              headers: {
+                'Content-type': 'application/json',
+                'CSRF-Token': "{{ website.csrf_token }}" // <-- is the csrf token as a header
+              },
+              body: JSON.stringify({
+                ...result.paymentMethod
+              }),
+            })
+            .then((response) => {
+              location.reload();
+            })
+          }
+        });
+      });
+
+    }
+  </script>
+<section class="hero is-fullheight">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+
+          <div class="content">
+            <!-- Heading -->
+            <h1 class="has-text-centered">
+              Add a payment method
+            </h1>
+
+            <!-- Text -->
+            <p class="has-text-centered subtitle">
+
+            </p>
+          </div>
+
+        <form action="" method="POST" class="mb-40">
+          <div id="payment-request-button">
+            <!-- A Stripe Element will be inserted here. -->
+          </div>
+
+          <p class="has-text-centered mt-20 mb-20">or</p>
+
+          <div class="field">
+            <label for="name" class="label {{ website.size }} has-text-weight-normal">
+              Name
+            </label>
+            <div class="control">
+              <input type="text" class="is-underlined-input input {{ website.size }}" id="name" name="name" placeholder="John Doe" value="{{ user.name }}">
+            </div>
+            <p id="error-name" class="help is-danger">{{ error.name }}</p>
+          </div>
+
+          <div class="field">
+            <label for="name" class="label {{ website.size }} has-text-weight-normal">
+              Credit card
+            </label>
+            <div class="control is-underlined-input">
+              <div id="card-element">
+                <!-- A Stripe Element will be inserted here. -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <input type="hidden" name="_csrf" value="{{ website.csrf_token }}">
+          <div class="field mt-5">
+            <div class="control">
+              <button class="button is-primary is-fullwidth" type="submit">Pay $49/mo</button>
+            </div>
+          </div>
+
+        </form>
+
+      </div>
+      </div>
+    </div> <!-- / .row -->
+  </div> <!-- / .container -->
+</section>
