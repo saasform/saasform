@@ -443,6 +443,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       signup_show_google: false,
       signup_show_azure: false,
       signup_show_username: false,
+      signup_force_payment: false,
 
       // page /user
       user_page_sections: [''],
@@ -496,6 +497,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'prelaunch_message',
       'prelaunch_background_url',
       'signup_show_username',
+      'signup_force_payment',
       'unsafe_disable_csp'
     ]
     for (const key of encodedPaths) {
