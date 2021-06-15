@@ -580,6 +580,12 @@
                 </div>
                     <form action="" id="payment-method" method="POST" class="mb-20">
                 
+                      <div id="payment-request-button">
+                        <!-- A Stripe Element will be inserted here. -->
+                      </div>
+                
+                      <p class="has-text-centered mt-20 mb-20">or</p>
+                
                       <div class="field">
                         <div id="card-element">
                           <!-- A Stripe Element will be inserted here. -->
@@ -592,13 +598,11 @@
                       <input type="hidden" name="_csrf" value="{{ csrf_token }}">
                       <div class="field">
                         <div class="control">
-                          <button class="button is-primary" type="submit">Add card</button>
+                          <button class="button is-primary" type="submit">Pay $49/mo</button>
                         </div>
                       </div>
+                
                     </form>
-                
-                
-                  </form>
               </section>
             </div>
             <div class="container is-max-desktop">
