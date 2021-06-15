@@ -127,6 +127,7 @@ cta_button: Get started for free
 
 # signup
 signup_show_username: false
+signup_force_payment: false
 
 # footer menu
 # footer:
