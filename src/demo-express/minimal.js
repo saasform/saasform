@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 
 const passport = require('passport');
-const SaasformStrategy = require('@saasform/passport-saasform');
+const SaasformStrategy = require('passport-saasform');
 
 passport.use(new SaasformStrategy({
   // saasformUrl: 'https://beautifulsaas.com',
