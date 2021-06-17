@@ -128,7 +128,6 @@ stripe.createToken(card).then(function(result) {
   } else {
     // Send the token to your server.
     // stripeTokenHandler(result.token);
-    console.log('token', result.token)
     fetch('/api/v1/add-payment-token', {
       method: 'post',
       headers: {

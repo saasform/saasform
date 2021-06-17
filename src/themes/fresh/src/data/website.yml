@@ -39,6 +39,7 @@ html_google_tag_manager_header: "{{ html_google_tag_manager_header }}"
 html_google_tag_manager_body: "{{ html_google_tag_manager_body }}"
 html_facebook_pixel: "{{ html_facebook_pixel }}"
 html_chatbot: "{{ html_chatbot }}"
+html_payments_processor: "{{ html_payments_processor }}"
 csrf_token: "{{ csrf_token }}"
 token: "{{ token }}"
 
@@ -91,7 +92,6 @@ u_name: '{{ u.name | default: "(No name specified)" }}'
 
 # billing
 payment_methods: "{{ account.payments_methods }}"
-stripePublishableKey: "{{ stripePublishableKey }}"
 plan_name: "{{ active_subscription.name }}"
 plan_price: "{{ active_subscription.price | divided_by: 100}}"
 plan_price_currency: "{{ active_subscription.currency}}"

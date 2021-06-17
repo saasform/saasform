@@ -19,15 +19,10 @@ layout: default
   color: #878787;
 }
 </style>
-  <script src="https://js.stripe.com/v3/"></script>
-  <script>
-    // This will create stipe client needed to perform 3dS checks.
-    // Please, copy exacly this way
-
-    const  stripe = Stripe("{{ website.stripePublishableKey }}");
-    const elements = stripe.elements();
-  </script>
+  {{ website.html_payments_processor }}
   <script type="module">
+  if (typeof stripe !== 'undefined') {
+    const elements = stripe.elements();
     // Custom styling can be passed to options when creating an Element.
     var style = {
       base: {
@@ -114,7 +109,6 @@ layout: default
     let buyPlanButttons = document.getElementsByClassName("plan-purchase-button");
 
     for(let i = 0; i < buyPlanButttons.length; i++) {
-      console.log(buyPlanButttons[i])
       buyPlanButttons[i].onclick = function (e) {
           e.preventDefault()
 
@@ -181,6 +175,7 @@ layout: default
       });
 
     }
+  } // end if stripe
   </script>
 <section class="hero is-fullheight">
   <div class="hero-body">
