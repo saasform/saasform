@@ -2381,7 +2381,6 @@ function initNavbar() {
     },
     openSidebar: function openSidebar() {
       this.$store.app.isSiderbarOpen = true;
-      console.log('clicked');
     }
   };
 }
@@ -2788,7 +2787,6 @@ function initModals() {
   if (typeof targets != "undefined" && targets != null) {
     for (var i = 0, len = targets.length; i < len; i++) {
       targets[i].addEventListener("click", function (event) {
-        console.log("click modal");
         var modalID = this.getAttribute("data-modal");
         document.querySelector("#" + modalID).classList.add("is-active");
         var scrollY = document.documentElement.style.getPropertyValue("--scroll-y");
@@ -2806,7 +2804,6 @@ function initModals() {
   if (typeof targets != "undefined" && targets != null) {
     for (var i = 0, len = targets.length; i < len; i++) {
       targets[i].addEventListener("click", function (event) {
-        console.log("click modal close");
         var body = document.body;
         var scrollY = body.style.top;
         body.style.position = "";
@@ -2962,7 +2959,6 @@ function createPaymentToken(_csrf) {
     } else {
       // Send the token to your server.
       // stripeTokenHandler(result.token);
-      console.log('token', result.token);
       fetch('/api/v1/add-payment-token', {
         method: 'post',
         headers: {

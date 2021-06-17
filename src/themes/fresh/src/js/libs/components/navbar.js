@@ -19,7 +19,6 @@ export function initNavbar() {
 
         openSidebar() {
             this.$store.app.isSiderbarOpen = true;
-            console.log('clicked');
         }
     }
 }

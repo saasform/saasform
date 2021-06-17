@@ -18,16 +18,11 @@
   <link rel="stylesheet" href="{{ root_assets }}/assets/css/bundle.css">
   <link rel="icon" type="image/png" href="{{ root_assets }}/assets/img/favicon.png" />
 
-  <!-- <script src="{{ root_assets }}/assets/stripe.js"></script> -->
-  <script src="https://js.stripe.com/v3/"></script>
-  <script>
-    // This will create stipe client needed to perform 3dS checks.
-    // Please, copy exacly this way
-
-    const  stripe = Stripe("{{ stripePublishableKey }}");
-    const elements = stripe.elements();
-  </script>
+  {{ html_payments_processor }}
   <script type="module">
+  if (typeof stripe !== 'undefined') {
+    const elements = stripe.elements();
+
     // Custom styling can be passed to options when creating an Element.
     var style = {
       base: {
@@ -41,7 +36,6 @@
       // Create a token or display an error when the form is submitted.
       deleteUserLink.addEventListener('click', function(event) { 
         const confirmDelete = confirm('Are you sure you want to delete your user?');
-        console.log(confirmDelete)
         if(confirmDelete) {
           fetch('/api/v1/user/{{ user.id }}', {
               method: 'delete',
@@ -54,7 +48,6 @@
               window.location = '/logout'
             })
         }
-        
       });
     }
 
@@ -102,7 +95,6 @@
     let buyPlanButttons = document.getElementsByClassName("plan-purchase-button");
 
     for(let i = 0; i < buyPlanButttons.length; i++) {
-      console.log(buyPlanButttons[i])
       buyPlanButttons[i].onclick = function (e) {
           e.preventDefault()
 
@@ -124,7 +116,6 @@
             .then((response) => {
               location.reload();
             })
-          
         }
     }
 
@@ -170,6 +161,7 @@
       });
 
     }
+  } // end if stripe
   </script>
 
 </head>
@@ -580,12 +572,6 @@
                 </div>
                     <form action="" id="payment-method" method="POST" class="mb-20">
                 
-                      <div id="payment-request-button">
-                        <!-- A Stripe Element will be inserted here. -->
-                      </div>
-                
-                      <p class="has-text-centered mt-20 mb-20">or</p>
-                
                       <div class="field">
                         <div id="card-element">
                           <!-- A Stripe Element will be inserted here. -->
@@ -598,11 +584,13 @@
                       <input type="hidden" name="_csrf" value="{{ csrf_token }}">
                       <div class="field">
                         <div class="control">
-                          <button class="button is-primary" type="submit">Pay $49/mo</button>
+                          <button class="button is-primary" type="submit">Add card</button>
                         </div>
                       </div>
-                
                     </form>
+                
+                
+                  </form>
               </section>
             </div>
             <div class="container is-max-desktop">
