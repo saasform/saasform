@@ -7,9 +7,11 @@ import jwt_decode from 'jwt-decode'
 
 import { AppModule } from './app.module'
 import { configureApp } from '../src/main.app'
-import { StripeService } from '../src/payments/services/stripe.service'
 import { GoogleOAuth2Service } from '../src/auth/google.service'
 import { CronService } from '../src/cron/cron.service'
+
+import { Stripe } from 'stripe'
+jest.mock('stripe')
 
 /**
  * User: 101
@@ -48,36 +50,37 @@ describe('Authentication (e2e)', () => {
   // let settingsService: SettingsService
 
   const mockedStripe = {
-    client2: {},
-    client: {
-      customers: {
-        retrieve: jest.fn(_ => {
-          return ({
-            subscriptions: {
-              data: [
-                { id: 'sub_2', status: 'active', active: 'false' },
-                { id: 'sub_3', status: 'active', active: 'true' }
-              ]
-            }
-          })
-        }),
-        create: jest.fn(_ => {
-          return ({
-          })
-        }),
-        update: jest.fn(_ => {})
-      },
-      paymentMethods: {
-        attach: jest.fn(_ => {})
-      },
-      products: {
-        create: jest.fn(_ => {})
-      },
-      prices: {
-        create: jest.fn(_ => {})
-      }
+    customers: {
+      retrieve: jest.fn(_ => {
+        return ({
+          subscriptions: {
+            data: [
+              { id: 'sub_2', status: 'active', active: 'false' },
+              { id: 'sub_3', status: 'active', active: 'true' }
+            ]
+          }
+        })
+      }),
+      create: jest.fn(_ => {
+        return ({
+        })
+      }),
+      update: jest.fn(_ => {})
+    },
+    paymentMethods: {
+      attach: jest.fn(_ => {})
+    },
+    products: {
+      create: jest.fn(_ => {})
+    },
+    prices: {
+      create: jest.fn(_ => {})
     }
-  }
+  };
+
+  (Stripe as any).mockImplementation(() => {
+    return mockedStripe
+  })
 
   const GOOGLE_ID_TOKEN_TO_SIGNIN = 'BAMBIIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX'
   const GOOGLE_ID_TOKEN_TO_SIGNUP = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtWbXJpxrTjMiAlmxHxDvBCO7knjP8xw7/se17BvUvLtaDsPSg7CC6Nh6FYSuLMDOiHNlXJTs43b8bepGAzvhB4kt2SUX//JsysI1wspCSnqblapX'
@@ -107,7 +110,6 @@ describe('Authentication (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule]
     })
-      .overrideProvider(StripeService).useValue(mockedStripe)
       .overrideProvider(GoogleOAuth2Service).useValue(mockedGoogle)
       .overrideProvider(CronService).useValue(mockedCronService)
       .compile()

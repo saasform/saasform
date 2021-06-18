@@ -10,8 +10,8 @@ import {
 import { Response } from 'express'
 import { UserRequiredAuthGuard } from '../../auth/auth.guard'
 import { AccountsService } from '../../accounts/services/accounts.service'
+import { PaymentsService } from '../../payments/services/payments.service'
 import { PlansService } from '../../payments/services/plans.service'
-import { ConfigService } from '@nestjs/config'
 
 import { renderPage } from '../utilities/render'
 
@@ -19,8 +19,8 @@ import { renderPage } from '../utilities/render'
 export class PaymentsController {
   constructor (
     private readonly accountsService: AccountsService,
-    private readonly plansService: PlansService,
-    public configService: ConfigService
+    private readonly paymentsService: PaymentsService,
+    private readonly plansService: PlansService
   ) {}
 
   @UseGuards(UserRequiredAuthGuard)
@@ -52,7 +52,7 @@ export class PaymentsController {
       account,
       plans,
       user: req.user,
-      stripePublishableKey: this.configService.get('STRIPE_PUBLISHABLE_KEY')
+      html_payments_processor: this.paymentsService.paymentProcessor.getHtml()
     })
   }
 
@@ -70,7 +70,7 @@ export class PaymentsController {
   @Get('/payment')
   async getPayment (@Request() req, @Res() res: Response): Promise<any> {
     return renderPage(req, res, 'payment', {
-      stripePublishableKey: this.configService.get('STRIPE_PUBLISHABLE_KEY')
+      html_payments_processor: this.paymentsService.paymentProcessor.getHtml()
     })
   }
 }

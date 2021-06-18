@@ -21,7 +21,6 @@ import { SettingsService } from '../../settings/settings.service'
 export class PlansService extends BaseService<PlanEntity> {
   private readonly planRepository = getConnection().getRepository(PlanEntity)
   private readonly paymentIntegration: string
-  private readonly stripeAccount = 'acct_1IionZBZGgCe7OWG'
 
   constructor (
     @Inject(REQUEST) private readonly req,
@@ -126,21 +125,21 @@ export class PlansService extends BaseService<PlanEntity> {
       const product = await this.stripeService.client.products.create({
         name,
         description
-      }, { stripeAccount: this.stripeAccount })
+      }, this.stripeService.apiOptions)
 
       const monthPrice = await this.stripeService.client.prices.create({
         unit_amount: monthAmount,
         currency: 'usd',
         recurring: { interval: 'month' },
         product: product.id
-      }, { stripeAccount: this.stripeAccount })
+      }, this.stripeService.apiOptions)
 
       const yearPrice = await this.stripeService.client.prices.create({
         unit_amount: yearAmount,
         currency: 'usd',
         recurring: { interval: 'year' },
         product: product.id
-      }, { stripeAccount: this.stripeAccount })
+      }, this.stripeService.apiOptions)
 
       const _plan = this.createPlan(
         product.id, name, description,
@@ -156,7 +155,7 @@ export class PlansService extends BaseService<PlanEntity> {
 
       await this.createOne(plan)
     } catch (err) {
-      console.error('Error while creating plan', name, description, monthAmount, yearAmount, features, err)
+      // console.error('Error while creating plan', name, description, monthAmount, yearAmount, features, err)
       return null
     }
   }
@@ -303,7 +302,7 @@ export class PlansService extends BaseService<PlanEntity> {
         currency: 'usd',
         recurring: { interval: 'month' },
         product: plan.id
-      }, { stripeAccount: this.stripeAccount })
+      }, this.stripeService.apiOptions)
     }
     // Create a new Stripe pricing for year price if necessary
     if (yearPrice.unit_amount_decimal !== plan.prices.year.unit_amount_decimal) {
@@ -313,7 +312,7 @@ export class PlansService extends BaseService<PlanEntity> {
         currency: 'usd',
         recurring: { interval: 'year' },
         product: plan.id
-      }, { stripeAccount: this.stripeAccount })
+      }, this.stripeService.apiOptions)
     }
 
     const FIELDS = ['name', 'limitUsers', 'freeTrial', 'priceText']
