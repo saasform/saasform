@@ -147,7 +147,7 @@ export class UserController {
       account,
       plans,
       activeSubscription,
-      stripePublishableKey: this.configService.get('STRIPE_PUBLISHABLE_KEY')
+      html_payments_processor: this.paymentsService.paymentProcessor.getHtml()
     })
   }
 

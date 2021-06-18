@@ -95,7 +95,7 @@ export class SettingsKeysJson {
   oauth_azure_ad_client_id: string
   oauth_azure_ad_client_secret_value: string
   oauth_azure_ad_scope: string
-  stripe_account_key: string
+  stripe_account: string
 }
 
 enum SettingsModulesHomepage {

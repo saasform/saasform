@@ -17,10 +17,10 @@ export class KillBillService extends BasePaymentProcessorService {
   public subscriptionApi
 
   constructor (
-    private readonly settingsService: SettingsService,
-    public configService: ConfigService
+    protected readonly configService: ConfigService,
+    protected readonly settingsService: SettingsService
   ) {
-    super()
+    super(configService, settingsService)
 
     this.url = this.configService.get<string>('KB_URL') ?? ''
     this.api_key = this.configService.get<string>('KB_API_KEY') ?? ''

@@ -17,7 +17,7 @@ import { SettingsService } from '../../settings/settings.service'
 @Injectable({ scope: Scope.REQUEST })
 export class PaymentsService extends BaseService<PaymentEntity> {
   private readonly paymentIntegration: string
-  private readonly paymentProcessors: any
+  public readonly paymentProcessor: any
 
   constructor (
     @Inject(REQUEST) private readonly req,
@@ -32,8 +32,11 @@ export class PaymentsService extends BaseService<PaymentEntity> {
       'PaymentEntity'
     )
     this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
-    this.paymentProcessors.stripe = this.stripeService
-    this.paymentProcessors.killbill = this.killBillService
+    if (this.paymentIntegration === 'killbill') {
+      this.paymentProcessor = this.killBillService
+    } else {
+      this.paymentProcessor = this.stripeService
+    }
   }
 
   /**
@@ -168,7 +171,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     // Always create the customer in Stripe, even if the Kill Bill integration is enabled. While not strictly needed,
     // this makes the integration with Saasform easier (as the stripe.id is expected in a lot of places).
     if (this.paymentIntegration === 'killbill') {
-      const kbCustomer = await this.killBillService.createCustomer(customer, stripeCustomer)
+      const kbCustomer = await this.killBillService.createCustomer(customer)
       return [stripeCustomer, kbCustomer]
     }
 

@@ -47,7 +47,9 @@ const subscriptionsArray = [
 
 describe('Payments Service', () => {
   let service // Removed type paymentsService because we must overwrite the paymentsRepository property
+  let stripeService
   let repo: Repository<PaymentEntity>
+  const apiOptions = {}
 
   const mockedRepo = {
     query: jest.fn(
@@ -98,10 +100,7 @@ describe('Payments Service', () => {
           provide: getRepositoryToken(PaymentEntity),
           useValue: mockedRepo
         },
-        {
-          provide: StripeService,
-          useValue: mockedStripe
-        },
+        StripeService,
         {
           provide: KillBillService,
           useValue: mockedKillBill
@@ -113,7 +112,7 @@ describe('Payments Service', () => {
         ValidationService,
         {
           provide: ConfigService,
-          useValue: {}
+          useValue: { get: () => {} }
         },
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
@@ -121,17 +120,22 @@ describe('Payments Service', () => {
     }).compile()
 
     service = await module.get(PaymentsService)
+    stripeService = await module.get(StripeService)
     repo = await module.get<Repository<PaymentEntity>>(
       getRepositoryToken(PaymentEntity)
     )
 
+    stripeService.client = mockedStripe
+
     // We must manually set the following because extending TypeOrmQueryService seems to break it
     Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
     service.paymentsRepository = repo
-    service.stripeService = { client: mockedStripe }
+    service.stripeService = stripeService
     service.killbillService = { accountApi: mockedKillBill }
     service.settingsService = mockedSettingsService
     service.validationService = await module.get(ValidationService)
+
+    service.paymentProcessor = stripeService
     // Object.keys(mockedStripe).forEach(
     //   f => (service.stripeClient[f] = mockedStripe[f]),
     // );
@@ -168,7 +172,8 @@ describe('Payments Service', () => {
       expect(stripeSpy).toBeCalledTimes(1)
       expect(stripeSpy).toBeCalledWith(
         account.data.stripe.id,
-        { expand: ['subscriptions'] }
+        { expand: ['subscriptions'] },
+        apiOptions
       )
     })
 
@@ -228,7 +233,7 @@ describe('Payments Service', () => {
 
       const account = { data: { stripe: { id: 'cus_123' } } }
       await service.attachPaymentMethod(account, 'met_456')
-      expect(stripeSpy).toBeCalledWith('met_456', { customer: 'cus_123' })
+      expect(stripeSpy).toBeCalledWith('met_456', { customer: 'cus_123' }, apiOptions)
     })
 
     it('should set the payment method as default', async () => {
@@ -241,7 +246,8 @@ describe('Payments Service', () => {
           invoice_settings: {
             default_payment_method: 'met_456'
           }
-        }
+        },
+        apiOptions
       )
     })
   })
@@ -324,7 +330,7 @@ describe('Payments Service', () => {
           { price: price.id }
         ],
         expand: ['latest_invoice.payment_intent']
-      })
+      }, apiOptions)
     })
 
     it('should return null if it fails to create a subscription', async () => {
@@ -368,7 +374,7 @@ describe('Payments Service', () => {
           id: subscriptionToUpdate.items.data[0].id,
           price: price.id
         }]
-      })
+      }, apiOptions)
     })
 
     it('should return null if it fails to update a subscription', async () => {

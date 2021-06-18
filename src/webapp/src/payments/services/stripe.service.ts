@@ -8,13 +8,21 @@ import { SettingsService } from '../../settings/settings.service'
 @Injectable()
 export class StripeService extends BasePaymentProcessorService {
   public client
+  public apiOptions
+  public publishableKey: string
 
   constructor (
-    private readonly settingsService: SettingsService,
-    private readonly configService: ConfigService
+    protected readonly configService: ConfigService,
+    protected readonly settingsService: SettingsService
   ) {
-    super()
-    const apiKey = this.configService.get<string>('STRIPE_API_KEY') ?? 'xxx'
+    super(configService, settingsService)
+    this.init()  // eslint-disable-line
+  }
+
+  async init (): Promise<void> {
+    this.apiOptions = await this.getApiOptions()
+    this.publishableKey = await this.getPublishableKey() ?? this.configService.get<string>('STRIPE_PUBLISHABLE_KEY') ?? ''
+    const apiKey = await this.getApiKey() ?? this.configService.get<string>('STRIPE_API_KEY') ?? ''
     if (!apiKey.endsWith('xxx')) {
       this.client = new Stripe(apiKey, { apiVersion: '2020-08-27' })
     } else {
@@ -23,14 +31,19 @@ export class StripeService extends BasePaymentProcessorService {
     }
   }
 
-  async getStripeAccountKey (): Promise<string> {
-    return (await this.settingsService.getKeysSettings()).stripe_account_key
+  getHtml (): string {
+    const jsonApiOptions = JSON.stringify(this.apiOptions)
+    const html = this.client != null ? `
+<script src="https://js.stripe.com/v3/"></script>
+<script>const stripe = Stripe("${this.publishableKey}", ${jsonApiOptions});</script>
+` : '<script>console.warn(\'Stripe not initialized - configure STRIPE_API_KEY in saasform.yml\');</script>'
+    return html
   }
 
   async createCustomer (customer): Promise<any> {
     try {
       const stripeCustomer = await this.client.customers.create(
-        customer, { stripeAccount: await this.getStripeAccountKey() }
+        customer, this.apiOptions
       )
 
       if (stripeCustomer == null) {
@@ -55,7 +68,7 @@ export class StripeService extends BasePaymentProcessorService {
         customer: stripeId,
         items: [{ price: plan.prices.year.id }],
         trial_end
-      }, { stripeAccount: await this.getStripeAccountKey() })
+      }, this.apiOptions)
 
       return subscription
     } catch (error) {
@@ -68,7 +81,7 @@ export class StripeService extends BasePaymentProcessorService {
     try {
       await this.client.paymentMethods.attach(method, {
         customer
-      }, { stripeAccount: await this.getStripeAccountKey() })
+      }, this.apiOptions)
     } catch (error) {
       console.error('paymentsService - attachPaymentMethod - error while attaching', error)
       return null
@@ -82,7 +95,7 @@ export class StripeService extends BasePaymentProcessorService {
           invoice_settings: {
             default_payment_method: method
           }
-        }, { stripeAccount: await this.getStripeAccountKey() }
+        }, this.apiOptions
       )
 
       return updatedCustomer
@@ -101,7 +114,7 @@ export class StripeService extends BasePaymentProcessorService {
           { price: price.id }
         ],
         expand: ['latest_invoice.payment_intent']
-      }, { stripeAccount: await this.getStripeAccountKey() })
+      }, this.apiOptions)
 
       if (subscription == null) {
         console.error('paymentService - subscribeToPlan - error while creating subscription')
@@ -120,7 +133,7 @@ export class StripeService extends BasePaymentProcessorService {
       const customer = await this.client.customers.retrieve(
         accountId,
         { expand: ['subscriptions'] },
-        { stripeAccount: await this.getStripeAccountKey() }
+        this.apiOptions
       )
 
       if (customer == null) {
@@ -136,7 +149,7 @@ export class StripeService extends BasePaymentProcessorService {
 
   async updatePlan (subscriptionId: any, price: any): Promise<any> { // TODO: return a proper type
     try {
-      const subscription = await this.client.subscriptions.retrieve(subscriptionId, { stripeAccount: await this.getStripeAccountKey() })
+      const subscription = await this.client.subscriptions.retrieve(subscriptionId, this.apiOptions)
 
       if (subscription == null) {
         console.error('paymentService - updatePlan - error while finding the subscription to update')
@@ -149,7 +162,7 @@ export class StripeService extends BasePaymentProcessorService {
           id: subscription.items.data[0].id,
           price: price.id
         }]
-      }, { stripeAccount: await this.getStripeAccountKey() })
+      }, this.apiOptions)
 
       if (updatedSubscription == null) {
         console.error('paymentService - updatePlan - error while updating subscription', subscription)
