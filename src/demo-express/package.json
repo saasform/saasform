@@ -7,7 +7,7 @@
     "minimal": "node ./minimal.js"
   },
   "dependencies": {
-    "passport-saasform": "^0.2.0",
+    "passport-saasform": "^0.3.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
@@ -15,7 +15,6 @@
     "jade": "^1.11.0",
     "morgan": "~1.9.1",
     "node-fetch": "^2.6.1",
-    "passport": "^0.4.1",
-    "passport-jwt": "^4.0.0"
+    "passport": "^0.4.1"
   }
 }
