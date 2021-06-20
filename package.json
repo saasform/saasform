@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "passport-totp": "^0.0.2"
+  }
+}
