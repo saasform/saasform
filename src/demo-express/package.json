@@ -1,13 +1,13 @@
 {
-  "name": "demosaas",
-  "version": "0.0.0",
+  "name": "demo-express",
+  "version": "0.6.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "minimal": "node ./minimal.js"
   },
   "dependencies": {
-    "passport-saasform": "^0.3.0",
+    "passport-saasform": "^0.3.3",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
