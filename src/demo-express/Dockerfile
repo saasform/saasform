@@ -1,4 +1,4 @@
-FROM node:12.19.0-stretch-slim
+FROM node:14.17-stretch-slim
 WORKDIR /app
 COPY ./ .
 RUN rm -rf node_modules

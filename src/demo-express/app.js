@@ -10,6 +10,8 @@ const passport = require('passport');
 const SaasformStrategy = require('passport-saasform');
 
 passport.use(new SaasformStrategy({
+  // this is overridden by docker to connect to Saasform API
+  saasformServerUrl: process.env.SAASFORM_SERVER ?? 'http://localhost:7000',
   // saasformUrl: 'https://beautifulsaas.com',
   // appBaseUrl: 'https://app.beautifulsaas.com',
 }));
