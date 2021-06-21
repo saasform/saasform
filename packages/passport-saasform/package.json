@@ -1,6 +1,6 @@
 {
   "name": "passport-saasform",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "description": "Saasform authentication strategy for Passport",
   "author": "Saasform Team <hello@saasform.dev> (https://saasform.dev)",
   "license": "Apache-2.0",
