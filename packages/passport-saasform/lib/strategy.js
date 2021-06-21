@@ -25,10 +25,11 @@ class Strategy extends BaseStrategy {
 
   init(options) {
     this.name = 'saasform'
+    this._saasformServerUrl = options.saasformServerUrl ?? 'http://localhost:7000'
     this._saasformUrl = options.saasformUrl ?? 'http://localhost:7000'
     this._appBaseUrl = options.appBaseUrl ?? 'http://localhost:3000'
 
-    fetch(`${this._saasformUrl}/api/v1/public-key`)
+    fetch(`${this._saasformServerUrl}/api/v1/public-key`)
       .then(response => response.json())
       .then(data => {
         this.initJWTStrategy(data.message)
@@ -57,7 +58,7 @@ class Strategy extends BaseStrategy {
     var token = self._jwtFromRequest(req);
 
     function fail(err) {
-      return self.redirect(`${self._saasformUrl}/login`)
+      return self.redirect(`${self._saasformUrl}/login?r=auto`)
     }
 
     if (!token) {
@@ -86,7 +87,7 @@ class Strategy extends BaseStrategy {
             };
 
             if (payload && payload.status !== 'active') {
-              self.redirect(`${self._saasformUrl}/user`)
+              self.redirect(`${self._saasformUrl}/user?r=auto`)
             }
 
             try {
