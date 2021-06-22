@@ -6613,6 +6613,11 @@ normalize-path@^2.1.1:
   dependencies:
     remove-trailing-separator "^1.0.1"
 
+notp@2.0.x:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/notp/-/notp-2.0.3.tgz#a9fd11e25cfe1ccb39fc6689544ee4c10ef9a577"
+  integrity sha1-qf0R4lz+HMs5/GaJVE7kwQ75pXc=
+
 npm-bundled@^1.0.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/npm-bundled/-/npm-bundled-1.1.1.tgz"
@@ -7031,7 +7036,6 @@ pascalcase@^0.1.1:
 
 passport-azure-ad@0x0ece/passport-azure-ad:
   version "4.3.0"
-  uid "966ad0626d84d9c290b2ae756189494eb08f5e5b"
   resolved "https://codeload.github.com/0x0ece/passport-azure-ad/tar.gz/966ad0626d84d9c290b2ae756189494eb08f5e5b"
   dependencies:
     async "^1.5.2"
@@ -7075,10 +7079,19 @@ passport-saml@^2.2.0:
     xmlbuilder "^15.1.1"
     xmldom "0.5.x"
 
-passport-strategy@*, passport-strategy@1.x.x, passport-strategy@^1.0.0:
+passport-strategy@*, passport-strategy@1.0.0, passport-strategy@1.x.x, passport-strategy@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz"
   integrity sha1-tVOaqPwiWj0a0XlHbd8ja0QPUuQ=
+
+passport-totp@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/passport-totp/-/passport-totp-0.0.2.tgz#3173815af6b75186f969fd4256be7ffd4c1be59a"
+  integrity sha1-MXOBWva3UYb5af1CVr5//Uwb5Zo=
+  dependencies:
+    notp "2.0.x"
+    passport-strategy "1.0.0"
+    pkginfo "0.2.x"
 
 passport@^0.3.2:
   version "0.3.2"
@@ -7209,6 +7222,11 @@ pkg-dir@^4.2.0:
   integrity sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==
   dependencies:
     find-up "^4.0.0"
+
+pkginfo@0.2.x:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/pkginfo/-/pkginfo-0.2.3.tgz#7239c42a5ef6c30b8f328439d9b9ff71042490f8"
+  integrity sha1-cjnEKl72wwuPMoQ52bn/cQQkkPg=
 
 pluralize@8.0.0, pluralize@^8.0.0:
   version "8.0.0"
