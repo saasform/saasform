@@ -225,7 +225,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     const moduleHomepageConfig = this.configService.get<string>('MODULE_HOMEPAGE') ?? 'saasform'
     const moduleHomepage = (await this.getModulesSettings())?.homepage ?? moduleHomepageConfig
     if (moduleHomepage === 'redirect') {
-      return await this.getRedirectAfterLogin()
+      return await this.getConfiguredRedirectAfterLogin()
     }
     return null
   }
@@ -268,7 +268,10 @@ export class SettingsService extends BaseService<SettingsEntity> {
   }
 
   // TODO: TDD this
-  async getRedirectAfterLogin (cachedSettings?): Promise<string> {
+  /*
+    The redirect after login, aka app url as it comes from config.
+  */
+  async getConfiguredRedirectAfterLogin (cachedSettings?): Promise<string> {
     const configuredRedirectUrl = this.configService.get<string>('SAAS_REDIRECT_URL') ?? ''
     const settings = cachedSettings ?? await this.getWebsiteSettings()
     if (settings.domain_app != null) {
@@ -283,6 +286,51 @@ export class SettingsService extends BaseService<SettingsEntity> {
     }
 
     return '/'
+  }
+
+  async getNextUrl (queryNext): Promise<string | null> {
+    const baseUrl = await this.getBaseUrl()
+    const appUrl = await this.getConfiguredRedirectAfterLogin()
+    const homeUrl = await this.getHomepageRedirectUrl()
+
+    // prevent open redirects
+    const next: string = queryNext
+    if (next != null) {
+      if (
+        // relative path
+        next[0] === '/' ||
+        // absolute url to Saasform
+        next.startsWith(baseUrl) ||
+        // absolute url to SaaS
+        next.startsWith(appUrl)
+      ) {
+        // when home is not managed by saasform, make relative url absolute
+        if (homeUrl !== null && next[0] === '/') {
+          return `${homeUrl}${next}`
+        }
+        return next
+      }
+    }
+    return null
+  }
+
+  /*
+    The actual redirect after login, combining app url, req.query.next, sign flows etc.
+  */
+  async getActualRedirectAfterLogin (requestUser, queryNext): Promise<string> {
+    switch (requestUser.status) {
+      case 'no_payment_method':
+        return '/payment'
+      case 'unpaid':
+        return '/user/billing'
+    }
+
+    const next = await this.getNextUrl(queryNext)
+    if (next != null) {
+      return next
+    }
+
+    return await this.getConfiguredRedirectAfterLogin()
   }
 
   async getAssetsRoot (): Promise<{themeRoot: string, assetsRoot: string}> {
@@ -539,7 +587,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     const homeUrl = await this.getHomepageRedirectUrl() ?? res.domain_primary
     const homeDomain = homeUrl.replace('http://', '').replace('https://', '')
     const renderedUrl = `https://${homeDomain}`
-    const redirectAfterLogin = await this.getRedirectAfterLogin(settings)
+    const redirectAfterLogin = await this.getConfiguredRedirectAfterLogin(settings)
 
     res.domain_home = homeDomain
     res.seo_fb_app_id = ''

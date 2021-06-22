@@ -155,8 +155,7 @@ describe('Payments Service', () => {
       expect(repoSpy).toBeCalledTimes(1)
       expect(repoSpy).toBeCalledWith({
         filter: {
-          account_id: { eq: accountId },
-          status: { in: ['active', 'trialing'] }
+          account_id: { eq: accountId }
         }
       })
     })

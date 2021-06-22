@@ -14,6 +14,7 @@ import { UserError, ErrorTypes } from '../utilities/common.model'
 const mockJwtService = {}
 const mockAccountsService = {}
 const mockPaymentsService = {
+  getPaymentsConfig: async () => ({}),
   refreshPaymentsFromStripe: async () => {},
   getActivePayments: async (accountId) => (null)
 }

@@ -7,6 +7,7 @@ import { SettingsService } from '../../settings/settings.service'
 
 @Injectable()
 export class StripeService extends BasePaymentProcessorService {
+  public enabled = false
   public client
   public apiOptions
   public publishableKey: string
@@ -22,9 +23,10 @@ export class StripeService extends BasePaymentProcessorService {
   async init (): Promise<void> {
     this.apiOptions = await this.getApiOptions()
     this.publishableKey = await this.getPublishableKey() ?? this.configService.get<string>('STRIPE_PUBLISHABLE_KEY') ?? ''
-    const apiKey = await this.getApiKey() ?? this.configService.get<string>('STRIPE_API_KEY') ?? ''
+    const apiKey = await this.getApiKey() ?? this.configService.get<string>('STRIPE_API_KEY') ?? 'xxx'
     if (!apiKey.endsWith('xxx')) {
       this.client = new Stripe(apiKey, { apiVersion: '2020-08-27' })
+      this.enabled = true
     } else {
       // TODO: mock in a way that doesn't create issues
       this.client = null
@@ -60,14 +62,14 @@ export class StripeService extends BasePaymentProcessorService {
 
   async createFreeSubscription (plan, stripeId): Promise<any> {
     const trialDays = await this.settingsService.getTrialLength()
-    const trial_end = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60 // eslint-disable-line @typescript-eslint/naming-convention
+    const trialEnd = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60
 
     try {
       // TODO: fix the price to use
       const subscription = await this.client.subscriptions.create({
         customer: stripeId,
         items: [{ price: plan.prices.year.id }],
-        trial_end
+        trial_end: trialEnd
       }, this.apiOptions)
 
       return subscription

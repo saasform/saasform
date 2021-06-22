@@ -39,6 +39,16 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     }
   }
 
+  async getPaymentsConfig (): Promise<any> {
+    const settings = await this.settingsService.getWebsiteRenderingVariables()
+    const processorEnabled = this.stripeService.enabled
+    return {
+      payment_processor: this.paymentIntegration,
+      payment_processor_enabled: processorEnabled,
+      signup_force_payment: settings.signup_force_payment
+    }
+  }
+
   /**
    * Retuns the active subscription for an account.
    * @param accountId
@@ -47,8 +57,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     try {
       const payments = await this.query({
         filter: {
-          account_id: { eq: accountId },
-          status: { in: ['active', 'trialing'] }
+          account_id: { eq: accountId }
         }
       })
       return payments[0] ?? null

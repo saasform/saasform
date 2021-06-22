@@ -29,32 +29,6 @@ export class AuthenticationController {
     private readonly settingsService: SettingsService
   ) {}
 
-  async getNextUrl (req): Promise<string | null> {
-    const baseUrl = await this.settingsService.getBaseUrl()
-    const appUrl = await this.settingsService.getRedirectAfterLogin()
-    const homeUrl = await this.settingsService.getHomepageRedirectUrl()
-
-    // prevent open redirects
-    const next: string = req.query.next
-    if (next != null) {
-      if (
-        // relative path
-        next[0] === '/' ||
-        // absolute url to Saasform
-        next.startsWith(baseUrl) ||
-        // absolute url to SaaS
-        next.startsWith(appUrl)
-      ) {
-        // when home is not managed by saasform, make relative url absolute
-        if (homeUrl !== null && next[0] === '/') {
-          return `${homeUrl}${next}`
-        }
-        return next
-      }
-    }
-    return null
-  }
-
   async issueJwtAndRediret (req, res, user): Promise<Response> {
     const requestUser = await this.authService.getTokenPayloadFromUserModel(user)
     if (requestUser == null) {
@@ -64,29 +38,18 @@ export class AuthenticationController {
 
     await this.authService.setJwtCookie(req, res, requestUser)
 
-    // if subscription is not valid redirect to the billing page
-    const payment = await this.paymentsService.getActivePayments(requestUser.account_id)
-    if (await this.paymentsService.isPaymentValid(payment) === false) {
-      return res.redirect('/user/billing')
-    }
-
-    const next = await this.getNextUrl(req)
-    if (next != null) {
-      return res.redirect(next)
-    }
-
-    const appUrl = await this.settingsService.getRedirectAfterLogin()
+    const appUrl = await this.settingsService.getActualRedirectAfterLogin(requestUser, req.query.next)
     return res.redirect(appUrl)
   }
 
   @Get('/login')
   async getLogin (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
-      const redirect = await this.settingsService.getRedirectAfterLogin()
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
       return res.redirect(redirect)
     }
     return renderPage(req, res, 'login', {
-      next_url: await this.getNextUrl(req)
+      next_url: await this.settingsService.getNextUrl(req.query.next)
     })
   }
 
@@ -126,11 +89,11 @@ export class AuthenticationController {
   @Get('/signup')
   async getSignup (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
-      const redirect = await this.settingsService.getRedirectAfterLogin()
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
       return res.redirect(redirect)
     }
     return renderPage(req, res, 'signup', {
-      next_url: await this.getNextUrl(req)
+      next_url: await this.settingsService.getNextUrl(req.query.next)
     })
   }
 
@@ -201,7 +164,7 @@ export class AuthenticationController {
         }
         await this.authService.setJwtCookie(req, res, requestUser)
 
-        const redirect = await this.settingsService.getRedirectAfterLogin()
+        const redirect = await this.settingsService.getActualRedirectAfterLogin(requestUser, req.query.next)
         res.redirect(redirect)
       } else {
         res.redirect('/')
@@ -285,7 +248,7 @@ export class AuthenticationController {
   @Post('/auth/azure/callback')
   async azureAdReturnFrom (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
-      const redirect = await this.settingsService.getRedirectAfterLogin()
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
       return res.redirect(redirect)
     }
     return res.redirect('/login')

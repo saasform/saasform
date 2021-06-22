@@ -78,14 +78,50 @@ export class AuthService {
     return validUser
   }
 
+  getTokenPayloadStatus (validUser: ValidUser, subscriptionData, paymentsConfig): string {
+    // when not set, it's false - e.g. in tests
+    const configSignupForcePayment = (paymentsConfig.signup_force_payment === true)
+    const configPaymentProcessorEnabled = (paymentsConfig.payment_processor_enabled === true)
+
+    const userIsActive = true // TODO
+    const accountIsActive =
+      // signup requires payment but account doesn't have any payments
+      (configSignupForcePayment && validUser.account?.data?.payments_methods != null) ||
+      // signup doesn't require payment
+      !configSignupForcePayment
+      // TODO not banned/blocked account
+    const subsIsActive =
+      // no subs, but payment processor disabled
+      (subscriptionData.subs_status == null && !configPaymentProcessorEnabled) ||
+      // valid subs in any of these states: disabled, external, active, trialing
+      ['disabled', 'external', 'active', 'trialing'].includes(subscriptionData.subs_status)
+
+    if (userIsActive && accountIsActive && subsIsActive) {
+      return 'active'
+    } else {
+      if (!subsIsActive) {
+        return 'unpaid'
+      }
+      if (!accountIsActive) {
+        return 'no_payment_method'
+      }
+      // if (userIsActive === false) {
+      //   return 'account_blocked'
+      // }
+    }
+
+    return 'invalid'
+  }
+
   async getTokenPayloadFromUserModel (validUser: ValidUser, updateActiveSubscription: boolean = true): Promise<RequestUser | null> {
     if (validUser == null) {
       return null
     }
 
+    // TODO cleanup
     const { allowedKeys } = await this.settingsService.getUserSettings()
     const userData = validUser.user.data.profile != null
-      ? allowedKeys.reduce((acc, key: string) => {
+      ? allowedKeys.filter((key) => !(key in ['email', 'username'])).reduce((acc, key: string) => {
         acc[`user_${key}`] = validUser.user.data.profile[key] ?? '' // using user_${key} to flatten the jwt data
         return acc
       }, {})
@@ -96,12 +132,15 @@ export class AuthService {
       subscriptionData = await this.updateActiveSubscription(validUser.account)
     }
 
+    const paymentsConfig = await this.paymentsService.getPaymentsConfig()
+    const status = this.getTokenPayloadStatus(validUser, subscriptionData, paymentsConfig)
+
     return {
       nonce: '', // TODO
       id: validUser.user.id,
       account_id: validUser.account?.id,
       account_name: validUser.account?.data.name ?? '',
-      status: 'active', // TODO: use actual value
+      status: status,
       email: validUser.user.email,
       email_verified: validUser.user?.data.emailConfirmed ?? false,
       staff: validUser.user?.isAdmin ?? false,
@@ -132,11 +171,11 @@ export class AuthService {
     }
 
     return {
-      subscription_id: payment.data.id,
-      subscription_plan: plan.uid,
-      subscription_status: payment.status,
-      subscription_expiration: payment.data.current_period_end,
-      subscription_name: plan.name
+      // subscription_id: payment.data.id,
+      // subscription_plan: plan.uid,
+      subs_exp: payment.data.current_period_end,
+      subs_name: plan.name,
+      subs_status: payment.status
     }
   }
 
