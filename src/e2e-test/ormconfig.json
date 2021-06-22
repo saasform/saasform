@@ -8,7 +8,7 @@
    "synchronize": true,
    "logging": true,
    "migrations": [
-      "reset-db/**/*.ts"
+      "reset-db/**/*.js"
    ],
    "cli": {
       "migrationsDir": "reset-db"

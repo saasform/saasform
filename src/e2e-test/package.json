@@ -15,7 +15,6 @@
     "cucumber",
     "puppeteer"
   ],
-  "author": "Pat Heard <patrick.heard@canada.ca>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/patheard/test-cuke/issues"
