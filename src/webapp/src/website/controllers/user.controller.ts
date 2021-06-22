@@ -34,9 +34,10 @@ export class UserController {
   async getUser (@Request() req, @Res() res: Response): Promise<any> {
     const account = await this.accountsService.findById(req.user.account_id)
 
-    if (account == null) {
-      console.error('UserController - getUser - Account not found', req.user.account_id)
-      return res.redirect('/error')
+    // TODO: use subscription_status?
+    if (req.user.status !== 'active' && req.query?.r === 'auto') {
+      const forcePayment = req.websiteData.signup_force_payment
+      return res.redirect(forcePayment === true ? '/payment' : '/user/billing')
     }
 
     return renderUserPage(req, res, 'general', {

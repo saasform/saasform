@@ -36,15 +36,7 @@ export class ApiV1AutheticationController {
 
     await this.authService.setJwtCookie(req, res, requestUser)
 
-    let redirect = ''
-    // if subscription is not valid redirect to the billing page
-    const payment = await this.paymentsService.getActivePayments(requestUser.account_id)
-    if (await this.paymentsService.isPaymentValid(payment) === false) {
-      redirect = '/user/billing'
-    } else {
-      redirect = await this.settingsService.getRedirectAfterLogin()
-    }
-
+    const redirect = await this.settingsService.getActualRedirectAfterLogin(requestUser, req.query.next)
     return res.status(302).json({
       statusCode: 302,
       message: 'Found',

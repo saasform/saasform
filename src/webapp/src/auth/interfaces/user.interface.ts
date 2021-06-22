@@ -1,23 +1,20 @@
 export interface RequestUser {
   nonce: string
 
-  id: number
-  account_id: number
-  account_name?: string
-  status: string // active, subscrition_<status>
+  status: string // active, unpaid
 
+  id: number
   email: string
   email_verified: boolean
   staff: boolean
+  username?: string
 
-  data?: any // FIXME: change this to a proper object with the user data fields?
+  account_id: number
+  account_name?: string
 
-  subscription_id?: number // payment id
-  subscription_plan?: number // plan id
-  subscription_status?: string // trialing, active, incomplete, incomplete_expired, past_due, canceled, or unpaid
-  payment_status?: boolean // inidicates if a payment method is present
-  subscription_expiration?: number // timestamp
-  subscription_name?: string // subscription name. TODO: add the subscription label
+  subs_exp?: number // timestamp
+  subs_name?: string // subscription name
+  subs_status?: string // [saasform:] disabled, external, [stripe:] trialing, active, incomplete, incomplete_expired, past_due, canceled, or unpaid
 }
 
 export class ValidUser {

@@ -174,7 +174,7 @@ describe('SettingsService', () => {
     expect(result).toEqual(null)
   })
 
-  it('getRedirectAfterLogin', async () => {
+  it('getConfiguredRedirectAfterLogin', async () => {
     const mock = service.query
     let result
 
@@ -183,7 +183,7 @@ describe('SettingsService', () => {
       category: 'website',
       domain_app: 'myapp.mysite.com'
     }])) as any
-    result = await service.getRedirectAfterLogin()
+    result = await service.getConfiguredRedirectAfterLogin()
     expect(result).toEqual('https://myapp.mysite.com')
 
     // domain_primary
@@ -192,21 +192,21 @@ describe('SettingsService', () => {
       category: 'website',
       domain_primary: 'mysite.com'
     }])) as any
-    result = await service.getRedirectAfterLogin()
+    result = await service.getConfiguredRedirectAfterLogin()
     expect(result).toEqual('https://app.mysite.com')
 
     // configured host
     service.data = null // disable cache
     service.query = mock
     service.configService.get = jest.fn(_ => 'mockedHost')
-    result = await service.getRedirectAfterLogin()
+    result = await service.getConfiguredRedirectAfterLogin()
     expect(result).toEqual('mockedHost')
 
     // no settings (original)
     service.data = null // disable cache
     service.query = mock
     service.configService.get = jest.fn(_ => '')
-    result = await service.getRedirectAfterLogin()
+    result = await service.getConfiguredRedirectAfterLogin()
     expect(result).toEqual('/')
   })
 
