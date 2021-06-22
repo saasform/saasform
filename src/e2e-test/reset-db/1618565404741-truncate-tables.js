@@ -1,8 +1,8 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+const { MigrationInterface, QueryRunner } = require("typeorm");
 
-export class truncateTables1618565404741 implements MigrationInterface {
+module.exports = class truncateTables1618565404741 {
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
+    async up(queryRunner) {
         await queryRunner.query(`TRUNCATE accounts`)
         await queryRunner.query(`TRUNCATE accounts_domains`)
         await queryRunner.query(`TRUNCATE accounts_users`)
@@ -13,7 +13,7 @@ export class truncateTables1618565404741 implements MigrationInterface {
         await queryRunner.query(`TRUNCATE users_credentials`)
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
+    async down(queryRunner) {
     }
 
 }
