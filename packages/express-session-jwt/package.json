@@ -1,6 +1,6 @@
 {
   "name": "express-session-jwt",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Secure session middleware for Express with JWT, drop in replacement for express-session",
   "author": "Saasform Team <hello@saasform.dev> (https://saasform.dev)",
   "license": "MIT",

@@ -1,22 +1,20 @@
 # express-session-jwt
 
-[![NPM Version][npm-version-image]][npm-url]
-
-**!! IMPORTANT !! This library is in alpha, not yet recommended for production - please help us battle test it !!**
-
-This is `express-session-jwt` a drop-in replacement of `express-session` with enhanced security.
+Express session using JWT. Drop-in replacement of `express-session` with enhanced security ([blog post](https://hackernoon.com/secure-sessions-in-javascript-forking-express-session-to-improve-security-s62c35mk)). 
 
 Compared to the original `express-session`, this fork:
-1. Prevents session fixation (e.g., when a user logs in a new token is emitted)
-2. Guarantees that destroyed sessions can't be re-saved (e.g., a logged out session can't become alive again)
-3. Reduces the impact of data theft from the store (stores `hash(sessId)` instead of `sessId`)
-4. Improves upon deprecated default config options
+1. Uses JWT as session tokens
+2. Uses public-key cryptography (ES256) for better access to secrets
+3. Prevents session fixation (e.g., when a user logs in a new token is emitted)
+4. Guarantees that destroyed sessions can't be re-saved (e.g., a logged out session can't become alive again)
+5. Reduces the impact of data theft from the store (stores `hash(sessId)` instead of `sessId`)
+6. Improves upon deprecated default config options
 
-In addition, it's a **drop-in replacement** in the sense that you can replace the npm package and all existig/active sessions will be transparently upgraded from the original to the new format, without logging users out.
+It's a drop-in replacement of `express-session` in the sense than you can replace the npm package and existing sessions will be transparently upgraded to JWT without logging your users out. See the [Examples](#examples) below.
 
-Our implementation uses JWT as session tokens. With JWT you can store data that changes infrequently (wrt the lifetime of a session, e.g., user id, roles) inside the JWT, while you can still maintain the full flexibility of your store (e.g., for counters, flash messages). We expect tokens to be passed as secure, http-only cookies. We use public key cryptography, specifically ES256, so that you can have a single service issuing tokens but multiple services verifying them (with access to the public key only, not the private key).
 
-Features:
+## Features
+
 - [x] Pass all original express-session tests (only changes are the default config values)
 - [x] Add `keys` option with public/private keys
 - [x] Add `jwtFromReq` option to return content of JWT token
@@ -810,6 +808,8 @@ On Windows, use the corresponding command;
 ## License
 
 [MIT](LICENSE)
+
+[![NPM Version][npm-version-image]][npm-url]
 
 [rfc-6265bis-03-4.1.2.7]: https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.2.7
 [npm-downloads-image]: https://badgen.net/npm/dm/express-session-jwt
