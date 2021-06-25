@@ -1,4 +1,5 @@
 import { Controller, Post, Put, Delete, UseGuards, Request, Res, Param } from '@nestjs/common'
+import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { SettingsService } from '../../../settings/settings.service'
 import { AccountsService } from '../../../accounts/services/accounts.service'
@@ -7,6 +8,9 @@ import { UsersService } from '../../../accounts/services/users.service'
 
 import { UserRequiredAuthGuard } from '../../../auth/auth.guard'
 
+@ApiBearerAuth()
+@ApiCookieAuth()
+@ApiTags('Settings page')
 @Controller('/api/v1/user')
 export class ApiV1UserController {
   constructor (

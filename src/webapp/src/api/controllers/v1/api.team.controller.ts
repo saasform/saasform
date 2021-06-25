@@ -1,9 +1,13 @@
 import { Controller, Get, Post, UseGuards, Request, Res } from '@nestjs/common'
+import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { AccountsService } from '../../../accounts/services/accounts.service'
 
 import { UserRequiredAuthGuard } from '../../../auth/auth.guard'
 
+@ApiBearerAuth()
+@ApiCookieAuth()
+@ApiTags('Settings page')
 @Controller('/api/v1/team')
 export class ApiV1TeamController {
   constructor (

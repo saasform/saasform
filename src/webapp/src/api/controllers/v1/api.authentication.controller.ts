@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common'
+import { ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { SettingsService } from '../../../settings/settings.service'
 import { AuthService } from '../../../auth/auth.service'
@@ -7,6 +8,7 @@ import { UserError } from '../../../utilities/common.model'
 import { GoogleGuard } from '../../../auth/auth.guard'
 import { UserCredentialsService } from '../../../accounts/services/userCredentials.service'
 
+@ApiTags('Authentication')
 @Controller('/api/v1')
 export class ApiV1AutheticationController {
   constructor (
@@ -15,14 +17,6 @@ export class ApiV1AutheticationController {
     private readonly paymentsService: PaymentsService,
     private readonly userCredentialsService: UserCredentialsService
   ) {}
-
-  @Get()
-  async getHello (@Request() req, @Res() res: Response): Promise<any> {
-    return res.json({
-      statusCode: 200,
-      message: 'Hello, World!'
-    })
-  }
 
   async issueJwtAndRedirect (req, res, user): Promise<Response> {
     const requestUser = req.user != null ? req.user : await this.authService.getTokenPayloadFromUserModel(user)
