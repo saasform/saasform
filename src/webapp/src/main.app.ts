@@ -6,8 +6,10 @@ import { Liquid } from 'liquidjs'
 import * as bodyParser from 'body-parser'
 import * as cookieParser from 'cookie-parser'
 import * as csurf from 'csurf'
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 
 import { HttpExceptionsFilter } from './filters/http-exceptions.filter'
+import { ApiModule } from './api/api.module'
 
 // import { HttpExceptionsFilter } from './filters/http-exceptions.filter';
 
@@ -86,4 +88,16 @@ export function configureApp (app, isTest: boolean = false): void {
       return csrf(req, res, next)
     })
   }
+
+  const config = new DocumentBuilder()
+    .setTitle('Saasform API')
+    .setDescription('Saasform API')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .addCookieAuth('__session')
+    .build()
+  const document = SwaggerModule.createDocument(app, config, {
+    include: [ApiModule]
+  })
+  SwaggerModule.setup('api/v1', app, document)
 }

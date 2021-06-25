@@ -1,4 +1,5 @@
 import { Controller, Get, Request, Res } from '@nestjs/common'
+import { ApiExcludeEndpoint } from '@nestjs/swagger'
 import { Response } from 'express'
 import { CronService } from '../../../cron/cron.service'
 
@@ -8,6 +9,7 @@ export class ApiV1CronController {
     private readonly cronService: CronService
   ) {}
 
+  @ApiExcludeEndpoint()
   @Get('register')
   async handleAddPaymentToken (@Request() req, @Res() res: Response): Promise<any> {
     await this.cronService.setupCron()
