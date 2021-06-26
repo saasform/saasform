@@ -658,6 +658,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     res.html_google_signin_header = res.app_google_signin_client_id !== '' && !res.app_google_signin_client_id.endsWith('xxx')
       ? `
       <meta name="google-signin-client_id" content="${res.app_google_signin_client_id}">
+      <meta name="google-signin-scope" content="${res.app_google_signin_scope}">
       <script src="https://apis.google.com/js/platform.js?onload=onGoogleStart" async defer></script>
     `
       : ''
