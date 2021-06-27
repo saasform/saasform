@@ -12,10 +12,7 @@ function onGoogleStart() {
 }
 
 function onGoogleSignIn(googleUser) {
-  const data = {
-    token: googleUser.getAuthResponse().id_token
-  };
-
+  const data = googleUser.getAuthResponse();
   const xhr = new XMLHttpRequest();
   xhr.open('POST', '/api/v1/google-signin');
   xhr.setRequestHeader('Content-Type', 'application/json');
