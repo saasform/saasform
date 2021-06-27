@@ -2296,9 +2296,7 @@ function onGoogleStart() {
 }
 
 function onGoogleSignIn(googleUser) {
-  var data = {
-    token: googleUser.getAuthResponse().id_token
-  };
+  var data = googleUser.getAuthResponse();
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/api/v1/google-signin');
   xhr.setRequestHeader('Content-Type', 'application/json');

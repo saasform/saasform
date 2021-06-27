@@ -1,0 +1,36 @@
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" enable-background="new 54.064 105.541 445.253 63.814" y="0px" x="0px" id="MIRACL-4" version="1.1" viewBox="74.06 132.66 103.49 56.69">
+<g
+   transform="translate(20,20)"
+   id="g36">
+	<polygon
+   style="fill:#4c565c"
+   id="polygon20"
+   points="74.479,113.66 94.885,113.66 74.479,168.355 54.064,168.355 " />
+	<polygon
+   style="fill:#4c565c"
+   id="polygon22"
+   points="115.297,113.66 135.703,113.66 115.297,168.355 94.885,168.355 " />
+	<g
+   id="g28">
+		<polygon
+   style="fill:#5692ce"
+   id="polygon24"
+   points="135.703,113.66 115.297,113.66 135.703,168.355 156.117,168.355 " />
+		<path
+   style="fill:#ffffff"
+   id="path26"
+   d="m 135.703,113.66 20.414,54.695 H 135.703 L 115.297,113.66 h 20.406 m 0.695,-1 h -0.695 -20.406 -1.439 l 0.504,1.35 20.406,54.695 0.242,0.65 h 0.693 20.414 1.441 l -0.504,-1.351 -20.414,-54.694 z" />
+	</g>
+	<g
+   id="g34">
+		<polygon
+   style="fill:#5692ce"
+   id="polygon30"
+   points="94.885,113.66 74.479,113.66 94.885,168.355 115.297,168.355 " />
+		<path
+   style="fill:#ffffff"
+   id="path32"
+   d="m 94.885,113.66 20.412,54.695 H 94.885 L 74.479,113.66 h 20.406 m 0.695,-1 H 94.885 74.479 73.04 l 0.504,1.35 20.406,54.695 0.242,0.65 h 0.693 20.412 1.441 l -0.504,-1.351 -20.412,-54.694 z" />
+	</g>
+</g>
+</svg>
