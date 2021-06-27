@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport'
 import { LocalStrategy } from './local.strategy'
 import { JwtStrategy } from './jwt.strategy'
 import { AzureAdStrategy } from './azuread.strategy'
+import { MiraclStrategy } from './miracl.strategy'
 import { JwtModule } from '@nestjs/jwt'
 import { AccountsModule } from '../accounts/accounts.module'
 import { SettingsService } from '../settings/settings.service'
@@ -31,7 +32,8 @@ import { GoogleOAuth2Service } from './google.service'
     LocalStrategy,
     JwtStrategy,
     GoogleOAuth2Service,
-    AzureAdStrategy
+    AzureAdStrategy,
+    MiraclStrategy
   ],
   exports: [AuthService, GoogleOAuth2Service, JwtModule]
 })
