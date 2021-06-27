@@ -202,17 +202,21 @@ export class AccountsService extends BaseService<AccountEntity> {
       try {
         const res = await this.createOne(account)
         // If a user is specified add the user as owner
-        if (user !== undefined) await this.accountsUsersService.addUser(user, res)
+        if (user !== undefined) {
+          await this.accountsUsersService.addUser(user, res)
+        }
         // TODO: refactor this
 
-        // send email here (new account template)
-        const emailData = {
-          user,
-          action_url: `${await this.settingsService.getBaseUrl()}/verify-email/${user.emailConfirmationToken as string}`
-        }
+        if (user.data.emailConfirmed !== true) {
+          // send email here (new account template)
+          const emailData = {
+            user,
+            action_url: `${await this.settingsService.getBaseUrl()}/verify-email/${user.emailConfirmationToken as string}`
+          }
 
-        if ((await this.notificationService.sendEmail(user.email, 'email_confirm', emailData)) === false) {
-          console.error('Error while sending email')
+          if ((await this.notificationService.sendEmail(user.email, 'email_confirm', emailData)) === false) {
+            console.error('Error while sending email')
+          }
         }
 
         return res

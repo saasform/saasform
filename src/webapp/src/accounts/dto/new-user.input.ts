@@ -8,6 +8,9 @@ export class UserJson {
 
   @Field()
   email: string
+
+  @Field()
+  emailConfirmed?: boolean = false
 };
 
 @InputType('NewUser')
