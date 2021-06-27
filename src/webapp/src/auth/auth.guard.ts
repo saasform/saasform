@@ -61,7 +61,7 @@ export class GoogleGuard implements CanActivate {
 
   async canActivate (context: ExecutionContext): Promise<any> {
     const req = context.switchToHttp().getRequest()
-    const profile = await this.googleService.getUserPayload(req.body.token)
+    const profile = await this.googleService.getUserPayload(req.body.id_token)
     if (profile == null || profile.email == null) {
       return false
     }
