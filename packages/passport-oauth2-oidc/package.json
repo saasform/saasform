@@ -1,0 +1,54 @@
+{
+  "name": "passport-oauth2-oidc",
+  "version": "0.0.2",
+  "description": "OAuth2 + OpenID Connect (OIDC) authentication strategy for Passport.",
+  "keywords": [
+    "passport",
+    "openid",
+    "openidconnect",
+    "oauth",
+    "oauth2",
+    "auth",
+    "authn",
+    "authentication",
+    "identity"
+  ],
+  "author": {
+    "name": "Saasform Team",
+    "email": "hello@saasform.dev",
+    "url": "https://saasform.dev"
+  },
+  "repository": "saasform/saasform",
+  "bugs": {
+    "url": "http://github.com/saasform/saasform/issues"
+  },
+  "license": "MIT",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ],
+  "main": "./lib",
+  "dependencies": {
+    "oauth": "0.9.x",
+    "passport-strategy": "1.x.x",
+    "request": "^2.75.0",
+    "webfinger": "0.4.x"
+  },
+  "devDependencies": {
+    "chai": "2.x.x",
+    "chai-passport-strategy": "1.x.x",
+    "jsonwebtoken": "^7.1.9",
+    "make-node": "0.3.x",
+    "mocha": "2.x.x",
+    "proxyquire": "^1.7.10",
+    "sinon": "^1.17.6"
+  },
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/mocha --reporter spec --require test/bootstrap/node test/*.test.js test/**/*.test.js"
+  }
+}
