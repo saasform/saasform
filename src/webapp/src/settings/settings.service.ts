@@ -198,6 +198,21 @@ export class SettingsService extends BaseService<SettingsEntity> {
     } : null
   }
 
+  async getMiraclStrategyConfig (): Promise<any | null> {
+    const keys = await this.getKeysSettings()
+
+    const clientID = keys.oidc_miracl_client_id ?? this.configService.get('OIDC_MIRACL_CLIENT_ID') ?? ''
+    const clientSecret = keys.oidc_miracl_client_secret ?? this.configService.get('OIDC_MIRACL_CLIENT_SECRET') ?? ''
+
+    const baseUrl = await this.getBaseUrl()
+
+    return (clientID !== '' && !clientID.endsWith('xxx')) ? {
+      clientID,
+      clientSecret,
+      callbackURL: `${baseUrl}/auth/miracl/callback`
+    } : null
+  }
+
   async getAdminSettings (): Promise<SettingsAdminJson> {
     const result = await this.getSettings('admin') as unknown as SettingsAdminJson
 
@@ -490,6 +505,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       // signup fields
       signup_show_google: false,
       signup_show_azure: false,
+      signup_show_miracl: false,
       signup_show_username: false,
       signup_force_payment: false,
 
@@ -648,6 +664,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     res.app_google_signin_client_id = keys.oauth_google_signin_client_id ?? this.configService.get('OAUTH_GOOGLE_SIGNIN_CLIENT_ID') ?? ''
     res.app_google_signin_scope = keys.oauth_google_signin_scope ?? this.configService.get('OAUTH_GOOGLE_SIGNIN_SCOPE') ?? ''
     const azureAdConfig = await this.getAzureAdStrategyConfig()
+    const miraclConfig = await this.getMiraclStrategyConfig()
 
     // html
 
@@ -655,6 +672,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     // https://developers.google.com/identity/sign-in/web/sign-in
     res.signup_show_google = !!((res.app_google_signin_client_id !== '' && !res.app_google_signin_client_id.endsWith('xxx')))
     res.signup_show_azure = !!(azureAdConfig != null)
+    res.signup_show_miracl = !!(miraclConfig != null)
     res.html_google_signin_header = res.app_google_signin_client_id !== '' && !res.app_google_signin_client_id.endsWith('xxx')
       ? `
       <meta name="google-signin-client_id" content="${res.app_google_signin_client_id}">
