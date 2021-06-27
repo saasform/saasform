@@ -436,4 +436,34 @@ export class AuthService {
       extra: data
     })
   }
+
+  async authMiracl (req, profile, accessToken, refreshToken): Promise<RequestUser | null> {
+    /*
+      profile = {
+        id: 'ec@saasform.dev',
+        displayName: undefined,
+        name: {
+          familyName: undefined,
+          givenName: undefined,
+          middleName: undefined
+        },
+        _raw: '{"sub":"ec@saasform.dev","email":"ec@saasform.dev","email_verified":true}',
+        _json: {
+          sub: 'ec@saasform.dev',
+          email: 'ec@saasform.dev',
+          email_verified: true
+        }
+      }
+    */
+    const data = profile?._json ?? {}
+    const { _raw, ...extra } = profile
+
+    return await this.userFindOrCreate(req, {
+      provider: 'miracl',
+      email: data.email,
+      email_verified: data.email_verified ?? false,
+      subject: profile.id,
+      extra
+    })
+  }
 }

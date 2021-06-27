@@ -75,3 +75,6 @@ export class GoogleGuard implements CanActivate {
 
 @Injectable()
 export class AzureAdGuard extends AuthGuard('azuread-openidconnect') {}
+
+@Injectable()
+export class MiraclGuard extends AuthGuard('miracl') {}
