@@ -42,7 +42,7 @@ KILLBILL_API_SECRET: lazar
 KILLBILL_USERNAME: admin
 KILLBILL_PASSWORD: password
 
-# Supported OAuth: Google, AzureAD (incl. Office 365)
+# Supported OAuth/OIDC: Google, AzureAD (incl. Office 365), Miracl (miracl.com)
 OAUTH_GOOGLE_SIGNIN_CLIENT_ID: 123xxx
 OAUTH_GOOGLE_SIGNIN_SCOPE: email profile
 
@@ -50,3 +50,6 @@ OAUTH_AZURE_AD_TENANT_ID: 123xxx
 OAUTH_AZURE_AD_CLIENT_ID: 123xxx
 OAUTH_AZURE_AD_CLIENT_SECRET_VALUE: abcxxx
 OAUTH_AZURE_AD_SCOPE: email profile openid
+
+OIDC_MIRACL_CLIENT_ID: 123xxx
+OIDC_MIRACL_CLIENT_SECRET: abcxxx
