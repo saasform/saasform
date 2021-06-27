@@ -634,7 +634,10 @@ app.get('/bar', function (req, res, next) {
   res.send('you viewed this page ' + req.session.views['/bar'] + ' times')
 })
 
-app.listen(3000);
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Ready: http://localhost:${port}/`)
+})
 ```
 
 ### Minimal examples (original vs re-implementation)

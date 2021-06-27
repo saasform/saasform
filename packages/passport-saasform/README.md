@@ -20,8 +20,8 @@ yarn add passport-saasform
 Here's a minimal working example:
 
 ```js
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 
 const passport = require('passport');
 const SaasformStrategy = require('passport-saasform');
@@ -34,12 +34,13 @@ passport.use(new SaasformStrategy({
 const auth = passport.authenticate('saasform', { session: false });
 
 app.get('/', auth, (req, res) => {
-  res.send(`Hello ${req.user.email}!`)
-})
+  res.send(`Hello ${req.user.email}!`);
+});
 
-app.listen(3000, () => {
-  console.log(`Minimal example app`)
-})
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Ready: http://localhost:${port}/`);
+});
 ```
 
 ## Contribute
