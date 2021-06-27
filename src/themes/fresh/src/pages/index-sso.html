@@ -61,7 +61,7 @@ layout: default
             </div>
           </div>
 
-          {% if signup_show_google or signup_show_azure %}
+          {% if signup_show_google or signup_show_azure or signup_show_miracl %}
           <p class="has-text-centered mt-20 mb-20">or</p>
           {% endif %}
 
@@ -93,6 +93,21 @@ layout: default
               </a>
             </div>
             <p id="error-azure" class="help is-danger">{{ error.azure }}</p>
+          </div>
+          {% endif %}
+          {% if signup_show_miracl %}
+          <div class="field">
+            <div class="control">
+              <a id="miracl-signin" class="button is-fullwidth is-justify-content-start" href="/auth/miracl">
+                <span class="icon is-large">
+                  <img src="/default/assets/img/logo/miracl.svg"/>
+                </span>
+                <span style="width: 100%">
+                  Sign in with Miracl
+                </span>
+              </a>
+            </div>
+            <p id="error-miracl" class="help is-danger">{{ error.miracl }}</p>
           </div>
           {% endif %}
         </form>
