@@ -310,35 +310,35 @@ describe('Authentication (e2e)', () => {
   it('with a registered google credential for a registered user, should signin into saasform IF email is verified', () => {
     return agent
       .post('/api/v1/google-signin')
-      .send(`token=${GOOGLE_ID_TOKEN_TO_SIGNIN}`)
-      .expect(302)
+      .send(`id_token=${GOOGLE_ID_TOKEN_TO_SIGNIN}`)
+      .expect(302, '{"statusCode":302,"message":"Found","redirect":"https://app.uplom.com"}')
   })
 
   it('with a registered google credential for a registered user, should NOT signin into saasform IF saasform email unverified', () => {
     return agent
       .post('/api/v1/google-signin')
-      .send(`token=${GOOGLE_ID_TOKEN_TO_UNVERIFIED}`)
+      .send(`id_token=${GOOGLE_ID_TOKEN_TO_UNVERIFIED}`)
       .expect(409)
   })
 
   it('with a registered google credential for a registered user, should NOT signin into saasform IF google email unverified', () => {
     return agent
       .post('/api/v1/google-signin')
-      .send(`token=${GOOGLE_ID_TOKEN_UNVERIFIED_ON_GOOGLE}`)
+      .send(`id_token=${GOOGLE_ID_TOKEN_UNVERIFIED_ON_GOOGLE}`)
       .expect(409)
   })
 
   it('with a not registered google credential for a registered user, should signup into saasform and redirect into saasform', () => {
     return agent
       .post('/api/v1/google-signin')
-      .send(`token=${GOOGLE_ID_TOKEN_TO_SIGNUP}`)
-      .expect(302)
+      .send(`id_token=${GOOGLE_ID_TOKEN_TO_SIGNUP}`)
+      .expect(302, '{"statusCode":302,"message":"Found","redirect":"https://app.uplom.com"}')
   })
 
   it('with a not registered google credential for a not registered user, should signup into saasform and redirect into saasform', () => {
     return agent
       .post('/api/v1/google-signin')
-      .send(`token=${GOOGLE_ID_TOKEN_TO_ERROR}`)
-      .expect(302)
+      .send(`id_token=${GOOGLE_ID_TOKEN_TO_ERROR}`)
+      .expect(302, '{"statusCode":302,"message":"Found","redirect":"https://app.uplom.com"}')
   })
 })

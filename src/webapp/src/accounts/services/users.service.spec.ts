@@ -125,6 +125,24 @@ describe('UsersService', () => {
       expect(addedUser.data.emailConfirmed).toBeFalsy()
     })
 
+    it('should not set the email confirmation token and flag when a user is created', async () => {
+      const repoSpy = jest.spyOn(mockedRepo, 'createOne')
+      const userInput: NewUserInput = new NewUserInput()
+      userInput.email = 'foo@email.com'
+      userInput.password = 'password'
+      userInput.data = { name: 'foo', email: 'foo@email.com', emailConfirmed: true }
+
+      await service.addUser(userInput)
+
+      const addedUser: UserEntity = repoSpy.mock.calls[0][0]
+      expect(repoSpy).toBeCalledTimes(1)
+      // expect(addedUser.data.emailConfirmationToken).toBeNull()
+      // expect(addedUser.emailConfirmationToken).toBeNull()
+      // expect(addedUser.data.emailConfirmationTokenExp).toBeNull()
+
+      expect(addedUser.data.emailConfirmed).toBeTruthy()
+    })
+
     it('should send the confirmation email', async () => {
     })
 
