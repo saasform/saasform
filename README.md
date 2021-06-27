@@ -54,6 +54,8 @@ Saasform uses [Humbug](https://github.com/bugout-dev/humbug) to collect anonymou
   - [x] Security emails (verification, password reset...)
   - [x] Team support (invite new user)
   - [x] Google oauth / SSO
+  - [x] Microsoft Azure AD (incl. Office 365)
+  - [x] [Miracl](https://miracl.com)
   - [ ] Session management
   - [ ] Enterprise SSO / SAML / Okta integration
 - Subscription payments
