@@ -22,11 +22,11 @@ export class KillBillService extends BasePaymentProcessorService {
   ) {
     super(configService, settingsService)
 
-    this.url = this.configService.get<string>('KB_URL') ?? ''
-    this.api_key = this.configService.get<string>('KB_API_KEY') ?? ''
-    this.api_secret = this.configService.get<string>('KB_API_SECRET') ?? ''
-    this.username = this.configService.get<string>('KB_USERNAME') ?? ''
-    this.password = this.configService.get<string>('KB_PASSWORD') ?? ''
+    this.url = this.configService.get<string>('KILLBILL_URL') ?? ''
+    this.api_key = this.configService.get<string>('KILLBILL_API_KEY') ?? ''
+    this.api_secret = this.configService.get<string>('KILLBILL_API_SECRET') ?? ''
+    this.username = this.configService.get<string>('KILLBILL_USERNAME') ?? ''
+    this.password = this.configService.get<string>('KILLBILL_PASSWORD') ?? ''
 
     const killbill = require('killbill') // eslint-disable-line
     const globalAxios = require('axios') // eslint-disable-line
