@@ -34,7 +34,7 @@ export class AccountsDomainsService extends BaseService<AccountDomainEntity> {
     })
 
     if (this.validationService.isNilOrEmpty(domains) === true) {
-      console.error('AccountsDomainsService - getAccountIsByEmailDomain - domain not found', domain, domains)
+      // console.log('AccountsDomainsService - getAccountIsByEmailDomain - domain not found', domain, domains)
       return null
     }
 

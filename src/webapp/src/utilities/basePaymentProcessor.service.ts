@@ -36,7 +36,7 @@ export class BasePaymentProcessorService {
     // console.log('Create customer')
   }
 
-  async createFreeSubscription (plan: any, stripeId: any): Promise<any> {
+  async createSubscription (plan: any, stripeId: any): Promise<any> {
     // console.log('Create free subscription')
   }
 

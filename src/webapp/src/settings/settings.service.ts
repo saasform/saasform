@@ -264,10 +264,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
 
   async getTrialLength (cachedSettings?): Promise<number> {
     const settings = cachedSettings ?? await this.getWebsiteSettings()
-    if (settings.trial_length == null) {
-      return 10 // TODO: fix the trial duration
-    }
-    return settings.trial_length
+    return settings.pricing_free_trial ?? 7
   }
 
   async getTopLevelUrl (cachedSettings?): Promise<string> {

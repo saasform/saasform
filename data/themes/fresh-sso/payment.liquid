@@ -101,7 +101,7 @@
       // Finally, it needs the CSRF token.
   
       // 1. Attaching a listener to the form submit event
-      const paymentForm = document.getElementById('payment-form');
+      /*const paymentForm = document.getElementById('payment-form');
       if (paymentForm) {
         paymentForm.addEventListener('submit', function (event) {
           event.preventDefault();
@@ -154,7 +154,7 @@
                 location.reload();
               })
           }
-      }
+      }*/
   
   
       const paymentMethodForm = document.getElementById('payment-method');
@@ -175,12 +175,12 @@
           .then(function(result) {
             if (result.error) {
               // Inform the customer that there was an error.
-              var errorElement = document.getElementById('card-errors');
+              var errorElement = document.getElementById('error-card');
               errorElement.textContent = result.error.message;
             } else {
               // Send the token to your server.
               // stripeTokenHandler(result.token);
-              fetch('/api/v1/add-payment-token', {
+              fetch('/api/v1/add-payment-token?redirect=1', {
                 method: 'post',
                 headers: {
                   'Content-type': 'application/json',
@@ -190,8 +190,15 @@
                   ...result.paymentMethod
                 }),
               })
-              .then((response) => {
-                location.reload();
+              .then(response => response.json())
+              .then((result) => {
+                // Inform the customer that there was an error.
+                if (result.error) {
+                  console.error(result.error);
+                  var errorElement = document.getElementById('error-card');
+                  errorElement.textContent = result.error;
+                }
+                location = result.redirect ?? '/';
               })
             }
           });
@@ -218,12 +225,11 @@
               </p>
             </div>
   
-          <form action="" method="POST" class="mb-40">
-            <div id="payment-request-button">
-              <!-- A Stripe Element will be inserted here. -->
+          <form id="payment-method" action="" method="POST" class="mb-40">
+            <!--div id="payment-request-button">
             </div>
   
-            <p class="has-text-centered mt-20 mb-20">or</p>
+            <p class="has-text-centered mt-20 mb-20">or</p-->
   
             <div class="field">
               <label for="name" class="label  has-text-weight-normal">
@@ -244,6 +250,7 @@
                   <!-- A Stripe Element will be inserted here. -->
                 </div>
               </div>
+              <p id="error-card" class="help is-danger"></p>
             </div>
   
             <!-- Submit -->

@@ -54,7 +54,7 @@ export class KillBillService extends BasePaymentProcessorService {
     }
   }
 
-  async createFreeSubscription (plan, kbAccountId): Promise<any> {
+  async createSubscription (plan, kbAccountId): Promise<any> {
     try {
       // const trialDays = 10 // TODO
       const subscriptionData = { accountId: kbAccountId, planName: `${String(plan.id)}-yearly` }
