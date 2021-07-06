@@ -187,11 +187,11 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     return [stripeCustomer, null]
   }
 
-  async createFreeSubscription (plan, user): Promise<any> { // TODO: return a proper type
+  async createSubscription (plan, user): Promise<any> { // TODO: return a proper type
     if (this.paymentIntegration === 'killbill') {
-      return await this.killBillService.createFreeSubscription(plan, user)
+      return await this.killBillService.createSubscription(plan, user)
     } else {
-      return await this.stripeService.createFreeSubscription(plan, user)
+      return await this.stripeService.createSubscription(plan, user)
     }
   }
 

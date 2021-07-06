@@ -2,6 +2,7 @@ import { Controller, Post, UseGuards, Request, Res } from '@nestjs/common'
 import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { AccountsService } from '../../../accounts/services/accounts.service'
+import { SettingsService } from '../../../settings/settings.service'
 
 import { UserRequiredAuthGuard } from '../../../auth/auth.guard'
 
@@ -11,7 +12,8 @@ import { UserRequiredAuthGuard } from '../../../auth/auth.guard'
 @Controller('/api/v1')
 export class ApiV1PaymentController {
   constructor (
-    private readonly accountsService: AccountsService
+    private readonly accountsService: AccountsService,
+    private readonly settingsService: SettingsService
   ) {}
 
   @UseGuards(UserRequiredAuthGuard)
@@ -20,13 +22,29 @@ export class ApiV1PaymentController {
     const account = await this.accountsService.findByOwnerEmail(req.user.email)
 
     if (account == null) {
-      return res.json({
+      return res.status(400).json({
         statusCode: 400,
         error: 'Account not found'
       })
     }
 
-    const methods = await this.accountsService.addPaymentsMethods(account.id, req.body)
+    let methods
+    try {
+      methods = await this.accountsService.addPaymentsMethods(account.id, req.body)
+    } catch (_) {
+      return res.json({
+        statusCode: 400,
+        error: 'Invalid credit card info. Please try again.'
+      })
+    }
+
+    if (req.query.redirect != null) {
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
+      return res.json({
+        statusCode: 302,
+        redirect
+      })
+    }
 
     return res.json({
       statusCode: 200,

@@ -60,17 +60,21 @@ export class StripeService extends BasePaymentProcessorService {
     }
   }
 
-  async createFreeSubscription (plan, stripeId): Promise<any> {
+  async createSubscription (plan, stripeId): Promise<any> {
     const trialDays = await this.settingsService.getTrialLength()
     const trialEnd = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60
 
+    const subscriptionOptions: any = {
+      customer: stripeId,
+      items: [{ price: plan.prices.year.id }]
+    }
+    if (trialDays > 0) {
+      subscriptionOptions.trial_end = trialEnd
+    }
+
     try {
       // TODO: fix the price to use
-      const subscription = await this.client.subscriptions.create({
-        customer: stripeId,
-        items: [{ price: plan.prices.year.id }],
-        trial_end: trialEnd
-      }, this.apiOptions)
+      const subscription = await this.client.subscriptions.create(trialDays, this.apiOptions)
 
       return subscription
     } catch (error) {

@@ -90,7 +90,7 @@ export class AccountsService extends BaseService<AccountEntity> {
     const domain = email.split('@')[1]
     const accountId = await this.accountsDomainsService.getAccountIsByEmailDomain(domain)
     if (accountId == null) {
-      console.error('accountsService - getAccountByEmailDomain - cannot find account for the domain', domain)
+      // console.log('accountsService - getAccountByEmailDomain - cannot find account for the domain', domain)
       return null
     }
 
@@ -187,10 +187,10 @@ export class AccountsService extends BaseService<AccountEntity> {
       }
 
       // Add free tier plan
-      if (await this.settingsService.getTrialLength() !== 0) {
+      if (await this.settingsService.getTrialLength() > 0) {
         try {
           const plans = await this.plansService.getPlans()
-          await this.paymentsService.createFreeSubscription(
+          await this.paymentsService.createSubscription(
             plans[0],
             (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id)
           )

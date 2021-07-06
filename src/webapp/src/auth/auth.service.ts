@@ -93,17 +93,19 @@ export class AuthService {
     const subsIsActive =
       // no subs, but payment processor disabled
       (subscriptionData.subs_status == null && !configPaymentProcessorEnabled) ||
+      // no subs, e.g. enterprise or not yet added
+      (subscriptionData.subs_status === undefined) ||
       // valid subs in any of these states: disabled, external, active, trialing
       ['disabled', 'external', 'active', 'trialing'].includes(subscriptionData.subs_status)
 
     if (userIsActive && accountIsActive && subsIsActive) {
       return 'active'
     } else {
-      if (!subsIsActive) {
-        return 'unpaid'
-      }
       if (!accountIsActive) {
         return 'no_payment_method'
+      }
+      if (!subsIsActive) {
+        return 'unpaid'
       }
       // if (userIsActive === false) {
       //   return 'account_blocked'
