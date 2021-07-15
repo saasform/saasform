@@ -6,8 +6,8 @@ import { AccountsService } from '../../../accounts/services/accounts.service'
 import { PlansService } from '../../../payments/services/plans.service'
 import { UsersService } from '../../../accounts/services/users.service'
 
-import { UserRequiredAuthGuard } from '../../../auth/auth.guard'
-import { UserCredentialsService } from 'src/accounts/services/userCredentials.service'
+import { BearerTokenGuard, UserRequiredAuthGuard } from '../../../auth/auth.guard'
+import { UserCredentialsService } from '../../../accounts/services/userCredentials.service'
 
 @ApiBearerAuth()
 @ApiCookieAuth()
@@ -141,7 +141,7 @@ export class ApiV1UserController {
     })
   }
 
-  // @UseGuards(UserRequiredAuthGuard)
+  @UseGuards(BearerTokenGuard)
   @Get(':userId/oauth_tokens')
   async getOauthTokens (@Request() req, @Res() res: Response, @Param('userId') userId): Promise<any> {
     if (userId == null) {
