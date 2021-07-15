@@ -1,4 +1,4 @@
-import { Controller, Post, Put, Delete, UseGuards, Request, Res, Param } from '@nestjs/common'
+import { Controller, Get, Post, Put, Delete, UseGuards, Request, Res, Param } from '@nestjs/common'
 import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { SettingsService } from '../../../settings/settings.service'
@@ -7,6 +7,7 @@ import { PlansService } from '../../../payments/services/plans.service'
 import { UsersService } from '../../../accounts/services/users.service'
 
 import { UserRequiredAuthGuard } from '../../../auth/auth.guard'
+import { UserCredentialsService } from 'src/accounts/services/userCredentials.service'
 
 @ApiBearerAuth()
 @ApiCookieAuth()
@@ -17,7 +18,8 @@ export class ApiV1UserController {
     private readonly usersService: UsersService,
     private readonly settingsService: SettingsService,
     private readonly accountsService: AccountsService,
-    private readonly plansService: PlansService
+    private readonly plansService: PlansService,
+    private readonly userCredentialService: UserCredentialsService
   ) {}
 
   @UseGuards(UserRequiredAuthGuard)
@@ -137,5 +139,50 @@ export class ApiV1UserController {
       statusCode: 200,
       error: `User ${userId as string} removed`
     })
+  }
+
+  // @UseGuards(UserRequiredAuthGuard)
+  @Get(':userId/oauth_tokens')
+  async getOauthTokens (@Request() req, @Res() res: Response, @Param('userId') userId): Promise<any> {
+    if (userId == null) {
+      return res.json({
+        statusCode: 400,
+        error: 'userId not valid'
+      })
+    }
+
+    try {
+      const userCredential = await this.userCredentialService.findUserCredentialByUserId(userId)
+
+      if (userCredential === null) {
+        return res.json({
+          statusCode: 404,
+          message: `Credentials not found for user ${userId as string}`
+        })
+      }
+
+      let userTokens: any[] = []
+      const providers = ['azure', 'google']
+      userTokens = providers.reduce((userTokens, provider) => {
+        const providerTokens = userCredential[provider]?.tokens ?? {}
+        userTokens.push({
+          email: userCredential.credential,
+          provider,
+          ...providerTokens
+        })
+        return userTokens
+      }, userTokens)
+
+      return res.json({
+        statusCode: 200,
+        message: userTokens
+      })
+    } catch (error) {
+      console.error('ApiV1UserController - getOauthTokens', error)
+      return res.json({
+        statusCode: 500,
+        message: `err ${error.message as string}`
+      })
+    }
   }
 }

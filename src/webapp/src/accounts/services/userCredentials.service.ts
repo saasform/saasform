@@ -20,6 +20,22 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
     super(req, 'UserCredentialsEntity')
   }
 
+  async findUserCredentialByUserId (userId: number): Promise<UserCredentialsEntity | null> {
+    if (userId == null) {
+      console.error('userCredentials.service - findUserCredentialByUserId - parameter error')
+      return null
+    }
+
+    const res = await this.query({ filter: { userId: { eq: userId } } })
+
+    if (this.validationService.isNilOrEmpty(res) === true) {
+      console.error('userCredentials.service - findUserCredentialByUserId - userCredential not found', userId)
+      return null
+    }
+
+    return res[0]
+  }
+
   async findUserCredentialByEmail (email: string, credentialType: CredentialType = CredentialType.DEFAULT): Promise<UserCredentialsEntity | null> {
     if (email == null) {
       console.error('userCredentials.service - findUserCredentialByEmail - parameter error')
@@ -63,6 +79,10 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
     }
   }
 
+  /**
+   * Deprecated ?
+   */
+  /*
   async attachUserCredentials (email: string, credential: any, credentialType: CredentialType = CredentialType.DEFAULT): Promise<UserCredentialsEntity | null> {
     if (email === null) {
       return null
@@ -95,6 +115,7 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
       return null
     }
   }
+  */
 
   async deleteUserCredentials (userId: number): Promise<number | null> {
     try {

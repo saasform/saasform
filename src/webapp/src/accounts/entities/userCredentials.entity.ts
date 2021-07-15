@@ -55,6 +55,11 @@ export class UserCredentialsEntity {
     this[provider] = this.json[provider] = data
   }
 
+  public setProviderTokens (provider, tokens): void {
+    this.json = this.json ?? {}
+    this[provider].tokens = this.json[provider].tokens = tokens
+  }
+
   constructor (credential: string, userId: number = 0, json: CredentialsJSON = {}) {
     this.credential = credential
     this.userId = userId

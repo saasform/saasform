@@ -7050,7 +7050,7 @@ pascalcase@^0.1.1:
 
 passport-azure-ad@0x0ece/passport-azure-ad:
   version "4.3.0"
-  resolved "https://codeload.github.com/0x0ece/passport-azure-ad/tar.gz/966ad0626d84d9c290b2ae756189494eb08f5e5b"
+  resolved "https://codeload.github.com/0x0ece/passport-azure-ad/tar.gz/fd343e0f205e462ce47e851cd9baebd20c27cd25"
   dependencies:
     async "^1.5.2"
     base64url "^3.0.0"

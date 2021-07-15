@@ -13,6 +13,7 @@ import { SettingsService } from '../settings/settings.service'
 import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
 import { UserError } from '../utilities/common.model'
+import { UserCredentialsEntity } from 'src/accounts/entities/userCredentials.entity'
 
 @Injectable()
 export class AuthService {
@@ -331,6 +332,10 @@ export class AuthService {
         return null
       }
       validUser = newUser
+    } else {
+      (validUser.credential as UserCredentialsEntity).setProviderTokens(data.provider, data.tokens)
+      const { id, ...cred } = validUser.credential
+      await this.userCredentialsService.updateOne(id, cred)
     }
 
     // validate credentials
@@ -388,7 +393,8 @@ export class AuthService {
       email: data.email,
       email_verified: data.email_verified,
       subject: data.sub,
-      extra: data
+      extra: data,
+      tokens: { access_token: req.body.access_token }
     })
   }
 
@@ -435,7 +441,8 @@ export class AuthService {
       email: data.email,
       email_verified: true, // Azure AD doesn't return it - TODO: validate that it's always true
       subject: data.sub,
-      extra: data
+      extra: data,
+      tokens: { access_token: accessToken, refresh_token: refreshToken }
     })
   }
 
@@ -465,7 +472,8 @@ export class AuthService {
       email: data.email,
       email_verified: data.email_verified ?? false,
       subject: profile.id,
-      extra
+      extra,
+      tokens: { access_token: accessToken, refresh_token: refreshToken }
     })
   }
 }
