@@ -10,6 +10,7 @@ import { AccountsModule } from '../accounts/accounts.module'
 import { SettingsService } from '../settings/settings.service'
 import { PaymentsModule } from '../payments/payments.module'
 import { GoogleOAuth2Service } from './google.service'
+import { BearerTokenStrategy } from './bearertoken.strategy'
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { GoogleOAuth2Service } from './google.service'
     JwtStrategy,
     GoogleOAuth2Service,
     AzureAdStrategy,
-    MiraclStrategy
+    MiraclStrategy,
+    BearerTokenStrategy
   ],
   exports: [AuthService, GoogleOAuth2Service, JwtModule]
 })

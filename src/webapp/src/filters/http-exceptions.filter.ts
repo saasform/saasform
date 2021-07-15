@@ -18,8 +18,24 @@ export class HttpExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>()
     const request: any = ctx.getRequest<Request>()
 
+    const requestAccept = request.get('Accept')
+
     console.error('HttpExceptionsFilter - received exception', exception)
     saasformReporter.errorReport(exception, tags, true).then(() => {}, () => {})
+
+    if (requestAccept === 'application/json') {
+      if (exception instanceof UnauthorizedException) {
+        return response.json({
+          statusCode: 401,
+          message: 'Unauthorized'
+        })
+      }
+
+      return response.json({
+        statusCode: 500,
+        message: 'Error'
+      })
+    }
 
     // This needs to be first because it is a special
     // kind of unauthrized that does not trigger any
