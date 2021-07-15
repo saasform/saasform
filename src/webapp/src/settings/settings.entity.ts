@@ -98,6 +98,7 @@ export class SettingsKeysJson {
   oidc_miracl_client_id: string
   oidc_miracl_client_secret: string
   stripe_account: string
+  tokens: any
 }
 
 enum SettingsModulesHomepage {
