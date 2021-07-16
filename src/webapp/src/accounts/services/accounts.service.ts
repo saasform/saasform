@@ -79,15 +79,12 @@ export class AccountsService extends BaseService<AccountEntity> {
   }
 
   /**
-   * Return the account that is linked to an email domain, if it exists. Null otherwise.
-   * For instance if a company links the domain "@company.com" every email @company.com
-   * will return the company account
+   * Return the account that is linked to a domain, if it exists. Null otherwise.
    *
-   * @param email an email to search
+   * @param domain to search
    * @returns the account or null
    */
-  async getAccountByEmailDomain (email: string): Promise<AccountEntity|null> {
-    const domain = email.split('@')[1]
+  async getAccountByDomain (domain: string): Promise<AccountEntity|null> {
     const accountId = await this.accountsDomainsService.getAccountIsByEmailDomain(domain)
     if (accountId == null) {
       // console.log('accountsService - getAccountByEmailDomain - cannot find account for the domain', domain)
@@ -103,6 +100,19 @@ export class AccountsService extends BaseService<AccountEntity> {
     }
 
     return account ?? null
+  }
+
+  /**
+   * Return the account that is linked to an email domain, if it exists. Null otherwise.
+   * For instance if a company links the domain "@company.com" every email @company.com
+   * will return the company account
+   *
+   * @param email an email to search
+   * @returns the account or null
+   */
+  async getAccountByEmailDomain (email: string): Promise<AccountEntity|null> {
+    const domain = email.split('@')[1]
+    return await this.getAccountByDomain(domain)
   }
 
   /**

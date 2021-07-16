@@ -228,6 +228,12 @@ export class AuthService {
     return email != null ? user : null
   }
 
+  async getOrgByDomain (domain: string): Promise<any> {
+    const account = await this.accountsService.getAccountByDomain(domain)
+    const org = account?.data?.org ?? null
+    return org
+  }
+
   async createNewUser (newUser: any): Promise<ValidUser | UserError | null> {
     const { email } = newUser
     if (email == null) {
@@ -474,6 +480,38 @@ export class AuthService {
       subject: profile.id,
       extra,
       tokens: { access_token: accessToken, refresh_token: refreshToken }
+    })
+  }
+
+  async authOkta (req, profile, accessToken, refreshToken): Promise<RequestUser | null> {
+    /*
+      profile = {
+        id: '00uc4l9dEVFyEGY9F695',
+        displayName: 'Emanuele Due',
+        name: { familyName: 'Due', givenName: 'Emanuele', middleName: undefined },
+        _raw: '{"sub":"00uc4l9dEVFyEGY9F695","name":"Emanuele Due","locale":"en-US","email":"ec@saasform.dev","preferred_username":"ec@saasform.dev","given_name":"Emanuele","family_name":"Due","zoneinfo":"America/Los_Angeles","updated_at":1626335424,"email_verified":true}',
+        _json: {
+          sub: '00uc4l9dEVFyEGY9F695',
+          name: 'Emanuele Due',
+          locale: 'en-US',
+          email: 'ec@saasform.dev',
+          preferred_username: 'ec@saasform.dev',
+          given_name: 'Emanuele',
+          family_name: 'Due',
+          zoneinfo: 'America/Los_Angeles',
+          updated_at: 1626335424,
+          email_verified: true
+        }
+    */
+    const data = profile?._json ?? {}
+    const { _raw, ...extra } = profile
+
+    return await this.userFindOrCreate(req, {
+      provider: 'okta',
+      email: data.email,
+      email_verified: data.email_verified ?? false,
+      subject: profile.id,
+      extra
     })
   }
 }
