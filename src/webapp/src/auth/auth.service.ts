@@ -366,7 +366,7 @@ export class AuthService {
     return requestUser
   }
 
-  async authGoogle (req, profile): Promise<RequestUser | null> {
+  async authGoogle (req, profile, accessToken, refreshToken): Promise<RequestUser | null> {
     /*
       profile = {
         iss: 'accounts.google.com',
@@ -394,7 +394,7 @@ export class AuthService {
       email_verified: data.email_verified,
       subject: data.sub,
       extra: data,
-      tokens: { access_token: req.body.access_token }
+      tokens: { access_token: accessToken, refresh_token: refreshToken }
     })
   }
 

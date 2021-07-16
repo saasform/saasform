@@ -143,7 +143,7 @@ export class ApiV1UserController {
 
   @UseGuards(BearerTokenGuard)
   @Get(':userId/oauth_tokens')
-  async getOauthTokens (@Request() req, @Res() res: Response, @Param('userId') userId): Promise<any> {
+  async getOauthTokens (@Request() req, @Res() res: Response, @Param('userId') userId: number): Promise<any> {
     if (userId == null) {
       return res.json({
         statusCode: 400,
@@ -157,7 +157,7 @@ export class ApiV1UserController {
       if (userCredential === null) {
         return res.json({
           statusCode: 404,
-          message: `Credentials not found for user ${userId as string}`
+          message: `Credentials not found for user ${userId}`
         })
       }
 
@@ -174,8 +174,10 @@ export class ApiV1UserController {
       }, userTokens)
 
       return res.json({
-        statusCode: 200,
-        message: userTokens
+        object: 'list',
+        url: `/v1/user/${userId}/oauth_tokens`,
+        has_more: false,
+        data: userTokens
       })
     } catch (error) {
       console.error('ApiV1UserController - getOauthTokens', error)
