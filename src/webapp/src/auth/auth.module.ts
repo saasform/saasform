@@ -5,6 +5,7 @@ import { LocalStrategy } from './local.strategy'
 import { JwtStrategy } from './jwt.strategy'
 import { AzureAdStrategy } from './azuread.strategy'
 import { MiraclStrategy } from './miracl.strategy'
+import { OktaStrategy } from './okta.strategy'
 import { JwtModule } from '@nestjs/jwt'
 import { AccountsModule } from '../accounts/accounts.module'
 import { SettingsService } from '../settings/settings.service'
@@ -35,6 +36,7 @@ import { BearerTokenStrategy } from './bearertoken.strategy'
     GoogleOAuth2Service,
     AzureAdStrategy,
     MiraclStrategy,
+    OktaStrategy,
     BearerTokenStrategy
   ],
   exports: [AuthService, GoogleOAuth2Service, JwtModule]

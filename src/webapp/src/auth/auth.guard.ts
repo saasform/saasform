@@ -83,4 +83,7 @@ export class AzureAdGuard extends AuthGuard('azuread-openidconnect') {}
 export class MiraclGuard extends AuthGuard('miracl') {}
 
 @Injectable()
+export class OktaGuard extends AuthGuard('okta') {}
+
+@Injectable()
 export class BearerTokenGuard extends AuthGuard('bearer') {}

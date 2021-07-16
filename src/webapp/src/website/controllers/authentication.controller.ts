@@ -8,7 +8,7 @@ import {
   Param
 } from '@nestjs/common'
 import { Response } from 'express'
-import { UserOptionalAuthGuard, AzureAdGuard, MiraclGuard } from '../..//auth/auth.guard'
+import { UserOptionalAuthGuard, AzureAdGuard, MiraclGuard, OktaGuard } from '../..//auth/auth.guard'
 import { SettingsService } from '../../settings/settings.service'
 import { AuthService } from '../..//auth/auth.service'
 import { UsersService } from '../../accounts/services/users.service'
@@ -262,6 +262,21 @@ export class AuthenticationController {
   @UseGuards(MiraclGuard)
   @Get('/auth/miracl/callback')
   async miraclReturnFrom (@Request() req, @Res() res: Response): Promise<any> {
+    if (req.user !== false) {
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
+      return res.redirect(redirect)
+    }
+    return res.redirect('/login')
+  }
+
+  @UseGuards(OktaGuard)
+  @Get('/auth/okta')
+  async oktaRedirectTo (@Request() req, @Res() res: Response): Promise<any> {
+  }
+
+  @UseGuards(OktaGuard)
+  @Get('/auth/okta/callback')
+  async oktaReturnFrom (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
       const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
       return res.redirect(redirect)

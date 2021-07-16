@@ -107,7 +107,7 @@ export class HttpExceptionsFilter implements ExceptionFilter {
             next = originalUrl
           }
 
-          if (next != null && next !== '') {
+          if (next != null && next !== '' && !next.startsWith('/auth/')) {
             response.redirect(`/login?next=${next}`)
           } else {
             response.redirect('/login')
