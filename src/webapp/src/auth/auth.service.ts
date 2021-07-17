@@ -338,11 +338,11 @@ export class AuthService {
         return null
       }
       validUser = newUser
-    } else {
-      (validUser.credential as UserCredentialsEntity).setProviderTokens(data.provider, data.tokens)
-      const { id, ...cred } = validUser.credential
-      await this.userCredentialsService.updateOne(id, cred)
     }
+
+    (validUser.credential as UserCredentialsEntity).setProviderTokens(data.provider, data.tokens)
+    const { id, ...cred } = validUser.credential
+    await this.userCredentialsService.updateOne(id, cred)
 
     // validate credentials
     // for social logins we validate that the subject (user id in the social) is the expected one

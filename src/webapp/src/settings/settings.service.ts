@@ -674,7 +674,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       ? `
       <meta name="google-signin-client_id" content="${res.app_google_signin_client_id}">
       <meta name="google-signin-scope" content="${res.app_google_signin_scope}">
-      <script src="https://apis.google.com/js/platform.js?onload=onGoogleStart" async defer></script>
+      <script src="https://apis.google.com/js/platform.js?onload=onGoogleStart" defer></script>
     `
       : ''
 
