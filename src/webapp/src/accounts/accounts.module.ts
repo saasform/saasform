@@ -7,6 +7,7 @@ import { AccountsService } from './services/accounts.service'
 import { AccountsUsersService } from './services/accountsUsers.service'
 import { UsersService } from './services/users.service'
 import { AccountDTO } from './dto/account.dto'
+import { UserDTO } from './dto/user.dto'
 import { UserEntity } from './entities/user.entity'
 import { UserCredentialsEntity } from './entities/userCredentials.entity'
 import { AccountUserEntity } from './entities/accountUser.entity'
@@ -23,7 +24,10 @@ import { AccountDomainEntity } from './entities/accountDomain.entity'
     NestjsQueryGraphQLModule.forFeature({
       imports: [NestjsQueryTypeOrmModule.forFeature([AccountEntity, UserEntity, AccountUserEntity, AccountDomainEntity, UserCredentialsEntity]), NotificationsModule],
       services: [AccountsService, AccountsUsersService, UsersService, AccountsDomainsService, PaymentsService, PlansService, UserCredentialsService, NotificationsService],
-      resolvers: [{ DTOClass: AccountDTO, ServiceClass: AccountsService }]
+      resolvers: [
+        { DTOClass: AccountDTO, ServiceClass: AccountsService },
+        { DTOClass: UserDTO, EntityClass: UserEntity }
+      ]
     })
   ],
   providers: [AccountsService, UsersService, AccountsUsersService, AccountsDomainsService, UserCredentialsService],

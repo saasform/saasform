@@ -565,10 +565,10 @@ passport-jwt@^4.0.0:
     jsonwebtoken "^8.2.0"
     passport-strategy "^1.0.0"
 
-passport-saasform@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/passport-saasform/-/passport-saasform-0.3.2.tgz#724cdfca1c6f7f622237ea5768970937efdf7868"
-  integrity sha512-ZBVKmbI+YfwXtsqQiFhX71qomBvhePTQoUfqrWcaNyhF8pQKzBrY3WhNRwrW9SBOY3YnbPxfREzum+9N5/890A==
+passport-saasform@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/passport-saasform/-/passport-saasform-0.3.3.tgz#6956343715736421998ee361f6e95e14bada5574"
+  integrity sha512-Krwg9iRHbXKWM8HGlgR0QlXEC+ujgj9NwVqgai7PheFWoJxgdI2leMsKOMhfRIb4pG29874gevKz/Ry38fqRSg==
   dependencies:
     cookie "^0.4.1"
     node-fetch "^2.6.1"
