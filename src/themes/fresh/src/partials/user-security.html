@@ -47,3 +47,128 @@
 
   </div>
 </div>
+
+
+{% if security_two_factor_auth == true %}
+<div class="card mb-5">
+  <div class="card-content content">
+
+    <div class="level">
+      <div class="level-left">
+        <h3 class="has-text-weight-normal mb-0">Google Two-Factor Authentication</h3>
+      </div>
+      <div class="level-right">
+        <a class="button is-primary modal-trigger" data-modal="totp-modal">
+          Add new
+        </a>
+      </div>
+    </div>
+
+    <p><a class="modal-trigger" data-modal="totp-modal">Add an authentication method.</a></p>
+ 
+  </div>
+</div>
+
+<div id="totp-modal" class="modal">
+  <div class="modal-background modal-dismiss"></div>
+  <div class="modal-card">
+    <section class="modal-card-body" style="border-radius: 8px; margin-top: 100px;">
+      <div class="content has-text-centered">
+        <h3 class="">Add a Google two-factor authentication method</h3><br/>
+      </div>
+      
+
+      <form action="/user/totp-password-confirm" method="POST" class="mb-40" target="_blank">
+
+        <div class="field">
+          <label for="totp-password" class="label {{ website.size }} has-text-weight-normal">
+            Current password
+          </label>
+          <div class="control">
+            <input type="password" class="input {{ website.size }}" id="totp-password" name="password" minlength="8" required>
+          </div>
+          <p id="error-totp-password" class="help is-danger">{{ error.password }}</p>
+        </div>
+  
+        <input type="hidden" name="_csrf" value="{{ website.csrf_token }}">
+        <div class="field">
+          <div class="control">
+            <a class="button is-primary modal-trigger" data-modal="totp-modal-qr">Confirm password</a>
+            <!-- <button class="button {{ website.size }} is-primary" type="submit" data-modal="totp-modal-code">Confirm password</button> -->
+          </div>
+        </div>
+      </form>
+      
+      <!-- <div class="field" style="text-align:center">
+        <iframe name="qr_display" onsubmit="" style="width:200px; height:200px"></iframe> 
+      </div> -->
+      
+
+    </section>
+  </div>
+  <div class="container is-max-desktop">
+    <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+  </div>
+</div>
+
+<div id="totp-modal-qr" class="modal"> 
+  <div class="modal-card">
+    <section class="modal-card-body" style="border-radius: 8px; margin-top: 100px; height: 300px;">
+      <div class="content has-text-centered">
+        <h3 class="">Add a Google two-factor authentication method</h3><br/>
+      </div>
+      
+
+        <div class="field">
+          <div class="control">
+            <a class="button is-primary modal-trigger" data-dismiss="totp-modal-qr" data-modal="totp-modal-code">Continue</a>
+          </div>
+        </div>
+
+    </section>
+  </div>
+  <div class="container is-max-desktop">
+    <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+  </div>
+</div>
+
+
+
+
+<div id="totp-modal-code" class="modal"> 
+  <div class="modal-card">
+    <section class="modal-card-body" style="border-radius: 8px; margin-top: 100px;">
+      <div class="content has-text-centered">
+        <h3 class="">Add a Google two-factor authentication method</h3><br/>
+      </div>
+      
+
+      <form action="/user/totp-code" method="POST" class="mb-40" target="_blank">
+        <div class="field">
+          <label for="totp-code" class="label {{ website.size }} has-text-weight-normal">
+            Two-Factor Authentication Code
+          </label>
+          <div class="control">
+            <input type="password" class="input {{ website.size }}" id="totp-code" name="password" minlength="8" required>
+          </div>
+          <p id="error-totp-code" class="help is-danger">{{ error.password }}</p>
+        </div>
+      
+        <input type="hidden" name="_csrf" value="{{ website.csrf_token }}">
+        <div class="field">
+          <div class="control">
+            <button class="button {{ website.size }} is-primary" type="submit">Submit</button>
+          </div>
+        </div>
+      </form>
+      
+
+    </section>
+  </div>
+
+  <div class="container is-max-desktop">
+    <button class="modal-close is-large modal-dismiss" aria-label="close"></button>
+  </div>
+</div>
+
+{% endif %}
