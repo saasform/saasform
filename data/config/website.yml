@@ -128,7 +128,7 @@ cta_button: Get started for free
 # signup
 signup_show_username: false
 signup_force_payment: false
-
+security_two_factor_auth: false
 # footer menu
 # footer:
 #   - title: Industries

@@ -521,6 +521,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       signup_show_miracl: false,
       signup_show_username: false,
       signup_force_payment: false,
+      security_two_factor_auth: false,
 
       // page /user
       user_page_sections: [''],
@@ -575,6 +576,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'prelaunch_background_url',
       'signup_show_username',
       'signup_force_payment',
+      'security_two_factor_auth',
       'unsafe_disable_csp'
     ]
     for (const key of encodedPaths) {
