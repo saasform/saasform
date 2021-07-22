@@ -27,7 +27,7 @@
   <section class="hero is-fullheight">
     <div class="hero-body">
       <div class="container">
-        <div class="columns is-centered ">
+        <div class="columns is-centered is-vcentered">
           <div class="column is-half">
             <div class="content">
   
@@ -47,7 +47,26 @@
           </div>
           <div class="column is-one-third">
   
+          {% if user.email %}
+          <div class="is-flex is-flex-direction-column is-justify-content-space-between" style="min-height: 600px;">
+            <div>
+              {{ user.email }} (<a href="/logout">logout</a>)
+            </div>
   
+            <div>
+              <a href="{{ saas_redirect_url }}" class="button is-primary is-medium raised">
+                Dashboard&nbsp;&nbsp;
+                <span class="icon is-small">
+                  <i class="fa fa-arrow-right"></i>
+                </span>
+              </a>
+            </div>
+  
+            <div>
+              &nbsp;
+            </div>
+          </div>
+          {% else %}
           <!-- Form -->
           <form action="/login" method="POST" class="mb-40">
   
@@ -144,6 +163,7 @@
           <p class="is-size-7 has-text-grey has-text-centered">
             Don't have an account yet? <a href="/signup{% if next_url %}?next={{ next_url | url_encode }}{% endif %}">Sign up</a>.
           </p>
+          {% endif %}
   
         </div>
         </div>
