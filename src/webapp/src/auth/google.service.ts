@@ -24,12 +24,11 @@ export class GoogleOAuth2Service {
       const oAuth2Client = new OAuth2Client(
         clientID,
         clientSecret,
-        'http://localhost:8080'
-        // redirectURI
-      );
-  
-      const r = await oAuth2Client.getToken(code); 
-      
+        redirectURI
+      )
+
+      const r = await oAuth2Client.getToken(code)
+
       return r.tokens
     }
 

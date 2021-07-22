@@ -6,7 +6,7 @@ import { AccountsService } from '../../../accounts/services/accounts.service'
 import { PlansService } from '../../../payments/services/plans.service'
 import { UsersService } from '../../../accounts/services/users.service'
 
-import { BearerTokenGuard, UserRequiredAuthGuard } from '../../../auth/auth.guard'
+import { UserRequiredAuthGuard } from '../../../auth/auth.guard'
 import { UserCredentialsService } from '../../../accounts/services/userCredentials.service'
 
 @ApiBearerAuth()
@@ -170,7 +170,7 @@ export class ApiV1UserController {
             email: userCredential.credential,
             provider,
             ...providerTokens
-          })  
+          })
         }
         return userTokens
       }, userTokens)
