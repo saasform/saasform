@@ -213,6 +213,21 @@ export class SettingsService extends BaseService<SettingsEntity> {
     } : null
   }
 
+  async getGoogleStrategyConfig (): Promise<any | null> {
+    const keys = await this.getKeysSettings()
+
+    const clientID = keys.oauth_google_signin_client_id ?? this.configService.get('OAUTH_GOOGLE_SIGNIN_CLIENT_ID') ?? ''
+    const clientSecret = keys.oauth_google_signin_client_secret ?? this.configService.get('OAUTH_GOOGLE_SIGNIN_CLIENT_SECRET') ?? ''
+
+    const baseUrl = await this.getBaseUrl()
+
+    return (clientID !== '' && !clientID.endsWith('xxx')) ? {
+      clientID,
+      clientSecret,
+      redirectURI: `${baseUrl}/auth/google/callback`
+    } : null
+  }
+
   async getAdminSettings (): Promise<SettingsAdminJson> {
     const result = await this.getSettings('admin') as unknown as SettingsAdminJson
 
@@ -373,6 +388,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
       app_facebook_pixel_id: '',
       app_google_signin_client_id: '',
       app_google_signin_scope: '',
+      app_google_signin_access_type: 'offline',
       app_chatbot_provider: '',
       app_chatbot_id: '',
       app_chatbot_domain: '',
@@ -659,9 +675,10 @@ export class SettingsService extends BaseService<SettingsEntity> {
     // keys
     const keys = await this.getKeysSettings()
     res.app_google_signin_client_id = keys.oauth_google_signin_client_id ?? this.configService.get('OAUTH_GOOGLE_SIGNIN_CLIENT_ID') ?? ''
-    res.app_google_signin_scope = keys.oauth_google_signin_scope ?? this.configService.get('OAUTH_GOOGLE_SIGNIN_SCOPE') ?? ''
+    res.app_google_signin_scope = keys.oauth_google_signin_scope ?? this.configService.get('OAUTH_GOOGLE_SIGNIN_SCOPE') ?? 'email profile'
     const azureAdConfig = await this.getAzureAdStrategyConfig()
     const miraclConfig = await this.getMiraclStrategyConfig()
+    const googleConfig = await this.getGoogleStrategyConfig()
 
     // html
 
