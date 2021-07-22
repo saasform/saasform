@@ -90,6 +90,7 @@ export class SettingsKeysJson {
   jwt_private_key: string
   webhooks_key: string
   oauth_google_signin_client_id: string
+  oauth_google_signin_client_secret: string
   oauth_google_signin_scope: string
   oauth_azure_ad_tenant_id: string
   oauth_azure_ad_client_id: string

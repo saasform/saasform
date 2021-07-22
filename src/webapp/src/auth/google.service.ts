@@ -17,6 +17,25 @@ export class GoogleOAuth2Service {
     return payload
   }
 
+  async getRefreshToken (code: string): Promise<any> {
+    const { clientID, clientSecret, redirectURI } = await this.settingsService.getGoogleStrategyConfig()
+
+    if (clientSecret != null && clientSecret !== '' && code != null && code !== '') {
+      const oAuth2Client = new OAuth2Client(
+        clientID,
+        clientSecret,
+        'http://localhost:8080'
+        // redirectURI
+      );
+  
+      const r = await oAuth2Client.getToken(code); 
+      
+      return r.tokens
+    }
+
+    return {}
+  }
+
   private async _verify (idToken: string, audience: string = ''): Promise<any> {
     const client = new OAuth2Client(audience)
     return await client.verifyIdToken({ audience, idToken })
