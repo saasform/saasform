@@ -1,18 +1,16 @@
 function onGoogleStart() {
   gapi.load("auth2", () => {
-    const auth2 = gapi.auth2.init();
     const button = document.getElementById("google-signin");
-    auth2.attachClickHandler(
-      button,
-      {},
-      (googleUser) => onGoogleSignIn(googleUser),
-    );
-    //gapi.signin2.render(button, button.dataset);
+    button.onclick = function() {
+      gapi.auth2.authorize({
+        access_type: 'offline',
+        response_type: 'code id_token permission'
+      }, onGoogleSignIn)
+    };
   });
 }
 
-function onGoogleSignIn(googleUser) {
-  const data = googleUser.getAuthResponse();
+function onGoogleSignIn(data) {
   const xhr = new XMLHttpRequest();
   xhr.open('POST', '/api/v1/google-signin');
   xhr.setRequestHeader('Content-Type', 'application/json');
