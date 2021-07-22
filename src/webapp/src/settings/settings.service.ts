@@ -678,7 +678,6 @@ export class SettingsService extends BaseService<SettingsEntity> {
     res.app_google_signin_scope = keys.oauth_google_signin_scope ?? this.configService.get('OAUTH_GOOGLE_SIGNIN_SCOPE') ?? 'email profile'
     const azureAdConfig = await this.getAzureAdStrategyConfig()
     const miraclConfig = await this.getMiraclStrategyConfig()
-    const googleConfig = await this.getGoogleStrategyConfig()
 
     // html
 
