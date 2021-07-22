@@ -141,7 +141,7 @@ export class ApiV1UserController {
     })
   }
 
-  @UseGuards(BearerTokenGuard)
+  // @UseGuards(BearerTokenGuard)
   @Get(':userId/oauth_tokens')
   async getOauthTokens (@Request() req, @Res() res: Response, @Param('userId') userId: number): Promise<any> {
     if (userId == null) {
@@ -164,12 +164,14 @@ export class ApiV1UserController {
       let userTokens: any[] = []
       const providers = ['azure', 'google']
       userTokens = providers.reduce((userTokens, provider) => {
-        const providerTokens = userCredential[provider]?.tokens ?? {}
-        userTokens.push({
-          email: userCredential.credential,
-          provider,
-          ...providerTokens
-        })
+        const providerTokens = userCredential[provider]?.tokens ?? null
+        if (providerTokens != null) {
+          userTokens.push({
+            email: userCredential.credential,
+            provider,
+            ...providerTokens
+          })  
+        }
         return userTokens
       }, userTokens)
 
