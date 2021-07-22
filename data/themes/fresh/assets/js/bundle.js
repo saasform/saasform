@@ -2287,16 +2287,18 @@ node.removeChild(alreadyProcessedPseudoElement);}var meta=blankMeta();var extra=
 
 function onGoogleStart() {
   gapi.load("auth2", function () {
-    var auth2 = gapi.auth2.init();
     var button = document.getElementById("google-signin");
-    auth2.attachClickHandler(button, {}, function (googleUser) {
-      return onGoogleSignIn(googleUser);
-    }); //gapi.signin2.render(button, button.dataset);
+
+    button.onclick = function () {
+      gapi.auth2.authorize({
+        access_type: 'offline',
+        response_type: 'code id_token permission'
+      }, onGoogleSignIn);
+    };
   });
 }
 
-function onGoogleSignIn(googleUser) {
-  var data = googleUser.getAuthResponse();
+function onGoogleSignIn(data) {
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/api/v1/google-signin');
   xhr.setRequestHeader('Content-Type', 'application/json');
