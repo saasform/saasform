@@ -56,21 +56,22 @@ layout: default
               <input type="email" class="input" id="email" name="email" placeholder="name@address.com" required>
             </div>
             <p id="error-email" class="help is-danger">{{ error.email }}</p>
+            <p id="error-password" class="help is-danger">{{ error.password }}</p>
           </div>
 
           <!-- Password -->
-          <div class="field">
+          <!--div class="field">
             <label for="password" class="label has-text-weight-normal">
               Password
             </label>
             <div class="control has-icons-right">
-              <input type="password" class="input" id="password" name="password" placeholder="Enter your password" minlength="8" autocomplete="new-password" required>
+              <input type="password" class="input" id="password" name="password" placeholder="Enter your password" minlength="8" autocomplete="new-password">
               <span class="icon is-small is-right" style="pointer-events: auto" onclick="const p = document.getElementById('password'); const isPass = p.type === 'password'; p.type = isPass ? 'text' : 'password'; document.getElementById('fa-eye').classList.toggle(isPass ? 'fa-eye-slash' : 'fa-eye');">
                 <i id="fa-eye" class="fa fa-eye"></i>
               </span>
             </div>
             <p id="error-password" class="help is-danger">{{ error.password }}</p>
-          </div>
+          </div-->
 
           <!-- Submit -->
           <input type="hidden" name="_csrf" value="{{ website.csrf_token }}">

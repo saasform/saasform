@@ -53,7 +53,7 @@ export class UserCredentialsService extends BaseService<UserCredentialsEntity> {
   }
 
   isRegistered (userCredentials: UserCredentialsEntity, password: string): boolean {
-    if (userCredentials == null || password == null) {
+    if (userCredentials == null || password == null || password === '') {
       return false
     }
 

@@ -68,9 +68,15 @@ export class GoogleGuard implements CanActivate {
 
     const accessToken = req?.body?.access_token ?? ''
 
-    const { refresh_token } = await this.googleService.getRefreshToken(req.body.code) // eslint-disable-line
+    let refreshToken
+    try {
+      const tokens = await this.googleService.getOAuthTokens(req.body.code)
+      refreshToken = tokens.refresh_token
+    } catch (_) {
+      // pass
+    }
 
-    const requestUser = await this.authService.authGoogle(req, profile, accessToken, refresh_token)
+    const requestUser = await this.authService.authGoogle(req, profile, accessToken, refreshToken)
     req.user = requestUser
 
     return true

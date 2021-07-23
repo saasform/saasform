@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { UsersService } from '../accounts/services/users.service'
 import { AccountsService } from '../accounts/services/accounts.service'
 import { RequestUser, ValidUser } from './interfaces/user.interface'
@@ -14,6 +14,15 @@ import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
 import { UserError } from '../utilities/common.model'
 import { UserCredentialsEntity } from 'src/accounts/entities/userCredentials.entity'
+
+export class UnauthorizedWithRedirectException extends UnauthorizedException {
+  public redirect: string
+
+  constructor (url: string) {
+    super()
+    this.redirect = url
+  }
+}
 
 @Injectable()
 export class AuthService {
@@ -52,14 +61,48 @@ export class AuthService {
     return { user, credential, account }
   }
 
+  async getOrgSSORedirectUrl (accountWithOrg: AccountEntity): Promise<string> {
+    const org = accountWithOrg?.data?.org ?? {}
+    const { provider, domain } = org
+
+    switch (provider) {
+      case 'google':
+        return '/auth/google'
+      case 'azure':
+        return '/auth/azure'
+      case 'okta':
+        return `/auth/okta?iss=https%3A%2F%2F${domain as string}`
+    }
+    return '/login'
+  }
+
   async validateUser (email: string, inputPassword: string): Promise<ValidUser | null> {
-    if (email == null || inputPassword == null) {
+    if (email == null) {
       return null
     }
 
     const validUser = await this.getUserInfo(email)
     if (validUser == null) {
       console.error('auth.service - validateUser - cannon get valid user info', email)
+      return null
+    }
+
+    // [org] extract account from email domain, if any
+    const accountWithOrg = await this.getAccountWithOrgByEmail(email)
+    const forceProvider = accountWithOrg?.data?.org?.provider ?? null
+    if (accountWithOrg != null && forceProvider != null && forceProvider !== 'password') {
+      console.error('AuthService - validateUser - org required, invalid provider')
+      const url = await this.getOrgSSORedirectUrl(accountWithOrg)
+      throw new UnauthorizedWithRedirectException(url)
+    }
+
+    // [org] validate that org's account and actual account are the same
+    if (accountWithOrg != null && accountWithOrg.id !== validUser.account.id) {
+      console.error('AuthService - validateUser - org required, invalid account id')
+      return null
+    }
+
+    if (inputPassword == null) {
       return null
     }
 
@@ -228,6 +271,12 @@ export class AuthService {
     return email != null ? user : null
   }
 
+  async getAccountWithOrgByEmail (email: string): Promise<any> {
+    const domain = email.split('@')[1]
+    const account = await this.accountsService.getAccountByDomain(domain)
+    return account
+  }
+
   async getOrgByDomain (domain: string): Promise<any> {
     const account = await this.accountsService.getAccountByDomain(domain)
     const org = account?.data?.org ?? null
@@ -327,8 +376,18 @@ export class AuthService {
       - extra: data from the provider, stored at creation or connect
   */
   async userFindOrCreate (req, data): Promise<RequestUser | null> {
+    const { email, provider } = data
+
+    // [org] extract account from email domain, if any
+    const accountWithOrg = await this.getAccountWithOrgByEmail(email)
+    const forceProvider = accountWithOrg?.data?.org?.provider ?? null
+    if (accountWithOrg != null && forceProvider != null && forceProvider !== provider) {
+      console.error('AuthService - userFindOrCreate - org required, invalid provider')
+      return null
+    }
+
     // userFind
-    let validUser = await this.userFind(data.email)
+    let validUser = await this.userFind(email)
 
     // ...orCreate
     if (validUser == null) {
@@ -340,13 +399,13 @@ export class AuthService {
       validUser = newUser
     }
 
-    (validUser.credential as UserCredentialsEntity).setProviderTokens(data.provider, data.tokens)
-    const { id, ...cred } = validUser.credential
-    await this.userCredentialsService.updateOne(id, cred)
+    // [org] validate that org's account and actual account are the same
+    if (accountWithOrg != null && accountWithOrg.id !== validUser.account.id) {
+      console.error('AuthService - userFindOrCreate - org required, invalid account id')
+      return null
+    }
 
-    // validate credentials
-    // for social logins we validate that the subject (user id in the social) is the expected one
-    const provider = data.provider
+    // prepare to validate credentials
     let expectedSubject = validUser.credential.getProviderData(provider).sub
 
     // autoconnect social if it wasn't connected AND email is verified
@@ -358,10 +417,17 @@ export class AuthService {
       expectedSubject = data.subject
     }
 
+    // validate credentials
+    // for social logins we validate that the subject (user id in the social) is the expected one
     if (data.subject !== expectedSubject) {
       console.error('AuthService - userFindOrCreate - invalid subject')
       return null
     }
+
+    // store/update oauth tokens
+    (validUser.credential as UserCredentialsEntity).setProviderTokens(data.provider, data.tokens)
+    const { id, ...cred } = validUser.credential
+    await this.userCredentialsService.updateOne(id, cred)
 
     // gather additional info: account, subscription, ...
     const requestUser = await this.getTokenPayloadFromUserModel(validUser)
@@ -511,7 +577,8 @@ export class AuthService {
       email: data.email,
       email_verified: data.email_verified ?? false,
       subject: profile.id,
-      extra
+      extra,
+      tokens: { access_token: accessToken, refresh_token: refreshToken }
     })
   }
 }
