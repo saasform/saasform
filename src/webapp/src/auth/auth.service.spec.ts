@@ -12,7 +12,9 @@ import { PlansService } from '../payments/services/plans.service'
 import { UserError, ErrorTypes } from '../utilities/common.model'
 
 const mockJwtService = {}
-const mockAccountsService = {}
+const mockAccountsService = {
+  getAccountByDomain: async (domain) => (null)
+}
 const mockPaymentsService = {
   getPaymentsConfig: async () => ({}),
   refreshPaymentsFromStripe: async () => {},

@@ -61,24 +61,18 @@ export class AuthenticationController {
     if (email == null) {
       return renderPage(req, res, 'login', {
         error: {
-          email: 'Email not valid.'
+          email: 'Invalid email or password.'
         }
       })
     }
 
-    if (password == null) {
-      return renderPage(req, res, 'login', {
-        error: {
-          password: 'Password not valid.'
-        }
-      })
-    }
+    // we support null password as we may return redirect to SSO, e.g. Okta
 
     const user = await this.authService.validateUser(email, password)
     if (user == null) {
       return renderPage(req, res, 'login', {
         error: {
-          password: 'Invalid username or password'
+          password: 'Invalid email or password'
         }
       })
     }
@@ -103,7 +97,7 @@ export class AuthenticationController {
     if (email == null) {
       return renderPage(req, res, 'signup', {
         error: {
-          email: 'Email not valid.'
+          email: 'Invalid email.'
         }
       })
     }
@@ -111,7 +105,7 @@ export class AuthenticationController {
     if (password == null) {
       return renderPage(req, res, 'signup', {
         error: {
-          password: 'Password not valid.'
+          password: 'Invalid password.'
         }
       })
     }
@@ -220,7 +214,7 @@ export class AuthenticationController {
     let error
     if (password == null) {
       error = {
-        password: 'Password not valid.'
+        password: 'Invalid password.'
       }
       return renderPage(req, res, 'password-change', { token, error })
     }

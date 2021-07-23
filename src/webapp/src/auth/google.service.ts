@@ -17,7 +17,7 @@ export class GoogleOAuth2Service {
     return payload
   }
 
-  async getRefreshToken (code: string): Promise<any> {
+  async getOAuthTokens (code: string): Promise<any> {
     const { clientID, clientSecret, redirectURI } = await this.settingsService.getGoogleStrategyConfig()
 
     if (clientSecret != null && clientSecret !== '' && code != null && code !== '') {

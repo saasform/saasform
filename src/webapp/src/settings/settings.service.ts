@@ -224,7 +224,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
     return (clientID !== '' && !clientID.endsWith('xxx')) ? {
       clientID,
       clientSecret,
-      redirectURI: `${baseUrl}/auth/google/callback`
+      redirectURI: baseUrl
     } : null
   }
 

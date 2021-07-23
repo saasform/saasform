@@ -60,12 +60,13 @@ export class UserCredentialsEntity {
     this.json[provider] = this.json[provider] ?? {}
     this[provider] = this[provider] ?? {}
     const providerTokens = this[provider].tokens ?? {}
+    const inputTokens = tokens ?? {}
 
     // The refresh token is usually only is sent at the first login
     // If refresh_token is provided save it, otherwise it does not overwrite
     this[provider].tokens = this.json[provider].tokens = {
-      access_token: tokens.access_token ?? providerTokens.access_token,
-      refresh_token: tokens.refresh_token ?? providerTokens.refresh_token
+      access_token: inputTokens.access_token ?? providerTokens.access_token,
+      refresh_token: inputTokens.refresh_token ?? providerTokens.refresh_token
     }
   }
 

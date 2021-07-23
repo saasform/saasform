@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common'
 import { Request, Response } from 'express'
 import { saasformReporter, tags } from '../utilities/reporting'
+import { UnauthorizedWithRedirectException } from '../auth/auth.service'
 
 @Catch()
 export class HttpExceptionsFilter implements ExceptionFilter {
@@ -28,6 +29,10 @@ export class HttpExceptionsFilter implements ExceptionFilter {
 
     console.error('HttpExceptionsFilter - received exception', exception)
     saasformReporter.errorReport(exception, tags, true).then(() => {}, () => {})
+
+    if (exception instanceof UnauthorizedWithRedirectException) {
+      return response.redirect(exception.redirect)
+    }
 
     if (requestAccept != null && requestAccept === 'application/json') {
       if (exception instanceof UnauthorizedException) {
