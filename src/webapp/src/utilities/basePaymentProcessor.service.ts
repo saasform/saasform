@@ -36,14 +36,15 @@ export class BasePaymentProcessorService {
     // console.log('Create customer')
   }
 
-  async createSubscription (plan: any, stripeId: any): Promise<any> {
+  async createSubscription (customer: any, plan: any): Promise<any> {
     // console.log('Create free subscription')
   }
 
-  async attachPaymentMethod (customer: any, method: any): Promise<any|null> {
+  async attachPaymentMethod (customer: any, method: any): Promise<any> {
     // console.log('Create payment method')
   }
 
+  // Deprecated ?
   async subscribeToPlan (customer: any, paymentMethod: any, price: any): Promise<any> {
     // console.log('Subscribe to plan')
   }
@@ -52,6 +53,7 @@ export class BasePaymentProcessorService {
     // console.log('Get subscriptions')
   }
 
+  // Deprecated ?
   async updatePlan (subscriptionId: any, price: any): Promise<any> {
     // console.log('Update plan')
   }

@@ -36,6 +36,24 @@ export class PlansService extends BaseService<PlanEntity> {
     this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
   }
 
+  /**
+   * Return a plan object from a string handle
+   * @param handle the handle to the plan. It is in the format 'm-plus' there m stands from monthly or yearly and plus is the immutable name of the plan within Saasform
+   */
+  async getPlanFromHandle (handle: string): Promise<any> { // TODO: make and entity
+    // TODO
+    return {
+      freeTrial: 0, // if 0, no trial, if > 0 days of trial
+      price: 0, //  if 0, free tier, if > 0 price
+      interval: 'month', // month or year
+      ref: 'pro', // internal plan name, immutable
+      provider: 'stripe', // stripe/killbill (free tier, trial, full), external (enterprise)
+      stripe: {}
+    }
+  }
+
+  // OLD
+
   createPlan (id, name, description, _prices, features, extra): any {
     if (features == null) { features = [] }
 

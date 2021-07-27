@@ -55,4 +55,10 @@ export class AccountEntity {
     })
     this.data = data
   }
+
+  public getPaymentProviderCustomer (): any {
+    return ({
+      name: this.data.name
+    })
+  }
 }

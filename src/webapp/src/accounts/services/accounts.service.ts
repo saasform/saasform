@@ -201,13 +201,16 @@ export class AccountsService extends BaseService<AccountEntity> {
         try {
           const plans = await this.plansService.getPlans()
           await this.paymentsService.createSubscription(
-            plans[0],
-            (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id)
+            (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id), // customer
+            plans[0]
           )
         } catch (err) {
           console.error('accountsService - cannot create free subscription')
         }
       }
+
+      // TODO:
+      // this.paymentsService.enrollAccount()
 
       try {
         const res = await this.createOne(account)
@@ -411,7 +414,7 @@ export class AccountsService extends BaseService<AccountEntity> {
         return null
       }
 
-      const customer = await this.paymentsService.attachPaymentMethod(account, method.id)
+      const customer = await this.paymentsService.attachPaymentMethod(account, method)
       if (customer == null) {
         console.error('accountsService - addPaymentsMethods - error while attaching payment method to customer')
         return null
