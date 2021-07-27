@@ -44,25 +44,26 @@ export class KillBillService extends BasePaymentProcessorService {
     this.subscriptionApi = new killbill.SubscriptionApi(config, null, axios)
   }
 
-  async attachPaymentMethod (kbAccountId: string, stripePmId: string): Promise<any|null> {
+  async attachPaymentMethod (kbAccount: any, method: any): Promise<any> {
     try {
-      const pm = { isDefault: true, pluginName: 'killbill-stripe', pluginInfo: { externalPaymentMethodId: stripePmId } }
-      await this.accountApi.createPaymentMethod(pm, kbAccountId, 'saasform')
+      const pm = { isDefault: true, pluginName: 'killbill-stripe', pluginInfo: { externalPaymentMethodId: method.id } }
+      const attachedMethod = await this.accountApi.createPaymentMethod(pm, kbAccount.accountId, 'saasform')
+      return { customer: kbAccount, method: attachedMethod }
     } catch (error) {
-      console.error('paymentService - attachPaymentMethodInKillBill - error while syncing Stripe payment methods', kbAccountId, error)
-      return null
+      console.error('paymentService - attachPaymentMethodInKillBill - error while syncing Stripe payment methods', kbAccount, error)
+      return { customer: kbAccount, method: null }
     }
   }
 
-  async createSubscription (plan, kbAccountId): Promise<any> {
+  async createSubscription (customer, plan): Promise<any> {
     try {
       // const trialDays = 10 // TODO
-      const subscriptionData = { accountId: kbAccountId, planName: `${String(plan.id)}-yearly` }
+      const subscriptionData = { accountId: customer, planName: `${String(plan.id)}-yearly` }
       const subscription = await this.subscriptionApi.createSubscription(subscriptionData, 'saasform')
 
       return subscription.data
     } catch (error) {
-      console.error('paymentService - createKillBillFreeSubscription - error while creating free plan', plan, kbAccountId, error)
+      console.error('paymentService - createKillBillFreeSubscription - error while creating free plan', plan, customer, error)
       return null
     }
   }

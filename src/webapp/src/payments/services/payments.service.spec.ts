@@ -11,6 +11,7 @@ import { KillBillService } from './killbill.service'
 import { ConfigService } from '@nestjs/config'
 import { SettingsService } from '../../settings/settings.service'
 import { ValidationService } from '../../validator/validation.service'
+import { PlansService } from './plans.service'
 
 const deletedSubscription = new PaymentEntity()
 const existingSubscription = new PaymentEntity()
@@ -90,6 +91,9 @@ describe('Payments Service', () => {
     getWebsiteSettings: jest.fn(_ => ({}))
   }
 
+  const mockedPlanService = {
+  }
+
   beforeEach(async () => {
     jest.clearAllMocks()
 
@@ -108,6 +112,10 @@ describe('Payments Service', () => {
         {
           provide: SettingsService,
           useValue: mockedSettingsService
+        },
+        {
+          provide: PlansService,
+          useValue: mockedPlanService
         },
         ValidationService,
         {
@@ -231,7 +239,7 @@ describe('Payments Service', () => {
       const stripeSpy = jest.spyOn(mockedStripe.paymentMethods, 'attach')
 
       const account = { data: { stripe: { id: 'cus_123' } } }
-      await service.attachPaymentMethod(account, 'met_456')
+      await service.attachPaymentMethod(account, { id: 'met_456' })
       expect(stripeSpy).toBeCalledWith('met_456', { customer: 'cus_123' }, apiOptions)
     })
 
@@ -239,7 +247,7 @@ describe('Payments Service', () => {
       const stripeSpy = jest.spyOn(mockedStripe.customers, 'update')
 
       const account = { data: { stripe: { id: 'cus_123' } } }
-      await service.attachPaymentMethod(account, 'met_456')
+      await service.attachPaymentMethod(account, { id: 'met_456' })
       expect(stripeSpy).toBeCalledWith('cus_123',
         {
           invoice_settings: {

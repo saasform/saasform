@@ -133,7 +133,8 @@ describe('Authentication (e2e)', () => {
         res = { email: 'mi@gmail.com', sub: '21011218888823127' }
       }
       return res
-    })
+    }),
+    getRefreshToken: jest.fn().mockReturnValue({ refresh_token: '' })
   }
 
   const mockedCronService = {

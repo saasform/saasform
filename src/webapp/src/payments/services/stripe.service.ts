@@ -60,13 +60,25 @@ export class StripeService extends BasePaymentProcessorService {
     }
   }
 
-  async createSubscription (plan, stripeId): Promise<any> {
+  /**
+   * Return the Stripe price id given a plan.
+   * Consider the year/month interval of the plan to choose the correct price
+   * @param plan Saasform plan
+   * @returns Stripe price id
+   */
+  getPriceIdFromPlan (plan): string {
+    const interval = plan.interval === 'year' ? 'year' : 'month'
+    const prices = plan?.stripe?.prices ?? { }
+    return prices[interval]?.id ?? ''
+  }
+
+  async createSubscription (customer, plan): Promise<any> {
     const trialDays = await this.settingsService.getTrialLength()
     const trialEnd = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60
 
     const subscriptionOptions: any = {
-      customer: stripeId,
-      items: [{ price: plan.prices.year.id }]
+      customer: customer.id,
+      items: [{ price: this.getPriceIdFromPlan(plan) }]
     }
     if (trialDays > 0) {
       subscriptionOptions.trial_end = trialEnd
@@ -74,43 +86,52 @@ export class StripeService extends BasePaymentProcessorService {
 
     try {
       // TODO: fix the price to use
-      const subscription = await this.client.subscriptions.create(trialDays, this.apiOptions)
+      const subscription = await this.client.subscriptions.create(subscriptionOptions, this.apiOptions)
 
       return subscription
     } catch (error) {
-      console.error('paymentService - createStripeCustomer - error while creating free plan', plan, stripeId, error)
+      console.error('paymentService - createStripeCustomer - error while creating subscription', customer.id, plan, error)
       return null
     }
   }
 
-  async attachPaymentMethod (customer: string, method: string): Promise<any|null> {
+  /**
+   * Attach a payment method to a Stripe customer and sets as default.
+   * The payment method must already be created before calling this function.
+   * @param account of the user
+   * @param method the payment method
+   */
+  async attachPaymentMethod (customer: any, method: any): Promise<any> {
+    let attachedMethod = null
     try {
-      await this.client.paymentMethods.attach(method, {
-        customer
+      attachedMethod = await this.client.paymentMethods.attach(method.id, {
+        customer: customer.id
       }, this.apiOptions)
     } catch (error) {
-      console.error('paymentsService - attachPaymentMethod - error while attaching', error)
-      return null
+      console.error('paymentsService - attachPaymentMethod - error while attaching payment method', error)
+      return { customer: null, method: null }
     }
 
     try {
       // Change the default invoice settings on the customer to the new payment method
       const updatedCustomer = await this.client.customers.update(
-        customer,
+        customer.id,
         {
           invoice_settings: {
-            default_payment_method: method
+            default_payment_method: method.id
           }
         }, this.apiOptions
       )
 
-      return updatedCustomer
+      return { customer: updatedCustomer, method: attachedMethod }
     } catch (error) {
       console.error('paymentsService - attachPaymentMethod - error while setting default payment method')
-      return null
+      return { customer: null, method: attachedMethod }
     }
   }
 
+  // Duplicate of createSubscription.
+  // Deprecated ?
   async subscribeToPlan (customer: string, paymentMethod: any, price: any): Promise<any> { // TODO: return a proper type
     try {
       const subscription = await this.client.subscriptions.create({
@@ -165,8 +186,8 @@ export class StripeService extends BasePaymentProcessorService {
       const updatedSubscription = await this.client.subscriptions.update(subscriptionId, {
         cancel_at_period_end: false,
         items: [{
-          id: subscription.items.data[0].id,
-          price: price.id
+          id: subscription.items.data[0].id, // subscription item id
+          price: price.id // new price id
         }]
       }, this.apiOptions)
 
