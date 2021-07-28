@@ -89,14 +89,14 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
     customers: {
       retrieve: jest.fn(_ => ({ subscriptions: { data: subscriptionsArray } })),
       update: jest.fn(_ => {}),
-      create: jest.fn(_ => (mockStripeCustomer)),
+      create: jest.fn(_ => (mockStripeCustomer))
     },
     paymentMethods: {
       attach: jest.fn(_ => (mockedStripePaymentMethod))
     },
     subscriptions: {
-      create: jest.fn(_ => (mockStripeSub)),
-    },
+      create: jest.fn(_ => (mockStripeSub))
+    }
   }
 
   const mockedKillBill = {
@@ -190,7 +190,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       expect(config).toEqual({
         payment_processor: 'stripe',
         payment_processor_enabled: true,
-        signup_force_payment: false,
+        signup_force_payment: false
       })
     })
 
@@ -203,7 +203,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       expect(config).toEqual({
         payment_processor: 'stripe',
         payment_processor_enabled: true,
-        signup_force_payment: true,
+        signup_force_payment: true
       })
     })
 
@@ -214,7 +214,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       expect(config).toEqual({
         payment_processor: 'stripe',
         payment_processor_enabled: false,
-        signup_force_payment: false,
+        signup_force_payment: false
       })
     })
   })
@@ -271,7 +271,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
         provider: 'stripe',
         plan: mockPlan,
         customer: mockStripeCustomer,
-        sub: mockStripeSub,
+        sub: mockStripeSub
       }
       expect(payment).toEqual(expectedPayment)
     })
@@ -288,7 +288,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
         provider: 'stripe',
         plan: mockPlan,
         customer: mockStripeCustomer,
-        sub: mockStripeSub,
+        sub: mockStripeSub
       })
 
       account.data.payment = payment0
@@ -315,7 +315,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       const expectedPayment = {
         provider: 'stripe',
         plan: mockPlan,
-        customer: mockStripeCustomer,
+        customer: mockStripeCustomer
       }
       expect(payment).toEqual(expectedPayment)
     })
@@ -331,7 +331,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       expect(payment0).toEqual({
         provider: 'stripe',
         plan: mockPlan,
-        customer: mockStripeCustomer,
+        customer: mockStripeCustomer
       })
 
       account.data.payment = payment0
@@ -371,7 +371,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
         provider: 'stripe',
         plan: existingPlan,
         customer: existingCustomer,
-        sub: existingSub,
+        sub: existingSub
       }
       expect(payment).toEqual(expectedPayment)
     })
@@ -394,12 +394,12 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
         plan: mockPlan,
       }
       expect(payment).toEqual(expectedPayment)
-    })*/
+    }) */
   })
 
   describe('enrollOrUpdateAccount - customer not set', () => {
     it('should create an external subscription if customer is not set', async () => {
-      mockStripeCustomer = null  // simulate one Stripe call failure
+      mockStripeCustomer = null // simulate one Stripe call failure
       mockPlan = {
         provider: 'external'
       }
@@ -417,7 +417,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
     })
 
     it('should create a free tier if customer is not set', async () => {
-      mockStripeCustomer = null  // simulate one Stripe call failure
+      mockStripeCustomer = null // simulate one Stripe call failure
       mockPlan = {
         price: 0
       }
@@ -435,7 +435,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
     })
 
     it('should not create a free trial if customer is not set', async () => {
-      mockStripeCustomer = null  // simulate one Stripe call failure
+      mockStripeCustomer = null // simulate one Stripe call failure
       mockPlan = {
         price: 10,
         freeTrial: 14
@@ -445,13 +445,13 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
 
       const expectedPayment = {
         provider: 'stripe',
-        plan: mockPlan,
+        plan: mockPlan
       }
       expect(payment).toEqual(expectedPayment)
     })
 
     it('should not create a full subscription if customer is not set', async () => {
-      mockStripeCustomer = null  // simulate one Stripe call failure
+      mockStripeCustomer = null // simulate one Stripe call failure
       mockPlan = {
         price: 10,
         freeTrial: 0
@@ -461,7 +461,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
 
       const expectedPayment = {
         provider: 'stripe',
-        plan: mockPlan,
+        plan: mockPlan
       }
       expect(payment).toEqual(expectedPayment)
     })
@@ -518,7 +518,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
 
       const expectedPayment = {
         provider: null,
-        plan: mockPlan,
+        plan: mockPlan
       }
       expect(payment).toEqual(expectedPayment)
     })
@@ -537,7 +537,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
 
       const expectedPayment = {
         provider: null,
-        plan: mockPlan,
+        plan: mockPlan
       }
       expect(payment).toEqual(expectedPayment)
     })
@@ -559,7 +559,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       const payment0 = await service.enrollOrUpdateAccount(account, planHandle, null)
       expect(payment0).toEqual({
         provider: null,
-        plan: mockPlan,
+        plan: mockPlan
       })
 
       stripeService.enabled = true
@@ -589,7 +589,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
         provider: 'stripe',
         plan: mockPlan,
         customer: mockStripeCustomer,
-        sub: mockStripeSub,
+        sub: mockStripeSub
       })
 
       service.paymentIntegration = 'killbill'
@@ -598,7 +598,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       let error
       try {
         await service.enrollOrUpdateAccount(account, planHandle, paymentMethod)
-      } catch(e) {
+      } catch (e) {
         error = e
       }
       expect(error).toStrictEqual(new NotImplementedException('Payment provider mismatch'))
@@ -618,7 +618,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       const payment0 = await service.enrollOrUpdateAccount(account, planHandle, null)
       expect(payment0).toEqual({
         provider: 'stripe',
-        customer: mockStripeCustomer,
+        customer: mockStripeCustomer
       })
 
       mockPlan = plan0
@@ -654,7 +654,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
         provider: 'stripe',
         plan: plan0,
         customer: mockStripeCustomer,
-        sub: mockStripeSub,
+        sub: mockStripeSub
       })
 
       mockPlan = plan1
@@ -675,10 +675,6 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
   describe('enrollOrUpdateAccount - customer', () => {
     it('should not overwrite a customer if already set', async () => { })
 
-    it('should create a customer for free trial', async () => { })
-
-    it('should create a customer for full subscription', async () => { })
-
     it('should not create a customer for enterprise if payment method is not passed', async () => { })
 
     it('should not create a customer for free tier if payment method is not passed', async () => { })
@@ -686,6 +682,10 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
     it('should create a customer for enterprise if payment method is passed', async () => { })
 
     it('should create a customer for free tier if payment method is passed', async () => { })
+
+    it('should create a customer for free trial', async () => { })
+
+    it('should create a customer for full subscription', async () => { })
   })
 
   describe('enrollOrUpdateAccount - payment method', () => {
