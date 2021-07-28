@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Request, Res, Get } from '@nestjs/common'
+import { Controller, Post, UseGuards, Request, Res } from '@nestjs/common'
 import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { AccountsService } from '../../../accounts/services/accounts.service'
@@ -20,7 +20,7 @@ export class ApiV1PaymentController {
 
   @UseGuards(UserRequiredAuthGuard)
   @Post('add-payment-token')
-  async handleAddPaymentToken (@Request() req /*, @Res() res: Response*/): Promise<any> {
+  async handleAddPaymentToken (@Request() req /*, @Res() res: Response */): Promise<any> {
     // const account = await this.accountsService.findByOwnerEmail(req.user.email)
 
     let payment

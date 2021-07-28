@@ -63,9 +63,6 @@ export class PlansService extends BaseService<PlanEntity> {
 
     // Enterprise
     // return {
-    //   freeTrial: 0, // if 0, no trial, if > 0 days of trial
-    //   price: 0, //  if 0, free tier, if > 0 price
-    //   interval: 'month', // month or year
     //   ref: 'pro', // internal plan name, immutable
     //   provider: 'external' // stripe/killbill (free tier, trial, full), external (enterprise)
     // }
