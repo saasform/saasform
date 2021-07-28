@@ -1,12 +1,16 @@
 const { Given, When } = require("cucumber");
 const { createConnection, getManager } = require("typeorm");
 
+const json = JSON;
+
 Given('admin sets settings {string} to {string}', async function (key, v) {
   let val
   if (v === 'true') {
     val = true;
   } else if (v === 'false') {
     val = false;
+  } else if (v.indexOf('"') > 0) {
+    val = `'${v}'`;
   } else {
     val = `"${v}"`;
   }
