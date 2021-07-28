@@ -12,6 +12,8 @@ import { SettingsService } from '../../settings/settings.service'
 import { ValidationService } from '../../validator/validation.service'
 import { PlansService } from './plans.service'
 
+import { AccountEntity } from '../../accounts/entities/account.entity'
+
 const deletedSubscription = new PaymentEntity()
 const existingSubscription = new PaymentEntity()
 const otherAccountSubscription = new PaymentEntity()
@@ -50,6 +52,15 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
   let stripeService
   let repo: Repository<PaymentEntity>
 
+  let account
+  let planHandle
+  let paymentMethod
+  let mockPlan
+  let mockSettings
+
+  let mockStripeCustomer
+  let mockStripeSub
+
   const mockedRepo = {
     query: jest.fn(
       query => {
@@ -75,21 +86,26 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
   const mockedStripe = {
     customers: {
       retrieve: jest.fn(_ => ({ subscriptions: { data: subscriptionsArray } })),
-      update: jest.fn(_ => {})
+      update: jest.fn(_ => {}),
+      create: jest.fn(_ => (mockStripeCustomer)),
     },
     paymentMethods: {
       attach: jest.fn(_ => {})
-    }
+    },
+    subscriptions: {
+      create: jest.fn(_ => (mockStripeSub)),
+    },
   }
 
   const mockedKillBill = {
   }
 
   const mockedSettingsService = {
-    getWebsiteSettings: jest.fn(_ => ({}))
+    getWebsiteRenderingVariables: jest.fn(_ => (mockSettings))
   }
 
   const mockedPlanService = {
+    getPlanFromHandle: jest.fn(_ => (mockPlan))
   }
 
   beforeEach(async () => {
@@ -131,7 +147,9 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       getRepositoryToken(PaymentEntity)
     )
 
+    // this is not really unit test, we're going 1 level deep and testing also StripeService
     stripeService.client = mockedStripe
+    stripeService.enabled = true
 
     // We must manually set the following because extending TypeOrmQueryService seems to break it
     Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
@@ -139,12 +157,22 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
     service.stripeService = stripeService
     service.killbillService = { accountApi: mockedKillBill }
     service.settingsService = mockedSettingsService
+    service.plansService = mockedPlanService
     service.validationService = await module.get(ValidationService)
 
+    service.paymentIntegration = 'stripe'
     service.paymentProcessor = stripeService
     // Object.keys(mockedStripe).forEach(
     //   f => (service.stripeClient[f] = mockedStripe[f]),
     // );
+
+    account = new AccountEntity()
+    planHandle = ''
+    paymentMethod = null
+    mockSettings = {}
+    mockPlan = {}
+    mockStripeCustomer = { object: 'customer', id: 'cus_123' }
+    mockStripeSub = { object: 'subscription', id: 'sub_123' }
   })
 
   it('should be defined', () => {
@@ -152,14 +180,110 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
     expect(service.paymentsRepository).toEqual(repo)
   })
 
+  describe('getPaymentsConfig', () => {
+    it('default = stripe', async () => {
+      const config = await service.getPaymentsConfig()
+      expect(config).toEqual({
+        payment_processor: 'stripe',
+        payment_processor_enabled: true,
+        signup_force_payment: false,
+      })
+    })
+
+    it('signup_force_payment: true', async () => {
+      mockSettings = {
+        signup_force_payment: true
+      }
+
+      const config = await service.getPaymentsConfig()
+      expect(config).toEqual({
+        payment_processor: 'stripe',
+        payment_processor_enabled: true,
+        signup_force_payment: true,
+      })
+    })
+
+    it('Stripe disabled', async () => {
+      stripeService.enabled = false
+
+      const config = await service.getPaymentsConfig()
+      expect(config).toEqual({
+        payment_processor: 'stripe',
+        payment_processor_enabled: false,
+        signup_force_payment: false,
+      })
+    })
+  })
+
   describe('enrollOrUpdateAccount - subscription succeed', () => {
-    it('should create an external subscription [create account via admin dashboard]', async () => { })
+    it('should create an external subscription [create account via admin dashboard]', async () => {
+      mockPlan = {
+        provider: 'external'
+      }
 
-    it('should create a free tier [signup]', async () => { })
+      const payment = await service.enrollOrUpdateAccount(account, planHandle, paymentMethod)
 
-    it('should create a free trial [signup]', async () => { })
+      const expectedPayment = {
+        provider: 'stripe',
+        plan: mockPlan,
+        sub: {
+          status: 'external'
+        }
+      }
+      expect(payment).toEqual(expectedPayment)
+    })
 
-    it('should update a free trial when a payment method is passed [add payment method]', async () => { })
+    it('should create a free tier [signup]', async () => {
+      mockPlan = {
+        price: 0
+      }
+
+      const payment = await service.enrollOrUpdateAccount(account, planHandle, paymentMethod)
+
+      const expectedPayment = {
+        provider: 'stripe',
+        plan: mockPlan,
+        sub: {
+          status: 'active'
+        }
+      }
+      expect(payment).toEqual(expectedPayment)
+    })
+
+    it('should create a free trial [signup]', async () => {
+      mockPlan = {
+        price: 10,
+        freeTrial: 14
+      }
+
+      const payment = await service.enrollOrUpdateAccount(account, planHandle, paymentMethod)
+
+      const expectedPayment = {
+        provider: 'stripe',
+        plan: mockPlan,
+        customer: mockStripeCustomer,
+        sub: mockStripeSub,
+      }
+      expect(payment).toEqual(expectedPayment)
+    })
+
+    it('should update a free trial when a payment method is passed [add payment method]', async () => {
+      paymentMethod = { id: 123 }
+      mockPlan = {
+        price: 10,
+        freeTrial: 14
+      }
+
+      const payment = await service.enrollOrUpdateAccount(account, planHandle, paymentMethod)
+
+      const expectedPayment = {
+        provider: 'stripe',
+        plan: mockPlan,
+        customer: mockStripeCustomer,
+        sub: mockStripeSub,
+      }
+      expect(payment).toEqual(expectedPayment)
+    })
 
     it('should not create a full subscription if no payment method is set [signup]', async () => { })
 
@@ -222,6 +346,17 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
 
   describe('enrollOrUpdateAccount - payment method', () => {
     it('should add the first payment method', async () => { })
+
+    it('should add the second payment method', async () => { })
+
+    it('should update the customer when adding a payment method', async () => { })
+  })
+
+  describe('enrollOrUpdateAccount - inputs', () => {
+    it('should not fail on all null', async () => {
+      // const payment = await service.enrollOrUpdateAccount(null, null, null)
+      // expect(payment).toEqual({})
+    })
 
     it('should add the second payment method', async () => { })
 

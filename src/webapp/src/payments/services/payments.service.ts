@@ -139,7 +139,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     return {
       payment_processor: this.paymentIntegration,
       payment_processor_enabled: processorEnabled,
-      signup_force_payment: settings.signup_force_payment
+      signup_force_payment: settings.signup_force_payment === true
     }
   }
 
