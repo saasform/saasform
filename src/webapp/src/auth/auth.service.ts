@@ -14,7 +14,6 @@ import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
 import { UserError } from '../utilities/common.model'
 import { UserCredentialsEntity } from 'src/accounts/entities/userCredentials.entity'
-import { isWhiteSpaceLike } from 'typescript'
 
 export class UnauthorizedWithRedirectException extends UnauthorizedException {
   public redirect: string
@@ -182,16 +181,16 @@ export class AuthService {
       if (!subsIsPaid) {
         return 'unpaid'
       }
-      // if (userIsActive === false) {
-      //   return 'account_blocked'
-      // }
+      if (!userIsActive) {
+        return 'inactive_user'
+      }
     }
 
     return 'invalid'
   }
 
-  getTokenPayloadSubscripionData (validUser: ValidUser): any {
-    const payment = validUser.account.data.payment
+  getTokenPayloadSubscripionData (payment): any {
+    // const payment = validUser.account.data.payment
     let subscriptionData = {}
 
     const isFreeTier = payment.plan.price === 0
@@ -235,7 +234,7 @@ export class AuthService {
       }, {})
       : {}
 
-    const subscriptionData = this.getTokenPayloadSubscripionData(validUser)
+    const subscriptionData = this.getTokenPayloadSubscripionData(validUser.account.data.payment)
 
     // const paymentsConfig = await this.paymentsService.getPaymentsConfig()
     const status = await this.getTokenPayloadStatus(validUser)

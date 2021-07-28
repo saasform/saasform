@@ -145,32 +145,6 @@ describe('AuthService', () => {
       })
     })
 
-    describe('JWT generation', () => {
-      it('Must add user data', async () => {
-        // console.log('us', service['settingsService'].getUserSettings())
-        const validUser = {
-          user: { id: 1, email: 'main@email', data: { profile: { email: 'inside@email' } } },
-          credential: {},
-          account: { id: 101, data: { name: 'account name' } }
-        }
-        const jwtData = await service.getTokenPayloadFromUserModel(validUser)
-        expect(jwtData).toMatchObject(
-          {
-            nonce: '',
-            id: 1,
-            account_id: 101,
-            account_name: 'account name',
-            email: 'main@email',
-            email_verified: false,
-            staff: false,
-            status: 'active',
-            user_email: 'inside@email',
-            user_unused: ''
-          }
-        )
-      })
-    })
-
     describe('registerUser', () => {
       it('must fail when addUser fails', async () => {
         const newUser = {
