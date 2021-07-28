@@ -25,7 +25,7 @@ export class BasePaymentProcessorService {
 
   // options attached to every client API call, e.g. for Stripe
   async getApiOptions (): Promise<any> {
-    return {}
+    return { timeout: 5000 }
   }
 
   getHtml (): string {
