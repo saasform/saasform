@@ -60,6 +60,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
   let mockSettings
 
   let mockStripeCustomer
+  let mockStripeCustomerWithDefaultPayment
   let mockStripeSub
   let mockedStripePaymentMethod
 
@@ -88,7 +89,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
   const mockedStripe = {
     customers: {
       retrieve: jest.fn(_ => ({ subscriptions: { data: subscriptionsArray } })),
-      update: jest.fn(_ => {}),
+      update: jest.fn(_ => (mockStripeCustomerWithDefaultPayment)),
       create: jest.fn(_ => (mockStripeCustomer))
     },
     paymentMethods: {
@@ -175,6 +176,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
     mockSettings = {}
     mockPlan = {}
     mockStripeCustomer = { object: 'customer', id: 'cus_123' }
+    mockStripeCustomerWithDefaultPayment = { object: 'customer', id: 'cus_123', default_payment_method: 'met_123' }
     mockStripeSub = { object: 'subscription', id: 'sub_123' }
     mockedStripePaymentMethod = { object: 'method', id: 'met_123' }
   })
@@ -297,7 +299,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       const expectedPayment = {
         provider: 'stripe',
         plan: mockPlan,
-        customer: mockStripeCustomer,
+        customer: mockStripeCustomerWithDefaultPayment,
         sub: mockStripeSub,
         methods: [mockedStripePaymentMethod]
       }
@@ -340,7 +342,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       const expectedPayment = {
         provider: 'stripe',
         plan: mockPlan,
-        customer: mockStripeCustomer,
+        customer: mockStripeCustomerWithDefaultPayment,
         sub: mockStripeSub,
         methods: [mockedStripePaymentMethod]
       }
@@ -570,7 +572,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       const expectedPayment = {
         provider: 'stripe',
         plan: mockPlan,
-        customer: mockStripeCustomer,
+        customer: mockStripeCustomerWithDefaultPayment,
         sub: mockStripeSub,
         methods: [mockedStripePaymentMethod]
       }
@@ -628,7 +630,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       const expectedPayment = {
         provider: 'stripe',
         plan: plan0,
-        customer: mockStripeCustomer,
+        customer: mockStripeCustomerWithDefaultPayment,
         sub: mockStripeSub,
         methods: [mockedStripePaymentMethod]
       }
@@ -664,7 +666,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
       const expectedPayment = {
         provider: 'stripe',
         plan: plan0,
-        customer: mockStripeCustomer,
+        customer: mockStripeCustomerWithDefaultPayment,
         sub: mockStripeSub,
         methods: [mockedStripePaymentMethod]
       }
@@ -675,35 +677,173 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
   describe('enrollOrUpdateAccount - customer', () => {
     it('should not overwrite a customer if already set', async () => { })
 
-    it('should not create a customer for enterprise if payment method is not passed', async () => { })
+    // same as subscription succeed, external
+    // it('should not create a customer for external if payment method is not passed', async () => { })
 
-    it('should not create a customer for free tier if payment method is not passed', async () => { })
+    // same as subscription succeed, free tier
+    // it('should not create a customer for free tier if payment method is not passed', async () => { })
 
-    it('should create a customer for enterprise if payment method is passed', async () => { })
+    it('should create a customer for external if payment method is passed', async () => {
+      paymentMethod = { id: 123 }
+      mockPlan = {
+        provider: 'external'
+      }
 
-    it('should create a customer for free tier if payment method is passed', async () => { })
+      const payment = await service.enrollOrUpdateAccount(account, planHandle, paymentMethod)
 
-    it('should create a customer for free trial', async () => { })
+      const expectedPayment = {
+        provider: 'stripe',
+        plan: mockPlan,
+        sub: {
+          status: 'external'
+        },
+        customer: mockStripeCustomerWithDefaultPayment,
+        methods: [mockedStripePaymentMethod]
+      }
+      expect(payment).toEqual(expectedPayment)
+    })
 
-    it('should create a customer for full subscription', async () => { })
+    it('should create a customer for free tier if payment method is passed', async () => {
+      paymentMethod = { id: 123 }
+      mockPlan = {
+        price: 0
+      }
+
+      const payment = await service.enrollOrUpdateAccount(account, planHandle, paymentMethod)
+
+      const expectedPayment = {
+        provider: 'stripe',
+        plan: mockPlan,
+        sub: {
+          status: 'active'
+        },
+        customer: mockStripeCustomerWithDefaultPayment,
+        methods: [mockedStripePaymentMethod]
+      }
+      expect(payment).toEqual(expectedPayment)
+    })
+
+    // same as subscription succeed, free trial #golden
+    // it('should create a customer for free trial', async () => { })
+
+    // same as subscription succeed, full
+    // it('should create a customer for full subscription', async () => { })
   })
 
   describe('enrollOrUpdateAccount - payment method', () => {
-    it('should add the first payment method', async () => { })
+    // same as subscription succeed, free trial #golden
+    // it('should add the first payment method', async () => { })
 
-    it('should add the second payment method', async () => { })
+    it('should add the second payment method', async () => {
+      paymentMethod = { id: 123 }
+      mockPlan = {
+        price: 10,
+        freeTrial: 14
+      }
 
-    it('should update the customer when adding a payment method', async () => { })
+      const stripePaymentMethod0 = { object: 'method', id: 'met_123' }
+      const stripePaymentMethod1 = { object: 'method', id: 'met_456' }
+
+      const payment0 = await service.enrollOrUpdateAccount(account, planHandle, null)
+      expect(payment0).toEqual({
+        provider: 'stripe',
+        plan: mockPlan,
+        customer: mockStripeCustomer,
+        sub: mockStripeSub
+      })
+
+      mockedStripePaymentMethod = stripePaymentMethod0
+      account.data.payment = payment0
+      const payment1 = await service.enrollOrUpdateAccount(account, null, paymentMethod)
+
+      expect(payment1).toEqual({
+        provider: 'stripe',
+        plan: mockPlan,
+        customer: mockStripeCustomerWithDefaultPayment,
+        sub: mockStripeSub,
+        methods: [stripePaymentMethod0]
+      })
+
+      mockedStripePaymentMethod = stripePaymentMethod1
+      account.data.payment = payment1
+      const payment = await service.enrollOrUpdateAccount(account, null, paymentMethod)
+
+      const expectedPayment = {
+        provider: 'stripe',
+        plan: mockPlan,
+        customer: mockStripeCustomerWithDefaultPayment,
+        sub: mockStripeSub,
+        methods: [stripePaymentMethod0, stripePaymentMethod1]
+      }
+      expect(payment).toEqual(expectedPayment)
+    })
+
+    it('should update the customer when adding a payment method', async () => {
+      paymentMethod = { id: 123 }
+      mockPlan = {
+        price: 10,
+        freeTrial: 14
+      }
+
+      const payment0 = await service.enrollOrUpdateAccount(account, planHandle, null)
+      expect(payment0).toEqual({
+        provider: 'stripe',
+        plan: mockPlan,
+        customer: mockStripeCustomer,
+        sub: mockStripeSub
+      })
+
+      account.data.payment = payment0
+      const payment = await service.enrollOrUpdateAccount(account, null, paymentMethod)
+
+      const expectedPayment = {
+        provider: 'stripe',
+        plan: mockPlan,
+        customer: mockStripeCustomerWithDefaultPayment,
+        sub: mockStripeSub,
+        methods: [mockedStripePaymentMethod]
+      }
+      expect(payment).toEqual(expectedPayment)
+    })
   })
 
   describe('enrollOrUpdateAccount - inputs', () => {
     it('should not fail on all null', async () => {
-      // const payment = await service.enrollOrUpdateAccount(null, null, null)
-      // expect(payment).toEqual({})
+      mockPlan = {
+        price: 10,
+        freeTrial: 14
+      }
+
+      const payment = await service.enrollOrUpdateAccount(null, null, null)
+      expect(payment).toEqual({
+        provider: 'stripe',
+        plan: mockPlan
+      })
     })
 
-    it('should add the second payment method', async () => { })
+    it('should not fail on all null (stripe disabled)', async () => {
+      stripeService.enabled = false
+      mockPlan = null
 
-    it('should update the customer when adding a payment method', async () => { })
+      const payment = await service.enrollOrUpdateAccount(null, null, null)
+      expect(payment).toEqual({
+        provider: null
+      })
+    })
+
+    it('should create a subscription when everything but account is null', async () => {
+      mockPlan = {
+        price: 10,
+        freeTrial: 14
+      }
+
+      const payment = await service.enrollOrUpdateAccount(account, null, null)
+      expect(payment).toEqual({
+        provider: 'stripe',
+        plan: mockPlan,
+        customer: mockStripeCustomer,
+        sub: mockStripeSub
+      })
+    })
   })
 })

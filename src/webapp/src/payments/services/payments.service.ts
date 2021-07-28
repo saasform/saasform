@@ -91,9 +91,12 @@ export class PaymentsService extends BaseService<PaymentEntity> {
 
     // 2. Create customer
     if (isCustomerNeeded) {
-      const customer = await this.paymentProcessor.createCustomer(account.getPaymentProviderCustomer())
-      if (customer != null) {
-        payment.customer = customer
+      const inputCustomer = account?.getPaymentProviderCustomer()
+      if (inputCustomer != null) {
+        const customer = await this.paymentProcessor.createCustomer(account?.getPaymentProviderCustomer())
+        if (customer != null) {
+          payment.customer = customer
+        }
       }
     }
 
