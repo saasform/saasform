@@ -61,8 +61,10 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     const config = await this.getPaymentsConfig()
     const provider = config.payment_processor_enabled === true ? config.payment_processor : null
 
-    const payment = account?.data?.payment ?? {
-      provider
+    const payment = account?.data?.payment ?? {}
+
+    if (payment.provider == null) {
+      payment.provider = provider
     }
 
     if (payment.provider !== config.payment_processor && payment.provider != null) {
@@ -77,16 +79,22 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     if (payment.plan == null) {
       // We do not allow to update the plan here.
       // TODO: update plan
-      payment.plan = await this.plansService.getPlanFromHandle(planHandle)
+      const plan = await this.plansService.getPlanFromHandle(planHandle)
+      if (plan != null) {
+        payment.plan = plan
+      }
     }
-    const isFreeTier = payment.plan.price === 0
-    const isExternal = payment.plan.provider === 'external'
+    const isFreeTier = payment.plan?.price === 0
+    const isExternal = payment.plan?.provider === 'external'
 
     const isCustomerNeeded = payment.customer == null && ((!isFreeTier && !isExternal) || paymentMethod != null)
 
     // 2. Create customer
     if (isCustomerNeeded) {
-      payment.customer = await this.paymentProcessor.createCustomer(account.getPaymentProviderCustomer())
+      const customer = await this.paymentProcessor.createCustomer(account.getPaymentProviderCustomer())
+      if (customer != null) {
+        payment.customer = customer
+      }
     }
 
     // 3. Add payment method
@@ -116,7 +124,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
         payment.sub = { status: 'external' }
       } else if (isFreeTier) { // Free tier
         payment.sub = { status: 'active' }
-      } else if (payment.plan.freeTrial > 0 && payment.customer != null) { // Free trial
+      } else if (payment.plan?.freeTrial > 0 && payment.customer != null) { // Free trial
         payment.sub = await this.paymentProcessor.createSubscription(payment.customer, payment.plan)
       } else if (payment.methods != null && payment.customer != null) { // Full subscription
         payment.sub = await this.paymentProcessor.createSubscription(payment.customer, payment.plan)
