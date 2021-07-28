@@ -153,6 +153,35 @@ export class AccountsService extends BaseService<AccountEntity> {
   }
 
   /**
+   * Add or enroll a payment method for an account.
+   * WARNING: method is user input and should NOT be used without validation.
+   * It will be directly passed to the payment provider that MUST handle it securely.
+   * @param accountId id of the account to enroll the payment
+   * @param method payment method payload
+   * @returns the payment enrolled
+   */
+  async enrollOrUpdatePayment (accountId: number, method: any): Promise<any | null> {
+    const account = await this.findById(accountId)
+    if (account == null) {
+      return null
+    }
+
+    account.data.payment = await this.paymentsService.enrollOrUpdateAccount(account, '', method)
+
+    try {
+      await this.updateOne(account.id, { data: account.data })
+    } catch (err) {
+      console.error(
+        'accounts.service - inviteUser - Error while inviting new user (setting owner)',
+        err
+      )
+      return null
+    }
+
+    return account.data.payment
+  }
+
+  /**
    * Add an account and set the user as owner or attach the user
    * to the corresponding account, if the domain is linked.
    *
@@ -183,6 +212,7 @@ export class AccountsService extends BaseService<AccountEntity> {
       // will be associated with this account.
       account.owner_id = user?.id ?? 0
 
+      /*
       // Create a Billing user for this account
       const billingCustomers = await this.paymentsService.createBillingCustomer({
         name: data.name
@@ -208,9 +238,10 @@ export class AccountsService extends BaseService<AccountEntity> {
           console.error('accountsService - cannot create free subscription')
         }
       }
+      */
 
       // TODO:
-      // this.paymentsService.enrollAccount()
+      account.data.payment = await this.paymentsService.enrollOrUpdateAccount(account, '', null)
 
       try {
         const res = await this.createOne(account)

@@ -93,7 +93,8 @@ describe('Accounts Service', () => {
     createFreeSubscription: jest.fn(_ => {}),
     attachPaymentMethod: jest.fn((account, _) => account.data.stripe.id),
     subscribeToPlan: jest.fn(_ => {}),
-    updatePlan: jest.fn(_ => {})
+    updatePlan: jest.fn(_ => {}),
+    enrollOrUpdateAccount: jest.fn().mockReturnValue({})
   }
 
   const mockedPlansService = {
@@ -249,7 +250,7 @@ describe('Accounts Service', () => {
 
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
-          data: { name: 'foo bar', stripe: {} }
+          data: { name: 'foo bar', payment: {} }
         })
       )
     })
@@ -261,7 +262,7 @@ describe('Accounts Service', () => {
 
       expect(repoSpy).toBeCalledWith(
         expect.objectContaining({
-          data: { name: undefined, stripe: {} },
+          data: { name: undefined, payment: {} },
           owner_id: 101
         })
       )

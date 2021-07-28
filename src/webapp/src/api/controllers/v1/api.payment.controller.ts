@@ -19,18 +19,18 @@ export class ApiV1PaymentController {
   @UseGuards(UserRequiredAuthGuard)
   @Post('add-payment-token')
   async handleAddPaymentToken (@Request() req, @Res() res: Response): Promise<any> {
-    const account = await this.accountsService.findByOwnerEmail(req.user.email)
+    // const account = await this.accountsService.findByOwnerEmail(req.user.email)
 
-    if (account == null) {
-      return res.status(400).json({
-        statusCode: 400,
-        error: 'Account not found'
-      })
-    }
-
-    let methods
+    let payment
     try {
-      methods = await this.accountsService.addPaymentsMethods(account.id, req.body)
+      payment = await this.accountsService.enrollOrUpdatePayment(req.user.account_id, req.body)
+
+      if (payment == null) {
+        return res.json({
+          statusCode: 400,
+          error: 'Invalid credit card info. Please try again.'
+        })
+      }
     } catch (_) {
       return res.json({
         statusCode: 400,
@@ -48,7 +48,7 @@ export class ApiV1PaymentController {
 
     return res.json({
       statusCode: 200,
-      message: methods
+      message: 'Payment enrolled'
     })
   }
 

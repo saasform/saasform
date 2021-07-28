@@ -73,7 +73,7 @@ export class StripeService extends BasePaymentProcessorService {
   }
 
   async createSubscription (customer, plan): Promise<any> {
-    const trialDays = await this.settingsService.getTrialLength()
+    const trialDays = plan.freeTrial ?? await this.settingsService.getTrialLength()
     const trialEnd = Math.floor(Date.now() / 1000) + trialDays * 24 * 60 * 60
 
     const subscriptionOptions: any = {
