@@ -16,8 +16,39 @@ export const mockAccountsUsersRepo = {
   createOne: jest.fn(accountUser => accountUser)
 }
 
+export const mockJwtService = { ...mockGenericRepo }
+
+export const mockAccountsService = { ...mockGenericRepo }
+
+export const mockPlansService = { ...mockGenericRepo }
+
 export const mockValidationService = {
   isNilOrEmpty: jest.fn().mockReturnValue(false)
+}
+
+export const mockedSettingRepo = {
+  ...mockGenericRepo,
+  getWebsiteRenderingVariables: jest.fn(_ => []),
+  getUserSettings: jest.fn(_ => ({ allowedKeys: ['email', 'unused'] })),
+  getSettings: jest.fn(
+    category => {
+      switch (category) {
+        case 'user': return { allowedKeys: ['email', 'unused'] }
+        default: return {}
+      }
+    }
+  )
+}
+
+export const mockPaymentsService = {
+  getPaymentsConfig: async () => ({}),
+  refreshPaymentsFromStripe: async () => {},
+  getActivePayments: async (accountId) => (null)
+}
+
+export const mockList = {
+  settingsService: mockedSettingRepo,
+  paymentsService: mockPaymentsService
 }
 
 // TODO: refactor below this point
@@ -100,18 +131,6 @@ export const mockUserCredentialsEntity = {
   })
 }
 
-export const mockedSettingRepo = {
-  getWebsiteRenderingVariables: jest.fn(_ => []),
-  getUserSettings: jest.fn(_ => ({ allowedKeys: ['email', 'unused'] })),
-  getSettings: jest.fn(
-    category => {
-      switch (category) {
-        case 'user': return { allowedKeys: ['email', 'unused'] }
-        default: return {}
-      }
-    }
-  )
-}
 export const mockedRandom = {
   password: _ => 'password'
 }

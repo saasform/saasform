@@ -41,15 +41,53 @@ export class PlansService extends BaseService<PlanEntity> {
    * @param handle the handle to the plan. It is in the format 'm-plus' there m stands from monthly or yearly and plus is the immutable name of the plan within Saasform
    */
   async getPlanFromHandle (handle: string): Promise<any> { // TODO: make and entity
-    // TODO
+    // Inkstinct
+    // return {
+    //   freeTrial: 0, // if 0, no trial, if > 0 days of trial
+    //   price: 4900, //  if 0, free tier, if > 0 price
+    //   interval: 'month', // month or year
+    //   ref: 'pro', // internal plan name, immutable
+    //   provider: 'stripe', // stripe/killbill (free tier, trial, full), external (enterprise)
+    //   stripe: { prices: { month: { id: 'price_1JHr1gBZGgCe7OWGGed4jbe7' } } }
+    // }
+
+    // Free trial
+    // return {
+    //   freeTrial: 4, // if 0, no trial, if > 0 days of trial
+    //   price: 4900, //  if 0, free tier, if > 0 price
+    //   interval: 'month', // month or year
+    //   ref: 'pro', // internal plan name, immutable
+    //   provider: 'stripe', // stripe/killbill (free tier, trial, full), external (enterprise)
+    //   stripe: { prices: { month: { id: 'price_1JHr1gBZGgCe7OWGGed4jbe7' } } }
+    // }
+
+    // Enterprise
+    // return {
+    //   freeTrial: 0, // if 0, no trial, if > 0 days of trial
+    //   price: 0, //  if 0, free tier, if > 0 price
+    //   interval: 'month', // month or year
+    //   ref: 'pro', // internal plan name, immutable
+    //   provider: 'external' // stripe/killbill (free tier, trial, full), external (enterprise)
+    // }
+
+    // Free tier
     return {
       freeTrial: 0, // if 0, no trial, if > 0 days of trial
       price: 0, //  if 0, free tier, if > 0 price
       interval: 'month', // month or year
       ref: 'pro', // internal plan name, immutable
-      provider: 'stripe', // stripe/killbill (free tier, trial, full), external (enterprise)
-      stripe: {}
+      provider: 'stripe' // stripe/killbill (free tier, trial, full), external (enterprise)
     }
+
+    // Free tier with trial
+    // return {
+    //   freeTrial: 4, // if 0, no trial, if > 0 days of trial
+    //   price: 0, //  if 0, free tier, if > 0 price
+    //   interval: 'month', // month or year
+    //   ref: 'pro', // internal plan name, immutable
+    //   provider: 'stripe', // stripe/killbill (free tier, trial, full), external (enterprise)
+    //   stripe: { prices: { month: { id: 'price_1JHr1gBZGgCe7OWGGed4jbe7' } } }
+    // }
   }
 
   // OLD

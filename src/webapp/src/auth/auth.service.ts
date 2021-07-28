@@ -14,6 +14,7 @@ import { PaymentsService } from '../payments/services/payments.service'
 import { PlansService } from '../payments/services/plans.service'
 import { UserError } from '../utilities/common.model'
 import { UserCredentialsEntity } from 'src/accounts/entities/userCredentials.entity'
+import { isWhiteSpaceLike } from 'typescript'
 
 export class UnauthorizedWithRedirectException extends UnauthorizedException {
   public redirect: string
@@ -122,33 +123,63 @@ export class AuthService {
     return validUser
   }
 
-  getTokenPayloadStatus (validUser: ValidUser, subscriptionData, paymentsConfig): string {
+  // TODO: move into AccountEntity
+  async isPaymentMethodOK (account: AccountEntity): Promise<Boolean> {
     // when not set, it's false - e.g. in tests
+    const paymentsConfig = await this.paymentsService.getPaymentsConfig()
+    const payment = account.data.payment
+
     const configSignupForcePayment = (paymentsConfig.signup_force_payment === true)
+
+    const isExternal = payment.plan.provider === 'external'
+    const hasPaymentMethods = payment.methods != null && payment.methods.length > 0
+
+    const accountIsActive =
+    // signup requires payment and account has payments
+    (configSignupForcePayment && hasPaymentMethods) ||
+    // signup doesn't require payment
+    !configSignupForcePayment ||
+    // enterprise are alwasy active
+    isExternal
+    // TODO not banned/blocked account
+
+    return accountIsActive
+  }
+
+  // TODO: move into SubscriptionEntity
+  async isSubscriptionPaid (subscription): Promise<Boolean> {
+    // when not set, it's false - e.g. in tests
+    const paymentsConfig = await this.paymentsService.getPaymentsConfig()
     const configPaymentProcessorEnabled = (paymentsConfig.payment_processor_enabled === true)
 
-    const userIsActive = true // TODO
-    const accountIsActive =
-      // signup requires payment but account doesn't have any payments
-      (configSignupForcePayment && validUser.account?.data?.payments_methods != null) ||
-      // signup doesn't require payment
-      !configSignupForcePayment
-      // TODO not banned/blocked account
     const subsIsActive =
-      // no subs, but payment processor disabled
-      (subscriptionData.subs_status == null && !configPaymentProcessorEnabled) ||
-      // no subs, e.g. enterprise or not yet added
-      (subscriptionData.subs_status === undefined) ||
-      // valid subs in any of these states: disabled, external, active, trialing
-      ['disabled', 'external', 'active', 'trialing'].includes(subscriptionData.subs_status)
+    // no subs, but payment processor disabled
+    (subscription?.status == null && !configPaymentProcessorEnabled) ||
+    // no subs, e.g. enterprise or not yet added
+    // (subscription?.status === undefined) || // this should never happen unless something was broken in subscription creation
+    // valid subs in any of these states: disabled, external, active, trialing
+    ['disabled', 'external', 'active', 'trialing'].includes(subscription.status)
 
-    if (userIsActive && accountIsActive && subsIsActive) {
+    return subsIsActive
+  }
+
+  // TODO: move into UserEntity
+  async isUserActive (user: UserEntity): Promise<Boolean> {
+    return user.isActive
+  }
+
+  async getTokenPayloadStatus (validUser: ValidUser): Promise<string> {
+    const userIsActive = (await this.isUserActive(validUser.user) === true)
+    const paymentMethodIsOK = (await this.isPaymentMethodOK(validUser.account) === true)
+    const subsIsPaid = (await this.isSubscriptionPaid(validUser.account.data.payment.sub) === true)
+
+    if (userIsActive && paymentMethodIsOK && subsIsPaid) {
       return 'active'
     } else {
-      if (!accountIsActive) {
+      if (!paymentMethodIsOK) {
         return 'no_payment_method'
       }
-      if (!subsIsActive) {
+      if (!subsIsPaid) {
         return 'unpaid'
       }
       // if (userIsActive === false) {
@@ -157,6 +188,37 @@ export class AuthService {
     }
 
     return 'invalid'
+  }
+
+  getTokenPayloadSubscripionData (validUser: ValidUser): any {
+    const payment = validUser.account.data.payment
+    let subscriptionData = {}
+
+    const isFreeTier = payment.plan.price === 0
+    const isExternal = payment.plan.provider === 'external'
+    const isStripe = payment.plan.provider === 'stripe'
+
+    if (isExternal) {
+      subscriptionData = {
+        // subs_exp: payment.sub.current_period_end, // Enterprise does not exprire
+        subs_name: payment.plan.name,
+        subs_status: payment.sub.status
+      }
+    } else if (isFreeTier) {
+      subscriptionData = {
+        // subs_exp: payment.sub.current_period_end, // Free tier does not exprire
+        subs_name: payment.plan.name,
+        subs_status: payment.sub.status
+      }
+    } else if (isStripe) {
+      subscriptionData = {
+        subs_exp: payment.sub.current_period_end,
+        subs_name: payment.plan.name,
+        subs_status: payment.sub.status
+      }
+    }
+
+    return subscriptionData
   }
 
   async getTokenPayloadFromUserModel (validUser: ValidUser, updateActiveSubscription: boolean = true): Promise<RequestUser | null> {
@@ -173,13 +235,10 @@ export class AuthService {
       }, {})
       : {}
 
-    let subscriptionData = {}
-    if (updateActiveSubscription) {
-      subscriptionData = await this.updateActiveSubscription(validUser.account)
-    }
+    const subscriptionData = this.getTokenPayloadSubscripionData(validUser)
 
-    const paymentsConfig = await this.paymentsService.getPaymentsConfig()
-    const status = this.getTokenPayloadStatus(validUser, subscriptionData, paymentsConfig)
+    // const paymentsConfig = await this.paymentsService.getPaymentsConfig()
+    const status = await this.getTokenPayloadStatus(validUser)
 
     return {
       nonce: '', // TODO
@@ -196,6 +255,8 @@ export class AuthService {
     }
   }
 
+  // deprecated
+  /*
   async updateActiveSubscription (account: AccountEntity): Promise<any> {
     if (account == null) {
       return {}
@@ -224,6 +285,7 @@ export class AuthService {
       subs_status: payment.status
     }
   }
+  */
 
   getJwtCookieDomain (requestHostname: string, primaryDomain: string): string {
     let cookieDomain
