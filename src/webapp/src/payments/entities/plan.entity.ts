@@ -1,20 +1,142 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
-import { IsJSON } from 'class-validator'
+import { Entity, Column, PrimaryGeneratedColumn, AfterLoad } from 'typeorm'
 
+/*
+  // JSON DB object
+  {
+    "ref": "pro",
+    "name": "Pro",
+    "price_year": 99,
+    "price_month": 120,
+    "price_decimals": 0,
+    "button": "Choose",
+    "primary": true,
+    "features": [
+      {"name": "first"},
+      {"name": "second"}
+    ]
+  }
+
+  // example plans
+  - name: Pro
+    price_year: 99
+    price_month: 120
+    price_decimals: 0
+    button: Choose
+    primary: true
+    features:
+      - name: Lorem ipsum
+      - name: Dolor sit amet
+      - name: Consectetur
+      - name: Adipiscing elit
+  - name: Enterprise
+    price_text: Let's talk
+    button: Contact us
+    button_href: mailto:hello@beautifulsaas.com
+    features:
+      - name: Lorem ipsum
+      - name: Dolor sit amet
+      - name: Consectetur
+      - name: Adipiscing elit
+*/
+
+class FeatureData {
+  name?: string
+}
+
+class PlanData {
+  provider?: string
+  stripe?: any // when we add new providers this must be updated
+  ref?: string
+  display?: boolean
+  name?: string
+  primary?: boolean
+  price_year?: number
+  price_month?: number
+  price_decimals: 0
+  price_text?: string
+  free_trial?: number
+  button?: string
+  button_href?: string
+  features: FeatureData[]
+}
 @Entity({ name: 'plans' })
 export class PlanEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column('text')
-  @IsJSON()
-  product: string // Can we use a proper json instead of a string?
+  @Column('json')
+  data: PlanData | any
 
-  @Column('text')
-  @IsJSON()
-  prices: string
+  /**
+  * Set values in this from values in this.data
+  */
+  @AfterLoad()
+  public setValuesFromJson (): any {
+  // json parsing is done automatically
+    const data = this.data ?? {}
+    for (const key in data) {
+      if (!(key in this)) {
+        this[key] = data[key]
+      }
+    }
+  }
 
-  @Column('text')
-  @IsJSON()
-  plan: string
+  /**
+  * Set values in this.data from values in json
+  */
+  public async setJsonFromValues (): Promise<any> {
+    const data = new PlanData()
+    Object.keys(data).forEach(key => {
+      if (key in this) {
+        // if (key === 'features') {
+
+        //   this[key].forEach(feature => {
+
+        //   })
+        // }
+        const castedKey: string = key
+        data[castedKey] = this[key]
+      }
+    })
+    this.data = data
+  }
+
+  // Getters
+
+  public isPrimary (): boolean {
+    return this.data.primary === true
+  }
+
+  /**
+   * @returns ref if defined, otherwise the name without spaces
+   */
+  public getRef (): string {
+    return this.data.ref ?? this.data.name.replace(' ', '')
+  }
+
+  public hasRef (ref): boolean {
+    return this.getRef() === ref
+  }
+
+  /**
+   * @param interval the privcing interval
+   * @returns monthly price if interval is "month"; yearly price otherwise
+   */
+  public getIntervalPrice (interval): number {
+    return interval === 'month' ? this.data.price_month : this.data.price_year
+  }
+
+  public getProvider (): string {
+    // TODO
+    return 'stripe'
+  }
+
+  public getProviderData (): any {
+    const provider = this.getProvider()
+    return this.data[provider] ?? {}
+  }
+
+  public getName (): string {
+    return this.data.name ?? ''
+  }
 }
