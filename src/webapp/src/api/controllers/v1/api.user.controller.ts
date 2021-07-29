@@ -1,6 +1,5 @@
-import { Controller, Get, Post, Put, Delete, UseGuards, Request, Res, Param } from '@nestjs/common'
+import { Controller, Get, Post, Put, Delete, UseGuards, Request, Param } from '@nestjs/common'
 import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger'
-import { Response } from 'express'
 import { SettingsService } from '../../../settings/settings.service'
 import { AccountsService } from '../../../accounts/services/accounts.service'
 import { PlansService } from '../../../payments/services/plans.service'
@@ -24,22 +23,22 @@ export class ApiV1UserController {
 
   @UseGuards(UserRequiredAuthGuard)
   @Post('password-change')
-  async handlePasswordChange (@Request() req, @Res() res: Response): Promise<any> {
+  async handlePasswordChange (@Request() req): Promise<any> {
     const { password } = req.body
     const passwordConfirmation = req.body['password-confirm']
     const passwordNew = req.body['password-new']
 
     if (password == null) {
-      return res.json({
+      return {
         statusCode: 400,
         error: 'Password not valid'
-      })
+      }
     }
     if (passwordNew !== passwordConfirmation) {
-      return res.json({
+      return {
         statusCode: 400,
         error: 'Confirmation password doesn\'t match'
-      })
+      }
     }
 
     let result: Boolean
@@ -48,23 +47,24 @@ export class ApiV1UserController {
       result = await this.usersService.changePassword(req.user.email, password, passwordNew)
     } catch (error) {
       console.error('ApiV1UserController - handlePasswordChange', error)
-      return res.json({
+      return {
         statusCode: 500,
         message: `err ${error.message as string}`
-      })
+      }
     }
 
     if (result !== true) {
-      return res.json({
+      return {
         statusCode: 400,
         error: 'Error while changing password'
-      })
+      }
     }
 
-    return res.json({
+    req.userUpdated = true
+    return {
       statusCode: 200,
       message: 'Password changed'
-    })
+    }
   }
 
   @UseGuards(UserRequiredAuthGuard)
@@ -112,54 +112,55 @@ export class ApiV1UserController {
 
   @UseGuards(UserRequiredAuthGuard)
   @Delete(':userId')
-  async handleDeleteUser (@Request() req, @Res() res: Response, @Param('userId') userId): Promise<any> {
+  async handleDeleteUser (@Request() req, @Param('userId') userId): Promise<any> {
     if (userId == null) {
-      return res.json({
+      return {
         statusCode: 400,
         error: 'userId not valid'
-      })
+      }
     }
 
     try {
       const wasDeleted = await this.usersService.deleteUser(userId)
       if (wasDeleted !== true) {
-        return res.json({
+        return {
           statusCode: 500,
           message: `Error while removing user ${userId as string}`
-        })
+        }
       }
     } catch (error) {
       console.error('ApiV1UserController - handleDeleteUser', error)
-      return res.json({
+      return {
         statusCode: 500,
         message: `err ${error.message as string}`
-      })
+      }
     }
 
-    return res.json({
+    // req.userUpdated = true
+    return {
       statusCode: 200,
       error: `User ${userId as string} removed`
-    })
+    }
   }
 
   // @UseGuards(BearerTokenGuard)
   @Get(':userId/oauth_tokens')
-  async getOauthTokens (@Request() req, @Res() res: Response, @Param('userId') userId: number): Promise<any> {
+  async getOauthTokens (@Request() req, @Param('userId') userId: number): Promise<any> {
     if (userId == null) {
-      return res.json({
+      return {
         statusCode: 400,
         error: 'userId not valid'
-      })
+      }
     }
 
     try {
       const userCredential = await this.userCredentialService.findUserCredentialByUserId(userId)
 
       if (userCredential === null) {
-        return res.json({
+        return {
           statusCode: 404,
           message: `Credentials not found for user ${userId}`
-        })
+        }
       }
 
       let userTokens: any[] = []
@@ -176,18 +177,18 @@ export class ApiV1UserController {
         return userTokens
       }, userTokens)
 
-      return res.json({
+      return {
         object: 'list',
         url: `/v1/user/${userId}/oauth_tokens`,
         has_more: false,
         data: userTokens
-      })
+      }
     } catch (error) {
       console.error('ApiV1UserController - getOauthTokens', error)
-      return res.json({
+      return {
         statusCode: 500,
         message: `err ${error.message as string}`
-      })
+      }
     }
   }
 }
