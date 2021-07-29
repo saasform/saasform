@@ -128,7 +128,7 @@ export class PlanEntity {
 
   public getProvider (): string {
     // TODO
-    return 'stripe'
+    return this.data?.provider ?? 'stripe'
   }
 
   public getProviderData (): any {
