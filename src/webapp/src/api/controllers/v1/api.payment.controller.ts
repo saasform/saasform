@@ -21,8 +21,6 @@ export class ApiV1PaymentController {
   @UseGuards(UserRequiredAuthGuard)
   @Post('add-payment-token')
   async handleAddPaymentToken (@Request() req /*, @Res() res: Response */): Promise<any> {
-    // const account = await this.accountsService.findByOwnerEmail(req.user.email)
-
     let payment
     try {
       payment = await this.accountsService.enrollOrUpdatePayment(req.user.account_id, req.body)
@@ -40,20 +38,7 @@ export class ApiV1PaymentController {
       }
     }
 
-    const validUser = await this.authService.getUserInfo(req.user.email)
-    if (validUser == null) {
-      // this should never happen
-      console.error('ApiV1PaymentController - handleAddPaymentToken - Cannot retrieve validUser')
-      return {
-        statusCode: 400,
-        error: 'Unexpected error. Please try again.'
-      }
-    }
-
-    req.user = await this.authService.getTokenPayloadFromUserModel(validUser)
-
-    // await this.authService.setJwtCookie(req, res, req.user)
-
+    req.userUpdated = true
     if (req.query.redirect != null) {
       const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
       return {

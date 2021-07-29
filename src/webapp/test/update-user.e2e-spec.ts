@@ -140,7 +140,7 @@ describe('Update user (e2e)', () => {
               .get('/api/v1/team/users')
               .set('Cookie', res.header['set-cookie'])
               .send()
-              // .expect(200)
+              .expect(200)
               .then(res => {
                 try {
                   const { profile } = res.body.message[0]

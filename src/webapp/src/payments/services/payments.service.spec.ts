@@ -50,7 +50,7 @@ describe('Payments Service', () => {
   let service // Removed type paymentsService because we must overwrite the paymentsRepository property
   let stripeService
   let repo: Repository<PaymentEntity>
-  const apiOptions = {}
+  const apiOptions = { timeout: 5000 }
 
   const mockedRepo = {
     query: jest.fn(

@@ -164,7 +164,6 @@ describe('Authentication (e2e)', () => {
                     nonce: '',
                     staff: false,
                     status: 'active',
-                    user_email: 'new@uplom.com',
                     user_name: '',
                     username: null
                   })
@@ -209,7 +208,6 @@ describe('Authentication (e2e)', () => {
                     nonce: '',
                     staff: false,
                     status: 'active',
-                    user_email: 'new@anotherdomain.com',
                     user_name: '',
                     username: null
                   })

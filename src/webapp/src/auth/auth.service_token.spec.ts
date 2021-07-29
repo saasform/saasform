@@ -125,7 +125,6 @@ describe('AuthService', () => {
             email: 'main@email',
             email_verified: false,
             staff: false,
-            user_email: 'inside@email', // userData
             user_unused: '', // userData
             subs_exp: 123456789,
             subs_name: 'plan name',
