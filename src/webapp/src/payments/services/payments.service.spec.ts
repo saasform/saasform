@@ -169,96 +169,6 @@ describe('Payments Service', () => {
     })
   })
 
-  describe('refreshPaymentsFromStripe', () => {
-    it('should contact stripe for checking subscriptions updates', async () => {
-      const stripeSpy = jest.spyOn(mockedStripe.customers, 'retrieve')
-      const account = new AccountEntity()
-      account.data = { stripe: { id: 'cus_1' } }
-      await service.refreshPaymentsFromStripe(account)
-
-      expect(stripeSpy).toBeCalledTimes(1)
-      expect(stripeSpy).toBeCalledWith(
-        account.data.stripe.id,
-        { expand: ['subscriptions'] },
-        apiOptions
-      )
-    })
-
-    it('should add new subscriptions', async () => {
-      const repoSpy = jest.spyOn(service, 'createOne')
-      const subscription = subscriptionsArray[1]
-      const account = new AccountEntity()
-      account.data = { stripe: { id: 'cus_1' } }
-      account.id = 101
-      await service.refreshPaymentsFromStripe(account)
-
-      expect(repoSpy).toBeCalledTimes(1)
-      expect(repoSpy).toBeCalledWith(
-        {
-          account_id: account.id,
-          status: subscription.status,
-          stripe_id: subscription.id,
-          data: subscription
-        }
-      )
-    })
-
-    it('should delete not existing subscriptions for this account', async () => {
-      const repoSpy = jest.spyOn(service, 'deleteOne')
-      const account = new AccountEntity()
-      account.data = { stripe: { id: 'cus_1' } }
-      account.id = 101
-      await service.refreshPaymentsFromStripe(account)
-
-      expect(repoSpy).toBeCalledTimes(1)
-      expect(repoSpy).toBeCalledWith(
-        deletedSubscription.id
-      )
-    })
-
-    it('should update existing subscriptions for this account', async () => {
-      const repoSpy = jest.spyOn(service, 'updateOne')
-      const account = new AccountEntity()
-      account.data = { stripe: { id: 'cus_1' } }
-      account.id = 101
-      await service.refreshPaymentsFromStripe(account)
-
-      const { id, ...sub } = existingSubscription
-      const update = { ...sub, data: { id: 'sub_2', status: 'active', active: 'false' }, status: 'active' }
-      // delete update.id FIXME
-
-      expect(repoSpy).toBeCalledTimes(1)
-      expect(repoSpy).toBeCalledWith(
-        2, update
-      )
-    })
-  })
-
-  describe('attachPaymentMethod', () => {
-    it('should attach the payment method to the stripe customer', async () => {
-      const stripeSpy = jest.spyOn(mockedStripe.paymentMethods, 'attach')
-
-      const account = { data: { stripe: { id: 'cus_123' } } }
-      await service.attachPaymentMethod(account, { id: 'met_456' })
-      expect(stripeSpy).toBeCalledWith('met_456', { customer: 'cus_123' }, apiOptions)
-    })
-
-    it('should set the payment method as default', async () => {
-      const stripeSpy = jest.spyOn(mockedStripe.customers, 'update')
-
-      const account = { data: { stripe: { id: 'cus_123' } } }
-      await service.attachPaymentMethod(account, { id: 'met_456' })
-      expect(stripeSpy).toBeCalledWith('cus_123',
-        {
-          invoice_settings: {
-            default_payment_method: 'met_456'
-          }
-        },
-        apiOptions
-      )
-    })
-  })
-
   describe('getExpiringPayments', () => {
     it('should return the payments that are about to expire', async () => {
       const days = 5 // the default
@@ -286,34 +196,6 @@ describe('Payments Service', () => {
 
       const expiring = await service.getExpiringPayments(days)
       expect(expiring).toEqual([{ id: 2, data: { trial_end: today } }])
-    })
-  })
-
-  describe('validators', () => {
-    it('should validate active subscriptions', async () => {
-      const paymentStatus = await service.isPaymentValid({ status: 'active' })
-      expect(paymentStatus).toBeTruthy()
-    })
-
-    it('should validate traili subscriptions', async () => {
-      const paymentStatus = await service.isPaymentValid({ status: 'trialing' })
-      expect(paymentStatus).toBeTruthy()
-    })
-
-    it.skip('should not validate missing subscriptions', async () => {
-      const paymentStatus = await service.isPaymentValid(null)
-      expect(paymentStatus).toBeFalsy()
-    })
-
-    it('should not validate inactive subscriptions', async () => {
-      const paymentStatus = await service.isPaymentValid({ status: 'suspended' })
-      expect(paymentStatus).toBeFalsy()
-    })
-
-    it('should validate null subscriptions when subscription is not required', async () => {
-      service.settingsService.getWebsiteSettings = jest.fn(_ => ({ subscription_optional: true }))
-      const paymentStatus = await service.isPaymentValid(null)
-      expect(paymentStatus).toBeTruthy()
     })
   })
 

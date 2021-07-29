@@ -212,35 +212,7 @@ export class AccountsService extends BaseService<AccountEntity> {
       // will be associated with this account.
       account.owner_id = user?.id ?? 0
 
-      /*
-      // Create a Billing user for this account
-      const billingCustomers = await this.paymentsService.createBillingCustomer({
-        name: data.name
-      })
-      // TODO: stripeCustomer might be null if Stripe is not configure.
-      // at the moment it fails gracefully, but we should write a more
-      // proper way.
-
-      account.data.stripe = billingCustomers[0]
-      if (this.paymentIntegration === 'killbill') {
-        account.data.killbill = billingCustomers[1]
-      }
-
-      // Add free tier plan
-      if (await this.settingsService.getTrialLength() > 0) {
-        try {
-          const plans = await this.plansService.getPlans()
-          await this.paymentsService.createSubscription(
-            (this.paymentIntegration === 'killbill' ? account.data.killbill.accountId : account.data.stripe.id), // customer
-            plans[0]
-          )
-        } catch (err) {
-          console.error('accountsService - cannot create free subscription')
-        }
-      }
-      */
-
-      // TODO:
+      // Manage payments
       account.data.payment = await this.paymentsService.enrollOrUpdateAccount(account, '', null)
 
       try {
@@ -398,77 +370,6 @@ export class AccountsService extends BaseService<AccountEntity> {
   async deleteUser (userId: number): Promise<Boolean> {
     // TODO: implement this
     return true
-  }
-
-  /**
-   * Create a payment method and attach to an account.
-   * This SHOULD NOT be used anymore since it requires the credit card data ad input
-   * and is considered unsafe. Use addPaymentsMethods instead
-   * @param id the id of the account
-   * @param card information about the credit card
-   */
-  // async createPaymentsMethods (id: number, card: any): Promise<[any]|any> {
-  //   // DEPRECATED
-  //   try {
-  //     const account = await this.findById(id)
-  //     if (account == null) {
-  //       console.error('addPaymentsMethods - account not found')
-  //       return null
-  //     }
-  //     if (account.data == null) {
-  //       console.error('addPaymentsMethods - account format error')
-  //       return null
-  //     }
-
-  //     const method = await this.paymentsService.createPaymentMethod(account.data.stripe.id, card)
-
-  //     return await this.addPaymentsMethods(id, method)
-  //   } catch (error) {
-  //     console.error('getPaymentsMethods - error', id, error)
-  //   }
-  // }
-
-  /**
-   * Add a Stripe payment method to an account. Note that the payment method should be created elsewhere, possibly on the client.
-   * @param id id of the account
-   * @param method paymentMethod to add as returned by Stripe
-   */
-  async addPaymentsMethods (id: number, method: any): Promise<[any]|null> { // TODO: fix return type
-    try {
-      const account = await this.findById(id)
-      if (account == null) {
-        console.error('accountsService - addPaymentsMethods - account not found')
-        return null
-      }
-      if (account.data == null) {
-        console.error('accountsService - addPaymentsMethods - account format error')
-        return null
-      }
-
-      const customer = await this.paymentsService.attachPaymentMethod(account, method)
-      if (customer == null) {
-        console.error('accountsService - addPaymentsMethods - error while attaching payment method to customer')
-        return null
-      }
-
-      if (account.data.payments_methods == null) { account.data.payments_methods = [method] } else { account.data.payments_methods.push(method) }
-
-      if (account.data.payments_methods == null) {
-        console.error('accountsService - addPaymentsMethods - error while adding payment method')
-        return null
-      }
-
-      const updatedAccount = await this.updateOne(id, { data: account.data })
-      if (updatedAccount == null) {
-        console.error('accountsService - addPaymentsMethods - error while updating account')
-        return null
-      }
-
-      return account.data.payments_methods
-    } catch (error) {
-      console.error('getPaymentsMethods - error', id, error)
-      return null
-    }
   }
 
   /**

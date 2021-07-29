@@ -243,38 +243,6 @@ export class AuthService {
     }
   }
 
-  // deprecated
-  /*
-  async updateActiveSubscription (account: AccountEntity): Promise<any> {
-    if (account == null) {
-      return {}
-    }
-
-    await this.paymentsService.refreshPaymentsFromStripe(account)
-    const payment = await this.paymentsService.getActivePayments(account.id)
-    if (payment == null) {
-      // No subscription. Returning the token without subscription details
-      console.error('AuthService - updateActiveSubscription - No subscription available')
-      return {}
-    }
-
-    const plan = await this.plansService.getPlanForPayment(payment)
-    if (plan == null) {
-      // this should never happend. TODO: check if this is valid when plans change
-      console.error('AuthService - updateActiveSubscription - No plan for subscription')
-      return {}
-    }
-
-    return {
-      // subscription_id: payment.data.id,
-      // subscription_plan: plan.uid,
-      subs_exp: payment.data.current_period_end,
-      subs_name: plan.name,
-      subs_status: payment.status
-    }
-  }
-  */
-
   getJwtCookieDomain (requestHostname: string, primaryDomain: string): string {
     let cookieDomain
 
