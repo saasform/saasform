@@ -130,8 +130,8 @@ export class AuthService {
 
     const configSignupForcePayment = (paymentsConfig.signup_force_payment === true)
 
-    const isExternal = payment.plan.provider === 'external'
-    const hasPaymentMethods = payment.methods != null && payment.methods.length > 0
+    const isExternal = payment?.plan?.provider === 'external'
+    const hasPaymentMethods = payment?.methods != null && payment.methods.length > 0
 
     const accountIsActive =
     // signup requires payment and account has payments
@@ -170,7 +170,7 @@ export class AuthService {
   async getTokenPayloadStatus (validUser: ValidUser): Promise<string> {
     const userIsActive = (await this.isUserActive(validUser.user) === true)
     const paymentMethodIsOK = (await this.isPaymentMethodOK(validUser.account) === true)
-    const subsIsPaid = (await this.isSubscriptionPaid(validUser.account.data.payment.sub) === true)
+    const subsIsPaid = (await this.isSubscriptionPaid(validUser.account.data.payment?.sub) === true)
 
     if (userIsActive && paymentMethodIsOK && subsIsPaid) {
       return 'active'
@@ -191,30 +191,21 @@ export class AuthService {
 
   getTokenPayloadSubscripionData (payment): any {
     // const payment = validUser.account.data.payment
-    let subscriptionData = {}
+    const subscriptionData: any = {}
 
-    const isFreeTier = payment.plan.price === 0
-    const isExternal = payment.plan.provider === 'external'
-    const isStripe = payment.plan.provider === 'stripe'
+    // subs_name
+    if (payment?.plan?.name != null) {
+      subscriptionData.subs_name = payment.plan.name
+    }
 
-    if (isExternal) {
-      subscriptionData = {
-        // subs_exp: payment.sub.current_period_end, // Enterprise does not exprire
-        subs_name: payment.plan.name,
-        subs_status: payment.sub.status
-      }
-    } else if (isFreeTier) {
-      subscriptionData = {
-        // subs_exp: payment.sub.current_period_end, // Free tier does not exprire
-        subs_name: payment.plan.name,
-        subs_status: payment.sub.status
-      }
-    } else if (isStripe) {
-      subscriptionData = {
-        subs_exp: payment.sub.current_period_end,
-        subs_name: payment.plan.name,
-        subs_status: payment.sub.status
-      }
+    // subs_status
+    if (payment?.sub?.status != null) {
+      subscriptionData.subs_status = payment.sub.status
+    }
+
+    // subs_exp
+    if (payment?.sub?.current_period_end != null) {
+      subscriptionData.subs_exp = payment.sub.current_period_end
     }
 
     return subscriptionData
@@ -228,15 +219,13 @@ export class AuthService {
     // TODO cleanup
     const { allowedKeys } = await this.settingsService.getUserSettings()
     const userData = validUser.user.data.profile != null
-      ? allowedKeys.filter((key) => !(key in ['email', 'username'])).reduce((acc, key: string) => {
+      ? allowedKeys.filter((key) => !(['email', 'username']).includes(key)).reduce((acc, key: string) => {
         acc[`user_${key}`] = validUser.user.data.profile[key] ?? '' // using user_${key} to flatten the jwt data
         return acc
       }, {})
       : {}
 
     const subscriptionData = this.getTokenPayloadSubscripionData(validUser.account.data.payment)
-
-    // const paymentsConfig = await this.paymentsService.getPaymentsConfig()
     const status = await this.getTokenPayloadStatus(validUser)
 
     return {

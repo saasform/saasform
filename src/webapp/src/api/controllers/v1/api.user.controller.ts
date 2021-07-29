@@ -69,15 +69,15 @@ export class ApiV1UserController {
 
   @UseGuards(UserRequiredAuthGuard)
   @Put(':userId')
-  async updateUserProfile (@Request() req, @Res() res: Response, @Param('userId') userId): Promise<any> {
+  async updateUserProfile (@Request() req, @Param('userId') userId): Promise<any> {
     const updatedUser = await this.usersService.updateUserProfile(req.body, userId)
 
     if (updatedUser == null) {
       console.error('UserController - updateUserProfile - User not updated', req.user.account_id)
-      return res.json({
+      return {
         statusCode: 500,
         error: 'User not updated'
-      })
+      }
     }
 
     const { company } = req.body
@@ -86,27 +86,28 @@ export class ApiV1UserController {
 
       if (account == null) {
         console.error('UserController - updateUserProfile - Account not found', req.user.account_id)
-        return res.json({
+        return {
           statusCode: 400,
           error: 'Account not found'
-        })
+        }
       }
 
       const updatedAccount = await this.accountsService.setCompanyName(account, company)
 
       if (updatedAccount == null) {
         console.error('UserController - updateUserProfile - Account not updated', req.user.account_id)
-        return res.json({
+        return {
           statusCode: 500,
           error: 'Account not updated'
-        })
+        }
       }
     }
 
-    return res.json({
+    req.userUpdated = true
+    return {
       statusCode: 200,
       message: 'Profile updated'
-    })
+    }
   }
 
   @UseGuards(UserRequiredAuthGuard)
