@@ -21,15 +21,21 @@ export class GoogleOAuth2Service {
     const { clientID, clientSecret, redirectURI } = await this.settingsService.getGoogleStrategyConfig()
 
     if (clientSecret != null && clientSecret !== '' && code != null && code !== '') {
-      const oAuth2Client = new OAuth2Client(
-        clientID,
-        clientSecret,
-        redirectURI
-      )
+      try {
+        const oAuth2Client = new OAuth2Client(
+          clientID,
+          clientSecret,
+          redirectURI
+        )
 
-      const r = await oAuth2Client.getToken(code)
+        const r = await oAuth2Client.getToken(code)
 
-      return r.tokens
+        return r.tokens
+      } catch (err) {
+        // This happens when we don't have a valid Google ClientSecret, which is a valid condition.
+        // This function is only used to retrieve the refresh code, so if not needed, the clientSecret
+        // can be not set and this exception can be ignored.
+      }
     }
 
     return {}
