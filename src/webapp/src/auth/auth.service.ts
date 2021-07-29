@@ -146,10 +146,17 @@ export class AuthService {
   }
 
   // TODO: move into SubscriptionEntity
-  async isSubscriptionPaid (subscription): Promise<Boolean> {
+  async isSubscriptionPaid (payment): Promise<Boolean> {
     // when not set, it's false - e.g. in tests
     const paymentsConfig = await this.paymentsService.getPaymentsConfig()
     const configPaymentProcessorEnabled = (paymentsConfig.payment_processor_enabled === true)
+
+    const subscription = payment?.sub
+    const plan = payment?.plan
+
+    if (subscription == null && plan == null) {
+      return true
+    }
 
     const subsIsActive =
     // no subs, but payment processor disabled
@@ -157,7 +164,7 @@ export class AuthService {
     // no subs, e.g. enterprise or not yet added
     // (subscription?.status === undefined) || // this should never happen unless something was broken in subscription creation
     // valid subs in any of these states: disabled, external, active, trialing
-    ['disabled', 'external', 'active', 'trialing'].includes(subscription.status)
+    ['disabled', 'external', 'active', 'trialing'].includes(subscription?.status)
 
     return subsIsActive
   }
@@ -170,7 +177,7 @@ export class AuthService {
   async getTokenPayloadStatus (validUser: ValidUser): Promise<string> {
     const userIsActive = (await this.isUserActive(validUser.user) === true)
     const paymentMethodIsOK = (await this.isPaymentMethodOK(validUser.account) === true)
-    const subsIsPaid = (await this.isSubscriptionPaid(validUser.account.data.payment?.sub) === true)
+    const subsIsPaid = (await this.isSubscriptionPaid(validUser.account.data.payment) === true)
 
     if (userIsActive && paymentMethodIsOK && subsIsPaid) {
       return 'active'
@@ -277,11 +284,13 @@ export class AuthService {
     return options
   }
 
-  async setJwtCookie (request, response, requestUser: RequestUser): Promise<void> {
+  async setJwtCookie (request, response, requestUser: RequestUser): Promise<string> {
     const jwt = await this.jwtService.sign(requestUser)
     const options = await this.getJwtCookieOptions(request)
 
     response.cookie('__session', jwt, options) // TODO: make cookie name parametric
+
+    return jwt
   }
 
   async getUserIdentity (email: string): Promise<UserEntity | null> {

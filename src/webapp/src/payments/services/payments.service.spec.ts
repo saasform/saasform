@@ -5,7 +5,6 @@ import { TypeOrmQueryService } from '@nestjs-query/query-typeorm'
 
 import { PaymentEntity /* PaymentStatus */ } from '../entities/payment.entity'
 import { PaymentsService } from './payments.service'
-import { AccountEntity } from '../../accounts/entities/account.entity'
 import { StripeService } from './stripe.service'
 import { KillBillService } from './killbill.service'
 import { ConfigService } from '@nestjs/config'
