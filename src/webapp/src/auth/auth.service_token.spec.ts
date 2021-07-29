@@ -298,20 +298,41 @@ describe('AuthService', () => {
         service.paymentsService = { getPaymentsConfig: jest.fn().mockReturnValue({ payment_processor_enabled: false }) }
 
         const sub = null
+        const plan = { id: 1 }
 
-        const subStatus = await service.isSubscriptionPaid(sub)
+        const subStatus = await service.isSubscriptionPaid({ sub, plan })
 
         expect(subStatus).toEqual(true)
       })
 
       it('Must be true if the subscription is in one of the positive status', async () => {
         const subscriptionStatus = ['disabled', 'external', 'active', 'trialing']
+        const plan = { id: 1 }
 
         for (let i = 0; i < subscriptionStatus.length; i++) {
           const sub = { current_period_end: 123456789, status: subscriptionStatus[i] }
-          const subStatus = await service.isSubscriptionPaid(sub)
+          const subStatus = await service.isSubscriptionPaid({ sub, plan })
           expect(subStatus).toEqual(true)
         }
+      })
+
+      it('Must be false if the subscription is in one of the positive status', async () => {
+        const subscriptionStatus = ['random', 'value']
+        const plan = { id: 1 }
+
+        for (let i = 0; i < subscriptionStatus.length; i++) {
+          const sub = { current_period_end: 123456789, status: subscriptionStatus[i] }
+          const subStatus = await service.isSubscriptionPaid({ sub, plan })
+          expect(subStatus).toEqual(false)
+        }
+      })
+
+      it('Must be true if payment is empty or null', async () => {
+        const subStatus = await service.isSubscriptionPaid(null)
+        expect(subStatus).toEqual(true)
+
+        const subStatus2 = await service.isSubscriptionPaid({})
+        expect(subStatus2).toEqual(true)
       })
     })
 

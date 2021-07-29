@@ -56,6 +56,7 @@ export class SettingsWebsiteJson {
   billing_form_phone_number: HidOptDisFormField
   subscription_optional: boolean
   trial_length: number
+  unsafe_redirect_with_jwt?: string
 }
 
 export class SettingsAdminJson {

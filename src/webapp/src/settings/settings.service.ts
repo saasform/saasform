@@ -344,7 +344,7 @@ export class SettingsService extends BaseService<SettingsEntity> {
   /*
     The actual redirect after login, combining app url, req.query.next, sign flows etc.
   */
-  async getActualRedirectAfterLogin (requestUser, queryNext): Promise<string> {
+  async getActualRedirectAfterLogin (requestUser, queryNext, jwt: string|null = null): Promise<string> {
     switch (requestUser.status) {
       case 'no_payment_method':
         return '/payment'
@@ -357,7 +357,17 @@ export class SettingsService extends BaseService<SettingsEntity> {
       return next
     }
 
-    return await this.getConfiguredRedirectAfterLogin()
+    let append = ''
+    const settings = await this.getWebsiteSettings()
+    if (settings.unsafe_redirect_with_jwt === 'query' && jwt != null) {
+      append = `?token=${jwt}`
+    }
+    if (settings.unsafe_redirect_with_jwt === 'hash' && jwt != null) {
+      append = `#token=${jwt}`
+    }
+
+    const redirect = await this.getConfiguredRedirectAfterLogin()
+    return `${redirect}${append}`
   }
 
   async getAssetsRoot (): Promise<{themeRoot: string, assetsRoot: string}> {
@@ -534,7 +544,8 @@ export class SettingsService extends BaseService<SettingsEntity> {
       },
 
       // unsafe config
-      unsafe_disable_csp: false
+      unsafe_disable_csp: false,
+      unsafe_redirect_with_jwt: false
     }
 
     const encodedPaths = [
@@ -577,7 +588,8 @@ export class SettingsService extends BaseService<SettingsEntity> {
       'signup_show_username',
       'signup_force_payment',
       'security_two_factor_auth',
-      'unsafe_disable_csp'
+      'unsafe_disable_csp',
+      'unsafe_redirect_with_jwt'
     ]
     for (const key of encodedPaths) {
       const finalFunc = key.endsWith('url') ? htmlAsset : htmlEncode

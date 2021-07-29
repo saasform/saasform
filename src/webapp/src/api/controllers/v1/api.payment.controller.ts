@@ -40,6 +40,7 @@ export class ApiV1PaymentController {
     req.userUpdated = true
 
     if (req.query.redirect != null) {
+      // TODO pass jwt
       const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
       return {
         statusCode: 302,

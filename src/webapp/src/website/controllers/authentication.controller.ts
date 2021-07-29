@@ -36,16 +36,15 @@ export class AuthenticationController {
       return res.redirect('/error')
     }
 
-    await this.authService.setJwtCookie(req, res, requestUser)
-
-    const appUrl = await this.settingsService.getActualRedirectAfterLogin(requestUser, req.query.next)
-    return res.redirect(appUrl)
+    const jwt = await this.authService.setJwtCookie(req, res, requestUser)
+    const redirect = await this.settingsService.getActualRedirectAfterLogin(requestUser, req.query.next, jwt)
+    return res.redirect(redirect)
   }
 
   @Get('/login')
   async getLogin (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
-      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, req.cookies.__session)
       return res.redirect(redirect)
     }
     return renderPage(req, res, 'login', {
@@ -83,7 +82,7 @@ export class AuthenticationController {
   @Get('/signup')
   async getSignup (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
-      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, req.cookies.__session)
       return res.redirect(redirect)
     }
     return renderPage(req, res, 'signup', {
@@ -156,9 +155,9 @@ export class AuthenticationController {
           console.error('verifyEmailToken - error while reissuing token')
           throw new Error('User not found')
         }
-        await this.authService.setJwtCookie(req, res, requestUser)
+        const jwt = await this.authService.setJwtCookie(req, res, requestUser)
 
-        const redirect = await this.settingsService.getActualRedirectAfterLogin(requestUser, req.query.next)
+        const redirect = await this.settingsService.getActualRedirectAfterLogin(requestUser, req.query.nex, jwt)
         res.redirect(redirect)
       } else {
         res.redirect('/')
@@ -174,7 +173,7 @@ export class AuthenticationController {
     const options = await this.authService.getJwtCookieOptions(req)
     res.clearCookie('__session', options)
     req.logout()
-    res.redirect(await this.settingsService.getTopLevelUrl())
+    res.redirect(await this.settingsService.getHomepageRedirectUrl() ?? '/')
   }
 
   @Get('/password-reset')
@@ -242,7 +241,7 @@ export class AuthenticationController {
   @Post('/auth/azure/callback')
   async azureAdReturnFrom (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
-      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, req.cookies.__session)
       return res.redirect(redirect)
     }
     return res.redirect('/login')
@@ -257,7 +256,7 @@ export class AuthenticationController {
   @Get('/auth/miracl/callback')
   async miraclReturnFrom (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
-      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, req.cookies.__session)
       return res.redirect(redirect)
     }
     return res.redirect('/login')
@@ -272,7 +271,7 @@ export class AuthenticationController {
   @Get('/auth/okta/callback')
   async oktaReturnFrom (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
-      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, req.cookies.__session)
       return res.redirect(redirect)
     }
     return res.redirect('/login')
