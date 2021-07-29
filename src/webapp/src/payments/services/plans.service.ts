@@ -12,9 +12,10 @@ import { Plan } from '../entities/plan.model'
 import { PaymentEntity } from '../entities/payment.entity'
 import { StripeService } from './stripe.service'
 import { KillBillService } from './killbill.service'
-import { SimplePlan, SimplePlanCurrencyEnum, SimplePlanBillingPeriodEnum, SimplePlanProductCategoryEnum } from 'killbill'
+// import { SimplePlan, SimplePlanCurrencyEnum, SimplePlanBillingPeriodEnum, SimplePlanProductCategoryEnum } from 'killbill'
 import { ConfigService } from '@nestjs/config'
 import { SettingsService } from '../../settings/settings.service'
+// import { response } from 'express'
 
 @QueryService(PlanEntity)
 @Injectable({ scope: Scope.REQUEST })
@@ -38,9 +39,38 @@ export class PlansService extends BaseService<PlanEntity> {
 
   /**
    * Return a plan object from a string handle
+   * If plan is not found, the default plan is returned
    * @param handle the handle to the plan. It is in the format 'm-plus' there m stands from monthly or yearly and plus is the immutable name of the plan within Saasform
    */
   async getPlanFromHandle (handle: string): Promise<any> { // TODO: make and entity
+    const ref = handle.split('_')[1]
+    const interval = handle[0] === 'y' ? 'year' : 'month'
+
+    const plans = await this.query({})
+
+    // 1. search exact match
+    let plan = plans.filter(p => p.hasRef(ref))[0]
+
+    // 2. if plan is null, return default plan
+    if (plan == null) {
+      plan = plans.filter(p => p.isPrimary())[0]
+    }
+
+    const provider = plan?.getProvider()
+
+    const ret = {
+      name: plan?.getName(),
+      freeTrial: plan?.data?.free_trial,
+      price: plan?.getIntervalPrice(interval),
+      interval,
+      ref: plan?.getRef(),
+      provider
+    }
+
+    ret[provider] = plan?.getProviderData()
+
+    return ret
+
     // Inkstinct
     // return {
     //   freeTrial: 0, // if 0, no trial, if > 0 days of trial
@@ -68,13 +98,13 @@ export class PlansService extends BaseService<PlanEntity> {
     // }
 
     // Free tier
-    return {
-      freeTrial: 0, // if 0, no trial, if > 0 days of trial
-      price: 0, //  if 0, free tier, if > 0 price
-      interval: 'month', // month or year
-      ref: 'pro', // internal plan name, immutable
-      provider: 'stripe' // stripe/killbill (free tier, trial, full), external (enterprise)
-    }
+    // return {
+    //   freeTrial: 0, // if 0, no trial, if > 0 days of trial
+    //   price: 0, //  if 0, free tier, if > 0 price
+    //   interval: 'month', // month or year
+    //   ref: 'pro', // internal plan name, immutable
+    //   provider: 'stripe' // stripe/killbill (free tier, trial, full), external (enterprise)
+    // }
 
     // Free tier with trial
     // return {
@@ -127,6 +157,7 @@ export class PlansService extends BaseService<PlanEntity> {
   }
 
   async addKillBillPlan (name, description, monthAmount, yearAmount, features, extra): Promise<any> {
+    /*
     try {
       let planData: SimplePlan
       planData = {
@@ -162,17 +193,19 @@ export class PlansService extends BaseService<PlanEntity> {
         extra
       )
       const plan = new PlanEntity()
-      plan.product = JSON.stringify(product)
-      plan.prices = JSON.stringify([monthPrice, yearPrice])
-      plan.plan = JSON.stringify(_plan)
+      // plan.product = JSON.stringify(product)
+      // plan.prices = JSON.stringify([monthPrice, yearPrice])
+      // plan.plan = JSON.stringify(_plan)
       await this.createOne(plan)
     } catch (err) {
       console.error('Error while creating plan', name, description, monthAmount, yearAmount, features, err)
       return null
     }
+    */
   }
 
   async addStripePlan (name, description, monthAmount, yearAmount, features, extra): Promise<any> {
+    /*
     try {
     // TODO: if yearAmount is 0, use standard discount
       const product = await this.stripeService.client.products.create({
@@ -211,10 +244,12 @@ export class PlansService extends BaseService<PlanEntity> {
       // console.error('Error while creating plan', name, description, monthAmount, yearAmount, features, err)
       return null
     }
+    */
   }
 
   // TODO: Refactor
   async createFirstBilling (): Promise<any> { // TODO: return a proper type
+    /*
     // should we move the API call outside?
     await this.addPlan(
       'Starter',
@@ -259,9 +294,11 @@ export class PlansService extends BaseService<PlanEntity> {
         priceText: 'Let\'s talk'
       }
     )
+    */
   }
 
   validatePlan (p): any {
+    /*
     const plan = JSON.parse(p.plan)
     plan.prices.year.unit_amount_hr = (plan.price_decimals > 0) ? plan.prices.year.unit_amount_hr / 12 : Math.round(plan.prices.year.unit_amount_hr / 12)
     plan.uid = p.id // MySql ID used to update the plan
@@ -274,9 +311,12 @@ export class PlansService extends BaseService<PlanEntity> {
       price_text: plan.priceText,
       free_trial: plan.freeTrial
     }
+    */
   }
 
   async getPlans (): Promise<any[]> {
+    return []
+    /*
     let plans = await this.query({})
 
     const stripePlans: PlanEntity[] = []
@@ -303,6 +343,7 @@ export class PlansService extends BaseService<PlanEntity> {
     } else {
       return (this.paymentIntegration === 'killbill' ? killbillPlans : stripePlans).map(this.validatePlan)
     }
+    */
   }
 
   async getPricingAndPlans (): Promise<any> {
@@ -333,6 +374,8 @@ export class PlansService extends BaseService<PlanEntity> {
    * @param plan
    */
   async updatePlan (plan: Plan): Promise<PlanEntity | null> {
+    return null
+    /*
     // 1. get plan from DB
     const savedPlan = await this.findById(plan.uid)
 
@@ -410,6 +453,7 @@ export class PlansService extends BaseService<PlanEntity> {
     }
 
     return ret
+    */
   }
 
   /**
