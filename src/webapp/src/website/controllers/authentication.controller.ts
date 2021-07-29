@@ -241,7 +241,8 @@ export class AuthenticationController {
   @Post('/auth/azure/callback')
   async azureAdReturnFrom (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
-      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, req.cookies.__session)
+      const jwt = await this.authService.setJwtCookie(req, res, req.user)
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, jwt)
       return res.redirect(redirect)
     }
     return res.redirect('/login')
@@ -256,7 +257,8 @@ export class AuthenticationController {
   @Get('/auth/miracl/callback')
   async miraclReturnFrom (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
-      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, req.cookies.__session)
+      const jwt = await this.authService.setJwtCookie(req, res, req.user)
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, jwt)
       return res.redirect(redirect)
     }
     return res.redirect('/login')
@@ -271,7 +273,8 @@ export class AuthenticationController {
   @Get('/auth/okta/callback')
   async oktaReturnFrom (@Request() req, @Res() res: Response): Promise<any> {
     if (req.user !== false) {
-      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, req.cookies.__session)
+      const jwt = await this.authService.setJwtCookie(req, res, req.user)
+      const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, jwt)
       return res.redirect(redirect)
     }
     return res.redirect('/login')
