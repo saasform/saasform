@@ -1,6 +1,5 @@
-import { Controller, Post, UseGuards, Request, Res } from '@nestjs/common'
+import { Controller, Post, UseGuards, Request } from '@nestjs/common'
 import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger'
-import { Response } from 'express'
 import { AccountsService } from '../../../accounts/services/accounts.service'
 import { SettingsService } from '../../../settings/settings.service'
 import { AuthService } from '../../../auth/auth.service'
@@ -20,7 +19,7 @@ export class ApiV1PaymentController {
 
   @UseGuards(UserRequiredAuthGuard)
   @Post('add-payment-token')
-  async handleAddPaymentToken (@Request() req /*, @Res() res: Response */): Promise<any> {
+  async handleAddPaymentToken (@Request() req): Promise<any> {
     let payment
     try {
       payment = await this.accountsService.enrollOrUpdatePayment(req.user.account_id, req.body)
@@ -39,6 +38,7 @@ export class ApiV1PaymentController {
     }
 
     req.userUpdated = true
+
     if (req.query.redirect != null) {
       const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next)
       return {
@@ -55,30 +55,31 @@ export class ApiV1PaymentController {
 
   @UseGuards(UserRequiredAuthGuard)
   @Post('purchase-plan')
-  async handlePurchasePlan (@Request() req, @Res() res: Response): Promise<any> {
+  async handlePurchasePlan (@Request() req): Promise<any> {
     const account = await this.accountsService.findByOwnerEmail(req.user.email)
 
     if (account == null) {
-      return res.json({
+      return {
         statusCode: 400,
         error: 'Account not found'
-      })
+      }
     }
 
     const { plan, method, monthly } = req.body
 
     if (plan == null) {
-      return res.json({
+      return {
         statusCode: 400,
         error: 'Plan not found'
-      })
+      }
     }
 
     const result = await this.accountsService.subscribeToPlan(account, { plan, method, monthly })
 
-    return res.json({
+    req.userUpdated = true
+    return {
       statusCode: 200,
       message: result
-    })
+    }
   }
 }
