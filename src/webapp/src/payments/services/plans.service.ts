@@ -71,7 +71,7 @@ export class PlansService extends BaseService<PlanEntity> {
     const provider = plan?.getProvider()
     const interval = plan?.getInterval(intervalHandle)
 
-    const choosenPlan = {
+    const chosenPlan = {
       name: plan?.getName(),
       freeTrial: plan?.data?.free_trial,
       price: plan?.getIntervalPrice(interval),
@@ -80,9 +80,9 @@ export class PlansService extends BaseService<PlanEntity> {
       provider
     }
 
-    choosenPlan[provider] = plan?.getProviderData()
+    chosenPlan[provider] = plan?.getProviderData()
 
-    return choosenPlan
+    return chosenPlan
 
     // Inkstinct
     // return {
