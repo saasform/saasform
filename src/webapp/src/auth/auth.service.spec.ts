@@ -153,7 +153,7 @@ describe('AuthService', () => {
           accountEmail: 'accountEmail'
         }
 
-        const res = await service.registerUser(newUser)
+        const res = await service.registerUser({ body: newUser })
         expect(res).toBeNull()
       })
 
@@ -170,7 +170,7 @@ describe('AuthService', () => {
           accountEmail: 'accountEmail'
         }
 
-        const res = await service.registerUser(newUser)
+        const res = await service.registerUser({ body: newUser })
         expect(res).toBe(userError)
       })
 
@@ -189,7 +189,7 @@ describe('AuthService', () => {
           accountEmail: 'accountEmail'
         }
 
-        const res = await service.registerUser(newUser)
+        const res = await service.registerUser({ body: newUser })
         expect(res).toBeNull()
       })
 
@@ -211,7 +211,7 @@ describe('AuthService', () => {
           accountEmail: 'accountEmail'
         }
 
-        const res = await service.registerUser(newUser)
+        const res = await service.registerUser({ body: newUser })
         expect(res).toBeNull()
       })
 
@@ -233,7 +233,7 @@ describe('AuthService', () => {
           accountEmail: 'accountEmail'
         }
 
-        const res = await service.registerUser(newUser)
+        const res = await service.registerUser({ body: newUser })
         expect(res).toEqual({
           user: { user: 'mockUser' },
           credential: { userCredentials: 'mockUserCredentials' },
