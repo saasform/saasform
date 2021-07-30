@@ -39,24 +39,37 @@ export class PlansService extends BaseService<PlanEntity> {
 
   /**
    * Return a plan object from a string handle
-   * If plan is not found, the default plan is returned
+   * If plan is not found, or plan is external, but extenal it not allowed, the default plan is returned
    * @param handle the handle to the plan. It is in the format 'm-plus' there m stands from monthly or yearly and plus is the immutable name of the plan within Saasform
    */
-  async getPlanFromHandle (handle: string): Promise<any> { // TODO: make an entity
-    const ref = handle.split('_')[1]
-    const interval = handle[0] === 'y' ? 'year' : 'month'
+  async getPlanFromHandle (handle: string, allowExternalPlan: boolean): Promise<any> { // TODO: make an entity
+    const chunks = handle.split('_')
+    let intervalHandle
+    let ref
+
+    if (chunks.length >= 2) {
+      ref = chunks[1]
+      intervalHandle = chunks[0] === 'm' ? 'month' : 'year'
+    } else {
+      ref = handle
+      intervalHandle = 'year'
+    }
 
     const plans = await this.getPlans()
 
     // 1. search exact match
     let plan = plans.filter(p => p.hasRef(ref))[0]
 
-    // 2. if plan is null, return default plan
-    if (plan == null) {
+    // 2. if plan is null, or plan is external, but extenal it not allowed, return default plan
+    if (
+      plan == null ||
+      (plan.data.provider === 'external' && !allowExternalPlan)
+    ) {
       plan = plans.filter(p => p.isPrimary())[0]
     }
 
     const provider = plan?.getProvider()
+    const interval = plan?.getInterval(intervalHandle)
 
     const choosenPlan = {
       name: plan?.getName(),
@@ -365,7 +378,7 @@ export class PlansService extends BaseService<PlanEntity> {
       // 3. If payment processor is configured, sync the newly created plans (TODO)
       if (plans != null && plans.length > 0 && provider != null) {
         // a. sync with payment processor, if not enterprise or free tier
-        // b. persist on DB
+        // b. persist on DB. Make sure to set the ref if ref is not set!
       }
     }
 

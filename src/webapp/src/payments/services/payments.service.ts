@@ -57,7 +57,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
    * @param paymentMethod An object containing the payment method to add
    * @returns The payment object
    */
-  async enrollOrUpdateAccount (account: AccountEntity, planHandle: string, paymentMethod: any): Promise<any> {
+  async enrollOrUpdateAccount (account: AccountEntity, planHandle: string, paymentMethod: any, allowExternalPlan = false): Promise<any> {
     const config = await this.getPaymentsConfig()
     const provider = config.payment_processor_enabled === true ? config.payment_processor : null
 
@@ -79,7 +79,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     if (payment.plan == null) {
       // We do not allow to update the plan here.
       // TODO: update plan
-      const plan = await this.plansService.getPlanFromHandle(planHandle)
+      const plan = await this.plansService.getPlanFromHandle(planHandle, allowExternalPlan)
       if (plan != null) {
         payment.plan = plan
       }

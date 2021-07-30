@@ -81,20 +81,20 @@ pricing_text:
 pricing_free_trial: 7
 pricing_credit_card_required: false
 pricing_plans:
-  # Example of a free plan (i.e. both prices are $0)
-  # Optional, set price_text instead of showing $0
-  # Recommended: set pricing_free_trial: 0 above
-  - name: Free
-    price_year: 0
-    price_month: 0
-    price_decimals: 0
-    price_text: Free
-    button: Choose
-    features:
-      - name: Lorem ipsum
-      - name: Dolor sit amet
-      - name: Consectetur
-      - name: Adipiscing elit
+  # # Example of a free plan (i.e. both prices are $0)
+  # # Optional, set price_text instead of showing $0
+  # # Recommended: set pricing_free_trial: 0 above
+  # - name: Free
+  #   price_year: 0
+  #   price_month: 0
+  #   price_decimals: 0
+  #   price_text: Free
+  #   button: Choose
+  #   features:
+  #     - name: Lorem ipsum
+  #     - name: Dolor sit amet
+  #     - name: Consectetur
+  #     - name: Adipiscing elit
   - name: Starter
     price_year: 29
     price_month: 35
