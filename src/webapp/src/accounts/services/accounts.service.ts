@@ -194,7 +194,7 @@ export class AccountsService extends BaseService<AccountEntity> {
    * @param user data of the account owner
    * @returns the account created or attached or null
    */
-  async addOrAttach ({ data, user, choosenPlan }): Promise<AccountEntity | null> {
+  async addOrAttach ({ data, user, chosenPlan }): Promise<AccountEntity | null> {
     let account
     if (user?.email != null && (account = await this.getAccountByEmailDomain(user.email)) != null) {
       // attach user to account
@@ -213,7 +213,7 @@ export class AccountsService extends BaseService<AccountEntity> {
       account.owner_id = user?.id ?? 0
 
       // Manage payments
-      account.data.payment = await this.paymentsService.enrollOrUpdateAccount(account, choosenPlan, null)
+      account.data.payment = await this.paymentsService.enrollOrUpdateAccount(account, chosenPlan, null)
 
       try {
         const res = await this.createOne(account)

@@ -124,7 +124,7 @@ export class PlanEntity {
   }
 
   /**
-   * Make sure that if one interval is not defined, it cannot be choosen
+   * Make sure that if one interval is not defined, it cannot be chosen
    * @param interval the privcing interval
    * @returns the sanitized interval
    */

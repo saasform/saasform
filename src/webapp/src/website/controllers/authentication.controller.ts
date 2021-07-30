@@ -86,9 +86,9 @@ export class AuthenticationController {
       return res.redirect(redirect)
     }
 
-    const choosenPlan = req.query?.plan
-    if (choosenPlan != null) {
-      res.cookie('plan', choosenPlan)
+    const chosenPlan = req.query?.plan
+    if (chosenPlan != null) {
+      res.cookie('plan', chosenPlan)
     }
 
     return renderPage(req, res, 'signup', {
