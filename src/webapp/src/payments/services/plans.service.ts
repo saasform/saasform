@@ -42,11 +42,11 @@ export class PlansService extends BaseService<PlanEntity> {
    * If plan is not found, the default plan is returned
    * @param handle the handle to the plan. It is in the format 'm-plus' there m stands from monthly or yearly and plus is the immutable name of the plan within Saasform
    */
-  async getPlanFromHandle (handle: string): Promise<any> { // TODO: make and entity
+  async getPlanFromHandle (handle: string): Promise<any> { // TODO: make an entity
     const ref = handle.split('_')[1]
     const interval = handle[0] === 'y' ? 'year' : 'month'
 
-    const plans = await this.query({})
+    const plans = await this.getPlans()
 
     // 1. search exact match
     let plan = plans.filter(p => p.hasRef(ref))[0]
@@ -58,7 +58,7 @@ export class PlansService extends BaseService<PlanEntity> {
 
     const provider = plan?.getProvider()
 
-    const ret = {
+    const choosenPlan = {
       name: plan?.getName(),
       freeTrial: plan?.data?.free_trial,
       price: plan?.getIntervalPrice(interval),
@@ -67,9 +67,9 @@ export class PlansService extends BaseService<PlanEntity> {
       provider
     }
 
-    ret[provider] = plan?.getProviderData()
+    choosenPlan[provider] = plan?.getProviderData()
 
-    return ret
+    return choosenPlan
 
     // Inkstinct
     // return {
@@ -314,8 +314,62 @@ export class PlansService extends BaseService<PlanEntity> {
     */
   }
 
+  /**
+   * Return the plan list.
+   * The list is returned from the db, table plans.
+   * If the db table is empty, plans are generated from website.yml.
+   * When a payment processor is configured, plans are created in the db from website.yml.
+   *
+   * Said in another way, one can:
+   * - launch saasform and see default plans (from website.yml)
+   * - change website.yml, see updated plans
+   * - configure Stripe (or Killbill) - at this point plans are stored in the db (with ref to, e.g., Stripe products)
+   * - any further change must be done inside the db (or clearing the db first)
+   * @returns Plan list
+   */
   async getPlans (): Promise<any[]> {
-    return []
+    // 1. get the plan list
+    let plans = await this.query({})
+
+    // 2. if plan list if empty, create from setting.yaml
+    if (plans == null || plans.length === 0) {
+      const settings = await this.settingsService.getWebsiteRenderingVariables()
+      const plansFromSettings = settings.pricing_plans ?? []
+
+      plans = plansFromSettings.map(planData => {
+        const plan = new PlanEntity()
+
+        plan.data = { ...planData }
+
+        const priceYear = planData.price_year ?? null
+        const priceMonth = planData.price_month ?? null
+        const priceText = planData.price_text ?? null
+
+        // Check plan type: 1. enterprise 2. free tier 3. free trial 4. full
+        if (priceText != null && priceYear == null && priceMonth == null) {
+          // enterprise
+          plan.data.provider = 'external'
+        } else if (priceYear === 0 && priceMonth === 0) {
+          // free tier, pass
+        } else {
+          // free trial and full subscription
+          plan.data.free_trial = settings.pricing_free_trial
+        }
+
+        plan.setValuesFromJson()
+
+        return plan
+      })
+
+      const provider = null // TODO: get actual provider
+      // 3. If payment processor is configured, sync the newly created plans (TODO)
+      if (plans != null && plans.length > 0 && provider != null) {
+        // a. sync with payment processor, if not enterprise or free tier
+        // b. persist on DB
+      }
+    }
+
+    return plans
     /*
     let plans = await this.query({})
 
