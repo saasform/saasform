@@ -65,7 +65,7 @@ export class PlanEntity {
   id: number
 
   @Column('json')
-  data: PlanData | any
+  data: PlanData
 
   /**
   * Set values in this from values in this.data
@@ -101,6 +101,11 @@ export class PlanEntity {
     this.data = data
   }
 
+  constructor () {
+    this.data = new PlanData()
+    this.data.features = []
+  }
+
   // Getters
 
   public isPrimary (): boolean {
@@ -111,7 +116,7 @@ export class PlanEntity {
    * @returns ref if defined, otherwise the name without spaces
    */
   public getRef (): string {
-    return this.data.ref ?? this.data.name.replace(' ', '')
+    return this.data.ref ?? this.data?.name?.replace(' ', '') ?? ''
   }
 
   public hasRef (ref): boolean {
@@ -122,8 +127,8 @@ export class PlanEntity {
    * @param interval the privcing interval
    * @returns monthly price if interval is "month"; yearly price otherwise
    */
-  public getIntervalPrice (interval): number {
-    return interval === 'month' ? this.data.price_month : this.data.price_year
+  public getIntervalPrice (interval): number|null {
+    return (interval === 'month' ? this.data?.price_month : this.data.price_year) ?? null
   }
 
   public getProvider (): string {
