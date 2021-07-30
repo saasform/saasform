@@ -85,6 +85,12 @@ export class AuthenticationController {
       const redirect = await this.settingsService.getActualRedirectAfterLogin(req.user, req.query.next, req.cookies.__session)
       return res.redirect(redirect)
     }
+
+    const choosenPlan = req.query?.plan
+    if (choosenPlan != null) {
+      res.cookie('plan', choosenPlan)
+    }
+
     return renderPage(req, res, 'signup', {
       next_url: await this.settingsService.getNextUrl(req.query.next)
     })
@@ -109,7 +115,7 @@ export class AuthenticationController {
       })
     }
 
-    const user = await this.authService.registerUser(req.body)
+    const user = await this.authService.registerUser(req)
     if (user instanceof UserError || user == null) {
       let error
       switch (user?.name) {

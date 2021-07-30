@@ -99,7 +99,7 @@ export class ApiV1AutheticationController {
       })
     }
 
-    const user = await this.authService.registerUser(req.body)
+    const user = await this.authService.registerUser(req)
     if (user instanceof UserError || user == null) {
       return response.status(409).json({
         statusCode: 409,

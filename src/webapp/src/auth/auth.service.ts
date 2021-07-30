@@ -333,7 +333,10 @@ export class AuthService {
     return { user, credential, account: null }
   }
 
-  async registerUser (userData: any): Promise<ValidUser | UserError | null> {
+  async registerUser (req: any): Promise<ValidUser | UserError | null> {
+    const userData = req.body
+    const choosenPlan = req?.cookies?.plan
+
     const newUser = await this.createNewUser(userData)
     if (newUser instanceof UserError || newUser == null) {
       console.error('auth.service - registerUser - error while creating user')
@@ -343,7 +346,7 @@ export class AuthService {
     const { user, credential } = newUser
     const { email, accountEmail } = userData
     // We create a new acount for this user and add this as owner
-    const account = await this.accountsService.addOrAttach({ data: { name: accountEmail ?? email }, user })
+    const account = await this.accountsService.addOrAttach({ data: { name: accountEmail ?? email }, user, choosenPlan })
     if (account == null) {
       console.error('auth.service - registerUser - error while creating account', email, accountEmail)
       return null
@@ -358,6 +361,8 @@ export class AuthService {
 
   async userCreate (req, data): Promise<ValidUser | null> {
     const { provider, email } = data
+    const choosenPlan = req?.cookies?.plan
+
     if (email == null) {
       console.error('auth.service - userCreate - missing parameters', email)
       return null
@@ -384,7 +389,7 @@ export class AuthService {
 
     // We create a new acount for this user and add this as owner
     const accountEmail = email
-    const account = await this.accountsService.addOrAttach({ data: { name: accountEmail ?? email }, user })
+    const account = await this.accountsService.addOrAttach({ data: { name: accountEmail ?? email }, user, choosenPlan })
     if (account == null) {
       console.error('auth.service - userCreate - error while creating account', email, accountEmail)
       return null

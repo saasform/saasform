@@ -116,7 +116,7 @@ export class PlanEntity {
    * @returns ref if defined, otherwise the name without spaces
    */
   public getRef (): string {
-    return this.data.ref ?? this.data?.name?.replace(' ', '') ?? ''
+    return this.data.ref ?? this.data?.name?.replace(' ', '').toLowerCase() ?? ''
   }
 
   public hasRef (ref): boolean {
@@ -124,11 +124,31 @@ export class PlanEntity {
   }
 
   /**
+   * Make sure that if one interval is not defined, it cannot be choosen
+   * @param interval the privcing interval
+   * @returns the sanitized interval
+   */
+  public getInterval (intervalHandle): string {
+    const priceMonth = this.data?.price_month ?? 0
+    const priceYear = this.data?.price_year ?? 0
+
+    if (priceMonth > 0 && priceYear === 0) {
+      return 'month'
+    }
+
+    if (priceYear > 0 && priceMonth === 0) {
+      return 'year'
+    }
+
+    return intervalHandle === 'month' ? 'month' : 'year'
+  }
+
+  /**
    * @param interval the privcing interval
    * @returns monthly price if interval is "month"; yearly price otherwise
    */
   public getIntervalPrice (interval): number|null {
-    return (interval === 'month' ? this.data?.price_month : this.data.price_year) ?? null
+    return (interval === 'month' ? this.data?.price_month : this.data?.price_year) ?? null
   }
 
   public getProvider (): string {
