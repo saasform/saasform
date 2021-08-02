@@ -4,6 +4,7 @@ import Stripe from 'stripe'
 
 import { BasePaymentProcessorService } from '../../utilities/basePaymentProcessor.service'
 import { SettingsService } from '../../settings/settings.service'
+import { PlanEntity } from '../entities/plan.entity'
 
 @Injectable()
 export class StripeService extends BasePaymentProcessorService {
@@ -174,6 +175,7 @@ export class StripeService extends BasePaymentProcessorService {
     }
   }
 
+  // todo: rename to updateSubscription
   async updatePlan (subscriptionId: any, price: any): Promise<any> { // TODO: return a proper type
     try {
       const subscription = await this.client.subscriptions.retrieve(subscriptionId, this.apiOptions)
@@ -201,5 +203,49 @@ export class StripeService extends BasePaymentProcessorService {
       console.error('paymentService - updatePlan - exception while updating subscription', error)
       return null
     }
+  }
+
+  async createPlan (plan: PlanEntity): Promise<any> {
+    let monthPrice = null
+    let yearPrice = null
+    let product: any
+
+    try {
+      const monthAmount = plan.getIntervalPrice('month')
+      const yearAmount = plan.getIntervalPrice('year')
+      const name = plan.getName()
+      const description = plan.getDescription()
+
+      // TODO: if yearAmount is 0, use standard discount
+      product = await this.client.products.create({
+        name,
+        description
+      }, this.apiOptions)
+
+      if (monthAmount != null) {
+        monthPrice = await this.client.prices.create({
+          unit_amount: monthAmount,
+          currency: 'usd',
+          recurring: { interval: 'month' },
+          product: product.id
+        }, this.apiOptions)
+      }
+
+      if (yearAmount != null) {
+        yearPrice = await this.client.prices.create({
+          unit_amount: (yearAmount * 12),
+          currency: 'usd',
+          recurring: { interval: 'year' },
+          product: product.id
+        }, this.apiOptions)
+      }
+    } catch (err) {
+      console.error('Error while creating plan', plan, err)
+      return null
+    }
+
+    const prices = { year: yearPrice, month: monthPrice }
+
+    return { product, prices }
   }
 }

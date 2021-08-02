@@ -112,6 +112,17 @@ export class PlanEntity {
     return this.data.primary === true
   }
 
+  public isExternal (): boolean {
+    return this.data.provider === 'external'
+  }
+
+  public isFreeTier (): boolean {
+    const priceMonth = this.data?.price_month ?? 0
+    const priceYear = this.data?.price_year ?? 0
+
+    return priceMonth === 0 && priceYear === 0
+  }
+
   /**
    * @returns ref if defined, otherwise the name without spaces
    */
@@ -163,5 +174,10 @@ export class PlanEntity {
 
   public getName (): string {
     return this.data.name ?? ''
+  }
+
+  public getDescription (): string {
+    // description not yet supported
+    return this.getName()
   }
 }

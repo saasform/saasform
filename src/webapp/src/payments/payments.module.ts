@@ -10,11 +10,12 @@ import { PaymentsService } from './services/payments.service'
 import { PaymentDTO } from './dto/payment.dto'
 import { StripeService } from './services/stripe.service'
 import { KillBillService } from './services/killbill.service'
+import { ProvidersService } from './services/providers.service'
 
 @Global()
 @Module({
-  providers: [StripeService, KillBillService],
-  exports: [StripeService, KillBillService]
+  providers: [StripeService, KillBillService, ProvidersService],
+  exports: [StripeService, KillBillService, ProvidersService]
 })
 class PaymentGatewaysModule {}
 
