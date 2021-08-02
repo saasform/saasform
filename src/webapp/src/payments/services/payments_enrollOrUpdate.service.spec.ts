@@ -14,6 +14,7 @@ import { ValidationService } from '../../validator/validation.service'
 import { PlansService } from './plans.service'
 
 import { AccountEntity } from '../../accounts/entities/account.entity'
+import { ProvidersService } from './providers.service'
 
 const deletedSubscription = new PaymentEntity()
 const existingSubscription = new PaymentEntity()
@@ -51,6 +52,7 @@ const subscriptionsArray = [
 describe('Payments Service - enrollOrUpdateAccount', () => {
   let service // Removed type paymentsService because we must overwrite the paymentsRepository property
   let stripeService
+  let providersService
   let repo: Repository<PaymentEntity>
 
   let account
@@ -140,6 +142,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
           provide: ConfigService,
           useValue: { get: () => {} }
         },
+        ProvidersService,
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService
       ]
@@ -147,6 +150,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
 
     service = await module.get(PaymentsService)
     stripeService = await module.get(StripeService)
+    providersService = await module.get(ProvidersService)
     repo = await module.get<Repository<PaymentEntity>>(
       getRepositoryToken(PaymentEntity)
     )
@@ -158,14 +162,17 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
     // We must manually set the following because extending TypeOrmQueryService seems to break it
     Object.keys(mockedRepo).forEach(f => (service[f] = mockedRepo[f]))
     service.paymentsRepository = repo
-    service.stripeService = stripeService
-    service.killbillService = { accountApi: mockedKillBill }
+    service.providersService = providersService
+    service.providersService.stripeService = stripeService
+    service.providersService.killbillService = { accountApi: mockedKillBill }
+    service.providersService.settingsService = mockedSettingsService
+
     service.settingsService = mockedSettingsService
     service.plansService = mockedPlanService
     service.validationService = await module.get(ValidationService)
 
-    service.paymentIntegration = 'stripe'
-    service.paymentProcessor = stripeService
+    service.providersService.paymentIntegration = 'stripe'
+    service.providersService.paymentProcessor = stripeService
     // Object.keys(mockedStripe).forEach(
     //   f => (service.stripeClient[f] = mockedStripe[f]),
     // );
@@ -594,7 +601,7 @@ describe('Payments Service - enrollOrUpdateAccount', () => {
         sub: mockStripeSub
       })
 
-      service.paymentIntegration = 'killbill'
+      service.providersService.paymentIntegration = 'killbill'
 
       account.data.payment = payment0
       let error

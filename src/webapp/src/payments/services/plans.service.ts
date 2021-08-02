@@ -4,37 +4,28 @@ import { QueryService } from '@nestjs-query/core'
 import { getConnection } from 'typeorm'
 import { BaseService } from '../../utilities/base.service'
 
-// import { ProductEntity } from './product.entity';
-// import { PriceEntity } from './price.entity';
 import { PlanEntity } from '../entities/plan.entity'
 
 import { Plan } from '../entities/plan.model'
 import { PaymentEntity } from '../entities/payment.entity'
-import { StripeService } from './stripe.service'
-import { KillBillService } from './killbill.service'
-// import { SimplePlan, SimplePlanCurrencyEnum, SimplePlanBillingPeriodEnum, SimplePlanProductCategoryEnum } from 'killbill'
-import { ConfigService } from '@nestjs/config'
 import { SettingsService } from '../../settings/settings.service'
-// import { response } from 'express'
+import { ProvidersService } from './providers.service'
 
 @QueryService(PlanEntity)
 @Injectable({ scope: Scope.REQUEST })
 export class PlansService extends BaseService<PlanEntity> {
   private readonly planRepository = getConnection().getRepository(PlanEntity)
-  private readonly paymentIntegration: string
+  // private readonly paymentIntegration: string
 
   constructor (
     @Inject(REQUEST) private readonly req,
-    private readonly configService: ConfigService,
     private readonly settingsService: SettingsService,
-    private readonly stripeService: StripeService,
-    private readonly killBillService: KillBillService
+    private readonly providersService: ProvidersService
   ) {
     super(
       req,
       'PlanEntity'
     )
-    this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
   }
 
   /**
@@ -43,7 +34,7 @@ export class PlansService extends BaseService<PlanEntity> {
    * @param handle the handle to the plan. It is in the format 'm-plus' there m stands from monthly or yearly and plus is the immutable name of the plan within Saasform
    */
   async getPlanFromHandle (handle: string, allowExternalPlan: boolean): Promise<any> { // TODO: make an entity
-    const chunks = handle.split('_')
+    const chunks = (handle ?? '').split('_')
     let intervalHandle
     let ref
 
@@ -132,41 +123,45 @@ export class PlansService extends BaseService<PlanEntity> {
 
   // OLD
 
-  createPlan (id, name, description, _prices, features, extra): any {
-    if (features == null) { features = [] }
+  // createPlan (id, name, description, _prices, features, extra): any {
+  //   if (features == null) { features = [] }
 
-    const prices = _prices.reduce((prices, price) => {
-      const { id, currency, unit_amount, unit_amount_decimal, recurring, product } = price // eslint-disable-line
-      prices[recurring.interval] = {
-        id,
-        unit_amount_decimal,
-        recurring,
-        product,
-        currency,
-        unit_amount_hr: unit_amount / 100
-      }
+  //   const prices = _prices.reduce((prices, price) => {
+  //     const { id, currency, unit_amount, unit_amount_decimal, recurring, product } = price // eslint-disable-line
+  //     prices[recurring.interval] = {
+  //       id,
+  //       unit_amount_decimal,
+  //       recurring,
+  //       product,
+  //       currency,
+  //       unit_amount_hr: unit_amount / 100
+  //     }
 
-      return prices
-    }, {})
+  //     return prices
+  //   }, {})
 
-    const plan = {
-      id,
-      description,
-      name,
-      features,
-      ...extra,
-      prices
-    }
+  //   const plan = {
+  //     id,
+  //     description,
+  //     name,
+  //     features,
+  //     ...extra,
+  //     prices
+  //   }
 
-    return plan
-  }
+  //   return plan
+  // }
 
   async addPlan (name, description, monthAmount, yearAmount, features, extra): Promise<any> { // TODO: return a proper type
+    // call payment provider
+
+    /*
     if (this.paymentIntegration === 'killbill') {
       await this.addKillBillPlan(name, description, monthAmount, yearAmount, features, extra)
     } else {
       await this.addStripePlan(name, description, monthAmount, yearAmount, features, extra)
     }
+    */
   }
 
   async addKillBillPlan (name, description, monthAmount, yearAmount, features, extra): Promise<any> {
@@ -212,49 +207,6 @@ export class PlansService extends BaseService<PlanEntity> {
       await this.createOne(plan)
     } catch (err) {
       console.error('Error while creating plan', name, description, monthAmount, yearAmount, features, err)
-      return null
-    }
-    */
-  }
-
-  async addStripePlan (name, description, monthAmount, yearAmount, features, extra): Promise<any> {
-    /*
-    try {
-    // TODO: if yearAmount is 0, use standard discount
-      const product = await this.stripeService.client.products.create({
-        name,
-        description
-      }, this.stripeService.apiOptions)
-
-      const monthPrice = await this.stripeService.client.prices.create({
-        unit_amount: monthAmount,
-        currency: 'usd',
-        recurring: { interval: 'month' },
-        product: product.id
-      }, this.stripeService.apiOptions)
-
-      const yearPrice = await this.stripeService.client.prices.create({
-        unit_amount: yearAmount,
-        currency: 'usd',
-        recurring: { interval: 'year' },
-        product: product.id
-      }, this.stripeService.apiOptions)
-
-      const _plan = this.createPlan(
-        product.id, name, description,
-        [monthPrice, yearPrice],
-        features,
-        extra
-      )
-
-      const plan = new PlanEntity()
-      plan.product = JSON.stringify(product)
-      plan.prices = JSON.stringify([monthPrice, yearPrice])
-      plan.plan = JSON.stringify(_plan)
-
-      await this.createOne(plan)
-    } catch (err) {
-      // console.error('Error while creating plan', name, description, monthAmount, yearAmount, features, err)
       return null
     }
     */
@@ -374,43 +326,46 @@ export class PlansService extends BaseService<PlanEntity> {
         return plan
       })
 
-      const provider = null // TODO: get actual provider
+      const config = await this.providersService.getPaymentsConfig()
+      const provider = config.payment_processor_enabled === true ? config.payment_processor : null
+
       // 3. If payment processor is configured, sync the newly created plans (TODO)
       if (plans != null && plans.length > 0 && provider != null) {
-        // a. sync with payment processor, if not enterprise or free tier
-        // b. persist on DB. Make sure to set the ref if ref is not set!
+        let shouldPersistData = true
+        for (let i = 0; i < plans.length; i++) {
+          try {
+            // a. sync with payment processor, if not enterprise or free tier
+            const p = plans[i]
+            if (!p.isExternal() && !p.isFreeTier()) {
+              const providerData = await this.providersService.createPlan(p)
+              if (providerData == null) {
+                shouldPersistData = false
+              }
+              p.data[provider] = providerData
+            }
+          } catch (err) {
+            console.error('plansService - getPlans - exception while creating payment provider plans', err)
+          }
+        }
+
+        // todo: check provider sync was successful
+        if (shouldPersistData) {
+          for (let i = 0; i < plans.length; i++) {
+            try {
+              // b. persist on DB. Make sure to set the ref if ref is not set!
+              const newPlan = await this.createOne(plans[i])
+              if (newPlan == null) {
+                console.error('plansService - getPlans - error while persisting plan', plans[i])
+              }
+            } catch (err) {
+              console.error('plansService - getPlans - exception while persisting plans', err)
+            }
+          }
+        }
       }
     }
 
     return plans
-    /*
-    let plans = await this.query({})
-
-    const stripePlans: PlanEntity[] = []
-    const killbillPlans: PlanEntity[] = []
-    for (var plan of plans) {
-      if (JSON.parse(plan.product).killbill === true) {
-        killbillPlans.push(plan)
-      } else {
-        stripePlans.push(plan)
-      }
-    }
-
-    const createPlan = (this.paymentIntegration === 'killbill' && killbillPlans.length === 0) || (this.paymentIntegration === 'stripe' && stripePlans.length === 0)
-    if (createPlan) {
-      await this.createFirstBilling()
-      plans = await this.query({})
-      // TODO - keep plans in sync with config
-      if (plans.length === 0) {
-        const settings = await this.settingsService.getWebsiteRenderingVariables()
-        plans = settings.pricing_plans
-        return plans.map((p, j) => ({ ...p, id: j }))
-      }
-      return plans.map(this.validatePlan)
-    } else {
-      return (this.paymentIntegration === 'killbill' ? killbillPlans : stripePlans).map(this.validatePlan)
-    }
-    */
   }
 
   async getPricingAndPlans (): Promise<any> {

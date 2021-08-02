@@ -148,7 +148,7 @@ export class UserController {
       account,
       plans,
       activeSubscription,
-      html_payments_processor: this.paymentsService.paymentProcessor.getHtml()
+      html_payments_processor: this.paymentsService.getHtml()
     })
   }
 

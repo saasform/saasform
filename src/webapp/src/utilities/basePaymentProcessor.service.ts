@@ -44,17 +44,7 @@ export class BasePaymentProcessorService {
     // console.log('Create payment method')
   }
 
-  // Deprecated ?
-  async subscribeToPlan (customer: any, paymentMethod: any, price: any): Promise<any> {
-    // console.log('Subscribe to plan')
-  }
-
-  async getSubscriptions (accountId: any): Promise<any> {
-    // console.log('Get subscriptions')
-  }
-
-  // Deprecated ?
-  async updatePlan (subscriptionId: any, price: any): Promise<any> {
-    // console.log('Update plan')
+  async createPlan (plan: any): Promise<any> {
+    // console.log('Create plan')
   }
 }

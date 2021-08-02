@@ -13,12 +13,12 @@ import { ConfigService } from '@nestjs/config'
 import { ValidationService } from '../../validator/validation.service'
 import { SettingsService } from '../../settings/settings.service'
 import { PlansService } from './plans.service'
+import { ProvidersService } from './providers.service'
 
 @QueryService(PaymentEntity)
 @Injectable({ scope: Scope.REQUEST })
 export class PaymentsService extends BaseService<PaymentEntity> {
-  private readonly paymentIntegration: string
-  public readonly paymentProcessor: any
+  // private readonly paymentIntegration: string
 
   constructor (
     @Inject(REQUEST) private readonly req,
@@ -27,18 +27,14 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     private readonly settingsService: SettingsService,
     private readonly stripeService: StripeService,
     private readonly killBillService: KillBillService,
-    private readonly plansService: PlansService
+    private readonly plansService: PlansService,
+    private readonly providersService: ProvidersService
   ) {
     super(
       req,
       'PaymentEntity'
     )
-    this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
-    if (this.paymentIntegration === 'killbill') {
-      this.paymentProcessor = this.killBillService
-    } else {
-      this.paymentProcessor = this.stripeService
-    }
+    // this.paymentIntegration = this.configService.get<string>('MODULE_PAYMENT', 'stripe')
   }
 
   /**
@@ -58,7 +54,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
    * @returns The payment object
    */
   async enrollOrUpdateAccount (account: AccountEntity, planHandle: string, paymentMethod: any, allowExternalPlan = false): Promise<any> {
-    const config = await this.getPaymentsConfig()
+    const config = await this.providersService.getPaymentsConfig()
     const provider = config.payment_processor_enabled === true ? config.payment_processor : null
 
     const payment = account?.data?.payment ?? {}
@@ -93,7 +89,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
     if (isCustomerNeeded) {
       const inputCustomer = account?.getPaymentProviderCustomer()
       if (inputCustomer != null) {
-        const customer = await this.paymentProcessor.createCustomer(account?.getPaymentProviderCustomer())
+        const customer = await this.providersService.createCustomer(account?.getPaymentProviderCustomer())
         if (customer != null) {
           payment.customer = customer
         }
@@ -102,7 +98,7 @@ export class PaymentsService extends BaseService<PaymentEntity> {
 
     // 3. Add payment method
     if (paymentMethod != null) {
-      const { customer, method } = await this.paymentProcessor.attachPaymentMethod(payment.customer, paymentMethod)
+      const { customer, method } = await this.providersService.attachPaymentMethod(payment.customer, paymentMethod)
       if (method != null) {
         if (payment.methods == null) { payment.methods = [method] } else { payment.methods.push(method) }
       }
@@ -128,9 +124,9 @@ export class PaymentsService extends BaseService<PaymentEntity> {
       } else if (isFreeTier) { // Free tier
         payment.sub = { status: 'active' }
       } else if (payment.plan?.freeTrial > 0 && payment.customer != null) { // Free trial
-        payment.sub = await this.paymentProcessor.createSubscription(payment.customer, payment.plan)
+        payment.sub = await this.providersService.createSubscription(payment.customer, payment.plan)
       } else if (payment.methods != null && payment.customer != null) { // Full subscription
-        payment.sub = await this.paymentProcessor.createSubscription(payment.customer, payment.plan)
+        payment.sub = await this.providersService.createSubscription(payment.customer, payment.plan)
       }
       // else, payment.subscription = null
       // This happens when a subscription is required, no free trial nor free tier is granted and the account is being created:
@@ -143,13 +139,11 @@ export class PaymentsService extends BaseService<PaymentEntity> {
   }
 
   async getPaymentsConfig (): Promise<any> {
-    const settings = await this.settingsService.getWebsiteRenderingVariables()
-    const processorEnabled = this.stripeService.enabled
-    return {
-      payment_processor: this.paymentIntegration,
-      payment_processor_enabled: processorEnabled,
-      signup_force_payment: settings.signup_force_payment === true
-    }
+    return await this.providersService.getPaymentsConfig()
+  }
+
+  getHtml (): any {
+    return this.providersService.getHtml()
   }
 
   // OLD

@@ -52,7 +52,7 @@ export class PaymentsController {
       account,
       plans,
       user: req.user,
-      html_payments_processor: this.paymentsService.paymentProcessor.getHtml()
+      html_payments_processor: this.paymentsService.getHtml()
     })
   }
 
@@ -70,7 +70,7 @@ export class PaymentsController {
   @Get('/payment')
   async getPayment (@Request() req, @Res() res: Response): Promise<any> {
     return renderPage(req, res, 'payment', {
-      html_payments_processor: this.paymentsService.paymentProcessor.getHtml()
+      html_payments_processor: this.paymentsService.getHtml()
     })
   }
 }
