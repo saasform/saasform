@@ -151,17 +151,19 @@ export class UsersService extends BaseService<UserEntity> {
 
     // Get allowedKeys and update those values
     const { allowedKeys } = await this.settingsService.getUserSettings()
-    const updatedProfile = allowedKeys.reduce((acc, property) => {
-      if (property in data) {
-        acc[property] = data[property]
-      } else if (user?.data?.profile != null && property in user.data.profile) {
-        acc[property] = user.data.profile[property]
-      } else {
-        acc[property] = ''
-      }
 
-      return acc
-    }, {})
+    const updatedProfile = {}
+    for (let k = 0; k < allowedKeys.length; k++) {
+      const property = allowedKeys[k]
+
+      if (property in data) {
+        updatedProfile[property] = data[property]
+      } else if (user?.data?.profile != null && property in user.data.profile) {
+        updatedProfile[property] = user.data.profile[property]
+      } else {
+        updatedProfile[property] = ''
+      }
+    }
 
     user.data.profile = updatedProfile
 
