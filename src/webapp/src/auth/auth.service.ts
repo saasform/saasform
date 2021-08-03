@@ -431,6 +431,9 @@ export class AuthService {
       validUser = newUser
     }
 
+    // add IdP data to user
+    await this.usersService.updateUserProfile(data.idpData, validUser.user.id)
+
     // [org] validate that org's account and actual account are the same
     if (accountWithOrg != null && accountWithOrg.id !== validUser.account.id) {
       console.error('AuthService - userFindOrCreate - org required, invalid account id')
@@ -491,6 +494,13 @@ export class AuthService {
       }
     */
     const data = profile ?? {}
+    const idpData = {
+      email: data.email ?? null,
+      name: data.name ?? null,
+      given_name: data.given_name ?? null,
+      family_name: data.family_mane ?? null,
+      picture: data.picture ?? null
+    }
 
     return await this.userFindOrCreate(req, {
       provider: 'google',
@@ -498,6 +508,7 @@ export class AuthService {
       email_verified: data.email_verified,
       subject: data.sub,
       extra: data,
+      idpData,
       tokens: { access_token: accessToken, refresh_token: refreshToken }
     })
   }
@@ -539,6 +550,14 @@ export class AuthService {
       }
     */
     const data = profile?._json ?? {}
+    const idpData = {
+      email: profile?._json?.email ?? null,
+      name: profile?._json?.name ?? null,
+      given_name: profile?.name?.givenName ?? null,
+      middle_name: profile?.name?.middleName ?? null,
+      family_name: profile?.name?.undefined ?? null,
+      picture: '' // todo: find the right value
+    }
 
     return await this.userFindOrCreate(req, {
       provider: 'azure',
@@ -546,6 +565,7 @@ export class AuthService {
       email_verified: true, // Azure AD doesn't return it - TODO: validate that it's always true
       subject: data.sub,
       extra: data,
+      idpData,
       tokens: { access_token: accessToken, refresh_token: refreshToken }
     })
   }
