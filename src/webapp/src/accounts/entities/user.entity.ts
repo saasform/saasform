@@ -143,4 +143,10 @@ export class UserEntity {
     // This is needed for searching. Maybe it can be improved?
     this.emailConfirmationToken = this.data.emailConfirmationToken
   }
+
+  public getProfile (): any {
+    const profile = this.data.profile ?? {}
+
+    return profile
+  }
 }
