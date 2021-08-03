@@ -5,7 +5,7 @@ import { AccountsService } from '../../../accounts/services/accounts.service'
 import { PlansService } from '../../../payments/services/plans.service'
 import { UsersService } from '../../../accounts/services/users.service'
 
-import { UserRequiredAuthGuard } from '../../../auth/auth.guard'
+import { UserRequiredAuthGuard, BearerTokenGuard } from '../../../auth/auth.guard'
 import { UserCredentialsService } from '../../../accounts/services/userCredentials.service'
 
 @ApiBearerAuth()
@@ -143,7 +143,33 @@ export class ApiV1UserController {
     }
   }
 
-  // @UseGuards(BearerTokenGuard)
+  @UseGuards(BearerTokenGuard)
+  @Get(':userId')
+  async getProfile (@Request() req, @Param('userId') userId: number): Promise<any> {
+    if (userId == null) {
+      return {
+        statusCode: 400,
+        error: 'userId not valid'
+      }
+    }
+
+    try {
+      const user = await this.usersService.findById(userId)
+
+      const profile = user?.getProfile() ?? {}
+
+      return {
+        object: 'user',
+        url: `/v1/user/${userId}`,
+        has_more: false,
+        data: profile
+      }
+    } catch (err) {
+
+    }
+  }
+
+  @UseGuards(BearerTokenGuard)
   @Get(':userId/oauth_tokens')
   async getOauthTokens (@Request() req, @Param('userId') userId: number): Promise<any> {
     if (userId == null) {
