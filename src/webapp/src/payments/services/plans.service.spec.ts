@@ -9,6 +9,7 @@ import { StripeService } from './stripe.service'
 import { KillBillService } from './killbill.service'
 import { SettingsService } from '../../settings/settings.service'
 import { ConfigService } from '@nestjs/config'
+import { ProvidersService } from './providers.service'
 
 const mockedRepo = {
   find: jest.fn().mockResolvedValue([]),
@@ -43,6 +44,7 @@ describe('PlansService', () => {
           provide: ConfigService,
           useValue: {}
         },
+        ProvidersService,
         // TODO: Also stripe goes here
         // We must also pass TypeOrmQueryService
         TypeOrmQueryService

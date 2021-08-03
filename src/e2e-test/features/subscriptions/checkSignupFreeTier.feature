@@ -1,4 +1,4 @@
-Feature: checkSignupRequirePayment
+Feature: checkSignupFreeTier
   As the admin
   I want to force payment at signup
   So that I can collect cc info right away
@@ -9,7 +9,7 @@ Feature: checkSignupRequirePayment
   # Smoke test
   Scenario: Signup and redirect to /payment
     Given I open the url "http://localhost:7000/signup"
-    When I set the element "#email" value to "test+payment@example.com"
+    When I set the element "#email" value to "test+freetier@example.com"
     And I set the element "#password" value to "password"
     And I click the button "[type='submit']"
     And I wait for .5 seconds
