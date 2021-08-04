@@ -55,9 +55,10 @@ Saasform uses [Humbug](https://github.com/bugout-dev/humbug) to collect anonymou
   - [x] Team support (invite new user)
   - [x] Google oauth / SSO
   - [x] Microsoft Azure AD (incl. Office 365)
+  - [x] Okta
   - [x] [Miracl](https://miracl.com)
   - [ ] Session management
-  - [ ] Enterprise SSO / SAML / Okta integration
+  - [ ] Enterprise SSO / SAML
 - Subscription payments
   - [x] Stripe integration
   - [x] [Kill Bill](https://killbill.io)
@@ -81,12 +82,6 @@ Coming soon!
 ## Contribute
 
 We love any type of contribution, bug fixes, new integrations and better docs. Get started by running [Saasform in dev mode](https://docs.saasform.dev/contrib/dev).
-
-## Office Hours
-
-Dave: Wed, 9:30-11:30 AM CET, https://www.twitch.tv/davidevernizzi
-
-Ema: Wed, 8-10 AM PT on [YouTube](https://www.youtube.com/channel/UCDTowl5eFg8Fru1m0Wlwfew/live)
 
 ## Saasform Cloud
 
