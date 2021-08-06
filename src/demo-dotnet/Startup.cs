@@ -1,13 +1,12 @@
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 //using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,7 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace dotnet_demo
 {
@@ -53,6 +52,37 @@ namespace dotnet_demo
                         
                         var Handler = new JwtSecurityTokenHandler();
                         var Token = Handler.ReadJwtToken(CookieValue);
+
+                        try
+                            {
+                                var validateParameters = new TokenValidationParameters()
+                                {
+                                    ValidateLifetime = false,
+                                    ValidateAudience = false,
+                                    ValidateIssuer = false,
+                                    ValidIssuer = "Sample",
+                                    ValidAudience = "Sample",
+                                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(CookieValue))
+                                };
+                                SecurityToken validatedToken;
+                                Handler.ValidateToken(Token.ToString(), validateParameters, out validatedToken);
+
+                                if (validatedToken is JwtSecurityToken jwtSecurityToken)
+                                {
+                                    var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
+                                    if (result == false)
+                                    {
+                                        // Not valid token exception
+                                        throw new Exception();
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // Full list of exceptions during validation 
+                                // https://docs.microsoft.com/en-us/dotnet/api/system.identitymodel.tokens.jwt.jwtsecuritytokenhandler.validatetoken?view=azure-dotnet
+                                Console.WriteLine(ex.Message);
+                            }
     
                         var UserName = Token.Claims.Where(c => c.Type == "account_name").FirstOrDefault().Value;
                         var UserClaims = new List<Claim>
