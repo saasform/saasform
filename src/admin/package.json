@@ -21,10 +21,12 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start:dev": "PORT=3001 REACT_APP_FUTURE=1 react-scripts start",
+    "start": "PORT=3001 react-scripts start",
+    "build": "PUBLIC_URL=/admin react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint --fix \"src/**/*.{ts,tsx}\""
   },
   "browserslist": {
     "production": [
