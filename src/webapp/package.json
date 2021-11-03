@@ -75,7 +75,7 @@
     "tld-extract": "^2.0.1",
     "typeorm": "^0.2.32",
     "urlsafe-base64": "^1.0.0",
-    "validator": "^13.5.2",
+    "validator": "^13.7.0",
     "yarn": "^1.22.10"
   },
   "resolutions": {
