@@ -56,7 +56,7 @@
     "js-yaml": "^4.1.0",
     "killbill": "^0.1.0",
     "liquidjs": "^9.20.1",
-    "markdown-it": "^12.0.4",
+    "markdown-it": "^12.3.2",
     "mysql": "^2.18.1",
     "parse-domain": "^3.0.3",
     "passport": "^0.4.1",
