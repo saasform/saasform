@@ -20,7 +20,7 @@
   "main": "./lib",
   "dependencies": {
     "cookie": "^0.4.1",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.1.1",
     "passport-jwt": "^4.0.0",
     "passport-strategy": "1.x.x"
   },
