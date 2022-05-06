@@ -89,7 +89,7 @@ keys: [{ public: 'latest', private: '...' }, { public: 'old1' }, { public: 'old2
 We currenlty use the ES256 algorithm. Keys can be generated with:
 ```bash
 openssl ecparam -name secp256k1 -genkey -noout -out private-key.pem
-openssl ec -in ec-secp256k1-priv-key.pem -pubout > public-key.pem
+openssl ec -in private-key.pem -pubout > public-key.pem
 ```
 
 ##### jwtFromReq
