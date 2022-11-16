@@ -1,0 +1,4 @@
+paths-ignore:
+  - dist
+  - '**/*bundle.js'
+  - '**/fontawesome/*.js'
