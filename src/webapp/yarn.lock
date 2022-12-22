@@ -5898,10 +5898,10 @@ linkify-it@^3.0.1:
   dependencies:
     uc.micro "^1.0.1"
 
-liquidjs@^9.20.1:
-  version "9.22.1"
-  resolved "https://registry.npmjs.org/liquidjs/-/liquidjs-9.22.1.tgz"
-  integrity sha512-4gvj9vKqSaLZGQPLcL0kg5CWT+d/gSLMCsoB3aD1W9nQbVViFBm22caGRFQRphpkHoLb+mQ//MHZcNp0lf8qkg==
+liquidjs@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/liquidjs/-/liquidjs-10.0.0.tgz#282579e9f90f4bfd92ef7d09ad4f5aac3ec9fd61"
+  integrity sha512-uY3fKqBSRmnat0wB5qWk0W5N5iT78OUhuIXNRiMfhYQ3p35al9mEWKQ68/Z+WD54V2upaxEM8nHaZ6o1B8WCMA==
 
 load-json-file@^2.0.0:
   version "2.0.0"
